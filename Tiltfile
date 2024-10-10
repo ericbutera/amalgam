@@ -17,5 +17,6 @@ docker_build(
 )
 
 # LGTM Stack
+docker_build("lgtm-image", "lgtm")
 k8s_yaml("kubernetes/lgtm.yaml")
-k8s_resource("lgtm", port_forwards=["3001:3000","4317:4317","4318:4318"])
+k8s_resource("lgtm", port_forwards=["3001:3000","4317:4317","4318:4318", "9090:9090"])

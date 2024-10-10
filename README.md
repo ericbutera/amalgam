@@ -32,3 +32,4 @@ A Next.JS app.
 Observability stack.
 
 - [Grafana](http://localhost:3001/)
+- [Prometheus](http://localhost:9090/)

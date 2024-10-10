@@ -1,0 +1,10 @@
+storage:
+  tsdb:
+    # A 10min time window is enough because it can easily absorb retries and network delays.
+    out_of_order_time_window: 10m
+
+scrape_configs:
+- job_name: 'api'
+  scrape_interval: 5s
+  static_configs:
+  - targets: ['api:8080']
