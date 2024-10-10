@@ -5,5 +5,5 @@ FROM grafana/otel-lgtm:latest
 # allows scraping of api metrics
 COPY prometheus.yaml /otel-lgtm/prometheus.yaml
 
-# TODO: COPY api-dashboard.yaml /otel-lgtm/grafana/conf/provisioning/dashboards/api-dashboard.yaml
-# COPY gin.yaml /otel-lgtm/grafana/conf/provisioning/dashboards/gin.yaml
+COPY grafana-dashboards.yaml /otel-lgtm/grafana/conf/provisioning/datasources/grafana-dashboards.yaml
+COPY gin.json /otel-lgtm/grafana/conf/provisioning/dashboards/gin.json
