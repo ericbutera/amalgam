@@ -5,14 +5,14 @@ import (
 
 	"github.com/ericbutera/amalgam/api/internal"
 	"github.com/ericbutera/amalgam/api/internal/models"
+	"github.com/ericbutera/amalgam/api/internal/service"
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 
 	_ "github.com/ericbutera/amalgam/api/docs"
 )
 
 func (s *server) routes() {
-	handlers := newHandlers(s.db)
+	handlers := newHandlers(service.New(s.db) /*s.db*/)
 
 	s.router.GET("/", func(c *gin.Context) { c.Redirect(http.StatusMovedPermanently, internal.SwaggerUri) })
 	s.router.GET("/health", health)
@@ -39,11 +39,15 @@ func health(c *gin.Context) {
 }
 
 type handlers struct {
-	db *gorm.DB
+	//db *gorm.DB
+	svc *service.Service
 }
 
-func newHandlers(db *gorm.DB) *handlers {
-	return &handlers{db: db}
+func newHandlers(svc *service.Service /*db *gorm.DB*/) *handlers {
+	return &handlers{
+		//db: db
+		svc: svc,
+	}
 }
 
 // list feeds
@@ -56,10 +60,8 @@ func newHandlers(db *gorm.DB) *handlers {
 // @Failure 500 {object} map[string]string
 // @Router /feeds [get]
 func (h *handlers) feeds(c *gin.Context) {
-	var feeds []models.Feed
-	result := h.db.Find(&feeds).Limit(100)
-	if result.Error != nil {
-		// TODO error logging middleware
+	feeds, err := h.svc.Feeds()
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "unable to fetch feeds"})
 	}
 
@@ -83,23 +85,13 @@ type FeedsResponse struct {
 // @Failure 500 {object} map[string]string
 // @Router /feed/{id}/articles [get]
 func (h *handlers) articles(c *gin.Context) {
-	var feed models.Feed
 	// TODO: simplify flow control
 	// TODO: handle bad request
+	// TODO: handle non-existent feed
 	id := c.Param("id")
-	result := h.db.First(&feed, id)
-	if result.Error != nil {
-		if result.Error == gorm.ErrRecordNotFound {
-			c.JSON(http.StatusNotFound, gin.H{"error": "feed not found"})
-			return
-		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "unable to fetch feeds"})
-	}
 
-	// TODO: create specific article listing which excludes feed obj & conent
-	var articles []models.Article
-	res := h.db.Find(&articles, "feed_id = ?", feed.ID).Limit(100)
-	if res.Error != nil {
+	articles, err := h.svc.GetArticlesByFeed(id)
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "unable to fetch articles"})
 	}
 
