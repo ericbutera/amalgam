@@ -19,26 +19,41 @@ func NewServerCmd() *cobra.Command {
 		Use:   "server",
 		Short: "Run server",
 		Long:  "Run api server",
-		Run:   RunServer,
+		Run:   runServer,
 	}
 	return cmd
 }
 
-func RunServer(cmd *cobra.Command, args []string) {
+func quit(ctx context.Context, err error) {
+	slog.ErrorContext(ctx, err.Error())
+	os.Exit(1)
+}
+
+func runServer(cmd *cobra.Command, args []string) {
+	h := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug})
+	slog.SetDefault(slog.New(h))
+
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
-	otelShutdown, err := otel.Setup(ctx)
+	shutdown, err := otel.Setup(ctx)
 	if err != nil {
+		quit(ctx, err)
 		return
 	}
 	defer func() {
-		err = errors.Join(err, otelShutdown(context.Background()))
+		err = errors.Join(err, shutdown(context.Background()))
 	}()
+
+	srv, err := server.New(server.WithDatabase())
+	if err != nil {
+		quit(ctx, err)
+		return
+	}
 
 	srvErr := make(chan error, 1)
 	go func() {
-		srvErr <- server.New().Run()
+		srvErr <- srv.Run()
 	}()
 
 	select {
@@ -49,4 +64,5 @@ func RunServer(cmd *cobra.Command, args []string) {
 		slog.Info("shutting down")
 		stop()
 	}
+	quit(ctx, err)
 }

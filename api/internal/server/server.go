@@ -1,7 +1,13 @@
 package server
 
 import (
+	"log/slog"
+
+	"github.com/ericbutera/amalgam/api/internal/models"
 	"github.com/gin-gonic/gin"
+	slogGorm "github.com/orandin/slog-gorm"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
 const (
@@ -11,16 +17,69 @@ const (
 type server struct {
 	// Gin Router
 	router *gin.Engine
+	db     *gorm.DB
 }
 
-func New() *server {
+type ServerOption func(*server) error
+
+func New(options ...ServerOption) (*server, error) {
 	// TODO: ensure gin uses signal.NotifyContext ctx
 	// TODO: ensure gin uses slog as logger (for otel exporter)
+
 	s := &server{router: gin.Default()}
+
+	for _, o := range options {
+		if err := o(s); err != nil {
+			return nil, err
+		}
+	}
+
 	s.middleware()
 	s.metrics()
 	s.routes()
-	return s
+
+	return s, nil
+}
+
+func WithDatabase() func(*server) error {
+	//logger := slog.Default()
+	gormLogger := slogGorm.New(
+		slogGorm.WithTraceAll(), // TODO: only run in debug mode
+	)
+	return func(s *server) error {
+		db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{
+			Logger: gormLogger,
+		})
+		if err != nil {
+			return err
+		}
+
+		// TODO: only migrate in debug mode
+		db.AutoMigrate(&models.Feed{}, &models.Article{}, &models.User{})
+		seed(db)
+
+		s.db = db
+		return nil
+	}
+}
+
+// TODO populate with fixtures
+// TODO: only run in debug mode
+func seed(db *gorm.DB) {
+	var feed models.Feed
+	result := db.First(&feed, 1)
+	// if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) {
+	// 	slog.Error("failed to seed database: ", "error", result.Error)
+	// }
+	if result.RowsAffected > 0 {
+		slog.Debug("database already seeded")
+		return
+	}
+
+	db.Create(&models.Feed{
+		Url:  "https://example.com/",
+		Name: "Example",
+	})
 }
 
 func (s *server) Run() error {
