@@ -1,10 +1,12 @@
+# API
 # TODO: hot reload go
 docker_build("api-image", "api")
 k8s_yaml("kubernetes/api.yaml")
-k8s_resource("api", port_forwards=["8081:8080"])
+k8s_resource("api", port_forwards=["8080:8080"])
 
+# UI
 k8s_yaml("kubernetes/ui.yaml")
-k8s_resource("ui", port_forwards=["3001:3000"])
+k8s_resource("ui", port_forwards=["3000:3000"])
 docker_build(
     "ui-image",
     context="./ui",
@@ -13,3 +15,7 @@ docker_build(
     ],
     dockerfile="ui/dev.Dockerfile"
 )
+
+# LGTM Stack
+k8s_yaml("kubernetes/lgtm.yaml")
+k8s_resource("lgtm", port_forwards=["3001:3000","4317:4317","4318:4318"])
