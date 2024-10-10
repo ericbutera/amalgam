@@ -10,6 +10,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/ericbutera/amalgam/api/internal/config"
 	"github.com/ericbutera/amalgam/api/internal/otel"
 	"github.com/ericbutera/amalgam/api/internal/server"
 )
@@ -45,7 +46,16 @@ func runServer(cmd *cobra.Command, args []string) {
 		err = errors.Join(err, shutdown(context.Background()))
 	}()
 
-	srv, err := server.New(server.WithDatabase())
+	cfg, err := config.NewConfigFromEnv()
+	if err != nil {
+		quit(ctx, err)
+		return
+	}
+
+	srv, err := server.New(
+		server.WithConfig(cfg),
+		server.WithSqlite(""),
+	)
 	if err != nil {
 		quit(ctx, err)
 		return

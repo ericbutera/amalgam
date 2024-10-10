@@ -3,6 +3,7 @@ package server
 import (
 	"log/slog"
 
+	"github.com/ericbutera/amalgam/api/internal/config"
 	"github.com/ericbutera/amalgam/api/internal/models"
 	"github.com/gin-gonic/gin"
 	slogGorm "github.com/orandin/slog-gorm"
@@ -15,7 +16,7 @@ const (
 )
 
 type server struct {
-	// Gin Router
+	config *config.Config
 	router *gin.Engine
 	db     *gorm.DB
 }
@@ -26,7 +27,9 @@ func New(options ...ServerOption) (*server, error) {
 	// TODO: ensure gin uses signal.NotifyContext ctx
 	// TODO: ensure gin uses slog as logger (for otel exporter)
 
-	s := &server{router: gin.Default()}
+	s := &server{
+		router: gin.Default(),
+	}
 
 	for _, o := range options {
 		if err := o(s); err != nil {
@@ -41,7 +44,14 @@ func New(options ...ServerOption) (*server, error) {
 	return s, nil
 }
 
-func WithDatabase(name string) func(*server) error {
+func WithConfig(cfg *config.Config) func(*server) error {
+	return func(s *server) error {
+		s.config = cfg
+		return nil
+	}
+}
+
+func WithSqlite(name string) func(*server) error {
 	if name == "" {
 		name = "test.db"
 	}
