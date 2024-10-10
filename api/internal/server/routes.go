@@ -85,12 +85,9 @@ type FeedsResponse struct {
 // @Failure 500 {object} map[string]string
 // @Router /feed/{id}/articles [get]
 func (h *handlers) articles(c *gin.Context) {
-	// TODO: simplify flow control
 	// TODO: handle bad request
 	// TODO: handle non-existent feed
-	id := c.Param("id")
-
-	articles, err := h.svc.GetArticlesByFeed(id)
+	articles, err := h.svc.GetArticlesByFeed(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "unable to fetch articles"})
 	}

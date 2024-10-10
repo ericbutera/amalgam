@@ -42,7 +42,6 @@ func New(options ...ServerOption) (*server, error) {
 }
 
 func WithDatabase() func(*server) error {
-	//logger := slog.Default()
 	gormLogger := slogGorm.New(
 		slogGorm.WithTraceAll(), // TODO: only run in debug mode
 	)

@@ -40,9 +40,9 @@ func (s *Service) GetFeed(id string) (*models.Feed, error) {
 	return &feed, nil
 }
 
-func (s *Service) GetArticlesByFeed(feedId string) ([]models.Article, error) {
+func (s *Service) GetArticlesByFeed(id string) ([]models.Article, error) {
 	var articles []models.Article
-	result := s.db.Find(&articles, "feed_id = ?", feedId).Limit(100)
+	result := s.db.Find(&articles, "feed_id = ?", id).Limit(100)
 	if result.Error != nil {
 		return nil, errors.New("failed to fetch articles")
 	}

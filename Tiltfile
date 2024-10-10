@@ -17,6 +17,9 @@ docker_build(
 )
 
 # LGTM Stack
+# TODO: figure out:
+# - loki log exporter
+# - metric exporter isn't working
 docker_build("lgtm-image", "lgtm")
 k8s_yaml("kubernetes/lgtm.yaml")
 k8s_resource("lgtm", port_forwards=["3001:3000","4317:4317","4318:4318", "9090:9090"])
