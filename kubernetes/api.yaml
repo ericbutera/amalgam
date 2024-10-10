@@ -1,4 +1,17 @@
 # TODO: helm chart w/ values.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: api
+spec:
+  selector:
+    app: api
+  ports:
+    - name: api
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -24,6 +37,8 @@ spec:
           value: "8080"
         - name: GIN_MODE
           value: "debug"
+        - name: OTEL_EXPORTER_OTLP_INSECURE
+          value: "true"
         - name: OTEL_EXPORTER_OTLP_ENDPOINT
           value: "http://lgtm:4318"
         - name: OTEL_OTLP_EXPORT_INTERVAL
@@ -32,5 +47,9 @@ spec:
           value: "http://lgtm:4318/v1/metrics"
         - name: OTEL_METRIC_EXPORT_INTERVAL
           value: "5000"
+        - name: OTEL_EXPORTER_OTLP_LOGS_ENDPOINT
+          value: "http://lgtm:4318/v1/logs"
         - name: OTEL_RESOURCE_ATTRIBUTES
-          value: "service.name=api"
+          value: "service.name=api,service.instance.id=api:8080"
+        - name: OTEL_LOGS_EXPORTER
+          value: "otlp"
