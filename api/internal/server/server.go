@@ -41,12 +41,15 @@ func New(options ...ServerOption) (*server, error) {
 	return s, nil
 }
 
-func WithDatabase() func(*server) error {
+func WithDatabase(name string) func(*server) error {
+	if name == "" {
+		name = "test.db"
+	}
 	gormLogger := slogGorm.New(
 		slogGorm.WithTraceAll(), // TODO: only run in debug mode
 	)
 	return func(s *server) error {
-		db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{
+		db, err := gorm.Open(sqlite.Open(name), &gorm.Config{
 			Logger: gormLogger,
 		})
 		if err != nil {
@@ -65,24 +68,32 @@ func WithDatabase() func(*server) error {
 // TODO populate with fixtures
 // TODO: only run in debug mode
 func seed(db *gorm.DB) {
-	var feed models.Feed
-	result := db.First(&feed, 1)
+	db.Transaction(func(tx *gorm.DB) error {
+		var feed models.Feed
+		result := tx.First(&feed, 1)
 
-	if result.RowsAffected > 0 {
-		slog.Debug("database already seeded")
-		return
-	}
+		if result.RowsAffected > 0 {
+			slog.Debug("database already seeded")
+			return nil
+		}
 
-	feed = models.Feed{
-		Url:  "https://example.com/",
-		Name: "Example",
-	}
-	db.Create(&feed)
-	db.Create(&models.Article{
-		FeedID:  feed.ID,
-		Url:     "https://example.com/article",
-		Title:   "Example Article",
-		Content: "This is an example article",
+		slog.Info("seeding database")
+		feed = models.Feed{
+			Url:  "https://example.com/",
+			Name: "Example",
+		}
+		if err := tx.Create(&feed).Error; err != nil {
+			return err
+		}
+		if err := tx.Create(&models.Article{
+			FeedID:  feed.ID,
+			Url:     "https://example.com/article",
+			Title:   "Example Article",
+			Content: "This is an example article",
+		}).Error; err != nil {
+			return err
+		}
+		return nil
 	})
 }
 

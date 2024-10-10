@@ -21,7 +21,7 @@ func New(db *gorm.DB) *Service {
 
 func (s *Service) Feeds() ([]models.Feed, error) {
 	var feeds []models.Feed
-	result := s.db.Find(&feeds).Limit(100)
+	result := s.db.Find(&feeds).Limit(100) // TODO: pagination
 	if result.Error != nil {
 		return nil, errors.New("failed to fetch feeds")
 	}
@@ -42,7 +42,7 @@ func (s *Service) GetFeed(id string) (*models.Feed, error) {
 
 func (s *Service) GetArticlesByFeed(id string) ([]models.Article, error) {
 	var articles []models.Article
-	result := s.db.Find(&articles, "feed_id = ?", id).Limit(100)
+	result := s.db.Find(&articles, "feed_id = ?", id).Limit(100) // TODO: pagination (cursor)
 	if result.Error != nil {
 		return nil, errors.New("failed to fetch articles")
 	}
