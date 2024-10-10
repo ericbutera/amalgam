@@ -10,7 +10,7 @@ build: ## Build the binary
 
 .PHONY: docs
 docs: ## generate docs
-	swag init
+	swag init --parseDependency --parseInternal
 
 .PHONY: help
 help: ## Help

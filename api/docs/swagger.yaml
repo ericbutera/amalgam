@@ -1,6 +1,45 @@
+definitions:
+  gorm.DeletedAt:
+    properties:
+      time:
+        type: string
+      valid:
+        description: Valid is true if Time is not NULL
+        type: boolean
+    type: object
+  models.Feed:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: integer
+      name:
+        type: string
+      updatedAt:
+        type: string
+      url:
+        type: string
+    type: object
 info:
   contact: {}
 paths:
+  /feeds:
+    get:
+      consumes:
+      - application/json
+      description: list feeds
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Feed'
+            type: array
+      summary: list feeds
   /health:
     get:
       consumes:
