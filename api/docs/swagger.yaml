@@ -7,6 +7,37 @@ definitions:
         description: Valid is true if Time is not NULL
         type: boolean
     type: object
+  models.Article:
+    properties:
+      authorEmail:
+        type: string
+      authorName:
+        type: string
+      content:
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      feed:
+        $ref: '#/definitions/models.Feed'
+      feedID:
+        type: integer
+      guid:
+        type: string
+      id:
+        type: integer
+      imageUrl:
+        type: string
+      preview:
+        type: string
+      title:
+        type: string
+      updatedAt:
+        type: string
+      url:
+        type: string
+    type: object
   models.Feed:
     properties:
       createdAt:
@@ -22,9 +53,48 @@ definitions:
       url:
         type: string
     type: object
+  server.FeedArticlesResponse:
+    properties:
+      articles:
+        items:
+          $ref: '#/definitions/models.Article'
+        type: array
+    type: object
+  server.FeedsResponse:
+    properties:
+      feeds:
+        items:
+          $ref: '#/definitions/models.Feed'
+        type: array
+    type: object
 info:
   contact: {}
 paths:
+  /feed/{id}/articles:
+    get:
+      consumes:
+      - application/json
+      description: list articles for a feed
+      parameters:
+      - description: Feed ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/server.FeedArticlesResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: list articles for a feed
   /feeds:
     get:
       consumes:
@@ -36,9 +106,13 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/models.Feed'
-            type: array
+            $ref: '#/definitions/server.FeedsResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
       summary: list feeds
   /health:
     get:
