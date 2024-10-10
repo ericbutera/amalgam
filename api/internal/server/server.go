@@ -68,17 +68,22 @@ func WithDatabase() func(*server) error {
 func seed(db *gorm.DB) {
 	var feed models.Feed
 	result := db.First(&feed, 1)
-	// if result.Error != nil && !errors.Is(result.Error, gorm.ErrRecordNotFound) {
-	// 	slog.Error("failed to seed database: ", "error", result.Error)
-	// }
+
 	if result.RowsAffected > 0 {
 		slog.Debug("database already seeded")
 		return
 	}
 
-	db.Create(&models.Feed{
+	feed = models.Feed{
 		Url:  "https://example.com/",
 		Name: "Example",
+	}
+	db.Create(&feed)
+	db.Create(&models.Article{
+		FeedID:  feed.ID,
+		Url:     "https://example.com/article",
+		Title:   "Example Article",
+		Content: "This is an example article",
 	})
 }
 
