@@ -1,4 +1,15 @@
 info:
   contact: {}
-paths: {}
+paths:
+  /health:
+    get:
+      consumes:
+      - application/json
+      description: Health check
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Health check
 swagger: "2.0"

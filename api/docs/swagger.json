@@ -3,5 +3,23 @@
     "info": {
         "contact": {}
     },
-    "paths": {}
+    "paths": {
+        "/health": {
+            "get": {
+                "description": "Health check",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Health check",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        }
+    }
 }

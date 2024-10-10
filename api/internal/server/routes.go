@@ -4,20 +4,30 @@ import (
 	"net/http"
 
 	"github.com/ericbutera/amalgam/api/internal"
-	"github.com/ericbutera/amalgam/api/internal/metrics"
 	"github.com/gin-gonic/gin"
+
+	_ "github.com/ericbutera/amalgam/api/docs"
 )
 
 func (s *server) routes() {
 	s.router.GET("/", func(c *gin.Context) { c.Redirect(http.StatusMovedPermanently, internal.SwaggerUri) })
-	s.router.GET("/health", func(c *gin.Context) {
-		metrics.TestCounter.Inc()
-		c.Status(http.StatusOK)
-	})
+	s.router.GET("/health", health)
 
 	// TODO auth
 	// auth := s.router.Group("/")
 	// auth.Use(app.AuthRequired()) {
 	s.router.GET("/swagger/*any", internal.Swagger())
 	//}
+}
+
+// Health check
+// @Summary Health check
+// @Schemes
+// @Description Health check
+// @Accept json
+// @Produce json
+// @Success 200
+// @Router /health [get]
+func health(c *gin.Context) {
+	c.Status(http.StatusOK)
 }
