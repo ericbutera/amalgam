@@ -1,5 +1,8 @@
 // https://github.com/grafana/docker-otel-lgtm/blob/main/examples/go/otel.go
-package main
+package otel
+
+// TODO: don't emit traces for /health
+// TODO: i can't seem to find metric & log exporter data in LGTM
 
 import (
 	"context"
@@ -27,10 +30,22 @@ var (
 	logger = otelslog.NewLogger(schemaName)
 )
 
-// setupOTelSDK bootstraps the OpenTelemetry pipeline.
+/*
+func Tracer() tracer.Tracer {
+	return tracer
+}
+
+func Logger() *slog.Logger {
+	return logger
+}
+*/
+
+// bootstrap the OpenTelemetry pipeline
 // If it does not return an error, make sure to call shutdown for proper cleanup.
-func setupOTelSDK(ctx context.Context) (shutdown func(context.Context) error, err error) {
+func Setup(ctx context.Context) (shutdown func(context.Context) error, err error) {
 	var shutdownFuncs []func(context.Context) error
+
+	logger.Info("setting up OpenTelemetry")
 
 	// shutdown calls cleanup functions registered via shutdownFuncs.
 	// The errors from the calls are joined.
