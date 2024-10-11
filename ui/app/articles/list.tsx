@@ -1,23 +1,18 @@
 'use client'
 
-import useSWR from "swr";
 import Link from 'next/link'
-
-const fetcher = (url) => fetch(url).then((res) => res.json());
+import useArticles from '../data/articles';
 
 export default function Articles({ id }) {
-    const { data, error, isLoading } = useSWR(
-        `http://localhost:8080/feed/${id}/articles`,
-        fetcher
-    );
+    const { loading, error, articles, mutate } = useArticles(id);
 
-    if (error) return "An error has occurred.";
-    if (isLoading) return "Loading...";
+    if (error) return <div>An error has occurred.</div>
+    if (loading) <div>Loading...</div>
 
     return (
         <div>
             <ul>
-                {data.articles.map((article) => (
+                {articles.map((article) => (
                     <li key={article.ID}>
                         <Link href={`/article/${article.ID}`}>{article.Title}</Link>
                     </li>
