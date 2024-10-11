@@ -48,3 +48,15 @@ func (s *Service) GetArticlesByFeed(id string) ([]models.Article, error) {
 	}
 	return articles, nil
 }
+
+func (s *Service) GetArticle(id string) (*models.Article, error) {
+	var article models.Article
+	result := s.db.First(&article, id)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, ErrNotFound
+		}
+		return nil, errors.New("failed to fetch article")
+	}
+	return &article, nil
+}

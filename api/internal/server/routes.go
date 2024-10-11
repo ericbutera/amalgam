@@ -16,8 +16,11 @@ func (s *server) routes() {
 
 	s.router.GET("/", func(c *gin.Context) { c.Redirect(http.StatusMovedPermanently, internal.SwaggerUri) })
 	s.router.GET("/health", health)
+
+	// TODO: base route v1
 	s.router.GET("/feeds", handlers.feeds)
 	s.router.GET("/feed/:id/articles", handlers.articles)
+	s.router.GET("/article/:id", handlers.article)
 
 	// TODO auth
 	// auth := s.router.Group("/")
@@ -72,6 +75,33 @@ func (h *handlers) feeds(c *gin.Context) {
 
 type FeedsResponse struct {
 	Feeds []models.Feed `json:"feeds"`
+}
+
+// view article
+// @Summary view article
+// @Schemes
+// @Description view article
+// @Accept json
+// @Produce json
+// @Param id path int true "Article ID"
+// @Success 200 {object} ArticleResponse
+// @Failure 500 {object} map[string]string
+// @Router /article/{id} [get]
+func (h *handlers) article(c *gin.Context) {
+	// TODO: handle bad request
+	// TODO: handle non-existent feed
+	article, err := h.svc.GetArticle(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "unable to fetch articles"})
+	}
+
+	c.JSON(http.StatusOK, ArticleResponse{
+		Article: article,
+	})
+}
+
+type ArticleResponse struct {
+	Article *models.Article `json:"article"`
 }
 
 // list articles for a feed
