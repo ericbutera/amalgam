@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
+import Nav from "./nav";
+
 export const metadata: Metadata = {
   title: "amalgam",
   description: "amalgam",
@@ -14,7 +16,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        {children}
+        <Nav />
+        <div>
+          {children}
+        </div>
       </body>
     </html>
   );

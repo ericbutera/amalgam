@@ -13,10 +13,7 @@ export default function Feeds() {
   return (
     <div>
       <div>
-        <h1>feeds</h1>
-        <Link href="/">home</Link>
-        <Link href="/feeds">feeds</Link>
-        <Link href="/articles">articles</Link>
+        <h1>feed list</h1>
       </div>
       <div>
         <ul>
