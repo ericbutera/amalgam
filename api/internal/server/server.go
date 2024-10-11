@@ -1,10 +1,12 @@
 package server
 
 import (
+	"errors"
 	"log/slog"
 
 	"github.com/ericbutera/amalgam/api/internal/config"
 	"github.com/ericbutera/amalgam/api/internal/models"
+	"github.com/ericbutera/amalgam/api/internal/service"
 	"github.com/gin-gonic/gin"
 	slogGorm "github.com/orandin/slog-gorm"
 	"gorm.io/driver/sqlite"
@@ -16,17 +18,15 @@ const (
 )
 
 type server struct {
-	config *config.Config
-	router *gin.Engine
-	db     *gorm.DB
+	config  *config.Config
+	router  *gin.Engine
+	db      *gorm.DB
+	service *service.Service
 }
 
 type ServerOption func(*server) error
 
 func New(options ...ServerOption) (*server, error) {
-	// TODO: ensure gin uses signal.NotifyContext ctx
-	// TODO: ensure gin uses slog as logger (for otel exporter)
-
 	s := &server{
 		router: gin.Default(),
 	}
@@ -37,6 +37,11 @@ func New(options ...ServerOption) (*server, error) {
 		}
 	}
 
+	if s.db == nil {
+		return nil, errors.New("database not set")
+	}
+
+	s.service = service.New(s.db)
 	s.middleware()
 	s.metrics()
 	s.routes()

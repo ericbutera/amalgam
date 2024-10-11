@@ -28,10 +28,10 @@ GET /article/:id
 */
 
 func (s *server) routes() {
-	handlers := newHandlers(service.New(s.db) /*s.db*/)
+	handlers := newHandlers(s.service)
 
 	s.router.GET("/", func(c *gin.Context) { c.Redirect(http.StatusMovedPermanently, internal.SwaggerUri) })
-	s.router.GET("/health", health)
+	s.router.GET("/health", handlers.health)
 
 	// TODO: base route v1
 	s.router.GET("/feeds", handlers.feeds)
@@ -45,18 +45,6 @@ func (s *server) routes() {
 	//}
 }
 
-// Health check
-// @Summary Health check
-// @Schemes
-// @Description Health check
-// @Accept json
-// @Produce json
-// @Success 200
-// @Router /health [get]
-func health(c *gin.Context) {
-	c.Status(http.StatusOK)
-}
-
 type handlers struct {
 	svc *service.Service
 }
@@ -65,6 +53,18 @@ func newHandlers(svc *service.Service /*db *gorm.DB*/) *handlers {
 	return &handlers{
 		svc: svc,
 	}
+}
+
+// Health check
+// @Summary Health check
+// @Schemes
+// @Description Health check
+// @Accept json
+// @Produce json
+// @Success 200
+// @Router /health [get]
+func (h *handlers) health(c *gin.Context) {
+	c.Status(http.StatusOK)
 }
 
 // list feeds
