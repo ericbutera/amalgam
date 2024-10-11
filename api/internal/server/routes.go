@@ -11,6 +11,22 @@ import (
 	_ "github.com/ericbutera/amalgam/api/docs"
 )
 
+/*
+Routes:
+GET /health
+POST /register
+POST /login
+POST /logout
+GET /feeds
+POST /feed
+	- adds a feed source
+	- generic to all users
+	- create a user_feed record if exists
+GET /feed/:id
+GET /feed/:id/articles
+GET /article/:id
+*/
+
 func (s *server) routes() {
 	handlers := newHandlers(service.New(s.db) /*s.db*/)
 
@@ -42,13 +58,11 @@ func health(c *gin.Context) {
 }
 
 type handlers struct {
-	//db *gorm.DB
 	svc *service.Service
 }
 
 func newHandlers(svc *service.Service /*db *gorm.DB*/) *handlers {
 	return &handlers{
-		//db: db
 		svc: svc,
 	}
 }
