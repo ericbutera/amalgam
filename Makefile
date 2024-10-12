@@ -6,9 +6,7 @@ help: ## Help
 
 .PHONY: generate-api-client
 generate-api-client: ## Generate API client
-	# TODO: find a cleaner way to do this
-	# TODO: regenerate api docs (cd api && make docs) before running this command
-	#
+	# TODO: regenerate OpenAPI spec before running (cd api && make docs)
 	# https://github.com/OpenAPITools/openapi-generator?tab=readme-ov-file#16---docker
 	docker run \
 		-v "./api/docs/swagger.yaml:/local/swagger.yaml" \
