@@ -40,7 +40,6 @@ func runServer(cmd *cobra.Command, args []string) {
 	shutdown, err := otel.Setup(ctx)
 	if err != nil {
 		quit(ctx, err)
-		return
 	}
 	defer func() {
 		err = errors.Join(err, shutdown(context.Background()))
@@ -49,16 +48,19 @@ func runServer(cmd *cobra.Command, args []string) {
 	cfg, err := config.NewConfigFromEnv()
 	if err != nil {
 		quit(ctx, err)
-		return
+	}
+
+	dbAdapter, err := getDbAdapter(cfg)
+	if err != nil {
+		quit(ctx, err)
 	}
 
 	srv, err := server.New(
 		server.WithConfig(cfg),
-		server.WithSqlite(""),
+		dbAdapter,
 	)
 	if err != nil {
 		quit(ctx, err)
-		return
 	}
 
 	srvErr := make(chan error, 1)
@@ -68,11 +70,21 @@ func runServer(cmd *cobra.Command, args []string) {
 
 	select {
 	case err = <-srvErr:
-		slog.ErrorContext(ctx, "server error")
-		return
+		quit(ctx, err)
 	case <-ctx.Done():
 		slog.Info("shutting down")
 		stop()
 	}
 	quit(ctx, err)
+}
+
+func getDbAdapter(cfg *config.Config) (server.ServerOption, error) {
+	switch cfg.DbAdapter {
+	case "mysql":
+		return server.WithMysql(cfg.DbMysqlDsn), nil
+	case "sqlite":
+		return server.WithSqlite(cfg.DbSqliteName), nil
+	default:
+		return nil, errors.New("db adapter not supported")
+	}
 }

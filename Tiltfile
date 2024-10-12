@@ -2,7 +2,7 @@
 # TODO: hot reload go
 docker_build("api-image", "api")
 k8s_yaml("kubernetes/api.yaml")
-k8s_resource("api", port_forwards=["8080:8080"])
+k8s_resource("api", port_forwards=["8080:8080"], resource_deps=["mysql-migrate"])
 
 # UI
 k8s_yaml("kubernetes/ui.yaml")
@@ -29,3 +29,10 @@ docker_build("k6-image", "k6")
 k8s_yaml("kubernetes/k6.yaml")
 k8s_resource("k6", trigger_mode=TRIGGER_MODE_MANUAL)
 
+# mysql
+k8s_yaml("kubernetes/mysql.yaml")
+k8s_resource("mysql", port_forwards=["3306:3306"])
+# mysql migrations
+docker_build('mysql-migrate-image', 'mysql/migrations', dockerfile='mysql/migrate.Dockerfile')
+k8s_yaml("kubernetes/mysql-migrate-job.yaml")
+k8s_resource("mysql-migrate", resource_deps=["mysql"])

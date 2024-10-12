@@ -1,0 +1,36 @@
+# https://stackoverflow.com/a/67739290/261272
+apiVersion: batch/v1
+kind: Job
+metadata:
+  labels:
+    service: mysql-migrate
+  name: mysql-migrate
+spec:
+  template:
+    metadata:
+      name: mysql-migrate
+      labels:
+        service: mysql-migrate
+    spec:
+      containers:
+        - name: mysql-migrate
+          image: mysql-migrate-image
+      initContainers:
+        - name: init-amalgam-db
+          image: mysql-migrate-image
+          command:
+            [
+              "sh",
+              "-c",
+              "until nc -z mysql 3306; do echo waiting for mysql; sleep 2; done",
+            ]
+          imagePullPolicy: Always # only works with latest
+          volumeMounts:
+            - name: mysql-setup-sql
+              mountPath: /docker-entrypoint-initdb.d
+      volumes:
+        - name: mysql-setup-sql
+          configMap:
+            name: mysql-setup-sql
+      restartPolicy: Never
+  backoffLimit: 10

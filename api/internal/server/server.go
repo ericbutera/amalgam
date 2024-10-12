@@ -9,6 +9,7 @@ import (
 	"github.com/ericbutera/amalgam/api/internal/service"
 	"github.com/gin-gonic/gin"
 	slogGorm "github.com/orandin/slog-gorm"
+	"gorm.io/driver/mysql"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -74,6 +75,26 @@ func WithSqlite(name string) func(*server) error {
 		// TODO: only migrate in debug mode
 		db.AutoMigrate(&models.Feed{}, &models.Article{}, &models.User{})
 		seed(db)
+
+		s.db = db
+		return nil
+	}
+}
+
+func WithMysql(dsn string) func(*server) error {
+	gormLogger := slogGorm.New(
+		slogGorm.WithTraceAll(), // TODO: only run in debug mode
+	)
+	return func(s *server) error {
+		db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
+			Logger: gormLogger,
+		})
+		if err != nil {
+			return err
+		}
+
+		// TODO: only migrate in debug mode
+		// db.AutoMigrate(&models.Feed{}, &models.Article{}, &models.User{})
 
 		s.db = db
 		return nil

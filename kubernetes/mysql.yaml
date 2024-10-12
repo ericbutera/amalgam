@@ -1,0 +1,86 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    service: mysql
+  name: mysql
+spec:
+  ports:
+    - name: "3306"
+      port: 3306
+      targetPort: 3306
+  selector:
+    service: mysql
+status:
+  loadBalancer: {}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    service: mysql
+  name: mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: mysql
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        service: mysql
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: password
+            # TODO: might be possible to use this instead of setup.sql entrypoint. i prefer entrypoint as it lets me configure different users for app vs migration
+            # - name: MYSQL_DATABASE
+            #   value: amalgam-db
+            # - name: MYSQL_USER
+            #   value: amalgam-migration
+            # - name: MYSQL_PASSWORD
+            #   value: password
+            # - name: MYSQL_ALLOW_EMPTY_PASSWORD
+            #   value: "false"
+          volumeMounts:
+            - name: mysql-setup-sql
+              mountPath: /docker-entrypoint-initdb.d
+          ports:
+            - containerPort: 3306
+          resources: {}
+      volumes:
+        - name: mysql-setup-sql
+          configMap:
+            name: mysql-setup-sql
+      restartPolicy: Always
+status: {}
+--- # configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-setup-sql
+data:
+  setup.sql: |
+    SET GLOBAL max_allowed_packet=32505856;
+    CREATE DATABASE `amalgam-db`;
+
+    CREATE USER 'amalgam-migration'@'%'
+      IDENTIFIED WITH caching_sha2_password BY 'amalgam-password';
+    GRANT
+      ALL PRIVILEGES
+      ON `amalgam-db`.*
+      TO 'amalgam-migration'@'%';
+
+    CREATE USER 'amalgam-user'@'%'
+      IDENTIFIED WITH caching_sha2_password BY 'amalgam-password';
+    GRANT
+      SELECT, INSERT, UPDATE, DELETE
+      ON `amalgam-db`.*
+      TO 'amalgam-user'@'%';
+
+    FLUSH PRIVILEGES;

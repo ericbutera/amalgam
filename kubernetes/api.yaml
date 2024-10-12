@@ -28,28 +28,43 @@ spec:
         app: api
     spec:
       containers:
-      - name: api
-        image: api-image
-        ports:
-        - containerPort: 8080
-        env:
-        - name: PORT
-          value: "8080"
-        - name: GIN_MODE
-          value: "debug"
-        - name: OTEL_EXPORTER_OTLP_INSECURE
-          value: "true"
-        - name: OTEL_EXPORTER_OTLP_ENDPOINT
-          value: "http://lgtm:4318"
-        - name: OTEL_OTLP_EXPORT_INTERVAL
-          value: "5000"
-        - name: OTEL_EXPORTER_OTLP_METRICS_ENDPOINT
-          value: "http://lgtm:4318/v1/metrics"
-        - name: OTEL_METRIC_EXPORT_INTERVAL
-          value: "5000"
-        - name: OTEL_EXPORTER_OTLP_LOGS_ENDPOINT
-          value: "http://lgtm:4318/v1/logs"
-        - name: OTEL_RESOURCE_ATTRIBUTES
-          value: "service.name=api,service.instance.id=api:8080"
-        - name: OTEL_LOGS_EXPORTER
-          value: "otlp"
+        - name: api
+          image: api-image
+          ports:
+            - containerPort: 8080
+          env:
+            - name: PORT
+              value: "8080"
+            - name: GIN_MODE
+              value: "debug"
+            - name: OTEL_EXPORTER_OTLP_INSECURE
+              value: "true"
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "http://lgtm:4318"
+            - name: OTEL_OTLP_EXPORT_INTERVAL
+              value: "5000"
+            - name: OTEL_EXPORTER_OTLP_METRICS_ENDPOINT
+              value: "http://lgtm:4318/v1/metrics"
+            - name: OTEL_METRIC_EXPORT_INTERVAL
+              value: "5000"
+            - name: OTEL_EXPORTER_OTLP_LOGS_ENDPOINT
+              value: "http://lgtm:4318/v1/logs"
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: "service.name=api,service.instance.id=api:8080"
+            - name: OTEL_LOGS_EXPORTER
+              value: "otlp"
+            - name: CORS_ALLOW_ORIGINS
+              value: "http://localhost:3000"
+            - name: CORS_ALLOW_METHODS
+              value: "GET,POST,PUT,PATCH"
+            - name: CORS_ALLOW_HEADERS
+              value: "Content-Type,Authorization,Origin"
+            - name: CORS_EXPOSE_HEADERS
+              value: "Content-Length"
+            - name: DB_ADAPTER
+              value: "mysql"
+            - name: DB_MYSQL_DSN # Note: DB_MYSQL_DSN must be a secret in production env
+              value: "amalgam-user:amalgam-password@tcp(mysql:3306)/amalgam-db?charset=utf8mb4&parseTime=True&loc=Local"
+            # root can be used to allow gorm migrations (but shouldn't be used during operation):
+            # - name: DB_MYSQL_DSN # Note: DB_MYSQL_DSN must be a secret in production env
+            #   value: "root:password@tcp(mysql:3306)/amalgam-db?charset=utf8mb4&parseTime=True&loc=Local"

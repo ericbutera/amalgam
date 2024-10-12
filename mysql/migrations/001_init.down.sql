@@ -1,0 +1,9 @@
+DROP TABLE IF EXISTS `articles`;
+
+DROP TABLE IF EXISTS `feeds`;
+
+DROP TABLE IF EXISTS `users`;
+
+DROP TABLE IF EXISTS `user_feeds`;
+
+DROP TABLE IF EXISTS `user_articles`;
