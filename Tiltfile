@@ -23,3 +23,9 @@ docker_build(
 docker_build("lgtm-image", "lgtm")
 k8s_yaml("kubernetes/lgtm.yaml")
 k8s_resource("lgtm", port_forwards=["3001:3000","4317:4317","4318:4318", "9090:9090"])
+
+# k6 tests
+docker_build("k6-image", "k6")
+k8s_yaml("kubernetes/k6.yaml")
+k8s_resource("k6", trigger_mode=TRIGGER_MODE_MANUAL)
+
