@@ -74,6 +74,8 @@ definitions:
     type: object
 info:
   contact: {}
+  title: Feed API
+  version: "1.0"
 paths:
   /article/{id}:
     get:
