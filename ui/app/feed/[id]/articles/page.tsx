@@ -1,6 +1,6 @@
 'use client'
 
-import Articles from '../../../articles/list'
+import Articles from '../../../components/article/list'
 
 export default function Page({ params }: { params: { id: string } }) {
     return (

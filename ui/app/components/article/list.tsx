@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import useArticles from '../data/articles';
+import useArticles from '../../data/articles';
 
 export default function Articles({ id }) {
     const { loading, error, articles, mutate } = useArticles(id);
