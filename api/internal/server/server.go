@@ -29,7 +29,7 @@ type ServerOption func(*server) error
 
 func New(options ...ServerOption) (*server, error) {
 	s := &server{
-		router: gin.Default(),
+		router: gin.New(),
 	}
 
 	for _, o := range options {
