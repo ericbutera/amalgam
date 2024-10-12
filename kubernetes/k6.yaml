@@ -1,0 +1,15 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: k6
+spec:
+  template:
+    spec:
+      containers:
+        - name: k6
+          image: k6-image
+          env:
+            - name: BASE_URL
+              value: "http://api:8080"
+      restartPolicy: Never
+  backoffLimit: 4
