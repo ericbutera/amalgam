@@ -35,7 +35,7 @@ export default function () {
     });
 
     group("/article/{id}", () => {
-        let id = 'TODO_EDIT_THE_ID'; // TODO: specify value as there is no example value for this parameter in OpenAPI spec
+        let id = '1'; // TODO: specify value as there is no example value for this parameter in OpenAPI spec
 
         // Request No. 1:
         {
@@ -62,7 +62,7 @@ export default function () {
     });
 
     group("/feed/{id}/articles", () => {
-        let id = 'TODO_EDIT_THE_ID'; // TODO: specify value as there is no example value for this parameter in OpenAPI spec
+        let id = '1'; // TODO: specify value as there is no example value for this parameter in OpenAPI spec
 
         // Request No. 1:
         {
