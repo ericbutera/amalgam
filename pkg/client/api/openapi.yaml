@@ -1,0 +1,294 @@
+openapi: 3.0.1
+info:
+  contact: {}
+  title: Feed API
+  version: "1.0"
+servers:
+- url: /
+paths:
+  /article/{id}:
+    get:
+      description: view article
+      parameters:
+      - description: Article ID
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/server.ArticleResponse'
+          description: OK
+        "500":
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+          description: Internal Server Error
+      summary: view article
+  /feed/{id}/articles:
+    get:
+      description: list articles for a feed
+      parameters:
+      - description: Feed ID
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/server.FeedArticlesResponse'
+          description: OK
+        "500":
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+          description: Internal Server Error
+      summary: list articles for a feed
+  /feeds:
+    get:
+      description: list feeds
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/server.FeedsResponse'
+          description: OK
+        "500":
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+          description: Internal Server Error
+      summary: list feeds
+  /health:
+    get:
+      description: Health check
+      responses:
+        "200":
+          content: {}
+          description: OK
+      summary: Health check
+components:
+  schemas:
+    gorm.DeletedAt:
+      example:
+        valid: true
+        time: time
+      properties:
+        time:
+          type: string
+        valid:
+          description: Valid is true if Time is not NULL
+          type: boolean
+      type: object
+    models.Article:
+      example:
+        preview: preview
+        authorEmail: authorEmail
+        title: title
+        content: content
+        url: url
+        createdAt: createdAt
+        feed:
+          createdAt: createdAt
+          deletedAt:
+            valid: true
+            time: time
+          name: name
+          id: 0
+          url: url
+          updatedAt: updatedAt
+        deletedAt:
+          valid: true
+          time: time
+        feedID: 6
+        authorName: authorName
+        imageUrl: imageUrl
+        guid: guid
+        id: 1
+        updatedAt: updatedAt
+      properties:
+        authorEmail:
+          type: string
+        authorName:
+          type: string
+        content:
+          type: string
+        createdAt:
+          type: string
+        deletedAt:
+          $ref: '#/components/schemas/gorm.DeletedAt'
+        feed:
+          $ref: '#/components/schemas/models.Feed'
+        feedID:
+          type: integer
+        guid:
+          type: string
+        id:
+          type: integer
+        imageUrl:
+          type: string
+        preview:
+          type: string
+        title:
+          type: string
+        updatedAt:
+          type: string
+        url:
+          type: string
+      type: object
+    models.Feed:
+      example:
+        createdAt: createdAt
+        deletedAt:
+          valid: true
+          time: time
+        name: name
+        id: 0
+        url: url
+        updatedAt: updatedAt
+      properties:
+        createdAt:
+          type: string
+        deletedAt:
+          $ref: '#/components/schemas/gorm.DeletedAt'
+        id:
+          type: integer
+        name:
+          type: string
+        updatedAt:
+          type: string
+        url:
+          type: string
+      type: object
+    server.ArticleResponse:
+      example:
+        article:
+          preview: preview
+          authorEmail: authorEmail
+          title: title
+          content: content
+          url: url
+          createdAt: createdAt
+          feed:
+            createdAt: createdAt
+            deletedAt:
+              valid: true
+              time: time
+            name: name
+            id: 0
+            url: url
+            updatedAt: updatedAt
+          deletedAt:
+            valid: true
+            time: time
+          feedID: 6
+          authorName: authorName
+          imageUrl: imageUrl
+          guid: guid
+          id: 1
+          updatedAt: updatedAt
+      properties:
+        article:
+          $ref: '#/components/schemas/models.Article'
+      type: object
+    server.FeedArticlesResponse:
+      example:
+        articles:
+        - preview: preview
+          authorEmail: authorEmail
+          title: title
+          content: content
+          url: url
+          createdAt: createdAt
+          feed:
+            createdAt: createdAt
+            deletedAt:
+              valid: true
+              time: time
+            name: name
+            id: 0
+            url: url
+            updatedAt: updatedAt
+          deletedAt:
+            valid: true
+            time: time
+          feedID: 6
+          authorName: authorName
+          imageUrl: imageUrl
+          guid: guid
+          id: 1
+          updatedAt: updatedAt
+        - preview: preview
+          authorEmail: authorEmail
+          title: title
+          content: content
+          url: url
+          createdAt: createdAt
+          feed:
+            createdAt: createdAt
+            deletedAt:
+              valid: true
+              time: time
+            name: name
+            id: 0
+            url: url
+            updatedAt: updatedAt
+          deletedAt:
+            valid: true
+            time: time
+          feedID: 6
+          authorName: authorName
+          imageUrl: imageUrl
+          guid: guid
+          id: 1
+          updatedAt: updatedAt
+      properties:
+        articles:
+          items:
+            $ref: '#/components/schemas/models.Article'
+          type: array
+      type: object
+    server.FeedsResponse:
+      example:
+        feeds:
+        - createdAt: createdAt
+          deletedAt:
+            valid: true
+            time: time
+          name: name
+          id: 0
+          url: url
+          updatedAt: updatedAt
+        - createdAt: createdAt
+          deletedAt:
+            valid: true
+            time: time
+          name: name
+          id: 0
+          url: url
+          updatedAt: updatedAt
+      properties:
+        feeds:
+          items:
+            $ref: '#/components/schemas/models.Feed'
+          type: array
+      type: object
+x-original-swagger-version: "2.0"
