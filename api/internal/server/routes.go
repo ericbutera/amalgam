@@ -32,7 +32,10 @@ func (s *server) routes() {
 
 	s.router.GET("/", func(c *gin.Context) { c.Redirect(http.StatusMovedPermanently, internal.SwaggerUri) })
 	s.router.GET("/health", handlers.health)
-	s.router.GET("/swagger/*any", internal.Swagger()) // TODO: require auth
+
+	// TODO: require auth
+	// TODO: move to static file server
+	s.router.GET("/swagger/*any", internal.Swagger())
 
 	v1 := s.router.Group("/v1")
 	{

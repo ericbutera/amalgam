@@ -15,6 +15,7 @@ import (
 var ignoredRoutes = []string{
 	"/metrics",
 	"/health",
+	"/swagger/*any",
 }
 
 func (s *server) middleware() {
