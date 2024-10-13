@@ -35,6 +35,7 @@ Observability stack.
 
 - [Grafana](http://localhost:3001/)
 - [Prometheus](http://localhost:9090/)
+- [API Dashboard](http://localhost:3001/d/amalgam-gin-dashboard/gin-application-metrics?orgId=1&refresh=5s)
 
 ## Code generation
 
