@@ -25,7 +25,6 @@ type ModelsArticle struct {
 	CreatedAt *string `json:"createdAt,omitempty"`
 	DeletedAt *GormDeletedAt `json:"deletedAt,omitempty"`
 	Feed *ModelsFeed `json:"feed,omitempty"`
-	FeedID *int32 `json:"feedID,omitempty"`
 	Guid *string `json:"guid,omitempty"`
 	Id *int32 `json:"id,omitempty"`
 	ImageUrl *string `json:"imageUrl,omitempty"`
@@ -242,38 +241,6 @@ func (o *ModelsArticle) HasFeed() bool {
 // SetFeed gets a reference to the given ModelsFeed and assigns it to the Feed field.
 func (o *ModelsArticle) SetFeed(v ModelsFeed) {
 	o.Feed = &v
-}
-
-// GetFeedID returns the FeedID field value if set, zero value otherwise.
-func (o *ModelsArticle) GetFeedID() int32 {
-	if o == nil || IsNil(o.FeedID) {
-		var ret int32
-		return ret
-	}
-	return *o.FeedID
-}
-
-// GetFeedIDOk returns a tuple with the FeedID field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *ModelsArticle) GetFeedIDOk() (*int32, bool) {
-	if o == nil || IsNil(o.FeedID) {
-		return nil, false
-	}
-	return o.FeedID, true
-}
-
-// HasFeedID returns a boolean if a field has been set.
-func (o *ModelsArticle) HasFeedID() bool {
-	if o != nil && !IsNil(o.FeedID) {
-		return true
-	}
-
-	return false
-}
-
-// SetFeedID gets a reference to the given int32 and assigns it to the FeedID field.
-func (o *ModelsArticle) SetFeedID(v int32) {
-	o.FeedID = &v
 }
 
 // GetGuid returns the Guid field value if set, zero value otherwise.
@@ -527,9 +494,6 @@ func (o ModelsArticle) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.Feed) {
 		toSerialize["feed"] = o.Feed
-	}
-	if !IsNil(o.FeedID) {
-		toSerialize["feedID"] = o.FeedID
 	}
 	if !IsNil(o.Guid) {
 		toSerialize["guid"] = o.Guid

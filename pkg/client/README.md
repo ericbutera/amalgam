@@ -74,7 +74,7 @@ ctx = context.WithValue(context.Background(), client.ContextOperationServerVaria
 
 ## Documentation for API Endpoints
 
-All URIs are relative to *http://api:8080/v1*
+All URIs are relative to *http://localhost:8080/v1*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
@@ -84,7 +84,6 @@ Class | Method | HTTP request | Description
 *DefaultAPI* | [**FeedsIdGet**](docs/DefaultAPI.md#feedsidget) | **Get** /feeds/{id} | view feed
 *DefaultAPI* | [**FeedsIdPost**](docs/DefaultAPI.md#feedsidpost) | **Post** /feeds/{id} | update feed
 *DefaultAPI* | [**FeedsPost**](docs/DefaultAPI.md#feedspost) | **Post** /feeds | create feed
-*DefaultAPI* | [**HealthGet**](docs/DefaultAPI.md#healthget) | **Get** /health | Health check
 
 
 ## Documentation For Models
@@ -93,6 +92,7 @@ Class | Method | HTTP request | Description
  - [ModelsArticle](docs/ModelsArticle.md)
  - [ModelsFeed](docs/ModelsFeed.md)
  - [ServerArticleResponse](docs/ServerArticleResponse.md)
+ - [ServerErrorResponse](docs/ServerErrorResponse.md)
  - [ServerFeedArticlesResponse](docs/ServerFeedArticlesResponse.md)
  - [ServerFeedCreateResponse](docs/ServerFeedCreateResponse.md)
  - [ServerFeedResponse](docs/ServerFeedResponse.md)

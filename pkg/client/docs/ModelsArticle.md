@@ -10,7 +10,6 @@ Name | Type | Description | Notes
 **CreatedAt** | Pointer to **string** |  | [optional] 
 **DeletedAt** | Pointer to [**GormDeletedAt**](GormDeletedAt.md) |  | [optional] 
 **Feed** | Pointer to [**ModelsFeed**](ModelsFeed.md) |  | [optional] 
-**FeedID** | Pointer to **int32** |  | [optional] 
 **Guid** | Pointer to **string** |  | [optional] 
 **Id** | Pointer to **int32** |  | [optional] 
 **ImageUrl** | Pointer to **string** |  | [optional] 
@@ -187,31 +186,6 @@ SetFeed sets Feed field to given value.
 `func (o *ModelsArticle) HasFeed() bool`
 
 HasFeed returns a boolean if a field has been set.
-
-### GetFeedID
-
-`func (o *ModelsArticle) GetFeedID() int32`
-
-GetFeedID returns the FeedID field if non-nil, zero value otherwise.
-
-### GetFeedIDOk
-
-`func (o *ModelsArticle) GetFeedIDOk() (*int32, bool)`
-
-GetFeedIDOk returns a tuple with the FeedID field if it's non-nil, zero value otherwise
-and a boolean to check if the value has been set.
-
-### SetFeedID
-
-`func (o *ModelsArticle) SetFeedID(v int32)`
-
-SetFeedID sets FeedID field to given value.
-
-### HasFeedID
-
-`func (o *ModelsArticle) HasFeedID() bool`
-
-HasFeedID returns a boolean if a field has been set.
 
 ### GetGuid
 
