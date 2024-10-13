@@ -1,0 +1,15 @@
+apis/DefaultApi.ts
+apis/index.ts
+index.ts
+models/GormDeletedAt.ts
+models/ModelsArticle.ts
+models/ModelsFeed.ts
+models/ServerArticleResponse.ts
+models/ServerErrorResponse.ts
+models/ServerFeedArticlesResponse.ts
+models/ServerFeedCreateResponse.ts
+models/ServerFeedResponse.ts
+models/ServerFeedUpdateResponse.ts
+models/ServerFeedsResponse.ts
+models/index.ts
+runtime.ts
