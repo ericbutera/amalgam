@@ -6,7 +6,8 @@ import "github.com/ericbutera/amalgam/api/cmd"
 
 // @title           Feed API
 // @version         1.0
-// @host			http://localhost:8080
+// @scheme          http
+// @host			localhost:8080
 // @basepath        /v1
 
 func main() {

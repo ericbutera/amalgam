@@ -64,14 +64,6 @@ type ErrorResponse struct {
 	Error string `json:"error" example:"unable to fetch feeds"`
 }
 
-// Health check
-// @Summary Health check
-// @Schemes
-// @Description Health check
-// @Accept json
-// @Produce json
-// @Success 200
-// @Router /health [get]
 func (h *handlers) health(c *gin.Context) {
 	c.Status(http.StatusOK)
 }
@@ -83,7 +75,7 @@ func (h *handlers) health(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Example
-// @Param id path int true "Feed ID" example(1) minimum(1)
+// @Param id path int true "Feed ID" minimum(1)
 // @Success 200 {object} FeedResponse
 // @Failure 500 {object} ErrorResponse
 // @Router /feeds/{id} [get]
@@ -129,7 +121,7 @@ type FeedCreateResponse struct {
 // @Description update feed
 // @Accept json
 // @Produce json
-// @Param id path int true "Feed ID" example(1)
+// @Param id path int true "Feed ID"
 // @Success 200 {object} FeedUpdateResponse
 // @Failure 500 {object} map[string]string
 // @Router /feeds/{id} [post]

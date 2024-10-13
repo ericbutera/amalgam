@@ -5,7 +5,7 @@
         "contact": {},
         "version": "1.0"
     },
-    "host": "http://localhost:8080",
+    "host": "localhost:8080",
     "basePath": "/v1",
     "paths": {
         "/articles/{id}": {
@@ -116,7 +116,6 @@
                     {
                         "minimum": 1,
                         "type": "integer",
-                        "example": 1,
                         "description": "Feed ID",
                         "name": "id",
                         "in": "path",
@@ -150,7 +149,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "example": 1,
                         "description": "Feed ID",
                         "name": "id",
                         "in": "path",
@@ -213,23 +211,6 @@
                     }
                 }
             }
-        },
-        "/health": {
-            "get": {
-                "description": "Health check",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Health check",
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    }
-                }
-            }
         }
     },
     "definitions": {
@@ -269,10 +250,6 @@
                 },
                 "feed": {
                     "$ref": "#/definitions/models.Feed"
-                },
-                "feedID": {
-                    "type": "integer",
-                    "example": 1
                 },
                 "guid": {
                     "type": "string",

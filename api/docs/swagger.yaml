@@ -26,9 +26,6 @@ definitions:
         $ref: '#/definitions/gorm.DeletedAt'
       feed:
         $ref: '#/definitions/models.Feed'
-      feedID:
-        example: 1
-        type: integer
       guid:
         example: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
         type: string
@@ -111,7 +108,7 @@ definitions:
           $ref: '#/definitions/models.Feed'
         type: array
     type: object
-host: http://localhost:8080
+host: localhost:8080
 info:
   contact: {}
   title: Feed API
@@ -186,7 +183,6 @@ paths:
       description: view feed
       parameters:
       - description: Feed ID
-        example: 1
         in: path
         minimum: 1
         name: id
@@ -210,7 +206,6 @@ paths:
       description: update feed
       parameters:
       - description: Feed ID
-        example: 1
         in: path
         name: id
         required: true
@@ -254,15 +249,4 @@ paths:
               type: string
             type: object
       summary: list articles for a feed
-  /health:
-    get:
-      consumes:
-      - application/json
-      description: Health check
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-      summary: Health check
 swagger: "2.0"

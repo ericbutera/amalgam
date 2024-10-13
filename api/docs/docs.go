@@ -123,7 +123,6 @@ const docTemplate = `{
                     {
                         "minimum": 1,
                         "type": "integer",
-                        "example": 1,
                         "description": "Feed ID",
                         "name": "id",
                         "in": "path",
@@ -157,7 +156,6 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "example": 1,
                         "description": "Feed ID",
                         "name": "id",
                         "in": "path",
@@ -220,23 +218,6 @@ const docTemplate = `{
                     }
                 }
             }
-        },
-        "/health": {
-            "get": {
-                "description": "Health check",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "Health check",
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    }
-                }
-            }
         }
     },
     "definitions": {
@@ -276,10 +257,6 @@ const docTemplate = `{
                 },
                 "feed": {
                     "$ref": "#/definitions/models.Feed"
-                },
-                "feedID": {
-                    "type": "integer",
-                    "example": 1
                 },
                 "guid": {
                     "type": "string",
@@ -408,7 +385,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "http://localhost:8080",
+	Host:             "localhost:8080",
 	BasePath:         "/v1",
 	Schemes:          []string{},
 	Title:            "Feed API",
