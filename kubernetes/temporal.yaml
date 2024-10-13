@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: temporal
+spec:
+  selector:
+    app: temporal
+  ports:
+    - name: temporal-service
+      protocol: TCP
+      port: 7233
+      targetPort: 7233
+    - name: ui
+      protocol: TCP
+      port: 8233
+      targetPort: 8233
+    - name: metrics
+      protocol: TCP
+      port: 19090
+      targetPort: 19090
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: temporal
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: temporal
+  template:
+    metadata:
+      labels:
+        app: temporal
+    spec:
+      containers:
+        - name: temporal
+          image: temporalio/server
+          command:
+            ["temporal", "server", "start-dev", "--metrics-port", "19090"]
+          ports:
+            - containerPort: 7233
+            - containerPort: 8233
+            - containerPort: 19090

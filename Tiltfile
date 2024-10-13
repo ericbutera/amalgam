@@ -36,3 +36,7 @@ k8s_resource("mysql", port_forwards=["3306:3306"])
 docker_build('mysql-migrate-image', 'mysql/migrations', dockerfile='mysql/migrate.Dockerfile')
 k8s_yaml("kubernetes/mysql-migrate-job.yaml")
 k8s_resource("mysql-migrate", resource_deps=["mysql"])
+
+# temporalio/server
+k8s_yaml("kubernetes/temporal.yaml")
+k8s_resource("temporal", port_forwards=["7233:7233", "8233:8233", "19090:19090"])
