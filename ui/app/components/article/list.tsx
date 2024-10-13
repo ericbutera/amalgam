@@ -8,13 +8,14 @@ export default function Articles({ id }) {
 
     if (error) return <div>An error has occurred.</div>
     if (loading) <div>Loading...</div>
+    if (!articles || articles?.length === 0) return <div>no articles found</div>
 
     return (
         <div>
             <ul>
-                {articles.map((article) => (
-                    <li key={article.ID}>
-                        <Link href={`/article/${article.ID}`}>{article.Title}</Link>
+                {articles?.map((article) => (
+                    <li key={article.id}>
+                        <Link href={`/article/${article.id}`}>{article.title}</Link>
                     </li>
                 ))}
             </ul>

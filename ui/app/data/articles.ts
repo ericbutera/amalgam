@@ -1,18 +1,15 @@
 import useSWR from "swr";
+import { getApi } from '../lib/fetch';
 
-import config from '../config.ts';
-import fetch from '../lib/fetch';
-
-export default function useArticles(id) {
-  const { data, mutate, error } = useSWR(`${config.apiHost}/feed/${id}/articles`, fetch);
-
+export default function useArticles(id: number) {
+  const fetcher = async () => await getApi().feedsIdArticlesGet({ id });
+  const { data, mutate, error } = useSWR(`/feeds/${id}/articles`, fetcher);
   const loading = !data && !error;
-  const articles = data?.articles || [];
 
   return {
     loading,
     error,
-    articles,
+    articles: data?.articles,
     mutate
   };
 }

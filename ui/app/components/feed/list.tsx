@@ -8,13 +8,14 @@ export default function Feeds() {
 
   if (error) return <div>failed to load</div>
   if (loading) return <div>loading...</div>
+  if (!feeds || feeds?.length === 0) return <div>no feeds found</div>
 
   return (
       <div>
         <ul>
-          {feeds.map((feed) => (
-            <li key={feed.ID}>
-              <Link href={`/feed/${feed.ID}/articles`}>{feed.Name}</Link>
+          {feeds?.map((feed) => (
+            <li key={feed.id}>
+              <Link href={`/feed/${feed.id}/articles`}>{feed.name}</Link>
             </li>
           ))}
         </ul>
