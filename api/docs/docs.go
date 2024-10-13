@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/article/{id}": {
+        "/articles/{id}": {
             "get": {
                 "description": "view article",
                 "consumes": [
@@ -53,7 +53,137 @@ const docTemplate = `{
                 }
             }
         },
-        "/feed/{id}/articles": {
+        "/feeds": {
+            "get": {
+                "description": "list feeds",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "list feeds",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/server.FeedsResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "create feed",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "create feed",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/server.FeedCreateResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/feeds/{id}": {
+            "get": {
+                "description": "view feed",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "view feed",
+                "parameters": [
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "example": 1,
+                        "description": "Feed ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/server.FeedResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/server.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "update feed",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "update feed",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "Feed ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/server.FeedUpdateResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/feeds/{id}/articles": {
             "get": {
                 "description": "list articles for a feed",
                 "consumes": [
@@ -77,35 +207,6 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/server.FeedArticlesResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/feeds": {
-            "get": {
-                "description": "list feeds",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "list feeds",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/server.FeedsResponse"
                         }
                     },
                     "500": {
@@ -155,16 +256,20 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "authorEmail": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "example@example.com"
                 },
                 "authorName": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Eric Butera"
                 },
                 "content": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Article content text. May contain HTML."
                 },
                 "createdAt": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
                 },
                 "deletedAt": {
                     "$ref": "#/definitions/gorm.DeletedAt"
@@ -173,28 +278,36 @@ const docTemplate = `{
                     "$ref": "#/definitions/models.Feed"
                 },
                 "feedID": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "guid": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "imageUrl": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "https://example.com/image.jpg"
                 },
                 "preview": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Article preview text. May contain HTML."
                 },
                 "title": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Example Article"
                 },
                 "updatedAt": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
                 },
                 "url": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "https://example.com/"
                 }
             }
         },
@@ -202,22 +315,27 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "createdAt": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
                 },
                 "deletedAt": {
                     "$ref": "#/definitions/gorm.DeletedAt"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Example"
                 },
                 "updatedAt": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-01-01T00:00:00Z"
                 },
                 "url": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "https://example.com/"
                 }
             }
         },
@@ -229,6 +347,15 @@ const docTemplate = `{
                 }
             }
         },
+        "server.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string",
+                    "example": "unable to fetch feeds"
+                }
+            }
+        },
         "server.FeedArticlesResponse": {
             "type": "object",
             "properties": {
@@ -237,6 +364,30 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/models.Article"
                     }
+                }
+            }
+        },
+        "server.FeedCreateResponse": {
+            "type": "object",
+            "properties": {
+                "feed": {
+                    "$ref": "#/definitions/models.Feed"
+                }
+            }
+        },
+        "server.FeedResponse": {
+            "type": "object",
+            "properties": {
+                "feed": {
+                    "$ref": "#/definitions/models.Feed"
+                }
+            }
+        },
+        "server.FeedUpdateResponse": {
+            "type": "object",
+            "properties": {
+                "feed": {
+                    "$ref": "#/definitions/models.Feed"
                 }
             }
         },
@@ -257,8 +408,8 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "",
-	BasePath:         "",
+	Host:             "http://localhost:8080",
+	BasePath:         "/v1",
 	Schemes:          []string{},
 	Title:            "Feed API",
 	Description:      "",

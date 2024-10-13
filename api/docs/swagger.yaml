@@ -1,3 +1,4 @@
+basePath: /v1
 definitions:
   gorm.DeletedAt:
     properties:
@@ -10,53 +11,76 @@ definitions:
   models.Article:
     properties:
       authorEmail:
+        example: example@example.com
         type: string
       authorName:
+        example: Eric Butera
         type: string
       content:
+        example: Article content text. May contain HTML.
         type: string
       createdAt:
+        example: "2021-01-01T00:00:00Z"
         type: string
       deletedAt:
         $ref: '#/definitions/gorm.DeletedAt'
       feed:
         $ref: '#/definitions/models.Feed'
       feedID:
+        example: 1
         type: integer
       guid:
+        example: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
         type: string
       id:
+        example: 1
         type: integer
       imageUrl:
+        example: https://example.com/image.jpg
         type: string
       preview:
+        example: Article preview text. May contain HTML.
         type: string
       title:
+        example: Example Article
         type: string
       updatedAt:
+        example: "2021-01-01T00:00:00Z"
         type: string
       url:
+        example: https://example.com/
         type: string
     type: object
   models.Feed:
     properties:
       createdAt:
+        example: "2021-01-01T00:00:00Z"
         type: string
       deletedAt:
         $ref: '#/definitions/gorm.DeletedAt'
       id:
+        example: 1
         type: integer
       name:
+        example: Example
         type: string
       updatedAt:
+        example: "2021-01-01T00:00:00Z"
         type: string
       url:
+        example: https://example.com/
         type: string
     type: object
   server.ArticleResponse:
     properties:
       article:
         $ref: '#/definitions/models.Article'
+    type: object
+  server.ErrorResponse:
+    properties:
+      error:
+        example: unable to fetch feeds
+        type: string
     type: object
   server.FeedArticlesResponse:
     properties:
@@ -65,6 +89,21 @@ definitions:
           $ref: '#/definitions/models.Article'
         type: array
     type: object
+  server.FeedCreateResponse:
+    properties:
+      feed:
+        $ref: '#/definitions/models.Feed'
+    type: object
+  server.FeedResponse:
+    properties:
+      feed:
+        $ref: '#/definitions/models.Feed'
+    type: object
+  server.FeedUpdateResponse:
+    properties:
+      feed:
+        $ref: '#/definitions/models.Feed'
+    type: object
   server.FeedsResponse:
     properties:
       feeds:
@@ -72,12 +111,13 @@ definitions:
           $ref: '#/definitions/models.Feed'
         type: array
     type: object
+host: http://localhost:8080
 info:
   contact: {}
   title: Feed API
   version: "1.0"
 paths:
-  /article/{id}:
+  /articles/{id}:
     get:
       consumes:
       - application/json
@@ -102,7 +142,94 @@ paths:
               type: string
             type: object
       summary: view article
-  /feed/{id}/articles:
+  /feeds:
+    get:
+      consumes:
+      - application/json
+      description: list feeds
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/server.FeedsResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: list feeds
+    post:
+      consumes:
+      - application/json
+      description: create feed
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/server.FeedCreateResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: create feed
+  /feeds/{id}:
+    get:
+      consumes:
+      - application/json
+      description: view feed
+      parameters:
+      - description: Feed ID
+        example: 1
+        in: path
+        minimum: 1
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/server.FeedResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/server.ErrorResponse'
+      summary: view feed
+    post:
+      consumes:
+      - application/json
+      description: update feed
+      parameters:
+      - description: Feed ID
+        example: 1
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/server.FeedUpdateResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: update feed
+  /feeds/{id}/articles:
     get:
       consumes:
       - application/json
@@ -127,25 +254,6 @@ paths:
               type: string
             type: object
       summary: list articles for a feed
-  /feeds:
-    get:
-      consumes:
-      - application/json
-      description: list feeds
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/server.FeedsResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: list feeds
   /health:
     get:
       consumes:
