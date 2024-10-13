@@ -74,13 +74,16 @@ ctx = context.WithValue(context.Background(), client.ContextOperationServerVaria
 
 ## Documentation for API Endpoints
 
-All URIs are relative to *http://localhost*
+All URIs are relative to *http://api:8080/v1*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
-*DefaultAPI* | [**ArticleIdGet**](docs/DefaultAPI.md#articleidget) | **Get** /article/{id} | view article
-*DefaultAPI* | [**FeedIdArticlesGet**](docs/DefaultAPI.md#feedidarticlesget) | **Get** /feed/{id}/articles | list articles for a feed
+*DefaultAPI* | [**ArticlesIdGet**](docs/DefaultAPI.md#articlesidget) | **Get** /articles/{id} | view article
 *DefaultAPI* | [**FeedsGet**](docs/DefaultAPI.md#feedsget) | **Get** /feeds | list feeds
+*DefaultAPI* | [**FeedsIdArticlesGet**](docs/DefaultAPI.md#feedsidarticlesget) | **Get** /feeds/{id}/articles | list articles for a feed
+*DefaultAPI* | [**FeedsIdGet**](docs/DefaultAPI.md#feedsidget) | **Get** /feeds/{id} | view feed
+*DefaultAPI* | [**FeedsIdPost**](docs/DefaultAPI.md#feedsidpost) | **Post** /feeds/{id} | update feed
+*DefaultAPI* | [**FeedsPost**](docs/DefaultAPI.md#feedspost) | **Post** /feeds | create feed
 *DefaultAPI* | [**HealthGet**](docs/DefaultAPI.md#healthget) | **Get** /health | Health check
 
 
@@ -91,6 +94,9 @@ Class | Method | HTTP request | Description
  - [ModelsFeed](docs/ModelsFeed.md)
  - [ServerArticleResponse](docs/ServerArticleResponse.md)
  - [ServerFeedArticlesResponse](docs/ServerFeedArticlesResponse.md)
+ - [ServerFeedCreateResponse](docs/ServerFeedCreateResponse.md)
+ - [ServerFeedResponse](docs/ServerFeedResponse.md)
+ - [ServerFeedUpdateResponse](docs/ServerFeedUpdateResponse.md)
  - [ServerFeedsResponse](docs/ServerFeedsResponse.md)
 
 

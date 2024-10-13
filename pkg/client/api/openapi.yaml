@@ -4,9 +4,9 @@ info:
   title: Feed API
   version: "1.0"
 servers:
-- url: /
+- url: //api:8080/v1
 paths:
-  /article/{id}:
+  /articles/{id}:
     get:
       description: view article
       parameters:
@@ -32,7 +32,95 @@ paths:
                 type: object
           description: Internal Server Error
       summary: view article
-  /feed/{id}/articles:
+  /feeds:
+    get:
+      description: list feeds
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/server.FeedsResponse'
+          description: OK
+        "500":
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+          description: Internal Server Error
+      summary: list feeds
+    post:
+      description: create feed
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/server.FeedCreateResponse'
+          description: OK
+        "500":
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+          description: Internal Server Error
+      summary: create feed
+  /feeds/{id}:
+    get:
+      description: view feed
+      parameters:
+      - description: Feed ID
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/server.FeedResponse'
+          description: OK
+        "500":
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+          description: Internal Server Error
+      summary: view feed
+    post:
+      description: update feed
+      parameters:
+      - description: Feed ID
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/server.FeedUpdateResponse'
+          description: OK
+        "500":
+          content:
+            application/json:
+              schema:
+                additionalProperties:
+                  type: string
+                type: object
+          description: Internal Server Error
+      summary: update feed
+  /feeds/{id}/articles:
     get:
       description: list articles for a feed
       parameters:
@@ -58,25 +146,6 @@ paths:
                 type: object
           description: Internal Server Error
       summary: list articles for a feed
-  /feeds:
-    get:
-      description: list feeds
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/server.FeedsResponse'
-          description: OK
-        "500":
-          content:
-            application/json:
-              schema:
-                additionalProperties:
-                  type: string
-                type: object
-          description: Internal Server Error
-      summary: list feeds
   /health:
     get:
       description: Health check
@@ -265,6 +334,51 @@ components:
           items:
             $ref: '#/components/schemas/models.Article'
           type: array
+      type: object
+    server.FeedCreateResponse:
+      example:
+        feed:
+          createdAt: createdAt
+          deletedAt:
+            valid: true
+            time: time
+          name: name
+          id: 0
+          url: url
+          updatedAt: updatedAt
+      properties:
+        feed:
+          $ref: '#/components/schemas/models.Feed'
+      type: object
+    server.FeedResponse:
+      example:
+        feed:
+          createdAt: createdAt
+          deletedAt:
+            valid: true
+            time: time
+          name: name
+          id: 0
+          url: url
+          updatedAt: updatedAt
+      properties:
+        feed:
+          $ref: '#/components/schemas/models.Feed'
+      type: object
+    server.FeedUpdateResponse:
+      example:
+        feed:
+          createdAt: createdAt
+          deletedAt:
+            valid: true
+            time: time
+          name: name
+          id: 0
+          url: url
+          updatedAt: updatedAt
+      properties:
+        feed:
+          $ref: '#/components/schemas/models.Feed'
       type: object
     server.FeedsResponse:
       example:

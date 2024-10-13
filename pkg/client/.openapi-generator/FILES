@@ -1,5 +1,4 @@
 .gitignore
-.openapi-generator-ignore
 .travis.yml
 README.md
 api/openapi.yaml
@@ -12,6 +11,9 @@ docs/ModelsArticle.md
 docs/ModelsFeed.md
 docs/ServerArticleResponse.md
 docs/ServerFeedArticlesResponse.md
+docs/ServerFeedCreateResponse.md
+docs/ServerFeedResponse.md
+docs/ServerFeedUpdateResponse.md
 docs/ServerFeedsResponse.md
 git_push.sh
 model_gorm_deleted_at.go
@@ -19,7 +21,9 @@ model_models_article.go
 model_models_feed.go
 model_server_article_response.go
 model_server_feed_articles_response.go
+model_server_feed_create_response.go
+model_server_feed_response.go
+model_server_feed_update_response.go
 model_server_feeds_response.go
 response.go
-test/api_default_test.go
 utils.go
