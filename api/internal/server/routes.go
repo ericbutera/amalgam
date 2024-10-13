@@ -80,7 +80,7 @@ func (h *handlers) health(c *gin.Context) {
 // @Failure 500 {object} ErrorResponse
 // @Router /feeds/{id} [get]
 func (h *handlers) feedGet(c *gin.Context) {
-	feed, err := h.svc.GetFeed(c.Param("id"))
+	feed, err := h.svc.GetFeed(c.Request.Context(), c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: "unable to get feed"})
 	}
@@ -147,7 +147,7 @@ type FeedUpdateResponse struct {
 // @Failure 500 {object} map[string]string
 // @Router /feeds [get]
 func (h *handlers) feedsList(c *gin.Context) {
-	feeds, err := h.svc.Feeds()
+	feeds, err := h.svc.Feeds(c.Request.Context())
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: "unable to fetch feeds"})
 	}
@@ -172,7 +172,7 @@ type FeedsResponse struct {
 // @Failure 500 {object} map[string]string
 // @Router /articles/{id} [get]
 func (h *handlers) article(c *gin.Context) {
-	article, err := h.svc.GetArticle(c.Param("id"))
+	article, err := h.svc.GetArticle(c.Request.Context(), c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: "unable to fetch articles"})
 	}
@@ -197,7 +197,7 @@ type ArticleResponse struct {
 // @Failure 500 {object} map[string]string
 // @Router /feeds/{id}/articles [get]
 func (h *handlers) articles(c *gin.Context) {
-	articles, err := h.svc.GetArticlesByFeed(c.Param("id"))
+	articles, err := h.svc.GetArticlesByFeed(c.Request.Context(), c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: "unable to fetch articles"})
 	}

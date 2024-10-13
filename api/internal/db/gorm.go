@@ -9,6 +9,7 @@ import (
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
+	"gorm.io/plugin/opentelemetry/tracing"
 )
 
 func newLogger() logger.Interface {
@@ -17,12 +18,19 @@ func newLogger() logger.Interface {
 	)
 }
 
+func newConfig() *gorm.Config {
+	return &gorm.Config{
+		Logger: newLogger(),
+	}
+}
+
 // Note: mysql has a migrator job
 func Mysql(dsn string) (*gorm.DB, error) {
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
-		Logger: newLogger(),
-	})
+	db, err := gorm.Open(mysql.Open(dsn), newConfig())
 	if err != nil {
+		return nil, err
+	}
+	if err := middleware(db); err != nil {
 		return nil, err
 	}
 	return db, nil
@@ -35,23 +43,24 @@ func Sqlite(name string) (*gorm.DB, error) {
 	if name == "" {
 		name = "test.db"
 	}
-	db, err := gorm.Open(sqlite.Open(name), &gorm.Config{
-		Logger: newLogger(),
-	})
+	db, err := gorm.Open(sqlite.Open(name), newConfig())
 	if err != nil {
 		return nil, err
 	}
-
-	db.AutoMigrate(&models.Feed{}, &models.Article{}, &models.User{})
-	seedSqlite(db)
-
+	if err := middleware(db); err != nil {
+		return nil, err
+	}
+	if err := seedSqlite(db); err != nil {
+		return nil, err
+	}
 	return db, nil
 }
 
 // TODO populate with fixtures
 // TODO: only run in debug mode
-func seedSqlite(db *gorm.DB) {
-	db.Transaction(func(tx *gorm.DB) error {
+func seedSqlite(db *gorm.DB) error {
+	db.AutoMigrate(&models.Feed{}, &models.Article{}, &models.User{})
+	return db.Transaction(func(tx *gorm.DB) error {
 		var feed models.Feed
 		result := tx.First(&feed, 1)
 
@@ -78,4 +87,8 @@ func seedSqlite(db *gorm.DB) {
 		}
 		return nil
 	})
+}
+
+func middleware(db *gorm.DB) error {
+	return db.Use(tracing.NewPlugin())
 }
