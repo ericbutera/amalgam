@@ -4,7 +4,7 @@ storage:
     out_of_order_time_window: 10m
 
 scrape_configs:
-- job_name: 'api'
-  scrape_interval: 5s
-  static_configs:
-  - targets: ['api:8080']
+  - job_name: "api"
+    scrape_interval: 30s
+    static_configs:
+      - targets: ["api:8080"]
