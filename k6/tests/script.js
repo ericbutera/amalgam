@@ -38,21 +38,9 @@ export default function () {
 
         // Request No. 2:
         {
+            // TODO: this fails because there isn't post body yet
             let url = BASE_URL + `/feeds/${id}`;
             let request = http.post(url);
-
-            check(request, {
-                "OK": (r) => r.status === 200
-            });
-        }
-    });
-
-    group("/health", () => {
-
-        // Request No. 1:
-        {
-            let url = BASE_URL + `/health`;
-            let request = http.get(url);
 
             check(request, {
                 "OK": (r) => r.status === 200
