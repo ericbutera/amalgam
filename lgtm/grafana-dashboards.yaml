@@ -16,8 +16,18 @@ providers:
     options:
       path: /otel-lgtm/grafana-dashboard-jvm-metrics.json
       foldersFromFilesStructure: false
-  - name: "Go REST API"
+  - name: "Go REST API - Gin"
     type: file
     options:
       path: /otel-lgtm/gin.json
+      foldersFromFilesStructure: false
+  - name: "Go REST API - Gorm Metrics"
+    type: file
+    options:
+      path: /otel-lgtm/gorm-metric-dashboard.json
+      foldersFromFilesStructure: false
+  - name: "Amalgam Dashboard"
+    type: file
+    options:
+      path: /otel-lgtm/amalgam-dashboard.json
       foldersFromFilesStructure: false
