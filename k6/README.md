@@ -1,4 +1,4 @@
-# Tests
+# K6 Tests
 
 This demo shows how to generate k6 tests from an OpenAPI spec. These tests can be used to validate & load test the API.
 

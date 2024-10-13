@@ -40,3 +40,7 @@ Observability stack.
 
 - [REST client](./pkg/client/README.md) from OpenAPI spec
 - [k6 tests](./k6/README.md) from OpenAPI spec
+
+## TODO
+
+- fake feed data generation
