@@ -14,19 +14,32 @@
 import http from "k6/http";
 import { group, check, sleep } from "k6";
 
-const BASE_URL = "http://api:8080"; // TODO: define base url
+const BASE_URL = "http://api:8080/v1";
 // Sleep duration between successive requests.
 // You might want to edit the value of this variable or remove calls to the sleep function on the script.
 const SLEEP_DURATION = 0.1;
 // Global variables should be initialized.
 
 export default function () {
-    group("/health", () => {
+    group("/feeds/{id}", () => {
+        let id = '1'; // specify value as there is no example value for this parameter in OpenAPI spec
 
         // Request No. 1:
         {
-            let url = BASE_URL + `/health`;
+            let url = BASE_URL + `/feeds/${id}`;
             let request = http.get(url);
+
+            check(request, {
+                "OK": (r) => r.status === 200
+            });
+
+            sleep(SLEEP_DURATION);
+        }
+
+        // Request No. 2:
+        {
+            let url = BASE_URL + `/feeds/${id}`;
+            let request = http.post(url);
 
             check(request, {
                 "OK": (r) => r.status === 200
@@ -34,12 +47,11 @@ export default function () {
         }
     });
 
-    group("/article/{id}", () => {
-        let id = '1'; // TODO: specify value as there is no example value for this parameter in OpenAPI spec
+    group("/health", () => {
 
         // Request No. 1:
         {
-            let url = BASE_URL + `/article/${id}`;
+            let url = BASE_URL + `/health`;
             let request = http.get(url);
 
             check(request, {
@@ -58,15 +70,41 @@ export default function () {
             check(request, {
                 "OK": (r) => r.status === 200
             });
+
+            sleep(SLEEP_DURATION);
+        }
+
+        // Request No. 2:
+        {
+            let url = BASE_URL + `/feeds`;
+            let request = http.post(url);
+
+            check(request, {
+                "OK": (r) => r.status === 200
+            });
         }
     });
 
-    group("/feed/{id}/articles", () => {
-        let id = '1'; // TODO: specify value as there is no example value for this parameter in OpenAPI spec
+    group("/articles/{id}", () => {
+        let id = '1'; // specify value as there is no example value for this parameter in OpenAPI spec
 
         // Request No. 1:
         {
-            let url = BASE_URL + `/feed/${id}/articles`;
+            let url = BASE_URL + `/articles/${id}`;
+            let request = http.get(url);
+
+            check(request, {
+                "OK": (r) => r.status === 200
+            });
+        }
+    });
+
+    group("/feeds/{id}/articles", () => {
+        let id = '1'; // specify value as there is no example value for this parameter in OpenAPI spec
+
+        // Request No. 1:
+        {
+            let url = BASE_URL + `/feeds/${id}/articles`;
             let request = http.get(url);
 
             check(request, {
