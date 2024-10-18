@@ -68,13 +68,11 @@ func (h *handlers) health(c *gin.Context) {
 	c.Status(http.StatusOK)
 }
 
-// view feed
 // @Summary view feed
 // @Schemes
 // @Description view feed
 // @Accept json
 // @Produce json
-// @Example
 // @Param id path int true "Feed ID" minimum(1)
 // @Success 200 {object} FeedResponse
 // @Failure 500 {object} ErrorResponse
@@ -84,7 +82,6 @@ func (h *handlers) feedGet(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: "unable to get feed"})
 	}
-
 	c.JSON(http.StatusOK, FeedResponse{
 		Feed: feed,
 	})
@@ -94,20 +91,19 @@ type FeedResponse struct {
 	Feed *models.Feed `json:"feed"`
 }
 
-// createFeed
-// create feed
 // @Summary create feed
 // @Schemes
 // @Description create feed
 // @Accept json
 // @Produce json
+// @Param request body CreateFeedRequest true "feed data"
 // @Success 200 {object} FeedCreateResponse
 // @Failure 500 {object} map[string]string
 // @Router /feeds [post]
 func (h *handlers) feedCreate(c *gin.Context) {
 	var req CreateFeedRequest
 	if err := c.Bind(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, ErrorResponse{Error: err.Error()})
 		return
 	}
 	feed := models.Feed{
@@ -124,7 +120,7 @@ func (h *handlers) feedCreate(c *gin.Context) {
 
 // TODO: separate api from db
 type CreateFeed struct {
-	Url string `json:"url" binding:"required" example:"https://example.com/feed.xml"`
+	Url string `json:"url" binding:"required,url" example:"https://example.com/feed.xml"`
 }
 type CreateFeedRequest struct {
 	Feed CreateFeed `json:"feed"`
@@ -133,20 +129,20 @@ type FeedCreateResponse struct {
 	Feed *models.Feed `json:"feed"` // TODO: limit fields
 }
 
-// update feed
 // @Summary update feed
 // @Schemes
 // @Description update feed
 // @Accept json
 // @Produce json
 // @Param id path int true "Feed ID"
+// @Param request body UpdateFeedRequest true "feed data"
 // @Success 200 {object} FeedUpdateResponse
 // @Failure 500 {object} map[string]string
 // @Router /feeds/{id} [post]
 func (h *handlers) feedUpdate(c *gin.Context) {
 	var req UpdateFeedRequest
 	if err := c.Bind(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, ErrorResponse{Error: err.Error()})
 		return
 	}
 	feed := models.Feed{
@@ -163,8 +159,7 @@ func (h *handlers) feedUpdate(c *gin.Context) {
 
 // TODO: separate api from db
 type UpdateFeed struct {
-	ID  uint   `json:"id" binding:"required" example:"1"`
-	Url string `json:"url" binding:"required" example:"https://example.com/feed.xml"`
+	Url string `json:"url" binding:"required,url" example:"https://example.com/feed.xml"`
 }
 
 type UpdateFeedRequest struct {
@@ -179,7 +174,6 @@ type FeedUpdateResponse struct {
 // - delete from feeds_users
 // - note: prevent fetch if feed not in feeds_users
 
-// list feeds
 // @Summary list feeds
 // @Schemes
 // @Description list feeds
@@ -193,7 +187,6 @@ func (h *handlers) feedsList(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: "unable to fetch feeds"})
 	}
-
 	c.JSON(http.StatusOK, FeedsResponse{
 		Feeds: feeds,
 	})
@@ -203,7 +196,6 @@ type FeedsResponse struct {
 	Feeds []models.Feed `json:"feeds"`
 }
 
-// view article
 // @Summary view article
 // @Schemes
 // @Description view article
@@ -218,7 +210,6 @@ func (h *handlers) article(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: "unable to fetch articles"})
 	}
-
 	c.JSON(http.StatusOK, ArticleResponse{
 		Article: article,
 	})
@@ -228,7 +219,6 @@ type ArticleResponse struct {
 	Article *models.Article `json:"article"`
 }
 
-// list articles for a feed
 // @Summary list articles for a feed
 // @Schemes
 // @Description list articles for a feed
@@ -243,7 +233,6 @@ func (h *handlers) articles(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: "unable to fetch articles"})
 	}
-
 	c.JSON(http.StatusOK, FeedArticlesResponse{
 		Articles: articles,
 	})
