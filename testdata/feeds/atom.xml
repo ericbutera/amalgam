@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/">
+	<channel>
+		<title>feed 2</title>
+		<atom:link href="https://example.com/feed/" rel="self" type="application/rss+xml" />
+		<link>https://example.com/</link>
+		<description>desc</description>
+		<lastBuildDate>Fri, 18 Oct 2024 14:35:45 +0000</lastBuildDate>
+		<language>en-US</language>
+		<sy:updatePeriod>hourly </sy:updatePeriod>
+		<sy:updateFrequency>1</sy:updateFrequency>
+		<item>
+			<title>article</title>
+			<link>https://example.com/article/</link>
+			<comments>https://example.com/article/comments</comments>
+			<dc:creator><![CDATA[creator]]></dc:creator>
+			<pubDate>Fri, 18 Oct 2024 13:59:06 +0000</pubDate>
+			<category><![CDATA[category]]></category>
+			<guid isPermaLink="false">https://example.com/</guid>
+			<description><![CDATA[<p>description html</p>]]></description>
+			<content:encoded><![CDATA[<p>content</p>]]></content:encoded>
+			<wfw:commentRss>https://example.com/article/feed/</wfw:commentRss>
+			<slash:comments>1</slash:comments>
+		</item>
+	</channel>
+</rss>

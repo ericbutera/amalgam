@@ -1,0 +1,21 @@
+<rss version="2.0">
+    <channel>
+        <title>example feed</title>
+        <link>https://example.com/</link>
+        <description>description</description>
+        <item>
+            <title>example article</title>
+            <link>https://example.com/article</link>
+            <pubDate>Fri, 17 Oct 2024 08:00:00 +0000</pubDate>
+            <comments>https://example.com/article/comments</comments>
+            <description><![CDATA[<a href="https://example.com/article/comments">Comments</a>]]></description>
+        </item>
+        <item>
+            <title>example article 2</title>
+            <link>https://example.com/article-2</link>
+            <pubDate>Fri, 18 Oct 2024 10:10:10 +0000</pubDate>
+            <comments>https://example.com/article-2/comments</comments>
+            <description><![CDATA[<a href="https://example.com/article-2/comments">Comments</a>]]></description>
+        </item>
+    </channel>
+</rss>
