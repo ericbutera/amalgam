@@ -20,7 +20,7 @@ const BASE_URL = "http://api:8080/v1";
 const SLEEP_DURATION = 0.1;
 // Global variables should be initialized.
 
-export default function () {
+export default function() {
     group("/feeds/{id}", () => {
         let id = '1'; // specify value as there is no example value for this parameter in OpenAPI spec
 
@@ -38,9 +38,14 @@ export default function () {
 
         // Request No. 2:
         {
-            // TODO: this fails because there isn't post body yet
             let url = BASE_URL + `/feeds/${id}`;
-            let request = http.post(url);
+            let body = {"feed": {"url": "https://example.com/k6"}};
+            let params = {
+                headers: {
+                    "Content-Type": "application/json", "Accept": "application/json"
+                }
+            };
+            let request = http.put(url, JSON.stringify(body), params);
 
             check(request, {
                 "OK": (r) => r.status === 200
@@ -65,7 +70,13 @@ export default function () {
         // Request No. 2:
         {
             let url = BASE_URL + `/feeds`;
-            let request = http.post(url);
+            let body = {"feed": {"url": "https://example.com/k6"}};
+            let params = {
+                headers: {
+                    "Content-Type": "application/json", "Accept": "application/json"
+                }
+            };
+            let request = http.post(url, JSON.stringify(body), params);
 
             check(request, {
                 "OK": (r) => r.status === 200
