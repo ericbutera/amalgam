@@ -38,7 +38,6 @@ func Mysql(dsn string) (*gorm.DB, error) {
 
 // Create a new sqlite database connection
 // Runs migrations (sqlite is for local dev only)
-// @param name string The name of the database file
 func Sqlite(name string) (*gorm.DB, error) {
 	if name == "" {
 		name = "test.db"

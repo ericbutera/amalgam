@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"strconv"
 
 	"github.com/ericbutera/amalgam/api/internal/models"
 	"gorm.io/gorm"
@@ -34,6 +35,38 @@ func (s *Service) Feeds(ctx context.Context) ([]models.Feed, error) {
 		return nil, errors.New("failed to fetch feeds")
 	}
 	return feeds, nil
+}
+
+func (s *Service) CreateFeed(ctx context.Context, feed *models.Feed) error {
+	result := s.query(ctx).Create(feed)
+	if result.Error != nil {
+		return errors.New("failed to create feed")
+	}
+	return nil
+}
+
+func parseUint(s string) (uint, error) {
+	number, err := strconv.ParseUint(s, 10, 64)
+	if err != nil {
+		return 0, err
+	}
+	return uint(number), nil
+}
+
+func (s *Service) UpdateFeed(ctx context.Context, id string, feed *models.Feed) error {
+	// normalize URL to prevent duplicates
+	// create feed if not exists (feeds are global)
+	// create user_feed if not exists
+	uid, err := parseUint(id)
+	if err != nil {
+		return errors.New("invalid feed id")
+	}
+	feed.Base.ID = uid
+	result := s.query(ctx).Save(feed)
+	if result.Error != nil {
+		return errors.New("failed to update feed")
+	}
+	return nil
 }
 
 func (s *Service) GetFeed(ctx context.Context, id string) (*models.Feed, error) {

@@ -105,14 +105,32 @@ type FeedResponse struct {
 // @Failure 500 {object} map[string]string
 // @Router /feeds [post]
 func (h *handlers) feedCreate(c *gin.Context) {
-	// normalize URL to prevent duplicates
-	// create feed if not exists
-	// create user_feed if not exists
-	c.JSON(http.StatusNotImplemented, ErrorResponse{Error: "not implemented"})
+	var req CreateFeedRequest
+	if err := c.Bind(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	feed := models.Feed{
+		Url: req.Feed.Url,
+	}
+	if err := h.svc.CreateFeed(c.Request.Context(), &feed); err != nil {
+		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: "unable to create feed"})
+		return
+	}
+	c.JSON(http.StatusOK, FeedCreateResponse{
+		Feed: &feed,
+	})
 }
 
+// TODO: separate api from db
+type CreateFeed struct {
+	Url string `json:"url" binding:"required" example:"https://example.com/feed.xml"`
+}
+type CreateFeedRequest struct {
+	Feed CreateFeed `json:"feed"`
+}
 type FeedCreateResponse struct {
-	Feed *models.Feed `json:"feed"`
+	Feed *models.Feed `json:"feed"` // TODO: limit fields
 }
 
 // update feed
@@ -126,7 +144,31 @@ type FeedCreateResponse struct {
 // @Failure 500 {object} map[string]string
 // @Router /feeds/{id} [post]
 func (h *handlers) feedUpdate(c *gin.Context) {
-	c.JSON(http.StatusNotImplemented, ErrorResponse{Error: "not implemented"})
+	var req UpdateFeedRequest
+	if err := c.Bind(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	feed := models.Feed{
+		Url: req.Feed.Url,
+	}
+	if err := h.svc.UpdateFeed(c.Request.Context(), c.Param("id"), &feed); err != nil {
+		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: "unable to create feed"})
+		return
+	}
+	c.JSON(http.StatusOK, FeedUpdateResponse{
+		Feed: &feed,
+	})
+}
+
+// TODO: separate api from db
+type UpdateFeed struct {
+	ID  uint   `json:"id" binding:"required" example:"1"`
+	Url string `json:"url" binding:"required" example:"https://example.com/feed.xml"`
+}
+
+type UpdateFeedRequest struct {
+	Feed UpdateFeed `json:"feed"`
 }
 
 type FeedUpdateResponse struct {
