@@ -92,12 +92,16 @@ Class | Method | HTTP request | Description
  - [ModelsArticle](docs/ModelsArticle.md)
  - [ModelsFeed](docs/ModelsFeed.md)
  - [ServerArticleResponse](docs/ServerArticleResponse.md)
+ - [ServerCreateFeed](docs/ServerCreateFeed.md)
+ - [ServerCreateFeedRequest](docs/ServerCreateFeedRequest.md)
  - [ServerErrorResponse](docs/ServerErrorResponse.md)
  - [ServerFeedArticlesResponse](docs/ServerFeedArticlesResponse.md)
  - [ServerFeedCreateResponse](docs/ServerFeedCreateResponse.md)
  - [ServerFeedResponse](docs/ServerFeedResponse.md)
  - [ServerFeedUpdateResponse](docs/ServerFeedUpdateResponse.md)
  - [ServerFeedsResponse](docs/ServerFeedsResponse.md)
+ - [ServerUpdateFeed](docs/ServerUpdateFeed.md)
+ - [ServerUpdateFeedRequest](docs/ServerUpdateFeedRequest.md)
 
 
 ## Documentation For Authorization

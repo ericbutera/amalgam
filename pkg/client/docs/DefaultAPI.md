@@ -286,7 +286,7 @@ No authorization required
 
 ## FeedsIdPost
 
-> ServerFeedUpdateResponse FeedsIdPost(ctx, id).Execute()
+> ServerFeedUpdateResponse FeedsIdPost(ctx, id).Request(request).Execute()
 
 update feed
 
@@ -306,10 +306,11 @@ import (
 
 func main() {
 	id := int32(56) // int32 | Feed ID
+	request := *openapiclient.NewServerUpdateFeedRequest() // ServerUpdateFeedRequest | feed data
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.DefaultAPI.FeedsIdPost(context.Background(), id).Execute()
+	resp, r, err := apiClient.DefaultAPI.FeedsIdPost(context.Background(), id).Request(request).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `DefaultAPI.FeedsIdPost``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -335,6 +336,7 @@ Other parameters are passed through a pointer to a apiFeedsIdPostRequest struct 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
+ **request** | [**ServerUpdateFeedRequest**](ServerUpdateFeedRequest.md) | feed data | 
 
 ### Return type
 
@@ -346,7 +348,7 @@ No authorization required
 
 ### HTTP request headers
 
-- **Content-Type**: Not defined
+- **Content-Type**: application/json
 - **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
@@ -356,7 +358,7 @@ No authorization required
 
 ## FeedsPost
 
-> ServerFeedCreateResponse FeedsPost(ctx).Execute()
+> ServerFeedCreateResponse FeedsPost(ctx).Request(request).Execute()
 
 create feed
 
@@ -375,10 +377,11 @@ import (
 )
 
 func main() {
+	request := *openapiclient.NewServerCreateFeedRequest() // ServerCreateFeedRequest | feed data
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.DefaultAPI.FeedsPost(context.Background()).Execute()
+	resp, r, err := apiClient.DefaultAPI.FeedsPost(context.Background()).Request(request).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `DefaultAPI.FeedsPost``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -390,12 +393,16 @@ func main() {
 
 ### Path Parameters
 
-This endpoint does not need any parameter.
+
 
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiFeedsPostRequest struct via the builder pattern
 
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **request** | [**ServerCreateFeedRequest**](ServerCreateFeedRequest.md) | feed data | 
 
 ### Return type
 
@@ -407,7 +414,7 @@ No authorization required
 
 ### HTTP request headers
 
-- **Content-Type**: Not defined
+- **Content-Type**: application/json
 - **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)

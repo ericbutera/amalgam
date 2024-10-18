@@ -11,18 +11,18 @@ Name | Type | Description | Notes
 **DeletedAt** | Pointer to [**GormDeletedAt**](GormDeletedAt.md) |  | [optional] 
 **Feed** | Pointer to [**ModelsFeed**](ModelsFeed.md) |  | [optional] 
 **Guid** | Pointer to **string** |  | [optional] 
-**Id** | Pointer to **int32** |  | [optional] 
+**Id** | **int32** |  | 
 **ImageUrl** | Pointer to **string** |  | [optional] 
 **Preview** | Pointer to **string** |  | [optional] 
 **Title** | Pointer to **string** |  | [optional] 
 **UpdatedAt** | Pointer to **string** |  | [optional] 
-**Url** | Pointer to **string** |  | [optional] 
+**Url** | **string** |  | 
 
 ## Methods
 
 ### NewModelsArticle
 
-`func NewModelsArticle() *ModelsArticle`
+`func NewModelsArticle(id int32, url string, ) *ModelsArticle`
 
 NewModelsArticle instantiates a new ModelsArticle object
 This constructor will assign default values to properties that have it defined,
@@ -231,11 +231,6 @@ and a boolean to check if the value has been set.
 
 SetId sets Id field to given value.
 
-### HasId
-
-`func (o *ModelsArticle) HasId() bool`
-
-HasId returns a boolean if a field has been set.
 
 ### GetImageUrl
 
@@ -356,11 +351,6 @@ and a boolean to check if the value has been set.
 
 SetUrl sets Url field to given value.
 
-### HasUrl
-
-`func (o *ModelsArticle) HasUrl() bool`
-
-HasUrl returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

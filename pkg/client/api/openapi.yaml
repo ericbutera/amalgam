@@ -53,6 +53,13 @@ paths:
       summary: list feeds
     post:
       description: create feed
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/server.CreateFeedRequest'
+        description: feed data
+        required: true
       responses:
         "200":
           content:
@@ -69,6 +76,7 @@ paths:
                 type: object
           description: Internal Server Error
       summary: create feed
+      x-codegen-request-body-name: request
   /feeds/{id}:
     get:
       description: view feed
@@ -103,6 +111,13 @@ paths:
         required: true
         schema:
           type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/server.UpdateFeedRequest'
+        description: feed data
+        required: true
       responses:
         "200":
           content:
@@ -119,6 +134,7 @@ paths:
                 type: object
           description: Internal Server Error
       summary: update feed
+      x-codegen-request-body-name: request
   /feeds/{id}/articles:
     get:
       description: list articles for a feed
@@ -221,6 +237,9 @@ components:
         url:
           example: https://example.com/
           type: string
+      required:
+      - id
+      - url
       type: object
     models.Feed:
       example:
@@ -250,6 +269,9 @@ components:
         url:
           example: https://example.com/
           type: string
+      required:
+      - id
+      - url
       type: object
     server.ArticleResponse:
       example:
@@ -280,6 +302,19 @@ components:
       properties:
         article:
           $ref: '#/components/schemas/models.Article'
+      type: object
+    server.CreateFeed:
+      properties:
+        url:
+          example: https://example.com/feed.xml
+          type: string
+      required:
+      - url
+      type: object
+    server.CreateFeedRequest:
+      properties:
+        feed:
+          $ref: '#/components/schemas/server.CreateFeed'
       type: object
     server.ErrorResponse:
       example:
@@ -346,18 +381,13 @@ components:
       type: object
     server.FeedCreateResponse:
       example:
-        feed:
-          createdAt: 2021-01-01T00:00:00Z
-          deletedAt:
-            valid: true
-            time: time
-          name: Example
-          id: 1
-          url: https://example.com/
-          updatedAt: 2021-01-01T00:00:00Z
+        feed: "{}"
       properties:
         feed:
-          $ref: '#/components/schemas/models.Feed'
+          allOf:
+          - $ref: '#/components/schemas/models.Feed'
+          description: "TODO: limit fields"
+          type: object
       type: object
     server.FeedResponse:
       example:
@@ -413,5 +443,18 @@ components:
           items:
             $ref: '#/components/schemas/models.Feed'
           type: array
+      type: object
+    server.UpdateFeed:
+      properties:
+        url:
+          example: https://example.com/feed.xml
+          type: string
+      required:
+      - url
+      type: object
+    server.UpdateFeedRequest:
+      properties:
+        feed:
+          $ref: '#/components/schemas/server.UpdateFeed'
       type: object
 x-original-swagger-version: "2.0"

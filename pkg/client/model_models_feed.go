@@ -12,6 +12,8 @@ package client
 
 import (
 	"encoding/json"
+	"bytes"
+	"fmt"
 )
 
 // checks if the ModelsFeed type satisfies the MappedNullable interface at compile time
@@ -21,18 +23,22 @@ var _ MappedNullable = &ModelsFeed{}
 type ModelsFeed struct {
 	CreatedAt *string `json:"createdAt,omitempty"`
 	DeletedAt *GormDeletedAt `json:"deletedAt,omitempty"`
-	Id *int32 `json:"id,omitempty"`
+	Id int32 `json:"id"`
 	Name *string `json:"name,omitempty"`
 	UpdatedAt *string `json:"updatedAt,omitempty"`
-	Url *string `json:"url,omitempty"`
+	Url string `json:"url"`
 }
+
+type _ModelsFeed ModelsFeed
 
 // NewModelsFeed instantiates a new ModelsFeed object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewModelsFeed() *ModelsFeed {
+func NewModelsFeed(id int32, url string) *ModelsFeed {
 	this := ModelsFeed{}
+	this.Id = id
+	this.Url = url
 	return &this
 }
 
@@ -108,36 +114,28 @@ func (o *ModelsFeed) SetDeletedAt(v GormDeletedAt) {
 	o.DeletedAt = &v
 }
 
-// GetId returns the Id field value if set, zero value otherwise.
+// GetId returns the Id field value
 func (o *ModelsFeed) GetId() int32 {
-	if o == nil || IsNil(o.Id) {
+	if o == nil {
 		var ret int32
 		return ret
 	}
-	return *o.Id
+
+	return o.Id
 }
 
-// GetIdOk returns a tuple with the Id field value if set, nil otherwise
+// GetIdOk returns a tuple with the Id field value
 // and a boolean to check if the value has been set.
 func (o *ModelsFeed) GetIdOk() (*int32, bool) {
-	if o == nil || IsNil(o.Id) {
+	if o == nil {
 		return nil, false
 	}
-	return o.Id, true
+	return &o.Id, true
 }
 
-// HasId returns a boolean if a field has been set.
-func (o *ModelsFeed) HasId() bool {
-	if o != nil && !IsNil(o.Id) {
-		return true
-	}
-
-	return false
-}
-
-// SetId gets a reference to the given int32 and assigns it to the Id field.
+// SetId sets field value
 func (o *ModelsFeed) SetId(v int32) {
-	o.Id = &v
+	o.Id = v
 }
 
 // GetName returns the Name field value if set, zero value otherwise.
@@ -204,36 +202,28 @@ func (o *ModelsFeed) SetUpdatedAt(v string) {
 	o.UpdatedAt = &v
 }
 
-// GetUrl returns the Url field value if set, zero value otherwise.
+// GetUrl returns the Url field value
 func (o *ModelsFeed) GetUrl() string {
-	if o == nil || IsNil(o.Url) {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.Url
+
+	return o.Url
 }
 
-// GetUrlOk returns a tuple with the Url field value if set, nil otherwise
+// GetUrlOk returns a tuple with the Url field value
 // and a boolean to check if the value has been set.
 func (o *ModelsFeed) GetUrlOk() (*string, bool) {
-	if o == nil || IsNil(o.Url) {
+	if o == nil {
 		return nil, false
 	}
-	return o.Url, true
+	return &o.Url, true
 }
 
-// HasUrl returns a boolean if a field has been set.
-func (o *ModelsFeed) HasUrl() bool {
-	if o != nil && !IsNil(o.Url) {
-		return true
-	}
-
-	return false
-}
-
-// SetUrl gets a reference to the given string and assigns it to the Url field.
+// SetUrl sets field value
 func (o *ModelsFeed) SetUrl(v string) {
-	o.Url = &v
+	o.Url = v
 }
 
 func (o ModelsFeed) MarshalJSON() ([]byte, error) {
@@ -252,19 +242,53 @@ func (o ModelsFeed) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.DeletedAt) {
 		toSerialize["deletedAt"] = o.DeletedAt
 	}
-	if !IsNil(o.Id) {
-		toSerialize["id"] = o.Id
-	}
+	toSerialize["id"] = o.Id
 	if !IsNil(o.Name) {
 		toSerialize["name"] = o.Name
 	}
 	if !IsNil(o.UpdatedAt) {
 		toSerialize["updatedAt"] = o.UpdatedAt
 	}
-	if !IsNil(o.Url) {
-		toSerialize["url"] = o.Url
-	}
+	toSerialize["url"] = o.Url
 	return toSerialize, nil
+}
+
+func (o *ModelsFeed) UnmarshalJSON(data []byte) (err error) {
+	// This validates that all required properties are included in the JSON object
+	// by unmarshalling the object into a generic map with string keys and checking
+	// that every required field exists as a key in the generic map.
+	requiredProperties := []string{
+		"id",
+		"url",
+	}
+
+	allProperties := make(map[string]interface{})
+
+	err = json.Unmarshal(data, &allProperties)
+
+	if err != nil {
+		return err;
+	}
+
+	for _, requiredProperty := range(requiredProperties) {
+		if _, exists := allProperties[requiredProperty]; !exists {
+			return fmt.Errorf("no value given for required property %v", requiredProperty)
+		}
+	}
+
+	varModelsFeed := _ModelsFeed{}
+
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err = decoder.Decode(&varModelsFeed)
+
+	if err != nil {
+		return err
+	}
+
+	*o = ModelsFeed(varModelsFeed)
+
+	return err
 }
 
 type NullableModelsFeed struct {

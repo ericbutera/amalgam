@@ -12,6 +12,8 @@ package client
 
 import (
 	"encoding/json"
+	"bytes"
+	"fmt"
 )
 
 // checks if the ModelsArticle type satisfies the MappedNullable interface at compile time
@@ -26,20 +28,24 @@ type ModelsArticle struct {
 	DeletedAt *GormDeletedAt `json:"deletedAt,omitempty"`
 	Feed *ModelsFeed `json:"feed,omitempty"`
 	Guid *string `json:"guid,omitempty"`
-	Id *int32 `json:"id,omitempty"`
+	Id int32 `json:"id"`
 	ImageUrl *string `json:"imageUrl,omitempty"`
 	Preview *string `json:"preview,omitempty"`
 	Title *string `json:"title,omitempty"`
 	UpdatedAt *string `json:"updatedAt,omitempty"`
-	Url *string `json:"url,omitempty"`
+	Url string `json:"url"`
 }
+
+type _ModelsArticle ModelsArticle
 
 // NewModelsArticle instantiates a new ModelsArticle object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewModelsArticle() *ModelsArticle {
+func NewModelsArticle(id int32, url string) *ModelsArticle {
 	this := ModelsArticle{}
+	this.Id = id
+	this.Url = url
 	return &this
 }
 
@@ -275,36 +281,28 @@ func (o *ModelsArticle) SetGuid(v string) {
 	o.Guid = &v
 }
 
-// GetId returns the Id field value if set, zero value otherwise.
+// GetId returns the Id field value
 func (o *ModelsArticle) GetId() int32 {
-	if o == nil || IsNil(o.Id) {
+	if o == nil {
 		var ret int32
 		return ret
 	}
-	return *o.Id
+
+	return o.Id
 }
 
-// GetIdOk returns a tuple with the Id field value if set, nil otherwise
+// GetIdOk returns a tuple with the Id field value
 // and a boolean to check if the value has been set.
 func (o *ModelsArticle) GetIdOk() (*int32, bool) {
-	if o == nil || IsNil(o.Id) {
+	if o == nil {
 		return nil, false
 	}
-	return o.Id, true
+	return &o.Id, true
 }
 
-// HasId returns a boolean if a field has been set.
-func (o *ModelsArticle) HasId() bool {
-	if o != nil && !IsNil(o.Id) {
-		return true
-	}
-
-	return false
-}
-
-// SetId gets a reference to the given int32 and assigns it to the Id field.
+// SetId sets field value
 func (o *ModelsArticle) SetId(v int32) {
-	o.Id = &v
+	o.Id = v
 }
 
 // GetImageUrl returns the ImageUrl field value if set, zero value otherwise.
@@ -435,36 +433,28 @@ func (o *ModelsArticle) SetUpdatedAt(v string) {
 	o.UpdatedAt = &v
 }
 
-// GetUrl returns the Url field value if set, zero value otherwise.
+// GetUrl returns the Url field value
 func (o *ModelsArticle) GetUrl() string {
-	if o == nil || IsNil(o.Url) {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.Url
+
+	return o.Url
 }
 
-// GetUrlOk returns a tuple with the Url field value if set, nil otherwise
+// GetUrlOk returns a tuple with the Url field value
 // and a boolean to check if the value has been set.
 func (o *ModelsArticle) GetUrlOk() (*string, bool) {
-	if o == nil || IsNil(o.Url) {
+	if o == nil {
 		return nil, false
 	}
-	return o.Url, true
+	return &o.Url, true
 }
 
-// HasUrl returns a boolean if a field has been set.
-func (o *ModelsArticle) HasUrl() bool {
-	if o != nil && !IsNil(o.Url) {
-		return true
-	}
-
-	return false
-}
-
-// SetUrl gets a reference to the given string and assigns it to the Url field.
+// SetUrl sets field value
 func (o *ModelsArticle) SetUrl(v string) {
-	o.Url = &v
+	o.Url = v
 }
 
 func (o ModelsArticle) MarshalJSON() ([]byte, error) {
@@ -498,9 +488,7 @@ func (o ModelsArticle) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Guid) {
 		toSerialize["guid"] = o.Guid
 	}
-	if !IsNil(o.Id) {
-		toSerialize["id"] = o.Id
-	}
+	toSerialize["id"] = o.Id
 	if !IsNil(o.ImageUrl) {
 		toSerialize["imageUrl"] = o.ImageUrl
 	}
@@ -513,10 +501,46 @@ func (o ModelsArticle) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.UpdatedAt) {
 		toSerialize["updatedAt"] = o.UpdatedAt
 	}
-	if !IsNil(o.Url) {
-		toSerialize["url"] = o.Url
-	}
+	toSerialize["url"] = o.Url
 	return toSerialize, nil
+}
+
+func (o *ModelsArticle) UnmarshalJSON(data []byte) (err error) {
+	// This validates that all required properties are included in the JSON object
+	// by unmarshalling the object into a generic map with string keys and checking
+	// that every required field exists as a key in the generic map.
+	requiredProperties := []string{
+		"id",
+		"url",
+	}
+
+	allProperties := make(map[string]interface{})
+
+	err = json.Unmarshal(data, &allProperties)
+
+	if err != nil {
+		return err;
+	}
+
+	for _, requiredProperty := range(requiredProperties) {
+		if _, exists := allProperties[requiredProperty]; !exists {
+			return fmt.Errorf("no value given for required property %v", requiredProperty)
+		}
+	}
+
+	varModelsArticle := _ModelsArticle{}
+
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	err = decoder.Decode(&varModelsArticle)
+
+	if err != nil {
+		return err
+	}
+
+	*o = ModelsArticle(varModelsArticle)
+
+	return err
 }
 
 type NullableModelsArticle struct {

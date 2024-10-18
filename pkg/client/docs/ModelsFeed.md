@@ -6,16 +6,16 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **CreatedAt** | Pointer to **string** |  | [optional] 
 **DeletedAt** | Pointer to [**GormDeletedAt**](GormDeletedAt.md) |  | [optional] 
-**Id** | Pointer to **int32** |  | [optional] 
+**Id** | **int32** |  | 
 **Name** | Pointer to **string** |  | [optional] 
 **UpdatedAt** | Pointer to **string** |  | [optional] 
-**Url** | Pointer to **string** |  | [optional] 
+**Url** | **string** |  | 
 
 ## Methods
 
 ### NewModelsFeed
 
-`func NewModelsFeed() *ModelsFeed`
+`func NewModelsFeed(id int32, url string, ) *ModelsFeed`
 
 NewModelsFeed instantiates a new ModelsFeed object
 This constructor will assign default values to properties that have it defined,
@@ -99,11 +99,6 @@ and a boolean to check if the value has been set.
 
 SetId sets Id field to given value.
 
-### HasId
-
-`func (o *ModelsFeed) HasId() bool`
-
-HasId returns a boolean if a field has been set.
 
 ### GetName
 
@@ -174,11 +169,6 @@ and a boolean to check if the value has been set.
 
 SetUrl sets Url field to given value.
 
-### HasUrl
-
-`func (o *ModelsFeed) HasUrl() bool`
-
-HasUrl returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

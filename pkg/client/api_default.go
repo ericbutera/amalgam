@@ -478,6 +478,13 @@ type ApiFeedsIdPostRequest struct {
 	ctx context.Context
 	ApiService *DefaultAPIService
 	id int32
+	request *ServerUpdateFeedRequest
+}
+
+// feed data
+func (r ApiFeedsIdPostRequest) Request(request ServerUpdateFeedRequest) ApiFeedsIdPostRequest {
+	r.request = &request
+	return r
 }
 
 func (r ApiFeedsIdPostRequest) Execute() (*ServerFeedUpdateResponse, *http.Response, error) {
@@ -522,9 +529,12 @@ func (a *DefaultAPIService) FeedsIdPostExecute(r ApiFeedsIdPostRequest) (*Server
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
+	if r.request == nil {
+		return localVarReturnValue, nil, reportError("request is required and must be specified")
+	}
 
 	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{}
+	localVarHTTPContentTypes := []string{"application/json"}
 
 	// set Content-Type header
 	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
@@ -540,6 +550,8 @@ func (a *DefaultAPIService) FeedsIdPostExecute(r ApiFeedsIdPostRequest) (*Server
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
+	// body params
+	localVarPostBody = r.request
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
 		return localVarReturnValue, nil, err
@@ -590,6 +602,13 @@ func (a *DefaultAPIService) FeedsIdPostExecute(r ApiFeedsIdPostRequest) (*Server
 type ApiFeedsPostRequest struct {
 	ctx context.Context
 	ApiService *DefaultAPIService
+	request *ServerCreateFeedRequest
+}
+
+// feed data
+func (r ApiFeedsPostRequest) Request(request ServerCreateFeedRequest) ApiFeedsPostRequest {
+	r.request = &request
+	return r
 }
 
 func (r ApiFeedsPostRequest) Execute() (*ServerFeedCreateResponse, *http.Response, error) {
@@ -631,9 +650,12 @@ func (a *DefaultAPIService) FeedsPostExecute(r ApiFeedsPostRequest) (*ServerFeed
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
+	if r.request == nil {
+		return localVarReturnValue, nil, reportError("request is required and must be specified")
+	}
 
 	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{}
+	localVarHTTPContentTypes := []string{"application/json"}
 
 	// set Content-Type header
 	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
@@ -649,6 +671,8 @@ func (a *DefaultAPIService) FeedsPostExecute(r ApiFeedsPostRequest) (*ServerFeed
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
+	// body params
+	localVarPostBody = r.request
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
 		return localVarReturnValue, nil, err

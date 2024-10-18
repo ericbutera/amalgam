@@ -19,6 +19,7 @@ var _ MappedNullable = &ServerFeedCreateResponse{}
 
 // ServerFeedCreateResponse struct for ServerFeedCreateResponse
 type ServerFeedCreateResponse struct {
+	// TODO: limit fields
 	Feed *ModelsFeed `json:"feed,omitempty"`
 }
 
