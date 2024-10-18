@@ -59,12 +59,12 @@ func (s *Service) UpdateFeed(ctx context.Context, id string, feed *models.Feed) 
 	// create user_feed if not exists
 	uid, err := parseUint(id)
 	if err != nil {
-		return errors.New("invalid feed id")
+		return err
 	}
 	feed.Base.ID = uid
 	result := s.query(ctx).Save(feed)
 	if result.Error != nil {
-		return errors.New("failed to update feed")
+		return result.Error
 	}
 	return nil
 }
@@ -76,7 +76,7 @@ func (s *Service) GetFeed(ctx context.Context, id string) (*models.Feed, error) 
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			return nil, ErrNotFound
 		}
-		return nil, errors.New("failed to fetch feed")
+		return nil, result.Error
 	}
 	return &feed, nil
 }
@@ -87,7 +87,7 @@ func (s *Service) GetArticlesByFeed(ctx context.Context, id string) ([]models.Ar
 		Find(&articles, "feed_id = ?", id).
 		Limit(100) // TODO: pagination (cursor)
 	if result.Error != nil {
-		return nil, errors.New("failed to fetch articles")
+		return nil, result.Error
 	}
 	return articles, nil
 }
@@ -99,7 +99,7 @@ func (s *Service) GetArticle(ctx context.Context, id string) (*models.Article, e
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			return nil, ErrNotFound
 		}
-		return nil, errors.New("failed to fetch article")
+		return nil, result.Error
 	}
 	return &article, nil
 }
