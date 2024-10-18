@@ -348,7 +348,12 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "feed": {
-                    "$ref": "#/definitions/models.Feed"
+                    "description": "TODO: limit fields",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.Feed"
+                        }
+                    ]
                 }
             }
         },

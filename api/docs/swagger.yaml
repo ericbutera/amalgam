@@ -89,7 +89,9 @@ definitions:
   server.FeedCreateResponse:
     properties:
       feed:
-        $ref: '#/definitions/models.Feed'
+        allOf:
+        - $ref: '#/definitions/models.Feed'
+        description: 'TODO: limit fields'
     type: object
   server.FeedResponse:
     properties:
