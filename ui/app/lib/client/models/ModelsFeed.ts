@@ -44,7 +44,7 @@ export interface ModelsFeed {
      * @type {number}
      * @memberof ModelsFeed
      */
-    id?: number;
+    id: number;
     /**
      * 
      * @type {string}
@@ -62,13 +62,15 @@ export interface ModelsFeed {
      * @type {string}
      * @memberof ModelsFeed
      */
-    url?: string;
+    url: string;
 }
 
 /**
  * Check if a given object implements the ModelsFeed interface.
  */
 export function instanceOfModelsFeed(value: object): value is ModelsFeed {
+    if (!('id' in value) || value['id'] === undefined) return false;
+    if (!('url' in value) || value['url'] === undefined) return false;
     return true;
 }
 
@@ -84,10 +86,10 @@ export function ModelsFeedFromJSONTyped(json: any, ignoreDiscriminator: boolean)
         
         'createdAt': json['createdAt'] == null ? undefined : json['createdAt'],
         'deletedAt': json['deletedAt'] == null ? undefined : GormDeletedAtFromJSON(json['deletedAt']),
-        'id': json['id'] == null ? undefined : json['id'],
+        'id': json['id'],
         'name': json['name'] == null ? undefined : json['name'],
         'updatedAt': json['updatedAt'] == null ? undefined : json['updatedAt'],
-        'url': json['url'] == null ? undefined : json['url'],
+        'url': json['url'],
     };
 }
 

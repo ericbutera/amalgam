@@ -16,16 +16,20 @@
 import * as runtime from '../runtime';
 import type {
   ServerArticleResponse,
+  ServerCreateFeedRequest,
   ServerErrorResponse,
   ServerFeedArticlesResponse,
   ServerFeedCreateResponse,
   ServerFeedResponse,
   ServerFeedUpdateResponse,
   ServerFeedsResponse,
+  ServerUpdateFeedRequest,
 } from '../models/index';
 import {
     ServerArticleResponseFromJSON,
     ServerArticleResponseToJSON,
+    ServerCreateFeedRequestFromJSON,
+    ServerCreateFeedRequestToJSON,
     ServerErrorResponseFromJSON,
     ServerErrorResponseToJSON,
     ServerFeedArticlesResponseFromJSON,
@@ -38,6 +42,8 @@ import {
     ServerFeedUpdateResponseToJSON,
     ServerFeedsResponseFromJSON,
     ServerFeedsResponseToJSON,
+    ServerUpdateFeedRequestFromJSON,
+    ServerUpdateFeedRequestToJSON,
 } from '../models/index';
 
 export interface ArticlesIdGetRequest {
@@ -54,6 +60,11 @@ export interface FeedsIdGetRequest {
 
 export interface FeedsIdPostRequest {
     id: number;
+    request: ServerUpdateFeedRequest;
+}
+
+export interface FeedsPostRequest {
+    request: ServerCreateFeedRequest;
 }
 
 /**
@@ -206,15 +217,25 @@ export class DefaultApi extends runtime.BaseAPI {
             );
         }
 
+        if (requestParameters['request'] == null) {
+            throw new runtime.RequiredError(
+                'request',
+                'Required parameter "request" was null or undefined when calling feedsIdPost().'
+            );
+        }
+
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
 
         const response = await this.request({
             path: `/feeds/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
+            body: ServerUpdateFeedRequestToJSON(requestParameters['request']),
         }, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => ServerFeedUpdateResponseFromJSON(jsonValue));
@@ -233,16 +254,26 @@ export class DefaultApi extends runtime.BaseAPI {
      * create feed
      * create feed
      */
-    async feedsPostRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ServerFeedCreateResponse>> {
+    async feedsPostRaw(requestParameters: FeedsPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ServerFeedCreateResponse>> {
+        if (requestParameters['request'] == null) {
+            throw new runtime.RequiredError(
+                'request',
+                'Required parameter "request" was null or undefined when calling feedsPost().'
+            );
+        }
+
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
 
         const response = await this.request({
             path: `/feeds`,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
+            body: ServerCreateFeedRequestToJSON(requestParameters['request']),
         }, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => ServerFeedCreateResponseFromJSON(jsonValue));
@@ -252,8 +283,8 @@ export class DefaultApi extends runtime.BaseAPI {
      * create feed
      * create feed
      */
-    async feedsPost(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ServerFeedCreateResponse> {
-        const response = await this.feedsPostRaw(initOverrides);
+    async feedsPost(requestParameters: FeedsPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ServerFeedCreateResponse> {
+        const response = await this.feedsPostRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

@@ -5,11 +5,15 @@ models/GormDeletedAt.ts
 models/ModelsArticle.ts
 models/ModelsFeed.ts
 models/ServerArticleResponse.ts
+models/ServerCreateFeed.ts
+models/ServerCreateFeedRequest.ts
 models/ServerErrorResponse.ts
 models/ServerFeedArticlesResponse.ts
 models/ServerFeedCreateResponse.ts
 models/ServerFeedResponse.ts
 models/ServerFeedUpdateResponse.ts
 models/ServerFeedsResponse.ts
+models/ServerUpdateFeed.ts
+models/ServerUpdateFeedRequest.ts
 models/index.ts
 runtime.ts

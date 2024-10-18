@@ -81,7 +81,7 @@ export interface ModelsArticle {
      * @type {number}
      * @memberof ModelsArticle
      */
-    id?: number;
+    id: number;
     /**
      * 
      * @type {string}
@@ -111,13 +111,15 @@ export interface ModelsArticle {
      * @type {string}
      * @memberof ModelsArticle
      */
-    url?: string;
+    url: string;
 }
 
 /**
  * Check if a given object implements the ModelsArticle interface.
  */
 export function instanceOfModelsArticle(value: object): value is ModelsArticle {
+    if (!('id' in value) || value['id'] === undefined) return false;
+    if (!('url' in value) || value['url'] === undefined) return false;
     return true;
 }
 
@@ -138,12 +140,12 @@ export function ModelsArticleFromJSONTyped(json: any, ignoreDiscriminator: boole
         'deletedAt': json['deletedAt'] == null ? undefined : GormDeletedAtFromJSON(json['deletedAt']),
         'feed': json['feed'] == null ? undefined : ModelsFeedFromJSON(json['feed']),
         'guid': json['guid'] == null ? undefined : json['guid'],
-        'id': json['id'] == null ? undefined : json['id'],
+        'id': json['id'],
         'imageUrl': json['imageUrl'] == null ? undefined : json['imageUrl'],
         'preview': json['preview'] == null ? undefined : json['preview'],
         'title': json['title'] == null ? undefined : json['title'],
         'updatedAt': json['updatedAt'] == null ? undefined : json['updatedAt'],
-        'url': json['url'] == null ? undefined : json['url'],
+        'url': json['url'],
     };
 }
 

@@ -28,7 +28,7 @@ import {
  */
 export interface ServerFeedCreateResponse {
     /**
-     * 
+     * TODO: limit fields
      * @type {ModelsFeed}
      * @memberof ServerFeedCreateResponse
      */
