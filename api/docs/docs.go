@@ -90,6 +90,17 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "summary": "create feed",
+                "parameters": [
+                    {
+                        "description": "feed data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/server.CreateFeedRequest"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -160,6 +171,15 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "feed data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/server.UpdateFeedRequest"
+                        }
                     }
                 ],
                 "responses": {
@@ -235,6 +255,11 @@ const docTemplate = `{
         },
         "models.Article": {
             "type": "object",
+            "required": [
+                "feedId",
+                "id",
+                "url"
+            ],
             "properties": {
                 "authorEmail": {
                     "type": "string",
@@ -257,6 +282,10 @@ const docTemplate = `{
                 },
                 "feed": {
                     "$ref": "#/definitions/models.Feed"
+                },
+                "feedId": {
+                    "type": "integer",
+                    "example": 1
                 },
                 "guid": {
                     "type": "string",
@@ -290,6 +319,10 @@ const docTemplate = `{
         },
         "models.Feed": {
             "type": "object",
+            "required": [
+                "id",
+                "url"
+            ],
             "properties": {
                 "createdAt": {
                     "type": "string",
@@ -321,6 +354,26 @@ const docTemplate = `{
             "properties": {
                 "article": {
                     "$ref": "#/definitions/models.Article"
+                }
+            }
+        },
+        "server.CreateFeed": {
+            "type": "object",
+            "required": [
+                "url"
+            ],
+            "properties": {
+                "url": {
+                    "type": "string",
+                    "example": "https://example.com/feed.xml"
+                }
+            }
+        },
+        "server.CreateFeedRequest": {
+            "type": "object",
+            "properties": {
+                "feed": {
+                    "$ref": "#/definitions/server.CreateFeed"
                 }
             }
         },
@@ -381,6 +434,26 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/models.Feed"
                     }
+                }
+            }
+        },
+        "server.UpdateFeed": {
+            "type": "object",
+            "required": [
+                "url"
+            ],
+            "properties": {
+                "url": {
+                    "type": "string",
+                    "example": "https://example.com/feed.xml"
+                }
+            }
+        },
+        "server.UpdateFeedRequest": {
+            "type": "object",
+            "properties": {
+                "feed": {
+                    "$ref": "#/definitions/server.UpdateFeed"
                 }
             }
         }

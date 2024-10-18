@@ -26,6 +26,9 @@ definitions:
         $ref: '#/definitions/gorm.DeletedAt'
       feed:
         $ref: '#/definitions/models.Feed'
+      feedId:
+        example: 1
+        type: integer
       guid:
         example: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
         type: string
@@ -47,6 +50,10 @@ definitions:
       url:
         example: https://example.com/
         type: string
+    required:
+    - feedId
+    - id
+    - url
     type: object
   models.Feed:
     properties:
@@ -67,11 +74,27 @@ definitions:
       url:
         example: https://example.com/
         type: string
+    required:
+    - id
+    - url
     type: object
   server.ArticleResponse:
     properties:
       article:
         $ref: '#/definitions/models.Article'
+    type: object
+  server.CreateFeed:
+    properties:
+      url:
+        example: https://example.com/feed.xml
+        type: string
+    required:
+    - url
+    type: object
+  server.CreateFeedRequest:
+    properties:
+      feed:
+        $ref: '#/definitions/server.CreateFeed'
     type: object
   server.ErrorResponse:
     properties:
@@ -109,6 +132,19 @@ definitions:
         items:
           $ref: '#/definitions/models.Feed'
         type: array
+    type: object
+  server.UpdateFeed:
+    properties:
+      url:
+        example: https://example.com/feed.xml
+        type: string
+    required:
+    - url
+    type: object
+  server.UpdateFeedRequest:
+    properties:
+      feed:
+        $ref: '#/definitions/server.UpdateFeed'
     type: object
 host: localhost:8080
 info:
@@ -164,6 +200,13 @@ paths:
       consumes:
       - application/json
       description: create feed
+      parameters:
+      - description: feed data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/server.CreateFeedRequest'
       produces:
       - application/json
       responses:
@@ -212,6 +255,12 @@ paths:
         name: id
         required: true
         type: integer
+      - description: feed data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/server.UpdateFeedRequest'
       produces:
       - application/json
       responses:
