@@ -3,33 +3,28 @@ load('ext://restart_process', 'docker_build_with_restart')
 
 k8s_yaml(helm('./helm'))
 
-default_build_args = {
-    "GO111MODULE": "on",
-    "CGO_ENABLED": "0",
-    "GOOS": "linux",
-    "GOARCH": "amd64",
-}
-
 local_resource(
   'api-compile',
-  # 'CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o api/bin/api api/main.go',
-  'cd api && make build',
+  'make build',
+  dir='./api',
   ignore=['./api/bin'],
   deps=['./api','./pkg','./tools','./testdata'],
 )
 docker_build_with_restart(
   'api-image',
   './api',
-  entrypoint=['/app/bin/api','server'],
+  entrypoint=['/app/bin/app','server'],
   dockerfile='tilt/bin.Dockerfile',
-  only=[
-    './bin',
-  ],
-  live_update=[
-    sync('api/bin', '/app/bin'),
-  ],
+  only=['./bin'],
+  live_update=[sync('api/bin', '/app/bin')],
 )
 # here is a way to build the api-image without using the local_resource:
+# default_build_args = {
+#     "GO111MODULE": "on",
+#     "CGO_ENABLED": "0",
+#     "GOOS": "linux",
+#     "GOARCH": "amd64",
+# }
 # docker_build(
 #     "api-image",
 #     ".",
