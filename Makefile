@@ -4,6 +4,23 @@
 help: ## Help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
+test: install-tools ## Run tests
+	@echo Running tests
+	go test -v ./...
+
+lint: install-tools ## Run linter
+	@echo Running linter
+	go vet ./... && \
+	golangci-lint run && \
+	staticcheck ./...
+
+ci: install-tools test lint ## Run CI pipeline
+	ctlptl create cluster kind --registry=ctlptl-registry \
+	&& \
+	tilt ci \
+	&& \
+	ctlptl delete cluster kind
+
 generate-openapi: install-tools  ## Generate OpenAPI spec
 	@echo Generating OpenAPI
 	swag init --parseDependency --parseInternal --dir api --output api/docs
