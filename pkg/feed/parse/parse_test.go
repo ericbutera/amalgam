@@ -14,9 +14,9 @@ func newMinimal(t *testing.T) Articles {
 	return newFile(t, "feeds/minimal.xml")
 }
 
-func newAtom(t *testing.T) Articles {
-	return newFile(t, "feeds/atom.xml")
-}
+// func newAtom(t *testing.T) Articles {
+// 	return newFile(t, "feeds/atom.xml")
+// }
 
 func newFile(t *testing.T, path string) Articles {
 	require.NotEmpty(t, path)

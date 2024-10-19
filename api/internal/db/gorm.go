@@ -58,7 +58,9 @@ func Sqlite(name string) (*gorm.DB, error) {
 // TODO populate with fixtures
 // TODO: only run in debug mode
 func seedSqlite(db *gorm.DB) error {
-	db.AutoMigrate(&models.Feed{}, &models.Article{}, &models.User{})
+	if err := db.AutoMigrate(&models.Feed{}, &models.Article{}, &models.User{}); err != nil {
+		return err
+	}
 	return db.Transaction(func(tx *gorm.DB) error {
 		var feed models.Feed
 		result := tx.First(&feed, 1)

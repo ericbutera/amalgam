@@ -26,26 +26,16 @@ import (
 const schemaName = "https://github.com/grafana/docker-otel-lgtm"
 
 var (
-	tracer = otel.Tracer(schemaName)
-	logger = otelslog.NewLogger(schemaName)
+	Tracer = otel.Tracer(schemaName)
+	Logger = otelslog.NewLogger(schemaName)
 )
-
-/*
-func Tracer() tracer.Tracer {
-	return tracer
-}
-
-func Logger() *slog.Logger {
-	return logger
-}
-*/
 
 // bootstrap the OpenTelemetry pipeline
 // If it does not return an error, make sure to call shutdown for proper cleanup.
 func Setup(ctx context.Context) (shutdown func(context.Context) error, err error) {
 	var shutdownFuncs []func(context.Context) error
 
-	logger.Info("setting up OpenTelemetry")
+	Logger.Info("setting up OpenTelemetry")
 
 	// shutdown calls cleanup functions registered via shutdownFuncs.
 	// The errors from the calls are joined.
@@ -111,7 +101,8 @@ func Setup(ctx context.Context) (shutdown func(context.Context) error, err error
 
 	err = runtime.Start(runtime.WithMinimumReadMemStatsInterval(time.Second))
 	if err != nil {
-		logger.ErrorContext(ctx, "otel runtime instrumentation failed:", err)
+		Logger.ErrorContext(ctx, "otel runtime instrumentation failed:", "error", err)
+		return
 	}
 
 	return

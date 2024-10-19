@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/microcosm-cc/bluemonday"
-	"github.com/mmcdole/gofeed"
 	parser "github.com/mmcdole/gofeed"
 )
 
@@ -47,7 +46,7 @@ func Parse(reader *os.File) (articles Articles, err error) {
 	return
 }
 
-func newArticleFromItem(item *gofeed.Item) *Article {
+func newArticleFromItem(item *parser.Item) *Article {
 	return &Article{
 		Title:         item.Title,
 		Url:           item.Link,
@@ -63,31 +62,31 @@ func newArticleFromItem(item *gofeed.Item) *Article {
 	}
 }
 
-func getImageUrl(item *gofeed.Item) (s string) {
+func getImageUrl(item *parser.Item) (s string) {
 	if item.Image != nil && item.Image.URL != "" {
 		s = item.Image.URL
 	}
 	return s
 }
-func getAuthorName(item *gofeed.Item) (s string) {
+func getAuthorName(item *parser.Item) (s string) {
 	if item.Author != nil && item.Author.Name != "" {
 		s = item.Author.Name
 	}
 	return s
 }
-func getAuthorEmail(item *gofeed.Item) (s string) {
+func getAuthorEmail(item *parser.Item) (s string) {
 	if item.Author != nil && item.Author.Email != "" {
 		s = item.Author.Email
 	}
 	return s
 }
-func getDateUpdated(item *gofeed.Item) time.Time {
+func getDateUpdated(item *parser.Item) time.Time {
 	if item.UpdatedParsed != nil {
 		return *item.UpdatedParsed
 	}
 	return time.Now().UTC()
 }
-func getDatePublished(item *gofeed.Item) time.Time {
+func getDatePublished(item *parser.Item) time.Time {
 	if item.PublishedParsed != nil {
 		return *item.PublishedParsed
 	}

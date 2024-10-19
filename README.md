@@ -45,4 +45,13 @@ Observability stack.
 
 ## TODO
 
+- helm chart
+  - values file for configuration
+  - service account
+  - ingress
+  - deployment + service
+- graphql
+- data pipeline demos
 - fake feed data generation
+- move api/docs to static file server
+  - research: <https://github.com/scalar/scalar>
