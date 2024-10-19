@@ -10,9 +10,11 @@ generate: ## Generate tests from OpenAPI spec
 
 .PHONY: test
 test:  ## Run tests
-	# k6 run tests/test.js
 	docker run --rm \
 		-v "./tests:/tests" \
 		grafana/k6 \
 		run \
 		"/tests/script.js"
+
+test-debug:
+	k6 run tests/script.js --http-debug

@@ -37,6 +37,7 @@ export default function() {
         }
 
         // Request No. 2:
+        // TODO: this test fails because rest api isn't handling updates correctly (currently trying to set created_at=null)
         {
             let url = BASE_URL + `/feeds/${id}`;
             let body = {"feed": {"url": "https://example.com/k6"}};
