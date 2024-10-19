@@ -38,11 +38,21 @@ func (s *Service) Feeds(ctx context.Context) ([]models.Feed, error) {
 }
 
 func (s *Service) CreateFeed(ctx context.Context, feed *models.Feed) error {
-	result := s.query(ctx).Create(feed)
-	if result.Error != nil {
-		return errors.New("failed to create feed")
-	}
-	return nil
+	// TODO: normalize URL to prevent duplicates
+	// TODO: create user_feed if not exists
+	return s.query(ctx).Transaction(func(tx *gorm.DB) error {
+		res := tx.Find(&models.Feed{}, "url = ?", feed.Url)
+		if res.Error != nil {
+			return res.Error
+		}
+		if res.RowsAffected > 0 {
+			return errors.New("feed already exists")
+		}
+		if err := tx.Create(feed).Error; err != nil {
+			return err
+		}
+		return nil
+	})
 }
 
 func parseUint(s string) (uint, error) {
@@ -54,9 +64,9 @@ func parseUint(s string) (uint, error) {
 }
 
 func (s *Service) UpdateFeed(ctx context.Context, id string, feed *models.Feed) error {
-	// normalize URL to prevent duplicates
-	// create feed if not exists (feeds are global)
-	// create user_feed if not exists
+	// TODO: make this update user's feed (user_feed)
+	// TODO: deny changing of URL (create specific model for update fields)
+	// TODO: prevent changing created_at Incorrect datetime value: '0000-00-00' for column 'created_at'
 	uid, err := parseUint(id)
 	if err != nil {
 		return err
