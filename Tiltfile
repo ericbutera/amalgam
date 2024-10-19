@@ -54,6 +54,24 @@ docker_build(
 )
 k8s_resource("ui", port_forwards=[port_forward(3000, 3000, "ui")], labels=["app"])
 
+local_resource(
+  'graph-compile',
+  'make build',
+  dir='./graph',
+  ignore=['./graph/bin'],
+  deps=['./graph','./pkg','./tools','./testdata'],
+  labels=['app'],
+)
+docker_build_with_restart(
+  'graph-image',
+  './graph',
+  entrypoint=['/app/bin/app','server'],
+  dockerfile='tilt/bin.Dockerfile',
+  only=['./bin'],
+  live_update=[sync('graph/bin', '/app/bin')],
+)
+k8s_resource("graph", port_forwards=[port_forward(8082, 8080, "graphql playground")], labels=["app"])
+
 # https://grafana.com/go/webinar/getting-started-with-grafana-lgtm-stack/
 # TODO: figure out:
 # - loki log exporter

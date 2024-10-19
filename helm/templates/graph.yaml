@@ -1,0 +1,37 @@
+# TODO: helm chart w/ values.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: graph
+spec:
+  selector:
+    app: graph
+  ports:
+    - name: graph
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: graph
+  labels:
+    app: graph
+spec:
+  selector:
+    matchLabels:
+      app: graph
+  template:
+    metadata:
+      labels:
+        app: graph
+    spec:
+      containers:
+        - name: graph
+          image: graph-image
+          ports:
+            - containerPort: 8080
+          env:
+            - name: API_HOST
+              value: "api:8080"
