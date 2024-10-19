@@ -6,19 +6,7 @@ help: ## Help
 
 .PHONY: generate
 generate: ## Generate tests from OpenAPI spec
-	# TODO: regenerate OpenAPI spec before running (cd ../api && make docs)
-	cp ../api/docs/swagger.json . \
-	&& \
-	docker run --rm \
-		-v "${PWD}:/local" \
-		-v "./tests:/out" \
-		openapitools/openapi-generator-cli generate \
-		-i "/local/swagger.json" \
-		-g k6 \
-		-o "/out" \
-		--skip-validate-spec \
-	&& \
-	rm swagger.json
+	@echo Deprecated: use "cd .. && make generate-k6" instead
 
 .PHONY: test
 test:  ## Run tests

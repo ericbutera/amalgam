@@ -4,13 +4,11 @@
 build: ## Build the binary
 	CGO_ENABLED=0 GOOS=linux go build -o bin/app
 
-# .PHONY: docs-install
-# docs-install:
-# 	go install github.com/swaggo/swag/cmd/swag@latest
 
 .PHONY: docs
-docs: ## generate docs
-	swag init --parseDependency --parseInternal
+docs:
+	@echo Deprecated: use "cd .. && make generate-openapi" instead
+	@exit 1
 
 .PHONY: help
 help: ## Help
