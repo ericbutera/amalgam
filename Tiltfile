@@ -1,4 +1,5 @@
 load('ext://helm_resource', 'helm_resource', 'helm_repo')
+load('ext://restart_process', 'docker_build_with_restart')
 
 k8s_yaml(helm('./helm'))
 
@@ -9,8 +10,6 @@ default_build_args = {
     "GOARCH": "amd64",
 }
 
-# TODO: hot reload go
-
 local_resource(
   'api-compile',
   # 'CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o api/bin/api api/main.go',
@@ -18,7 +17,6 @@ local_resource(
   ignore=['./api/bin'],
   deps=['./api','./pkg','./tools','./testdata'],
 )
-load('ext://restart_process', 'docker_build_with_restart')
 docker_build_with_restart(
   'api-image',
   './api',
@@ -31,6 +29,7 @@ docker_build_with_restart(
     sync('api/bin', '/app/bin'),
   ],
 )
+# here is a way to build the api-image without using the local_resource:
 # docker_build(
 #     "api-image",
 #     ".",
