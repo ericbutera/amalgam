@@ -1,3 +1,5 @@
+# -*- mode: Python -*-
+
 load('ext://helm_resource', 'helm_resource', 'helm_repo')
 load('ext://restart_process', 'docker_build_with_restart')
 
@@ -9,6 +11,7 @@ local_resource(
   dir='./api',
   ignore=['./api/bin'],
   deps=['./api','./pkg','./tools','./testdata'],
+  labels=['app'],
 )
 docker_build_with_restart(
   'api-image',
@@ -40,15 +43,16 @@ k8s_resource(
         link("localhost:8080/swagger/index.html", "swagger"),
         link("localhost:8080/v1/feeds", "/v1/feeds"),
     ],
+    labels=["app"],
 )
 
-k8s_resource("ui", port_forwards=[port_forward(3000, 3000, "ui")])
 docker_build(
     "ui-image",
     context="./ui",
     live_update=[sync("./ui", "/usr/src/app")],
     dockerfile="ui/dev.Dockerfile",
 )
+k8s_resource("ui", port_forwards=[port_forward(3000, 3000, "ui")], labels=["app"])
 
 # https://grafana.com/go/webinar/getting-started-with-grafana-lgtm-stack/
 # TODO: figure out:
@@ -63,17 +67,18 @@ k8s_resource(
         "4317:4317",
         "4318:4318",
     ],
+    labels=["services"],
 )
 
 # https://k6.io/
 docker_build("k6-image", "k6")
-k8s_resource("k6", trigger_mode=TRIGGER_MODE_MANUAL, resource_deps=["api"])
+k8s_resource("k6", trigger_mode=TRIGGER_MODE_MANUAL, resource_deps=["api"], labels=["test"])
 
-k8s_resource("mysql", port_forwards=["3306:3306"])
+k8s_resource("mysql", port_forwards=["3306:3306"], labels=["services"])
 docker_build(
     "mysql-migrate-image", "mysql/migrations", dockerfile="mysql/migrate.Dockerfile"
 )
-k8s_resource("mysql-migrate", resource_deps=["mysql"])
+k8s_resource("mysql-migrate", resource_deps=["mysql"], labels=["services"])
 
 # https://temporal.io/
 k8s_resource(
@@ -83,4 +88,25 @@ k8s_resource(
         port_forward(19090, 19090, "metrics"),
         port_forward(7233, 7233),
     ],
+    labels=["services"],
 )
+
+
+
+# For more on the `test_go` extension: https://github.com/tilt-dev/tilt-extensions/tree/master/tests/golang
+# For more on tests in Tilt: https://docs.tilt.dev/tests_in_tilt.html
+load('ext://tests/golang', 'test_go')
+
+# these unit tests are fast/well cached, so it's easy to run them all whenever a file changes and get fast feedback
+# (The `skipintegration` tag prevents this test resource from running our very slow integration test suite)
+test_go('go-unit-tests', '.', '.', recursive=True, tags=['skipintegration'], labels=['test'])
+
+# TODO: integration tests
+# the integration tests are slow and clunky, so make them available from the sidebar
+# and let the developer run them manually whenever it's necessary
+# test_go('integration-tests', './integration', '.',
+#         extra_args=["-v"],
+#         trigger_mode=TRIGGER_MODE_MANUAL,
+#         # run this test automatically in CI mode; otherwise, only on manual trigger
+#         auto_init=config.tilt_subcommand == 'ci',
+#         labels=['test'])
