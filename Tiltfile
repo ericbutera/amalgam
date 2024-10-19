@@ -1,3 +1,7 @@
+load('ext://helm_resource', 'helm_resource', 'helm_repo')
+
+k8s_yaml(helm('./helm'))
+
 default_build_args = {
     "GO111MODULE": "on",
     "CGO_ENABLED": "0",
@@ -5,16 +9,35 @@ default_build_args = {
     "GOARCH": "amd64",
 }
 
-# API
 # TODO: hot reload go
-docker_build(
-    "api-image",
-    ".",
-    dockerfile="tilt/go.Dockerfile",
-    entrypoint=["/app/app", "server"],
-    build_args=dict(default_build_args, **{"APP_PATH": "api"}),
+
+local_resource(
+  'api-compile',
+  # 'CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o api/bin/api api/main.go',
+  'cd api && make build',
+  ignore=['./api/bin'],
+  deps=['./api','./pkg','./tools','./testdata'],
 )
-k8s_yaml("kubernetes/api.yaml")
+load('ext://restart_process', 'docker_build_with_restart')
+docker_build_with_restart(
+  'api-image',
+  './api',
+  entrypoint=['/app/bin/api','server'],
+  dockerfile='tilt/bin.Dockerfile',
+  only=[
+    './bin',
+  ],
+  live_update=[
+    sync('api/bin', '/app/bin'),
+  ],
+)
+# docker_build(
+#     "api-image",
+#     ".",
+#     dockerfile="tilt/go.Dockerfile",
+#     entrypoint=["/app/app", "server"],
+#     build_args=dict(default_build_args, **{"APP_PATH": "api"}),
+# )
 k8s_resource(
     "api",
     port_forwards=[port_forward(8080, 8080)],
@@ -25,8 +48,6 @@ k8s_resource(
     ],
 )
 
-# UI
-k8s_yaml("kubernetes/ui.yaml")
 k8s_resource("ui", port_forwards=[port_forward(3000, 3000, "ui")])
 docker_build(
     "ui-image",
@@ -35,12 +56,11 @@ docker_build(
     dockerfile="ui/dev.Dockerfile",
 )
 
-# LGTM Stack
+# https://grafana.com/go/webinar/getting-started-with-grafana-lgtm-stack/
 # TODO: figure out:
 # - loki log exporter
 # - metric exporter isn't working
 docker_build("lgtm-image", "lgtm")
-k8s_yaml("kubernetes/lgtm.yaml")
 k8s_resource(
     "lgtm",
     port_forwards=[
@@ -51,23 +71,17 @@ k8s_resource(
     ],
 )
 
-# k6 tests
+# https://k6.io/
 docker_build("k6-image", "k6")
-k8s_yaml("kubernetes/k6.yaml")
 k8s_resource("k6", trigger_mode=TRIGGER_MODE_MANUAL, resource_deps=["api"])
 
-# mysql
-k8s_yaml("kubernetes/mysql.yaml")
 k8s_resource("mysql", port_forwards=["3306:3306"])
-# mysql migrations
 docker_build(
     "mysql-migrate-image", "mysql/migrations", dockerfile="mysql/migrate.Dockerfile"
 )
-k8s_yaml("kubernetes/mysql-migrate-job.yaml")
 k8s_resource("mysql-migrate", resource_deps=["mysql"])
 
-# temporalio/server
-k8s_yaml("kubernetes/temporal.yaml")
+# https://temporal.io/
 k8s_resource(
     "temporal",
     port_forwards=[
