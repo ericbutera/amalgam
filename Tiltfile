@@ -70,7 +70,11 @@ docker_build_with_restart(
   only=['./bin'],
   live_update=[sync('graph/bin', '/app/bin')],
 )
-k8s_resource("graph", port_forwards=[port_forward(8082, 8080, "graphql playground")], labels=["app"])
+k8s_resource("graph",
+  port_forwards=[port_forward(8082, 8080, "graphql playground")],
+  links=[link("http://localhost:8082/query", "query")],
+  labels=["app"]
+)
 
 # https://grafana.com/go/webinar/getting-started-with-grafana-lgtm-stack/
 # TODO: figure out:
