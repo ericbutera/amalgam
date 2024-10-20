@@ -1,2 +1,4 @@
 .DS_Store
 **/bin/*
+__debug_bin*
+.vscode

@@ -34,4 +34,4 @@ spec:
             - containerPort: 8080
           env:
             - name: API_HOST
-              value: "api:8080"
+              value: "api:8080/v1"

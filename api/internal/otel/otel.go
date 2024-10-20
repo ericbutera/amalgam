@@ -7,6 +7,7 @@ package otel
 import (
 	"context"
 	"errors"
+	"os"
 	"time"
 
 	"go.opentelemetry.io/contrib/bridges/otelslog"
@@ -47,6 +48,11 @@ func Setup(ctx context.Context) (shutdown func(context.Context) error, err error
 		}
 		shutdownFuncs = nil
 		return err
+	}
+
+	if os.Getenv("OTEL_ENABLE") != "true" {
+		Logger.Info("OpenTelemetry is disabled")
+		return
 	}
 
 	// handleErr calls shutdown for cleanup and makes sure that all errors are returned.

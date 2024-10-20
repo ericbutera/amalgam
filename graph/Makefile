@@ -6,9 +6,9 @@ help: ## Help
 
 .PHONY: generate
 generate: ## Generate graph
-	go generate ./...
+	gqlgen generate
 
 .PHONY: build
 build: ## Build the binary
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o bin/app
+	CGO_ENABLED=0 GOOS=linux go build -o bin/app
 
