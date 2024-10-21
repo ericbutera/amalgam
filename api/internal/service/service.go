@@ -3,9 +3,9 @@ package service
 import (
 	"context"
 	"errors"
-	"strconv"
 
 	"github.com/ericbutera/amalgam/api/internal/models"
+	"github.com/ericbutera/amalgam/pkg/convert"
 	"gorm.io/gorm"
 )
 
@@ -55,19 +55,11 @@ func (s *Service) CreateFeed(ctx context.Context, feed *models.Feed) error {
 	})
 }
 
-func parseUint(s string) (uint, error) {
-	number, err := strconv.ParseUint(s, 10, 64)
-	if err != nil {
-		return 0, err
-	}
-	return uint(number), nil
-}
-
 func (s *Service) UpdateFeed(ctx context.Context, id string, feed *models.Feed) error {
 	// TODO: make this update user's feed (user_feed)
 	// TODO: deny changing of URL (create specific model for update fields)
 	// TODO: prevent changing created_at Incorrect datetime value: '0000-00-00' for column 'created_at'
-	uid, err := parseUint(id)
+	uid, err := convert.ParseUInt(id)
 	if err != nil {
 		return err
 	}

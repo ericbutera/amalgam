@@ -20,5 +20,4 @@ type Query {
 type Mutation {
   addFeed(url: String!, name: String!): Feed!
   updateFeed(id: ID!, url: String, name: String): Feed!
-  deleteFeed(id: ID!): Feed!
 }
