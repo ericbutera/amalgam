@@ -1,0 +1,34 @@
+name: All Workflows
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+# TODO: cache checkout (if possible)
+# TODO: cache go modules
+jobs:
+  lint:
+    uses: ./.github/workflows/lint.yaml
+    secrets: inherit
+
+  unit-test:
+    uses: ./.github/workflows/unit-test.yaml
+    secrets: inherit
+
+  # TODO: build binaries, build images, publish images
+  # build:
+  #   needs: [lint]
+  #   uses: ./.github/workflows/build.yaml
+  #   secrets: inherit
+
+  tilt-ci:
+    needs: [lint, unit-test]
+    uses: ./.github/workflows/tilt-ci.yaml
+    secrets: inherit
+
+  # TODO: PR env

@@ -1,13 +1,7 @@
 name: Run Tilt CI
 
 on:
-  # Trigger the workflow on push and pull requests
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+  workflow_call: # reusable
 
 jobs:
   tilt-ci:
@@ -27,7 +21,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: "1.23.2"
+          go-version: "1.23.2" # TODO: use variable
 
       - name: Install Helm
         run: |
@@ -48,5 +42,4 @@ jobs:
 
       - name: Run Tilt CI
         run: |
-          # tilt ci
           make ci
