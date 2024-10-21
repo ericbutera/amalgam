@@ -138,7 +138,7 @@ type FeedCreateResponse struct {
 // @Param request body UpdateFeedRequest true "feed data"
 // @Success 200 {object} FeedUpdateResponse
 // @Failure 500 {object} map[string]string
-// @Router /feeds/{id} [post]
+// @Router /feeds/{id} [put]
 func (h *handlers) feedUpdate(c *gin.Context) {
 	var req UpdateFeedRequest
 	if err := c.Bind(&req); err != nil {
