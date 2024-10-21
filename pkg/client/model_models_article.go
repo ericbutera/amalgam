@@ -27,6 +27,7 @@ type ModelsArticle struct {
 	CreatedAt *string `json:"createdAt,omitempty"`
 	DeletedAt *GormDeletedAt `json:"deletedAt,omitempty"`
 	Feed *ModelsFeed `json:"feed,omitempty"`
+	FeedId int32 `json:"feedId"`
 	Guid *string `json:"guid,omitempty"`
 	Id int32 `json:"id"`
 	ImageUrl *string `json:"imageUrl,omitempty"`
@@ -42,8 +43,9 @@ type _ModelsArticle ModelsArticle
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewModelsArticle(id int32, url string) *ModelsArticle {
+func NewModelsArticle(feedId int32, id int32, url string) *ModelsArticle {
 	this := ModelsArticle{}
+	this.FeedId = feedId
 	this.Id = id
 	this.Url = url
 	return &this
@@ -247,6 +249,30 @@ func (o *ModelsArticle) HasFeed() bool {
 // SetFeed gets a reference to the given ModelsFeed and assigns it to the Feed field.
 func (o *ModelsArticle) SetFeed(v ModelsFeed) {
 	o.Feed = &v
+}
+
+// GetFeedId returns the FeedId field value
+func (o *ModelsArticle) GetFeedId() int32 {
+	if o == nil {
+		var ret int32
+		return ret
+	}
+
+	return o.FeedId
+}
+
+// GetFeedIdOk returns a tuple with the FeedId field value
+// and a boolean to check if the value has been set.
+func (o *ModelsArticle) GetFeedIdOk() (*int32, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.FeedId, true
+}
+
+// SetFeedId sets field value
+func (o *ModelsArticle) SetFeedId(v int32) {
+	o.FeedId = v
 }
 
 // GetGuid returns the Guid field value if set, zero value otherwise.
@@ -485,6 +511,7 @@ func (o ModelsArticle) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Feed) {
 		toSerialize["feed"] = o.Feed
 	}
+	toSerialize["feedId"] = o.FeedId
 	if !IsNil(o.Guid) {
 		toSerialize["guid"] = o.Guid
 	}
@@ -510,6 +537,7 @@ func (o *ModelsArticle) UnmarshalJSON(data []byte) (err error) {
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
+		"feedId",
 		"id",
 		"url",
 	}

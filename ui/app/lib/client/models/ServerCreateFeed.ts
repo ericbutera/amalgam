@@ -24,6 +24,12 @@ export interface ServerCreateFeed {
      * @type {string}
      * @memberof ServerCreateFeed
      */
+    name?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ServerCreateFeed
+     */
     url: string;
 }
 
@@ -45,6 +51,7 @@ export function ServerCreateFeedFromJSONTyped(json: any, ignoreDiscriminator: bo
     }
     return {
         
+        'name': json['name'] == null ? undefined : json['name'],
         'url': json['url'],
     };
 }
@@ -60,6 +67,7 @@ export function ServerCreateFeedFromJSONTyped(json: any, ignoreDiscriminator: bo
 
     return {
         
+        'name': value['name'],
         'url': value['url'],
     };
 }

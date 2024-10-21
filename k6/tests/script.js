@@ -20,7 +20,7 @@ const BASE_URL = "http://api:8080/v1";
 const SLEEP_DURATION = 0.1;
 // Global variables should be initialized.
 
-export default function() {
+export default function () {
     group("/feeds/{id}", () => {
         let id = '1'; // specify value as there is no example value for this parameter in OpenAPI spec
 
@@ -40,7 +40,7 @@ export default function() {
         // TODO: this test fails because rest api isn't handling updates correctly (currently trying to set created_at=null)
         {
             let url = BASE_URL + `/feeds/${id}`;
-            let body = {"feed": {"url": "https://example.com/k6"}};
+            let body = { "feed": { "url": "https://example.com/k6" } };
             let params = {
                 headers: {
                     "Content-Type": "application/json", "Accept": "application/json"
@@ -71,7 +71,7 @@ export default function() {
         // Request No. 2:
         {
             let url = BASE_URL + `/feeds`;
-            let body = {"feed": {"url": "https://example.com/k6"}};
+            let body = { "feed": { "url": "https://example.com/k6" } };
             let params = {
                 headers: {
                     "Content-Type": "application/json", "Accept": "application/json"

@@ -120,7 +120,8 @@ func (h *handlers) feedCreate(c *gin.Context) {
 
 // TODO: separate api from db
 type CreateFeed struct {
-	Url string `json:"url" binding:"required,url" example:"https://example.com/feed.xml"`
+	Name string `json:"name" binding:"omitempty" example:"My Feed"`
+	Url  string `json:"url" binding:"required,url" example:"https://example.com/feed.xml"`
 }
 type CreateFeedRequest struct {
 	Feed CreateFeed `json:"feed"`
@@ -159,7 +160,8 @@ func (h *handlers) feedUpdate(c *gin.Context) {
 
 // TODO: separate api from db
 type UpdateFeed struct {
-	Url string `json:"url" binding:"required,url" example:"https://example.com/feed.xml"`
+	Name string `json:"name" binding:"omitempty" example:"My Feed"`
+	Url  string `json:"url" binding:"required,url" example:"https://example.com/feed.xml"`
 }
 
 type UpdateFeedRequest struct {

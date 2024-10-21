@@ -72,6 +72,12 @@ export interface ModelsArticle {
     feed?: ModelsFeed;
     /**
      * 
+     * @type {number}
+     * @memberof ModelsArticle
+     */
+    feedId: number;
+    /**
+     * 
      * @type {string}
      * @memberof ModelsArticle
      */
@@ -118,6 +124,7 @@ export interface ModelsArticle {
  * Check if a given object implements the ModelsArticle interface.
  */
 export function instanceOfModelsArticle(value: object): value is ModelsArticle {
+    if (!('feedId' in value) || value['feedId'] === undefined) return false;
     if (!('id' in value) || value['id'] === undefined) return false;
     if (!('url' in value) || value['url'] === undefined) return false;
     return true;
@@ -139,6 +146,7 @@ export function ModelsArticleFromJSONTyped(json: any, ignoreDiscriminator: boole
         'createdAt': json['createdAt'] == null ? undefined : json['createdAt'],
         'deletedAt': json['deletedAt'] == null ? undefined : GormDeletedAtFromJSON(json['deletedAt']),
         'feed': json['feed'] == null ? undefined : ModelsFeedFromJSON(json['feed']),
+        'feedId': json['feedId'],
         'guid': json['guid'] == null ? undefined : json['guid'],
         'id': json['id'],
         'imageUrl': json['imageUrl'] == null ? undefined : json['imageUrl'],
@@ -166,6 +174,7 @@ export function ModelsArticleFromJSONTyped(json: any, ignoreDiscriminator: boole
         'createdAt': value['createdAt'],
         'deletedAt': GormDeletedAtToJSON(value['deletedAt']),
         'feed': ModelsFeedToJSON(value['feed']),
+        'feedId': value['feedId'],
         'guid': value['guid'],
         'id': value['id'],
         'imageUrl': value['imageUrl'],

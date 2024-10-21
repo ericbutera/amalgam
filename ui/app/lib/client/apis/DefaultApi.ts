@@ -58,7 +58,7 @@ export interface FeedsIdGetRequest {
     id: number;
 }
 
-export interface FeedsIdPostRequest {
+export interface FeedsIdPutRequest {
     id: number;
     request: ServerUpdateFeedRequest;
 }
@@ -209,18 +209,18 @@ export class DefaultApi extends runtime.BaseAPI {
      * update feed
      * update feed
      */
-    async feedsIdPostRaw(requestParameters: FeedsIdPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ServerFeedUpdateResponse>> {
+    async feedsIdPutRaw(requestParameters: FeedsIdPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ServerFeedUpdateResponse>> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
-                'Required parameter "id" was null or undefined when calling feedsIdPost().'
+                'Required parameter "id" was null or undefined when calling feedsIdPut().'
             );
         }
 
         if (requestParameters['request'] == null) {
             throw new runtime.RequiredError(
                 'request',
-                'Required parameter "request" was null or undefined when calling feedsIdPost().'
+                'Required parameter "request" was null or undefined when calling feedsIdPut().'
             );
         }
 
@@ -232,7 +232,7 @@ export class DefaultApi extends runtime.BaseAPI {
 
         const response = await this.request({
             path: `/feeds/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id']))),
-            method: 'POST',
+            method: 'PUT',
             headers: headerParameters,
             query: queryParameters,
             body: ServerUpdateFeedRequestToJSON(requestParameters['request']),
@@ -245,8 +245,8 @@ export class DefaultApi extends runtime.BaseAPI {
      * update feed
      * update feed
      */
-    async feedsIdPost(requestParameters: FeedsIdPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ServerFeedUpdateResponse> {
-        const response = await this.feedsIdPostRaw(requestParameters, initOverrides);
+    async feedsIdPut(requestParameters: FeedsIdPutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ServerFeedUpdateResponse> {
+        const response = await this.feedsIdPutRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

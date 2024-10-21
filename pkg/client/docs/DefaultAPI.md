@@ -8,7 +8,7 @@ Method | HTTP request | Description
 [**FeedsGet**](DefaultAPI.md#FeedsGet) | **Get** /feeds | list feeds
 [**FeedsIdArticlesGet**](DefaultAPI.md#FeedsIdArticlesGet) | **Get** /feeds/{id}/articles | list articles for a feed
 [**FeedsIdGet**](DefaultAPI.md#FeedsIdGet) | **Get** /feeds/{id} | view feed
-[**FeedsIdPost**](DefaultAPI.md#FeedsIdPost) | **Post** /feeds/{id} | update feed
+[**FeedsIdPut**](DefaultAPI.md#FeedsIdPut) | **Put** /feeds/{id} | update feed
 [**FeedsPost**](DefaultAPI.md#FeedsPost) | **Post** /feeds | create feed
 
 
@@ -284,9 +284,9 @@ No authorization required
 [[Back to README]](../README.md)
 
 
-## FeedsIdPost
+## FeedsIdPut
 
-> ServerFeedUpdateResponse FeedsIdPost(ctx, id).Request(request).Execute()
+> ServerFeedUpdateResponse FeedsIdPut(ctx, id).Request(request).Execute()
 
 update feed
 
@@ -310,13 +310,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.DefaultAPI.FeedsIdPost(context.Background(), id).Request(request).Execute()
+	resp, r, err := apiClient.DefaultAPI.FeedsIdPut(context.Background(), id).Request(request).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `DefaultAPI.FeedsIdPost``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `DefaultAPI.FeedsIdPut``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `FeedsIdPost`: ServerFeedUpdateResponse
-	fmt.Fprintf(os.Stdout, "Response from `DefaultAPI.FeedsIdPost`: %v\n", resp)
+	// response from `FeedsIdPut`: ServerFeedUpdateResponse
+	fmt.Fprintf(os.Stdout, "Response from `DefaultAPI.FeedsIdPut`: %v\n", resp)
 }
 ```
 
@@ -330,7 +330,7 @@ Name | Type | Description  | Notes
 
 ### Other Parameters
 
-Other parameters are passed through a pointer to a apiFeedsIdPostRequest struct via the builder pattern
+Other parameters are passed through a pointer to a apiFeedsIdPutRequest struct via the builder pattern
 
 
 Name | Type | Description  | Notes

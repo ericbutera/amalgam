@@ -10,6 +10,7 @@ Name | Type | Description | Notes
 **CreatedAt** | Pointer to **string** |  | [optional] 
 **DeletedAt** | Pointer to [**GormDeletedAt**](GormDeletedAt.md) |  | [optional] 
 **Feed** | Pointer to [**ModelsFeed**](ModelsFeed.md) |  | [optional] 
+**FeedId** | **int32** |  | 
 **Guid** | Pointer to **string** |  | [optional] 
 **Id** | **int32** |  | 
 **ImageUrl** | Pointer to **string** |  | [optional] 
@@ -22,7 +23,7 @@ Name | Type | Description | Notes
 
 ### NewModelsArticle
 
-`func NewModelsArticle(id int32, url string, ) *ModelsArticle`
+`func NewModelsArticle(feedId int32, id int32, url string, ) *ModelsArticle`
 
 NewModelsArticle instantiates a new ModelsArticle object
 This constructor will assign default values to properties that have it defined,
@@ -186,6 +187,26 @@ SetFeed sets Feed field to given value.
 `func (o *ModelsArticle) HasFeed() bool`
 
 HasFeed returns a boolean if a field has been set.
+
+### GetFeedId
+
+`func (o *ModelsArticle) GetFeedId() int32`
+
+GetFeedId returns the FeedId field if non-nil, zero value otherwise.
+
+### GetFeedIdOk
+
+`func (o *ModelsArticle) GetFeedIdOk() (*int32, bool)`
+
+GetFeedIdOk returns a tuple with the FeedId field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetFeedId
+
+`func (o *ModelsArticle) SetFeedId(v int32)`
+
+SetFeedId sets FeedId field to given value.
+
 
 ### GetGuid
 

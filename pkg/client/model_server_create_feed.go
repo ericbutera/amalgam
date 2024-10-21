@@ -21,6 +21,7 @@ var _ MappedNullable = &ServerCreateFeed{}
 
 // ServerCreateFeed struct for ServerCreateFeed
 type ServerCreateFeed struct {
+	Name *string `json:"name,omitempty"`
 	Url string `json:"url"`
 }
 
@@ -42,6 +43,38 @@ func NewServerCreateFeed(url string) *ServerCreateFeed {
 func NewServerCreateFeedWithDefaults() *ServerCreateFeed {
 	this := ServerCreateFeed{}
 	return &this
+}
+
+// GetName returns the Name field value if set, zero value otherwise.
+func (o *ServerCreateFeed) GetName() string {
+	if o == nil || IsNil(o.Name) {
+		var ret string
+		return ret
+	}
+	return *o.Name
+}
+
+// GetNameOk returns a tuple with the Name field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ServerCreateFeed) GetNameOk() (*string, bool) {
+	if o == nil || IsNil(o.Name) {
+		return nil, false
+	}
+	return o.Name, true
+}
+
+// HasName returns a boolean if a field has been set.
+func (o *ServerCreateFeed) HasName() bool {
+	if o != nil && !IsNil(o.Name) {
+		return true
+	}
+
+	return false
+}
+
+// SetName gets a reference to the given string and assigns it to the Name field.
+func (o *ServerCreateFeed) SetName(v string) {
+	o.Name = &v
 }
 
 // GetUrl returns the Url field value
@@ -78,6 +111,9 @@ func (o ServerCreateFeed) MarshalJSON() ([]byte, error) {
 
 func (o ServerCreateFeed) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
+	if !IsNil(o.Name) {
+		toSerialize["name"] = o.Name
+	}
 	toSerialize["url"] = o.Url
 	return toSerialize, nil
 }

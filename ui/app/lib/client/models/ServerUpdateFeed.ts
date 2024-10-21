@@ -24,6 +24,12 @@ export interface ServerUpdateFeed {
      * @type {string}
      * @memberof ServerUpdateFeed
      */
+    name?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ServerUpdateFeed
+     */
     url: string;
 }
 
@@ -45,6 +51,7 @@ export function ServerUpdateFeedFromJSONTyped(json: any, ignoreDiscriminator: bo
     }
     return {
         
+        'name': json['name'] == null ? undefined : json['name'],
         'url': json['url'],
     };
 }
@@ -60,6 +67,7 @@ export function ServerUpdateFeedFromJSONTyped(json: any, ignoreDiscriminator: bo
 
     return {
         
+        'name': value['name'],
         'url': value['url'],
     };
 }

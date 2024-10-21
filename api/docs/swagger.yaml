@@ -85,6 +85,9 @@ definitions:
     type: object
   server.CreateFeed:
     properties:
+      name:
+        example: My Feed
+        type: string
       url:
         example: https://example.com/feed.xml
         type: string
@@ -135,6 +138,9 @@ definitions:
     type: object
   server.UpdateFeed:
     properties:
+      name:
+        example: My Feed
+        type: string
       url:
         example: https://example.com/feed.xml
         type: string
@@ -245,7 +251,7 @@ paths:
           schema:
             $ref: '#/definitions/server.ErrorResponse'
       summary: view feed
-    post:
+    put:
       consumes:
       - application/json
       description: update feed

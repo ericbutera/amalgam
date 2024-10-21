@@ -474,7 +474,7 @@ func (a *DefaultAPIService) FeedsIdGetExecute(r ApiFeedsIdGetRequest) (*ServerFe
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiFeedsIdPostRequest struct {
+type ApiFeedsIdPutRequest struct {
 	ctx context.Context
 	ApiService *DefaultAPIService
 	id int32
@@ -482,26 +482,26 @@ type ApiFeedsIdPostRequest struct {
 }
 
 // feed data
-func (r ApiFeedsIdPostRequest) Request(request ServerUpdateFeedRequest) ApiFeedsIdPostRequest {
+func (r ApiFeedsIdPutRequest) Request(request ServerUpdateFeedRequest) ApiFeedsIdPutRequest {
 	r.request = &request
 	return r
 }
 
-func (r ApiFeedsIdPostRequest) Execute() (*ServerFeedUpdateResponse, *http.Response, error) {
-	return r.ApiService.FeedsIdPostExecute(r)
+func (r ApiFeedsIdPutRequest) Execute() (*ServerFeedUpdateResponse, *http.Response, error) {
+	return r.ApiService.FeedsIdPutExecute(r)
 }
 
 /*
-FeedsIdPost update feed
+FeedsIdPut update feed
 
 update feed
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param id Feed ID
- @return ApiFeedsIdPostRequest
+ @return ApiFeedsIdPutRequest
 */
-func (a *DefaultAPIService) FeedsIdPost(ctx context.Context, id int32) ApiFeedsIdPostRequest {
-	return ApiFeedsIdPostRequest{
+func (a *DefaultAPIService) FeedsIdPut(ctx context.Context, id int32) ApiFeedsIdPutRequest {
+	return ApiFeedsIdPutRequest{
 		ApiService: a,
 		ctx: ctx,
 		id: id,
@@ -510,15 +510,15 @@ func (a *DefaultAPIService) FeedsIdPost(ctx context.Context, id int32) ApiFeedsI
 
 // Execute executes the request
 //  @return ServerFeedUpdateResponse
-func (a *DefaultAPIService) FeedsIdPostExecute(r ApiFeedsIdPostRequest) (*ServerFeedUpdateResponse, *http.Response, error) {
+func (a *DefaultAPIService) FeedsIdPutExecute(r ApiFeedsIdPutRequest) (*ServerFeedUpdateResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
+		localVarHTTPMethod   = http.MethodPut
 		localVarPostBody     interface{}
 		formFiles            []formFile
 		localVarReturnValue  *ServerFeedUpdateResponse
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DefaultAPIService.FeedsIdPost")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DefaultAPIService.FeedsIdPut")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}

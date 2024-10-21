@@ -155,7 +155,7 @@ const docTemplate = `{
                     }
                 }
             },
-            "post": {
+            "put": {
                 "description": "update feed",
                 "consumes": [
                     "application/json"
@@ -363,6 +363,10 @@ const docTemplate = `{
                 "url"
             ],
             "properties": {
+                "name": {
+                    "type": "string",
+                    "example": "My Feed"
+                },
                 "url": {
                     "type": "string",
                     "example": "https://example.com/feed.xml"
@@ -443,6 +447,10 @@ const docTemplate = `{
                 "url"
             ],
             "properties": {
+                "name": {
+                    "type": "string",
+                    "example": "My Feed"
+                },
                 "url": {
                     "type": "string",
                     "example": "https://example.com/feed.xml"

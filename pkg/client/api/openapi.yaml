@@ -102,7 +102,7 @@ paths:
                 $ref: '#/components/schemas/server.ErrorResponse'
           description: Internal Server Error
       summary: view feed
-    post:
+    put:
       description: update feed
       parameters:
       - description: Feed ID
@@ -194,6 +194,7 @@ components:
         deletedAt:
           valid: true
           time: time
+        feedId: 1
         authorName: Eric Butera
         imageUrl: https://example.com/image.jpg
         guid: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
@@ -216,6 +217,9 @@ components:
           $ref: '#/components/schemas/gorm.DeletedAt'
         feed:
           $ref: '#/components/schemas/models.Feed'
+        feedId:
+          example: 1
+          type: integer
         guid:
           example: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
           type: string
@@ -238,6 +242,7 @@ components:
           example: https://example.com/
           type: string
       required:
+      - feedId
       - id
       - url
       type: object
@@ -294,6 +299,7 @@ components:
           deletedAt:
             valid: true
             time: time
+          feedId: 1
           authorName: Eric Butera
           imageUrl: https://example.com/image.jpg
           guid: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
@@ -305,6 +311,9 @@ components:
       type: object
     server.CreateFeed:
       properties:
+        name:
+          example: My Feed
+          type: string
         url:
           example: https://example.com/feed.xml
           type: string
@@ -345,6 +354,7 @@ components:
           deletedAt:
             valid: true
             time: time
+          feedId: 1
           authorName: Eric Butera
           imageUrl: https://example.com/image.jpg
           guid: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
@@ -368,6 +378,7 @@ components:
           deletedAt:
             valid: true
             time: time
+          feedId: 1
           authorName: Eric Butera
           imageUrl: https://example.com/image.jpg
           guid: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
@@ -446,6 +457,9 @@ components:
       type: object
     server.UpdateFeed:
       properties:
+        name:
+          example: My Feed
+          type: string
         url:
           example: https://example.com/feed.xml
           type: string

@@ -82,7 +82,7 @@ Class | Method | HTTP request | Description
 *DefaultAPI* | [**FeedsGet**](docs/DefaultAPI.md#feedsget) | **Get** /feeds | list feeds
 *DefaultAPI* | [**FeedsIdArticlesGet**](docs/DefaultAPI.md#feedsidarticlesget) | **Get** /feeds/{id}/articles | list articles for a feed
 *DefaultAPI* | [**FeedsIdGet**](docs/DefaultAPI.md#feedsidget) | **Get** /feeds/{id} | view feed
-*DefaultAPI* | [**FeedsIdPost**](docs/DefaultAPI.md#feedsidpost) | **Post** /feeds/{id} | update feed
+*DefaultAPI* | [**FeedsIdPut**](docs/DefaultAPI.md#feedsidput) | **Put** /feeds/{id} | update feed
 *DefaultAPI* | [**FeedsPost**](docs/DefaultAPI.md#feedspost) | **Post** /feeds | create feed
 
 

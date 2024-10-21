@@ -6,7 +6,6 @@ package graph
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	"github.com/ericbutera/amalgam/graph/graph/model"
@@ -37,30 +36,26 @@ func (r *mutationResolver) AddFeed(ctx context.Context, url string, name string)
 
 // Update a feed by sending a PUT request
 func (r *mutationResolver) UpdateFeed(ctx context.Context, id string, url *string, name *string) (*model.Feed, error) {
-	/*
-		uid, err := convert.ParseUInt(id)
-		if err != nil {
-			return nil, err
-		}
-		req := api.ServerUpdateFeedRequest{
-			Feed: &api.ServerUpdateFeed{
-				ID:  int32(uid),
-				Url: url,
-				// TODO: support name `Name: &name,`
-			},
-		}
-		resp, _, err := r.apiClient.DefaultAPI.FeedsIdPut(ctx, uid).Request(req).Execute()
-		if err != nil {
-			return nil, err
-		}
-		feed := model.Feed{
-			ID:   fmt.Sprintf("%d", resp.Feed.Id),
-			URL:  resp.Feed.Url,
-			Name: lo.FromPtr(resp.Feed.Name),
-		}
-		return &feed, nil
-	*/
-	return nil, errors.New("feed update not implemented")
+	uid, err := convert.ParseUInt(id)
+	if err != nil {
+		return nil, err
+	}
+	req := api.ServerUpdateFeedRequest{
+		Feed: &api.ServerUpdateFeed{
+			Url: lo.FromPtr(url),
+			// TODO: support name `Name: &name,`
+		},
+	}
+	resp, _, err := r.apiClient.DefaultAPI.FeedsIdPut(ctx, int32(uid)).Request(req).Execute()
+	if err != nil {
+		return nil, err
+	}
+	feed := model.Feed{
+		ID:   fmt.Sprintf("%d", resp.Feed.Id),
+		URL:  resp.Feed.Url,
+		Name: lo.FromPtr(resp.Feed.Name),
+	}
+	return &feed, nil
 }
 
 // Fetch feeds from the REST API
