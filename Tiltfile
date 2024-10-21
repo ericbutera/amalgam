@@ -77,6 +77,7 @@ k8s_resource("graph",
 )
 
 # https://grafana.com/go/webinar/getting-started-with-grafana-lgtm-stack/
+# TODO: exclude during CI
 # TODO: figure out:
 # - loki log exporter
 # - metric exporter isn't working

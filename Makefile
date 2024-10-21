@@ -5,14 +5,18 @@ help: ## Help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 act: ## Run act
-	act --pull=false -P ubuntu-latest=catthehacker/ubuntu:act-latest -W .github/workflows/all.yaml
+	act \
+		--container-architecture linux/amd64 \
+		--pull=false \
+		-P ubuntu-latest=catthehacker/ubuntu:act-latest \
+		-W .github/workflows/all.yaml
 
 test: install-tools ## Run tests
 	@echo Running tests
 	go test -v ./... -short
 
 lint: install-tools ## Run linter
-	@echo Running linter
+	@echo Running linters
 	go vet ./... && \
 	golangci-lint run && \
 	staticcheck ./...
