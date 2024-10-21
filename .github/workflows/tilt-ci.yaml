@@ -28,11 +28,8 @@ jobs:
           curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
       - name: Install Tilt
-        env:
-          VERSION: 0.33.20
-          ARCH: amd64
         run: |
-          curl -fsSL https://github.com/tilt-dev/tilt/releases/download/v0.33.20/tilt.0.33.20.linux.x86_64.tar.gz | tar -xzv -C /usr/local/bin
+          curl -fsSL https://raw.githubusercontent.com/tilt-dev/tilt/master/scripts/install.sh | bash
 
       - name: Install kubectl
         run: |

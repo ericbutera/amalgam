@@ -19,24 +19,10 @@ docker_build_with_restart(
   'api-image',
   './api',
   entrypoint=['/app/bin/app','server'],
-  dockerfile='tilt/bin.Dockerfile',
+  dockerfile='./containers/tilt.go.Dockerfile',
   only=['./bin'],
   live_update=[sync('api/bin', '/app/bin')],
 )
-# here is a way to build the api-image without using the local_resource:
-# default_build_args = {
-#     "GO111MODULE": "on",
-#     "CGO_ENABLED": "0",
-#     "GOOS": "linux",
-#     "GOARCH": "amd64",
-# }
-# docker_build(
-#     "api-image",
-#     ".",
-#     dockerfile="tilt/go.Dockerfile",
-#     entrypoint=["/app/app", "server"],
-#     build_args=dict(default_build_args, **{"APP_PATH": "api"}),
-# )
 k8s_resource(
     "api",
     port_forwards=[port_forward(8080, 8080)],
@@ -68,7 +54,7 @@ docker_build_with_restart(
   'graph-image',
   './graph',
   entrypoint=['/app/bin/app','server'],
-  dockerfile='tilt/bin.Dockerfile',
+  dockerfile='./containers/tilt.go.Dockerfile',
   only=['./bin'],
   live_update=[sync('graph/bin', '/app/bin')],
 )
