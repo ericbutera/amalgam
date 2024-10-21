@@ -12,23 +12,22 @@ on:
 # TODO: cache checkout (if possible)
 # TODO: cache go modules
 jobs:
+  # TODO: break into lint-go, lint-typescript
   lint:
     uses: ./.github/workflows/lint.yaml
     secrets: inherit
 
+  # TODO: break into unit-test-go, unit-test-typescript
   unit-test:
     uses: ./.github/workflows/unit-test.yaml
     secrets: inherit
-
-  # TODO: build binaries, build images, publish images
-  # build:
-  #   needs: [lint]
-  #   uses: ./.github/workflows/build.yaml
-  #   secrets: inherit
 
   tilt-ci:
     needs: [lint, unit-test]
     uses: ./.github/workflows/tilt-ci.yaml
     secrets: inherit
 
-  # TODO: PR env
+  # TODO: PR environment
+  # TODO: build images
+  # TODO: push images
+  # TODO: seperate deploy workflow

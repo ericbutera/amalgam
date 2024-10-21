@@ -5,6 +5,8 @@ load('ext://restart_process', 'docker_build_with_restart')
 
 k8s_yaml(helm('./helm'))
 
+is_ci = config.tilt_subcommand == 'ci'
+
 local_resource(
   'api-compile',
   'make build',
@@ -91,6 +93,8 @@ k8s_resource(
         "4318:4318",
     ],
     labels=["services"],
+    auto_init=not is_ci,
+    trigger_mode=TRIGGER_MODE_MANUAL,
 )
 
 # https://k6.io/
@@ -113,8 +117,6 @@ k8s_resource(
     ],
     labels=["services"],
 )
-
-
 
 # For more on the `test_go` extension: https://github.com/tilt-dev/tilt-extensions/tree/master/tests/golang
 # For more on tests in Tilt: https://docs.tilt.dev/tests_in_tilt.html
