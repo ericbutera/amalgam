@@ -13,6 +13,7 @@ import (
 	"github.com/ericbutera/amalgam/api/internal/config"
 	"github.com/ericbutera/amalgam/api/internal/otel"
 	"github.com/ericbutera/amalgam/api/internal/server"
+	cfg "github.com/ericbutera/amalgam/pkg/config"
 )
 
 func NewServerCmd() *cobra.Command {
@@ -45,7 +46,7 @@ func runServer(cmd *cobra.Command, args []string) {
 		err = errors.Join(err, shutdown(context.Background()))
 	}()
 
-	cfg, err := config.NewConfigFromEnv()
+	cfg, err := cfg.NewFromEnv[config.Config]()
 	if err != nil {
 		quit(ctx, err)
 	}
