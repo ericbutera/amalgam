@@ -10,15 +10,17 @@ import (
 	"runtime/debug"
 	"syscall"
 
+	"github.com/ericbutera/amalgam/internal/db"
+	"github.com/ericbutera/amalgam/internal/service"
 	pb "github.com/ericbutera/amalgam/pkg/rpc/proto"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/recovery"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"gorm.io/gorm"
 
 	grpcprom "github.com/grpc-ecosystem/go-grpc-middleware/providers/prometheus"
-	"github.com/pkg/errors"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"go.opentelemetry.io/otel/trace"
 
@@ -36,6 +38,7 @@ type Server struct {
 	listener      net.Listener
 	panicsTotal   prometheus.Counter
 	metricSrv     *http.Server
+	service       *service.Service
 	pb.UnimplementedFeedServiceServer
 }
 
@@ -86,6 +89,18 @@ func WithListener(lis net.Listener) Option {
 		return nil
 	}
 }
+func WithDb(db *gorm.DB) Option {
+	return func(s *Server) error {
+		s.service = service.New(db)
+		return nil
+	}
+}
+func WithService(service *service.Service) Option {
+	return func(s *Server) error {
+		s.service = service
+		return nil
+	}
+}
 
 func New(opts ...Option) (*Server, error) {
 	server := Server{}
@@ -94,19 +109,17 @@ func New(opts ...Option) (*Server, error) {
 	srvMetrics := newServerMetrics()
 	registry.MustRegister(srvMetrics)
 	server.newPromMetrics(registry)
-
 	logger, logOpts := newServerLogger()
 
 	server.srv = grpc.NewServer(
+		grpc.StatsHandler(otelgrpc.NewServerHandler()),
 		grpc.ChainUnaryInterceptor(
 			// Order matters e.g. tracing interceptor have to create span first for the later exemplars to work.
-			otelgrpc.UnaryServerInterceptor(),
 			srvMetrics.UnaryServerInterceptor(grpcprom.WithExemplarFromContext(exemplarFromContext)),
 			logging.UnaryServerInterceptor(logger, logOpts...),
 			recovery.UnaryServerInterceptor(recovery.WithRecoveryHandler(server.grpcPanicRecoveryHandler)),
 		),
 		grpc.ChainStreamInterceptor(
-			otelgrpc.StreamServerInterceptor(),
 			srvMetrics.StreamServerInterceptor(grpcprom.WithExemplarFromContext(exemplarFromContext)),
 			logging.StreamServerInterceptor(logger, logOpts...),
 			recovery.StreamServerInterceptor(recovery.WithRecoveryHandler(server.grpcPanicRecoveryHandler)),
@@ -125,9 +138,16 @@ func New(opts ...Option) (*Server, error) {
 	if server.listener == nil {
 		listener, err := net.Listen("tcp", fmt.Sprintf(":%s", server.port))
 		if err != nil {
-			return nil, errors.Errorf("failed to listen: %v", err)
+			return nil, err
 		}
 		server.listener = listener
+	}
+	if server.service == nil {
+		db, err := db.NewFromEnv()
+		if err != nil {
+			return nil, err
+		}
+		server.service = service.New(db)
 	}
 
 	server.metricSrv = newMetricsServer(registry, server.metricAddress)

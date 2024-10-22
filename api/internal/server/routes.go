@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/ericbutera/amalgam/api/internal"
-	"github.com/ericbutera/amalgam/api/internal/models"
-	"github.com/ericbutera/amalgam/api/internal/service"
+	"github.com/ericbutera/amalgam/internal/db/models"
+	"github.com/ericbutera/amalgam/internal/service"
 	"github.com/gin-gonic/gin"
 
 	_ "github.com/ericbutera/amalgam/api/docs"
@@ -54,7 +54,7 @@ type handlers struct {
 	svc *service.Service
 }
 
-func newHandlers(svc *service.Service /*db *gorm.DB*/) *handlers {
+func newHandlers(svc *service.Service) *handlers {
 	return &handlers{
 		svc: svc,
 	}

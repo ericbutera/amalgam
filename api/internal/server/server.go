@@ -4,8 +4,7 @@ import (
 	"errors"
 
 	"github.com/ericbutera/amalgam/api/internal/config"
-	"github.com/ericbutera/amalgam/api/internal/db"
-	"github.com/ericbutera/amalgam/api/internal/service"
+	"github.com/ericbutera/amalgam/internal/service"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
@@ -53,23 +52,8 @@ func WithConfig(cfg *config.Config) func(*server) error {
 	}
 }
 
-func WithSqlite(name string) func(*server) error {
+func WithDb(db *gorm.DB) func(*server) error {
 	return func(s *server) error {
-		db, err := db.Sqlite(name)
-		if err != nil {
-			return err
-		}
-		s.db = db
-		return nil
-	}
-}
-
-func WithMysql(dsn string) func(*server) error {
-	return func(s *server) error {
-		db, err := db.Mysql(dsn)
-		if err != nil {
-			return err
-		}
 		s.db = db
 		return nil
 	}

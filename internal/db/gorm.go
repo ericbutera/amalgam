@@ -3,7 +3,8 @@ package db
 import (
 	"log/slog"
 
-	"github.com/ericbutera/amalgam/api/internal/models"
+	"github.com/ericbutera/amalgam/internal/db/models"
+	"github.com/go-errors/errors"
 	slogGorm "github.com/orandin/slog-gorm"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/sqlite"
@@ -24,8 +25,10 @@ func newConfig() *gorm.Config {
 	}
 }
 
-// Note: mysql has a migrator job
-func Mysql(dsn string) (*gorm.DB, error) {
+func NewMysql(dsn string) (*gorm.DB, error) {
+	if dsn == "" {
+		return nil, errors.New("mysql: dsn not set")
+	}
 	db, err := gorm.Open(mysql.Open(dsn), newConfig())
 	if err != nil {
 		return nil, err
@@ -38,9 +41,9 @@ func Mysql(dsn string) (*gorm.DB, error) {
 
 // Create a new sqlite database connection
 // Runs migrations (sqlite is for local dev only)
-func Sqlite(name string) (*gorm.DB, error) {
+func NewSqlite(name string) (*gorm.DB, error) {
 	if name == "" {
-		name = "test.db"
+		return nil, errors.New("sqlite: name not set")
 	}
 	db, err := gorm.Open(sqlite.Open(name), newConfig())
 	if err != nil {
