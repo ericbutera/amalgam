@@ -9,8 +9,6 @@ import (
 	"github.com/ericbutera/amalgam/rpc/internal/server"
 )
 
-const Port = "50055" // TODO: env
-
 func main() {
 	cfg, err := cfg.NewFromEnv[config.Config]()
 	if err != nil {
@@ -20,6 +18,7 @@ func main() {
 
 	srv, err := server.New(
 		server.WithPort(cfg.Port),
+		server.WithMetricAddress(cfg.MetricAddress),
 	)
 	if err != nil {
 		slog.Error("rpc error: ", "error", err)
