@@ -14,18 +14,7 @@ type Config struct {
 	// log level
 }
 
-func NewConfigFromEnv() (*Config, error) {
-	viper.AutomaticEnv()
-	setDefaults()
-
-	var c Config
-	if err := viper.Unmarshal(&c); err != nil {
-		return nil, err
-	}
-	return &c, nil
-}
-
-func setDefaults() {
+func init() {
 	viper.SetDefault("cors_allow_origins", []string{})
 	viper.SetDefault("cors_allow_methods", []string{})
 	viper.SetDefault("cors_allow_headers", []string{})

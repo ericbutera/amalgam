@@ -12,18 +12,7 @@ type Config struct {
 	ApiBaseUrl string `mapstructure:"api_base_url"`
 }
 
-func NewConfigFromEnv() (*Config, error) {
-	viper.AutomaticEnv()
-	setDefaults()
-
-	var c Config
-	if err := viper.Unmarshal(&c); err != nil {
-		return nil, err
-	}
-	return &c, nil
-}
-
-func setDefaults() {
+func init() {
 	viper.SetDefault("port", "8080")
 	viper.SetDefault("api_host", "api:8080")
 	viper.SetDefault("api_scheme", "https")
