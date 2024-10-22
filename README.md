@@ -64,8 +64,10 @@ One of the major goals of this project is to show how to quickly build integrati
   - service account
   - ingress
   - deployment + service
+- [just](https://github.com/casey/just)
 - graphql
 - data pipeline demos
 - fake feed data generation
 - move api/docs to static file server
   - research: <https://github.com/scalar/scalar>
+- [ci gate: coverage](https://github.com/vladopajic/go-test-coverage)
