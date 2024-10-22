@@ -2,10 +2,12 @@
 
 .PHONY: build
 build: ## Build the binary
+	# TODO: remove GOARCH
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o bin/app
 
 .PHONY: docs
 docs:
+	# TODO: remove
 	@echo Deprecated: use "cd .. && make generate-openapi" instead
 	@exit 1
 
@@ -15,10 +17,12 @@ help: ## Help
 
 .PHONY: image-build
 image-build: ## Build docker image
+	# TODO: remove
 	docker build -t ${IMAGE_REPO}/${IMAGE_NAME}:${IMAGE_TAG} .
 
 .PHONY: image-push
  image-push: ## Push docker image
+	# TODO: remove
 	docker push ${IMAGE_REPO}/${IMAGE_NAME}:${IMAGE_TAG}
 
 .PHONY: run
@@ -27,4 +31,4 @@ run: ## Run app
 
 .PHONY: test
 test: ## Run tests
-	go test ./...
+	go test -timeout 30s ./...

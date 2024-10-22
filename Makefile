@@ -5,21 +5,20 @@ help: ## Help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 act: ## Run act
-	act \
-		--container-architecture linux/amd64 \
-		--pull=false \
-		-P ubuntu-latest=catthehacker/ubuntu:act-latest \
-		-W .github/workflows/all.yaml
+	act
 
 test: install-tools ## Run tests
 	@echo Running tests
-	go test -v ./... -short
+	go test -v -timeout 30s ./... -short
+	# TODO: typescript (ui)
 
 lint: install-tools ## Run linter
 	@echo Running linters
 	go vet ./... && \
 	golangci-lint run && \
 	staticcheck ./...
+	# TODO: proto lint
+	# TODO: typescript lint (ui)
 
 ci: install-tools test lint ## Run CI pipeline
 	ctlptl create cluster kind --registry=ctlptl-registry \
@@ -73,6 +72,10 @@ generate-typescript-api-client: ## Generate Typescript API client
 		-i "/local/swagger.yaml" \
 		-g typescript-fetch \
 		-o "/out/"
+
+generate-proto: ## Generate protobuf
+	@echo Generating protobuf
+	buf generate
 
 download:
 	@echo Download go.mod dependencies
