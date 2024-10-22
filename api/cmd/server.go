@@ -11,9 +11,9 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/ericbutera/amalgam/api/internal/config"
-	"github.com/ericbutera/amalgam/api/internal/otel"
 	"github.com/ericbutera/amalgam/api/internal/server"
 	cfg "github.com/ericbutera/amalgam/pkg/config"
+	"github.com/ericbutera/amalgam/pkg/otel"
 )
 
 func NewServerCmd() *cobra.Command {

@@ -1,7 +1,6 @@
 // https://github.com/grafana/docker-otel-lgtm/blob/main/examples/go/otel.go
 package otel
 
-// TODO: don't emit traces for /health
 // TODO: i can't seem to find metric & log exporter data in LGTM
 
 import (
