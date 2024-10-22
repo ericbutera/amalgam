@@ -13,6 +13,8 @@ type client struct {
 }
 
 func NewClient(target string) (*client, error) {
+	// TODO: https://github.com/grpc-ecosystem/go-grpc-middleware/blob/main/interceptors/logging/examples/slog/example_test.go#L44-L55
+
 	creds := insecure.NewCredentials() // TODO: use secure by default!
 	conn, err := grpc.NewClient(target, grpc.WithTransportCredentials(creds))
 	if err != nil {
