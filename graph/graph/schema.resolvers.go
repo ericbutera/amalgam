@@ -8,16 +8,18 @@ import (
 	"context"
 	"fmt"
 
+	pb "github.com/ericbutera/amalgam/pkg/rpc/proto"
+	rpc "github.com/ericbutera/amalgam/rpc/pkg/client"
+
 	"github.com/ericbutera/amalgam/graph/graph/model"
-	api "github.com/ericbutera/amalgam/pkg/client"
+	rest "github.com/ericbutera/amalgam/pkg/client"
 	"github.com/ericbutera/amalgam/pkg/convert"
 	"github.com/samber/lo"
 )
 
-// Add a new feed by sending a POST request to the REST API
 func (r *mutationResolver) AddFeed(ctx context.Context, url string, name string) (*model.Feed, error) {
-	req := api.ServerCreateFeedRequest{
-		Feed: &api.ServerCreateFeed{
+	req := rest.ServerCreateFeedRequest{
+		Feed: &rest.ServerCreateFeed{
 			Url: url,
 			// TODO: support name `Name: &name,`
 		},
@@ -34,14 +36,13 @@ func (r *mutationResolver) AddFeed(ctx context.Context, url string, name string)
 	return &feed, nil
 }
 
-// Update a feed by sending a PUT request
 func (r *mutationResolver) UpdateFeed(ctx context.Context, id string, url *string, name *string) (*model.Feed, error) {
 	uid, err := convert.ParseUInt(id)
 	if err != nil {
 		return nil, err
 	}
-	req := api.ServerUpdateFeedRequest{
-		Feed: &api.ServerUpdateFeed{
+	req := rest.ServerUpdateFeedRequest{
+		Feed: &rest.ServerUpdateFeed{
 			Url: lo.FromPtr(url),
 			// TODO: support name `Name: &name,`
 		},
@@ -58,25 +59,44 @@ func (r *mutationResolver) UpdateFeed(ctx context.Context, id string, url *strin
 	return &feed, nil
 }
 
-// Fetch feeds from the REST API
 func (r *queryResolver) Feeds(ctx context.Context) ([]*model.Feed, error) {
 	var feeds []*model.Feed
-	resp, _, err := r.apiClient.DefaultAPI.FeedsGet(ctx).Execute()
+	/*
+		resp, _, err := r.apiClient.DefaultAPI.FeedsGet(ctx).Execute()
+		if err != nil {
+			return nil, err
+		}
+		for _, feed := range resp.Feeds {
+			// TODO: mapstructure!
+			feeds = append(feeds, &model.Feed{
+				ID:   fmt.Sprintf("%d", feed.Id),
+				URL:  feed.Url,
+				Name: lo.FromPtr(feed.Name),
+			})
+		}
+	*/
+	c, err := rpc.NewClient("localhost:50055") // TODO: env
 	if err != nil {
 		return nil, err
 	}
-	for _, feed := range resp.Feeds {
-		// TODO: mapstructure!
+	defer c.Conn.Close()
+
+	res, err := c.Client.ListFeeds(ctx, &pb.Empty{})
+	if err != nil {
+		return nil, err
+	}
+	for _, feed := range res.Feeds {
+		// TODO mapper
 		feeds = append(feeds, &model.Feed{
 			ID:   fmt.Sprintf("%d", feed.Id),
 			URL:  feed.Url,
-			Name: lo.FromPtr(feed.Name),
+			Name: feed.Name,
 		})
 	}
+
 	return feeds, nil
 }
 
-// Fetch a single feed by ID
 func (r *queryResolver) Feed(ctx context.Context, id string) (*model.Feed, error) {
 	uid, err := convert.ParseUInt(id)
 	if err != nil {
@@ -96,7 +116,6 @@ func (r *queryResolver) Feed(ctx context.Context, id string) (*model.Feed, error
 	return &feed, nil
 }
 
-// Fetch articles for a specific feed
 func (r *queryResolver) Articles(ctx context.Context, feedID string) ([]*model.Article, error) {
 	uid, err := convert.ParseUInt(feedID)
 	if err != nil {
@@ -117,7 +136,6 @@ func (r *queryResolver) Articles(ctx context.Context, feedID string) ([]*model.A
 	return articles, nil
 }
 
-// Article is the resolver for the article field.
 func (r *queryResolver) Article(ctx context.Context, id string) (*model.Article, error) {
 	uid, err := convert.ParseUInt(id)
 	if err != nil {
@@ -136,11 +154,8 @@ func (r *queryResolver) Article(ctx context.Context, id string) (*model.Article,
 	return &article, nil
 }
 
-// Mutation returns MutationResolver implementation.
 func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
-
-// Query returns QueryResolver implementation.
-func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
+func (r *Resolver) Query() QueryResolver       { return &queryResolver{r} }
 
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
