@@ -1,0 +1,7 @@
+--use-new-action-cache
+# --action-offline-mode
+# --rm
+--reuse
+--pull=false
+-P ubuntu-latest=catthehacker/ubuntu:act-latest
+-W .github/workflows/all.yaml
