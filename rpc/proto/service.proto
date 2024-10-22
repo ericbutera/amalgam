@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+package feeds;
+
+option go_package = "github.com/ericbutera/amalgam/rpc/gen/go/feeds";  // Adjust this path
+
+service FeedService {
+  rpc ListFeeds (Empty) returns (ListFeedsResponse);
+  rpc CreateFeed (CreateFeedRequest) returns (Feed);
+  rpc UpdateFeed (UpdateFeedRequest) returns (Feed);
+  rpc ListArticlesByFeed (ListArticlesByFeedRequest) returns (ListArticlesByFeedResponse);
+  rpc GetArticleById (GetArticleByIdRequest) returns (Article);
+}
+
+message Feed {
+  uint32 id = 1;
+  string url = 2;
+  string name = 3;
+}
+
+message Article {
+  uint32 id = 1;
+  string title = 2;
+  string content = 3;
+  uint32 feed_id = 4;
+}
+
+message Empty {}
+
+message ListFeedsResponse {
+  repeated Feed feeds = 1;
+}
+
+message CreateFeedRequest {
+  string url = 1;
+  string name = 2;
+}
+
+message UpdateFeedRequest {
+  uint32 id = 1;
+  string url = 2;
+  string name = 3;
+}
+
+message ListArticlesByFeedRequest {
+  uint32 feed_id = 1;
+}
+
+message ListArticlesByFeedResponse {
+  repeated Article articles = 1;
+}
+
+message GetArticleByIdRequest {
+  uint32 id = 1;
+}
