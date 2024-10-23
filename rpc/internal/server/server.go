@@ -12,6 +12,7 @@ import (
 
 	"github.com/ericbutera/amalgam/internal/db"
 	"github.com/ericbutera/amalgam/internal/service"
+	"github.com/ericbutera/amalgam/pkg/otel"
 	pb "github.com/ericbutera/amalgam/pkg/rpc/proto"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/recovery"
@@ -38,18 +39,27 @@ type Server struct {
 	listener      net.Listener
 	panicsTotal   prometheus.Counter
 	metricSrv     *http.Server
+	db            *gorm.DB
 	service       *service.Service
+	shutdowns     []func(context.Context) error
 	pb.UnimplementedFeedServiceServer
 }
 
-func (s *Server) Serve() error {
+func (s *Server) Serve(ctx context.Context) error {
 	g := &run.Group{}
+
 	g.Add(func() error {
 		slog.Info("launching server", "port", s.port)
 		return s.srv.Serve(s.listener)
 	}, func(err error) {
 		s.srv.GracefulStop()
 		s.srv.Stop()
+
+		for _, shutdown := range s.shutdowns {
+			if err := shutdown(ctx); err != nil {
+				slog.Error("failed to shutdown", "err", err)
+			}
+		}
 	})
 
 	g.Add(func() error {
@@ -61,7 +71,7 @@ func (s *Server) Serve() error {
 		}
 	})
 
-	g.Add(run.SignalHandler(context.Background(), syscall.SIGINT, syscall.SIGTERM))
+	g.Add(run.SignalHandler(ctx, syscall.SIGINT, syscall.SIGTERM))
 
 	if err := g.Run(); err != nil {
 		return err
@@ -92,12 +102,32 @@ func WithListener(lis net.Listener) Option {
 func WithDb(db *gorm.DB) Option {
 	return func(s *Server) error {
 		s.service = service.New(db)
+		s.db = db
 		return nil
+	}
+}
+func WithDbFromEnv() Option {
+	return func(s *Server) error {
+		db, err := db.NewFromEnv()
+		if err != nil {
+			return err
+		}
+		return WithDb(db)(s)
 	}
 }
 func WithService(service *service.Service) Option {
 	return func(s *Server) error {
 		s.service = service
+		return nil
+	}
+}
+func WithOtel(ctx context.Context) Option {
+	return func(s *Server) error {
+		shutdown, err := otel.Setup(ctx)
+		if err != nil {
+			return err
+		}
+		s.shutdowns = append(s.shutdowns, shutdown)
 		return nil
 	}
 }
@@ -151,7 +181,7 @@ func New(opts ...Option) (*Server, error) {
 	}
 
 	server.metricSrv = newMetricsServer(registry, server.metricAddress)
-	pb.RegisterFeedServiceServer(server.srv, &Server{})
+	pb.RegisterFeedServiceServer(server.srv, &server)
 	reflection.Register(server.srv)
 	srvMetrics.InitializeMetrics(server.srv)
 
