@@ -5,15 +5,24 @@ import (
 	"fmt"
 
 	pb "github.com/ericbutera/amalgam/pkg/rpc/proto"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func (s *Server) ListFeeds(ctx context.Context, in *pb.Empty) (*pb.ListFeedsResponse, error) {
-	// TODO: use database
-	feeds := []*pb.Feed{
-		{Id: 1, Url: "http://example.com", Name: "Example Feed"},
-		{Id: 2, Url: "http://another.com", Name: "Another Feed"},
+	feeds, err := s.service.Feeds(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to fetch feeds: %v", err)
 	}
-	return &pb.ListFeedsResponse{Feeds: feeds}, nil
+	pbFeeds := []*pb.Feed{}
+	for _, feed := range feeds {
+		pbFeeds = append(pbFeeds, &pb.Feed{
+			Id:   uint32(feed.ID),
+			Url:  feed.Url,
+			Name: feed.Name,
+		})
+	}
+	return &pb.ListFeedsResponse{Feeds: pbFeeds}, nil
 }
 
 func (s *Server) CreateFeed(ctx context.Context, in *pb.CreateFeedRequest) (*pb.Feed, error) {

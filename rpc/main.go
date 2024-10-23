@@ -1,28 +1,27 @@
 package main
 
 import (
+	"context"
 	"log/slog"
 	"os"
 
-	"github.com/ericbutera/amalgam/internal/db"
 	cfg "github.com/ericbutera/amalgam/pkg/config"
 	"github.com/ericbutera/amalgam/rpc/internal/config"
 	"github.com/ericbutera/amalgam/rpc/internal/server"
 )
 
 func main() {
+	ctx := context.Background()
+
 	cfg, err := cfg.NewFromEnv[config.Config]()
 	if err != nil {
 		slog.Error("config error: ", "error", err)
 		os.Exit(1)
 	}
-	d, err := db.NewFromEnv()
-	if err != nil {
-		slog.Error("database error: ", "error", err)
-		os.Exit(1)
-	}
+
 	srv, err := server.New(
-		server.WithDb(d),
+		server.WithOtel(ctx),
+		server.WithDbFromEnv(),
 		server.WithPort(cfg.Port),
 		server.WithMetricAddress(cfg.MetricAddress),
 	)
@@ -30,7 +29,7 @@ func main() {
 		slog.Error("server error: ", "error", err)
 		os.Exit(1)
 	}
-	if err := srv.Serve(); err != nil {
+	if err := srv.Serve(ctx); err != nil {
 		slog.Error("server error: ", "error", err)
 		os.Exit(1)
 	}

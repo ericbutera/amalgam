@@ -37,6 +37,10 @@ spec:
               value: "8080"
             - name: GIN_MODE
               value: "debug"
+            - name: OTEL_ENABLE
+              value: "true"
+            - name: OTEL_SERVICE_NAME
+              value: "app"
             - name: OTEL_EXPORTER_OTLP_INSECURE
               value: "true"
             - name: OTEL_EXPORTER_OTLP_ENDPOINT
