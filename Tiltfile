@@ -12,7 +12,7 @@ local_resource(
   'make build',
   dir='./api',
   ignore=['./api/bin'],
-  deps=['./api','./pkg','./tools','./testdata'],
+  deps=['./api','./pkg','./tools','./internal'],
   labels=['app'],
 )
 docker_build_with_restart(
@@ -34,20 +34,38 @@ k8s_resource(
     labels=["app"],
 )
 
-docker_build(
-    "ui-image",
-    context="./ui",
-    live_update=[sync("./ui", "/usr/src/app")],
-    dockerfile="ui/dev.Dockerfile",
+local_resource(
+  'rpc-compile',
+  'make build',
+  dir='./rpc',
+  ignore=['./rpc/bin'],
+  deps=['./rpc','./pkg','./tools','./internal'],
+  labels=['app'],
 )
-k8s_resource("ui", port_forwards=[port_forward(3000, 3000, "ui")], labels=["app"])
+docker_build_with_restart(
+  'rpc-image',
+  './rpc',
+  entrypoint=['/app/bin/app','server'],
+  dockerfile='./containers/tilt.go.Dockerfile',
+  only=['./bin'],
+  live_update=[sync('rpc/bin', '/app/bin')],
+)
+k8s_resource(
+    "rpc",
+    port_forwards=[
+      port_forward(50055, 50051, 'grpc'),
+      port_forward(9091, 9090, 'metrics'),
+    ],
+    resource_deps=["mysql-migrate"],
+    labels=["app"],
+)
 
 local_resource(
   'graph-compile',
   'make build',
   dir='./graph',
   ignore=['./graph/bin'],
-  deps=['./graph','./pkg','./tools','./testdata'],
+  deps=['./graph','./pkg','./tools','./internal'],
   labels=['app'],
 )
 docker_build_with_restart(
@@ -63,6 +81,14 @@ k8s_resource("graph",
   links=[link("http://localhost:8082/query", "query")],
   labels=["app"]
 )
+
+docker_build(
+    "ui-image",
+    context="./ui",
+    live_update=[sync("./ui", "/usr/src/app")],
+    dockerfile="ui/dev.Dockerfile",
+)
+k8s_resource("ui", port_forwards=[port_forward(3000, 3000, "ui")], labels=["app"])
 
 # https://grafana.com/go/webinar/getting-started-with-grafana-lgtm-stack/
 # TODO: exclude during CI
