@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	"github.com/ericbutera/amalgam/api/internal/models"
+	"github.com/ericbutera/amalgam/internal/db/models"
 	"github.com/ericbutera/amalgam/pkg/convert"
 	"gorm.io/gorm"
 )
@@ -13,6 +13,7 @@ var (
 	ErrNotFound = errors.New("not found")
 )
 
+// domain logic for feeds & articles
 type Service struct {
 	db *gorm.DB
 }

@@ -12,6 +12,7 @@ import (
 
 	"github.com/ericbutera/amalgam/api/internal/config"
 	"github.com/ericbutera/amalgam/api/internal/server"
+	"github.com/ericbutera/amalgam/internal/db"
 	cfg "github.com/ericbutera/amalgam/pkg/config"
 	"github.com/ericbutera/amalgam/pkg/otel"
 )
@@ -50,15 +51,14 @@ func runServer(cmd *cobra.Command, args []string) {
 	if err != nil {
 		quit(ctx, err)
 	}
-
-	dbAdapter, err := getDbAdapter(cfg)
+	d, err := db.NewFromEnv()
 	if err != nil {
 		quit(ctx, err)
 	}
 
 	srv, err := server.New(
 		server.WithConfig(cfg),
-		dbAdapter,
+		server.WithDb(d),
 	)
 	if err != nil {
 		quit(ctx, err)
@@ -77,15 +77,4 @@ func runServer(cmd *cobra.Command, args []string) {
 		stop()
 	}
 	quit(ctx, err)
-}
-
-func getDbAdapter(cfg *config.Config) (server.ServerOption, error) {
-	switch cfg.DbAdapter {
-	case "mysql":
-		return server.WithMysql(cfg.DbMysqlDsn), nil
-	case "sqlite":
-		return server.WithSqlite(cfg.DbSqliteName), nil
-	default:
-		return nil, errors.New("db adapter not supported")
-	}
 }
