@@ -10,6 +10,7 @@ import (
 	"github.com/ericbutera/amalgam/graph/graph"
 	"github.com/ericbutera/amalgam/graph/internal/config"
 	cfg "github.com/ericbutera/amalgam/pkg/config"
+	rpc "github.com/ericbutera/amalgam/rpc/pkg/client"
 )
 
 func main() {
@@ -20,9 +21,16 @@ func main() {
 		return
 	}
 
+	c, err := rpc.NewClient(cfg.RpcHost)
+	if err != nil {
+		slog.Error("failed to connect to rpc server", "error", err)
+		os.Exit(1)
+	}
+	defer c.Conn.Close()
+
 	apiClient := graph.NewApiClient(cfg.ApiScheme, cfg.ApiHost)
 	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{
-		Resolvers: graph.NewResolver(cfg, apiClient),
+		Resolvers: graph.NewResolver(cfg, apiClient, c.Client),
 	}))
 
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))

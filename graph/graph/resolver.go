@@ -3,6 +3,7 @@ package graph
 import (
 	"github.com/ericbutera/amalgam/graph/internal/config"
 	"github.com/ericbutera/amalgam/pkg/client"
+	pb "github.com/ericbutera/amalgam/pkg/rpc/proto"
 )
 
 // This file will not be regenerated automatically.
@@ -12,12 +13,14 @@ import (
 type Resolver struct {
 	config    *config.Config
 	apiClient *client.APIClient
+	rpcClient pb.FeedServiceClient
 }
 
-func NewResolver(config *config.Config, apiClient *client.APIClient) *Resolver {
+func NewResolver(config *config.Config, apiClient *client.APIClient, rpcClient pb.FeedServiceClient) *Resolver {
 	return &Resolver{
 		config:    config,
 		apiClient: apiClient,
+		rpcClient: rpcClient,
 	}
 }
 
