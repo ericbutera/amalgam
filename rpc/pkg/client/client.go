@@ -14,7 +14,6 @@ type client struct {
 
 func NewClient(target string) (*client, error) {
 	// TODO: https://github.com/grpc-ecosystem/go-grpc-middleware/blob/main/interceptors/logging/examples/slog/example_test.go#L44-L55
-
 	creds := insecure.NewCredentials() // TODO: use secure by default!
 	conn, err := grpc.NewClient(target, grpc.WithTransportCredentials(creds))
 	if err != nil {
@@ -25,19 +24,4 @@ func NewClient(target string) (*client, error) {
 		Client: pb.NewFeedServiceClient(conn),
 		Conn:   conn,
 	}, nil
-
-	/*
-		Example usage:
-
-		client, _ := NewClient("localhost:50055")
-		defer client.Close()
-
-		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-		defer cancel()
-		feeds, err := client.ListFeeds(ctx, &pb.Empty{})
-		if err != nil {
-			log.Fatalf("Failed to list feeds: %v", err)
-		}
-		fmt.Println("Feeds:", feeds)
-	*/
 }

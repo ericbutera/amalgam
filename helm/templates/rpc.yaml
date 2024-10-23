@@ -1,0 +1,57 @@
+# TODO: helm chart w/ values.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: rpc
+spec:
+  selector:
+    app: rpc
+  ports:
+    - name: rpc
+      protocol: TCP
+      port: 50051
+      targetPort: 50051
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rpc
+  labels:
+    app: rpc
+spec:
+  selector:
+    matchLabels:
+      app: rpc
+  template:
+    metadata:
+      labels:
+        app: rpc
+    spec:
+      containers:
+        - name: rpc
+          image: rpc-image
+          ports:
+            - containerPort: 50051
+          env:
+            - name: PORT
+              value: "50051"
+            - name: OTEL_EXPORTER_OTLP_INSECURE
+              value: "true"
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "http://lgtm:4318"
+            - name: OTEL_OTLP_EXPORT_INTERVAL
+              value: "5000"
+            - name: OTEL_EXPORTER_OTLP_METRICS_ENDPOINT
+              value: "http://lgtm:4318/v1/metrics"
+            - name: OTEL_METRIC_EXPORT_INTERVAL
+              value: "5000"
+            - name: OTEL_EXPORTER_OTLP_LOGS_ENDPOINT
+              value: "http://lgtm:4318/v1/logs"
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: "service.name=api,service.instance.id=api:8080"
+            - name: OTEL_LOGS_EXPORTER
+              value: "otlp"
+            - name: DB_ADAPTER
+              value: "mysql"
+            - name: DB_MYSQL_DSN # Note: DB_MYSQL_DSN must be a secret in production env
+              value: "amalgam-user:amalgam-password@tcp(mysql:3306)/amalgam-db?charset=utf8mb4&parseTime=True&loc=Local"

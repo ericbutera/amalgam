@@ -9,7 +9,6 @@ import (
 	"fmt"
 
 	pb "github.com/ericbutera/amalgam/pkg/rpc/proto"
-	rpc "github.com/ericbutera/amalgam/rpc/pkg/client"
 
 	"github.com/ericbutera/amalgam/graph/graph/model"
 	rest "github.com/ericbutera/amalgam/pkg/client"
@@ -59,29 +58,30 @@ func (r *mutationResolver) UpdateFeed(ctx context.Context, id string, url *strin
 	return &feed, nil
 }
 
-func (r *queryResolver) Feeds(ctx context.Context) ([]*model.Feed, error) {
+/*
+// example calling api /v1/feeds
+func restFeeds(ctx context.Context, apiClient *rest.APIClient) ([]*model.Feed, error) {
 	var feeds []*model.Feed
-	/*
-		resp, _, err := r.apiClient.DefaultAPI.FeedsGet(ctx).Execute()
-		if err != nil {
-			return nil, err
-		}
-		for _, feed := range resp.Feeds {
-			// TODO: mapstructure!
-			feeds = append(feeds, &model.Feed{
-				ID:   fmt.Sprintf("%d", feed.Id),
-				URL:  feed.Url,
-				Name: lo.FromPtr(feed.Name),
-			})
-		}
-	*/
-	c, err := rpc.NewClient("localhost:50055") // TODO: env
+	resp, _, err := apiClient.DefaultAPI.FeedsGet(ctx).Execute()
 	if err != nil {
 		return nil, err
 	}
-	defer c.Conn.Close()
+	for _, feed := range resp.Feeds {
+		// TODO: mapstructure!
+		feeds = append(feeds, &model.Feed{
+			ID:   fmt.Sprintf("%d", feed.Id),
+			URL:  feed.Url,
+			Name: lo.FromPtr(feed.Name),
+		})
+	}
+	return feeds, nil
+}
+*/
 
-	res, err := c.Client.ListFeeds(ctx, &pb.Empty{})
+// example showing gRPC call to feed service
+func rpcFeeds(ctx context.Context, rpcClient pb.FeedServiceClient) ([]*model.Feed, error) {
+	var feeds []*model.Feed
+	res, err := rpcClient.ListFeeds(ctx, &pb.Empty{})
 	if err != nil {
 		return nil, err
 	}
@@ -93,8 +93,13 @@ func (r *queryResolver) Feeds(ctx context.Context) ([]*model.Feed, error) {
 			Name: feed.Name,
 		})
 	}
-
 	return feeds, nil
+}
+
+func (r *queryResolver) Feeds(ctx context.Context) ([]*model.Feed, error) {
+	// TODO: A/B test between REST and gRPC
+	// return restFeeds(ctx, r.apiClient)
+	return rpcFeeds(ctx, r.rpcClient)
 }
 
 func (r *queryResolver) Feed(ctx context.Context, id string) (*model.Feed, error) {
