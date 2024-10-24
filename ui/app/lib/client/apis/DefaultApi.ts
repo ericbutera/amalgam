@@ -47,19 +47,19 @@ import {
 } from '../models/index';
 
 export interface ArticlesIdGetRequest {
-    id: number;
+    id: string;
 }
 
 export interface FeedsIdArticlesGetRequest {
-    id: number;
+    id: string;
 }
 
 export interface FeedsIdGetRequest {
-    id: number;
+    id: string;
 }
 
 export interface FeedsIdPutRequest {
-    id: number;
+    id: string;
     request: ServerUpdateFeedRequest;
 }
 

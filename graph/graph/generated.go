@@ -47,6 +47,10 @@ type DirectiveRoot struct {
 }
 
 type ComplexityRoot struct {
+	AddFeedResponse struct {
+		ID func(childComplexity int) int
+	}
+
 	Article struct {
 		Content func(childComplexity int) int
 		ID      func(childComplexity int) int
@@ -70,11 +74,15 @@ type ComplexityRoot struct {
 		Feed     func(childComplexity int, id string) int
 		Feeds    func(childComplexity int) int
 	}
+
+	UpdateFeedResponse struct {
+		ID func(childComplexity int) int
+	}
 }
 
 type MutationResolver interface {
-	AddFeed(ctx context.Context, url string, name string) (*model.Feed, error)
-	UpdateFeed(ctx context.Context, id string, url *string, name *string) (*model.Feed, error)
+	AddFeed(ctx context.Context, url string, name string) (*model.AddFeedResponse, error)
+	UpdateFeed(ctx context.Context, id string, url *string, name *string) (*model.UpdateFeedResponse, error)
 }
 type QueryResolver interface {
 	Feeds(ctx context.Context) ([]*model.Feed, error)
@@ -101,6 +109,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	ec := executionContext{nil, e, 0, 0, nil}
 	_ = ec
 	switch typeName + "." + field {
+
+	case "AddFeedResponse.id":
+		if e.complexity.AddFeedResponse.ID == nil {
+			break
+		}
+
+		return e.complexity.AddFeedResponse.ID(childComplexity), true
 
 	case "Article.content":
 		if e.complexity.Article.Content == nil {
@@ -210,6 +225,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.Feeds(childComplexity), true
+
+	case "UpdateFeedResponse.id":
+		if e.complexity.UpdateFeedResponse.ID == nil {
+			break
+		}
+
+		return e.complexity.UpdateFeedResponse.ID(childComplexity), true
 
 	}
 	return 0, false
@@ -580,6 +602,50 @@ func (ec *executionContext) field___Type_fields_argsIncludeDeprecated(
 
 // region    **************************** field.gotpl *****************************
 
+func (ec *executionContext) _AddFeedResponse_id(ctx context.Context, field graphql.CollectedField, obj *model.AddFeedResponse) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AddFeedResponse_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AddFeedResponse_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AddFeedResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Article_id(ctx context.Context, field graphql.CollectedField, obj *model.Article) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Article_id(ctx, field)
 	if err != nil {
@@ -870,9 +936,9 @@ func (ec *executionContext) _Mutation_addFeed(ctx context.Context, field graphql
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.Feed)
+	res := resTmp.(*model.AddFeedResponse)
 	fc.Result = res
-	return ec.marshalNFeed2ᚖgithubᚗcomᚋericbuteraᚋamalgamᚋgraphᚋgraphᚋmodelᚐFeed(ctx, field.Selections, res)
+	return ec.marshalNAddFeedResponse2ᚖgithubᚗcomᚋericbuteraᚋamalgamᚋgraphᚋgraphᚋmodelᚐAddFeedResponse(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_addFeed(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -884,13 +950,9 @@ func (ec *executionContext) fieldContext_Mutation_addFeed(ctx context.Context, f
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
-				return ec.fieldContext_Feed_id(ctx, field)
-			case "url":
-				return ec.fieldContext_Feed_url(ctx, field)
-			case "name":
-				return ec.fieldContext_Feed_name(ctx, field)
+				return ec.fieldContext_AddFeedResponse_id(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Feed", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type AddFeedResponse", field.Name)
 		},
 	}
 	defer func() {
@@ -933,9 +995,9 @@ func (ec *executionContext) _Mutation_updateFeed(ctx context.Context, field grap
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.Feed)
+	res := resTmp.(*model.UpdateFeedResponse)
 	fc.Result = res
-	return ec.marshalNFeed2ᚖgithubᚗcomᚋericbuteraᚋamalgamᚋgraphᚋgraphᚋmodelᚐFeed(ctx, field.Selections, res)
+	return ec.marshalNUpdateFeedResponse2ᚖgithubᚗcomᚋericbuteraᚋamalgamᚋgraphᚋgraphᚋmodelᚐUpdateFeedResponse(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_updateFeed(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -947,13 +1009,9 @@ func (ec *executionContext) fieldContext_Mutation_updateFeed(ctx context.Context
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
-				return ec.fieldContext_Feed_id(ctx, field)
-			case "url":
-				return ec.fieldContext_Feed_url(ctx, field)
-			case "name":
-				return ec.fieldContext_Feed_name(ctx, field)
+				return ec.fieldContext_UpdateFeedResponse_id(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Feed", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type UpdateFeedResponse", field.Name)
 		},
 	}
 	defer func() {
@@ -1329,6 +1387,50 @@ func (ec *executionContext) fieldContext_Query___schema(_ context.Context, field
 				return ec.fieldContext___Schema_directives(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type __Schema", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UpdateFeedResponse_id(ctx context.Context, field graphql.CollectedField, obj *model.UpdateFeedResponse) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UpdateFeedResponse_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UpdateFeedResponse_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UpdateFeedResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
 		},
 	}
 	return fc, nil
@@ -3115,6 +3217,45 @@ func (ec *executionContext) fieldContext___Type_specifiedByURL(_ context.Context
 
 // region    **************************** object.gotpl ****************************
 
+var addFeedResponseImplementors = []string{"AddFeedResponse"}
+
+func (ec *executionContext) _AddFeedResponse(ctx context.Context, sel ast.SelectionSet, obj *model.AddFeedResponse) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, addFeedResponseImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("AddFeedResponse")
+		case "id":
+			out.Values[i] = ec._AddFeedResponse_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var articleImplementors = []string{"Article"}
 
 func (ec *executionContext) _Article(ctx context.Context, sel ast.SelectionSet, obj *model.Article) graphql.Marshaler {
@@ -3378,6 +3519,45 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Query___schema(ctx, field)
 			})
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var updateFeedResponseImplementors = []string{"UpdateFeedResponse"}
+
+func (ec *executionContext) _UpdateFeedResponse(ctx context.Context, sel ast.SelectionSet, obj *model.UpdateFeedResponse) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, updateFeedResponseImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("UpdateFeedResponse")
+		case "id":
+			out.Values[i] = ec._UpdateFeedResponse_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -3727,6 +3907,20 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 
 // region    ***************************** type.gotpl *****************************
 
+func (ec *executionContext) marshalNAddFeedResponse2githubᚗcomᚋericbuteraᚋamalgamᚋgraphᚋgraphᚋmodelᚐAddFeedResponse(ctx context.Context, sel ast.SelectionSet, v model.AddFeedResponse) graphql.Marshaler {
+	return ec._AddFeedResponse(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNAddFeedResponse2ᚖgithubᚗcomᚋericbuteraᚋamalgamᚋgraphᚋgraphᚋmodelᚐAddFeedResponse(ctx context.Context, sel ast.SelectionSet, v *model.AddFeedResponse) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._AddFeedResponse(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalNArticle2ᚕᚖgithubᚗcomᚋericbuteraᚋamalgamᚋgraphᚋgraphᚋmodelᚐArticleᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Article) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
@@ -3794,10 +3988,6 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 		}
 	}
 	return res
-}
-
-func (ec *executionContext) marshalNFeed2githubᚗcomᚋericbuteraᚋamalgamᚋgraphᚋgraphᚋmodelᚐFeed(ctx context.Context, sel ast.SelectionSet, v model.Feed) graphql.Marshaler {
-	return ec._Feed(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalNFeed2ᚕᚖgithubᚗcomᚋericbuteraᚋamalgamᚋgraphᚋgraphᚋmodelᚐFeedᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Feed) graphql.Marshaler {
@@ -3882,6 +4072,20 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) marshalNUpdateFeedResponse2githubᚗcomᚋericbuteraᚋamalgamᚋgraphᚋgraphᚋmodelᚐUpdateFeedResponse(ctx context.Context, sel ast.SelectionSet, v model.UpdateFeedResponse) graphql.Marshaler {
+	return ec._UpdateFeedResponse(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNUpdateFeedResponse2ᚖgithubᚗcomᚋericbuteraᚋamalgamᚋgraphᚋgraphᚋmodelᚐUpdateFeedResponse(ctx context.Context, sel ast.SelectionSet, v *model.UpdateFeedResponse) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._UpdateFeedResponse(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalN__Directive2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx context.Context, sel ast.SelectionSet, v introspection.Directive) graphql.Marshaler {

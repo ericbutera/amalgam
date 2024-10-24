@@ -1,7 +1,7 @@
 package client
 
 import (
-	pb "github.com/ericbutera/amalgam/pkg/rpc/proto"
+	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"

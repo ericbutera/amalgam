@@ -2,6 +2,10 @@
 
 package model
 
+type AddFeedResponse struct {
+	ID string `json:"id"`
+}
+
 type Article struct {
 	ID      string `json:"id"`
 	Title   string `json:"title"`
@@ -18,4 +22,8 @@ type Mutation struct {
 }
 
 type Query struct {
+}
+
+type UpdateFeedResponse struct {
+	ID string `json:"id"`
 }

@@ -19,8 +19,7 @@ var _ MappedNullable = &ServerFeedCreateResponse{}
 
 // ServerFeedCreateResponse struct for ServerFeedCreateResponse
 type ServerFeedCreateResponse struct {
-	// TODO: limit fields
-	Feed *ModelsFeed `json:"feed,omitempty"`
+	Id *string `json:"id,omitempty"`
 }
 
 // NewServerFeedCreateResponse instantiates a new ServerFeedCreateResponse object
@@ -40,36 +39,36 @@ func NewServerFeedCreateResponseWithDefaults() *ServerFeedCreateResponse {
 	return &this
 }
 
-// GetFeed returns the Feed field value if set, zero value otherwise.
-func (o *ServerFeedCreateResponse) GetFeed() ModelsFeed {
-	if o == nil || IsNil(o.Feed) {
-		var ret ModelsFeed
+// GetId returns the Id field value if set, zero value otherwise.
+func (o *ServerFeedCreateResponse) GetId() string {
+	if o == nil || IsNil(o.Id) {
+		var ret string
 		return ret
 	}
-	return *o.Feed
+	return *o.Id
 }
 
-// GetFeedOk returns a tuple with the Feed field value if set, nil otherwise
+// GetIdOk returns a tuple with the Id field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ServerFeedCreateResponse) GetFeedOk() (*ModelsFeed, bool) {
-	if o == nil || IsNil(o.Feed) {
+func (o *ServerFeedCreateResponse) GetIdOk() (*string, bool) {
+	if o == nil || IsNil(o.Id) {
 		return nil, false
 	}
-	return o.Feed, true
+	return o.Id, true
 }
 
-// HasFeed returns a boolean if a field has been set.
-func (o *ServerFeedCreateResponse) HasFeed() bool {
-	if o != nil && !IsNil(o.Feed) {
+// HasId returns a boolean if a field has been set.
+func (o *ServerFeedCreateResponse) HasId() bool {
+	if o != nil && !IsNil(o.Id) {
 		return true
 	}
 
 	return false
 }
 
-// SetFeed gets a reference to the given ModelsFeed and assigns it to the Feed field.
-func (o *ServerFeedCreateResponse) SetFeed(v ModelsFeed) {
-	o.Feed = &v
+// SetId gets a reference to the given string and assigns it to the Id field.
+func (o *ServerFeedCreateResponse) SetId(v string) {
+	o.Id = &v
 }
 
 func (o ServerFeedCreateResponse) MarshalJSON() ([]byte, error) {
@@ -82,8 +81,8 @@ func (o ServerFeedCreateResponse) MarshalJSON() ([]byte, error) {
 
 func (o ServerFeedCreateResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.Feed) {
-		toSerialize["feed"] = o.Feed
+	if !IsNil(o.Id) {
+		toSerialize["id"] = o.Id
 	}
 	return toSerialize, nil
 }
