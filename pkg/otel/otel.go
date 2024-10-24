@@ -30,6 +30,9 @@ var (
 	Logger = otelslog.NewLogger(schemaName)
 )
 
+// TODO: sample traces (with keep parent)
+// TODO: tail call sampling
+
 // bootstrap the OpenTelemetry pipeline
 // If it does not return an error, make sure to call shutdown for proper cleanup.
 func Setup(ctx context.Context) (shutdown func(context.Context) error, err error) {

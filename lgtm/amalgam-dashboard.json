@@ -99,12 +99,13 @@
                         }
                     ],
                     "limit": 20,
-                    "queryType": "traceqlSearch",
+                    "query": "{resource.service.name=~ \"api|graph|rpc\"}",
+                    "queryType": "traceql",
                     "refId": "A",
                     "tableType": "traces"
                 }
             ],
-            "title": "api traces",
+            "title": "amalgam traces",
             "type": "table"
         }
     ],

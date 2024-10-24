@@ -78,7 +78,10 @@ docker_build_with_restart(
 )
 k8s_resource("graph",
   port_forwards=[port_forward(8082, 8080, "graphql playground")],
-  links=[link("http://localhost:8082/query", "query")],
+  links=[
+    link("http://localhost:8082/query", "query"),
+    link("http://localhost:8082/metrics", "metrics"),
+  ],
   labels=["app"]
 )
 
