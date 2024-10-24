@@ -3,6 +3,7 @@ package models
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -16,7 +17,7 @@ type Feed struct {
 
 type Article struct {
 	Base
-	FeedID      uint   `json:"feedId" binding:"required" example:"1"`
+	FeedID      string `json:"feedId" binding:"required" example:"1"`
 	Feed        Feed   `gorm:"foreignKey:FeedID"`
 	Url         string `json:"url" binding:"required" example:"https://example.com/"`
 	Title       string `json:"title" example:"Example Article"`
@@ -39,8 +40,16 @@ type User struct {
 }
 
 type Base struct {
-	ID        uint           `gorm:"primarykey" json:"id" binding:"required" example:"1"`
+	//ID        uint           `gorm:"primarykey" json:"id" binding:"required" example:"1"`
+	ID        string         `gorm:"type:uuid;primary_key;" json:"id" binding:"required" example:"aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"`
 	CreatedAt time.Time      `json:"createdAt" example:"2021-01-01T00:00:00Z"`
 	UpdatedAt time.Time      `json:"updatedAt" example:"2021-01-01T00:00:00Z"`
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"deletedAt"`
+}
+
+// Credit to https://medium.com/@amrilsyaifa_21001/how-to-use-uuid-in-gorm-golang-74be997d7087
+// BeforeCreate will set a UUID rather than numeric ID.
+func (b *Base) BeforeCreate(tx *gorm.DB) (err error) {
+	b.ID = uuid.New().String()
+	return
 }

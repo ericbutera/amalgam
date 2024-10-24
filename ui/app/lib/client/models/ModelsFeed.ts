@@ -40,11 +40,11 @@ export interface ModelsFeed {
      */
     deletedAt?: GormDeletedAt;
     /**
-     * 
-     * @type {number}
+     * ID        uint           `gorm:"primarykey" json:"id" binding:"required" example:"1"`
+     * @type {string}
      * @memberof ModelsFeed
      */
-    id: number;
+    id: string;
     /**
      * 
      * @type {string}

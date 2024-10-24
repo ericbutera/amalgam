@@ -3,7 +3,7 @@ package graph
 import (
 	"github.com/ericbutera/amalgam/graph/internal/config"
 	"github.com/ericbutera/amalgam/pkg/client"
-	pb "github.com/ericbutera/amalgam/pkg/rpc/proto"
+	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
 )
 
 // This file will not be regenerated automatically.

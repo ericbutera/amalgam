@@ -23,7 +23,8 @@ var _ MappedNullable = &ModelsFeed{}
 type ModelsFeed struct {
 	CreatedAt *string `json:"createdAt,omitempty"`
 	DeletedAt *GormDeletedAt `json:"deletedAt,omitempty"`
-	Id int32 `json:"id"`
+	// ID        uint           `gorm:\"primarykey\" json:\"id\" binding:\"required\" example:\"1\"`
+	Id string `json:"id"`
 	Name *string `json:"name,omitempty"`
 	UpdatedAt *string `json:"updatedAt,omitempty"`
 	Url string `json:"url"`
@@ -35,7 +36,7 @@ type _ModelsFeed ModelsFeed
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewModelsFeed(id int32, url string) *ModelsFeed {
+func NewModelsFeed(id string, url string) *ModelsFeed {
 	this := ModelsFeed{}
 	this.Id = id
 	this.Url = url
@@ -115,9 +116,9 @@ func (o *ModelsFeed) SetDeletedAt(v GormDeletedAt) {
 }
 
 // GetId returns the Id field value
-func (o *ModelsFeed) GetId() int32 {
+func (o *ModelsFeed) GetId() string {
 	if o == nil {
-		var ret int32
+		var ret string
 		return ret
 	}
 
@@ -126,7 +127,7 @@ func (o *ModelsFeed) GetId() int32 {
 
 // GetIdOk returns a tuple with the Id field value
 // and a boolean to check if the value has been set.
-func (o *ModelsFeed) GetIdOk() (*int32, bool) {
+func (o *ModelsFeed) GetIdOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -134,7 +135,7 @@ func (o *ModelsFeed) GetIdOk() (*int32, bool) {
 }
 
 // SetId sets field value
-func (o *ModelsFeed) SetId(v int32) {
+func (o *ModelsFeed) SetId(v string) {
 	o.Id = v
 }
 

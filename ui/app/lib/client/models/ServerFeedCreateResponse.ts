@@ -13,14 +13,6 @@
  */
 
 import { mapValues } from '../runtime';
-import type { ModelsFeed } from './ModelsFeed';
-import {
-    ModelsFeedFromJSON,
-    ModelsFeedFromJSONTyped,
-    ModelsFeedToJSON,
-    ModelsFeedToJSONTyped,
-} from './ModelsFeed';
-
 /**
  * 
  * @export
@@ -28,11 +20,11 @@ import {
  */
 export interface ServerFeedCreateResponse {
     /**
-     * TODO: limit fields
-     * @type {ModelsFeed}
+     * 
+     * @type {string}
      * @memberof ServerFeedCreateResponse
      */
-    feed?: ModelsFeed;
+    id?: string;
 }
 
 /**
@@ -52,7 +44,7 @@ export function ServerFeedCreateResponseFromJSONTyped(json: any, ignoreDiscrimin
     }
     return {
         
-        'feed': json['feed'] == null ? undefined : ModelsFeedFromJSON(json['feed']),
+        'id': json['id'] == null ? undefined : json['id'],
     };
 }
 
@@ -67,7 +59,7 @@ export function ServerFeedCreateResponseFromJSONTyped(json: any, ignoreDiscrimin
 
     return {
         
-        'feed': ModelsFeedToJSON(value['feed']),
+        'id': value['id'],
     };
 }
 

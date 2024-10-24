@@ -72,10 +72,10 @@ export interface ModelsArticle {
     feed?: ModelsFeed;
     /**
      * 
-     * @type {number}
+     * @type {string}
      * @memberof ModelsArticle
      */
-    feedId: number;
+    feedId: string;
     /**
      * 
      * @type {string}
@@ -83,11 +83,11 @@ export interface ModelsArticle {
      */
     guid?: string;
     /**
-     * 
-     * @type {number}
+     * ID        uint           `gorm:"primarykey" json:"id" binding:"required" example:"1"`
+     * @type {string}
      * @memberof ModelsArticle
      */
-    id: number;
+    id: string;
     /**
      * 
      * @type {string}

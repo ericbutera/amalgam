@@ -10,6 +10,14 @@ type Article {
   content: String!
 }
 
+type AddFeedResponse {
+  id: ID!
+}
+
+type UpdateFeedResponse {
+  id: ID!
+}
+
 type Query {
   feeds: [Feed!]!
   feed(id: ID!): Feed
@@ -18,6 +26,6 @@ type Query {
 }
 
 type Mutation {
-  addFeed(url: String!, name: String!): Feed!
-  updateFeed(id: ID!, url: String, name: String): Feed!
+  addFeed(url: String!, name: String!): AddFeedResponse!
+  updateFeed(id: ID!, url: String, name: String): UpdateFeedResponse!
 }

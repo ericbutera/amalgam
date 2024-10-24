@@ -73,7 +73,7 @@ func (h *handlers) health(c *gin.Context) {
 // @Description view feed
 // @Accept json
 // @Produce json
-// @Param id path int true "Feed ID" minimum(1)
+// @Param id path string true "Feed ID"
 // @Success 200 {object} FeedResponse
 // @Failure 500 {object} ErrorResponse
 // @Router /feeds/{id} [get]
@@ -114,7 +114,7 @@ func (h *handlers) feedCreate(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, FeedCreateResponse{
-		Feed: &feed,
+		Id: feed.ID,
 	})
 }
 
@@ -127,7 +127,7 @@ type CreateFeedRequest struct {
 	Feed CreateFeed `json:"feed"`
 }
 type FeedCreateResponse struct {
-	Feed *models.Feed `json:"feed"` // TODO: limit fields
+	Id string `json:"id"`
 }
 
 // @Summary update feed
@@ -135,7 +135,7 @@ type FeedCreateResponse struct {
 // @Description update feed
 // @Accept json
 // @Produce json
-// @Param id path int true "Feed ID"
+// @Param id path string true "Feed ID"
 // @Param request body UpdateFeedRequest true "feed data"
 // @Success 200 {object} FeedUpdateResponse
 // @Failure 500 {object} map[string]string
@@ -203,7 +203,7 @@ type FeedsResponse struct {
 // @Description view article
 // @Accept json
 // @Produce json
-// @Param id path int true "Article ID"
+// @Param id path string true "Article ID"
 // @Success 200 {object} ArticleResponse
 // @Failure 500 {object} map[string]string
 // @Router /articles/{id} [get]
@@ -226,7 +226,7 @@ type ArticleResponse struct {
 // @Description list articles for a feed
 // @Accept json
 // @Produce json
-// @Param id path int true "Feed ID"
+// @Param id path string true "Feed ID"
 // @Success 200 {object} FeedArticlesResponse
 // @Failure 500 {object} map[string]string
 // @Router /feeds/{id}/articles [get]

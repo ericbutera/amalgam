@@ -34,7 +34,7 @@ import (
 )
 
 func main() {
-	id := int32(56) // int32 | Article ID
+	id := "id_example" // string | Article ID
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
@@ -54,7 +54,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**id** | **int32** | Article ID | 
+**id** | **string** | Article ID | 
 
 ### Other Parameters
 
@@ -165,7 +165,7 @@ import (
 )
 
 func main() {
-	id := int32(56) // int32 | Feed ID
+	id := "id_example" // string | Feed ID
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
@@ -185,7 +185,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**id** | **int32** | Feed ID | 
+**id** | **string** | Feed ID | 
 
 ### Other Parameters
 
@@ -235,7 +235,7 @@ import (
 )
 
 func main() {
-	id := int32(56) // int32 | Feed ID
+	id := "id_example" // string | Feed ID
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
@@ -255,7 +255,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**id** | **int32** | Feed ID | 
+**id** | **string** | Feed ID | 
 
 ### Other Parameters
 
@@ -305,7 +305,7 @@ import (
 )
 
 func main() {
-	id := int32(56) // int32 | Feed ID
+	id := "id_example" // string | Feed ID
 	request := *openapiclient.NewServerUpdateFeedRequest() // ServerUpdateFeedRequest | feed data
 
 	configuration := openapiclient.NewConfiguration()
@@ -326,7 +326,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**id** | **int32** | Feed ID | 
+**id** | **string** | Feed ID | 
 
 ### Other Parameters
 

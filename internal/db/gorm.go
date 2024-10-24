@@ -74,16 +74,24 @@ func seedSqlite(db *gorm.DB) error {
 		}
 
 		slog.Info("seeding database")
+		feedUrl := "https://example.com/feed"
+		if err := tx.Exec("DELETE FROM feeds WHERE url = ?", feedUrl).Error; err != nil {
+			return err
+		}
 		feed = models.Feed{
-			Url:  "https://example.com/",
-			Name: "Example",
+			Url:  feedUrl,
+			Name: "Example Feed",
 		}
 		if err := tx.Create(&feed).Error; err != nil {
 			return err
 		}
+		articleUrl := "https://example.com/article"
+		if err := tx.Exec("DELETE FROM articles WHERE url=?", articleUrl).Error; err != nil {
+			return err
+		}
 		if err := tx.Create(&models.Article{
 			FeedID:  feed.ID,
-			Url:     "https://example.com/article",
+			Url:     articleUrl,
 			Title:   "Example Article",
 			Content: "This is an example article",
 		}).Error; err != nil {

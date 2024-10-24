@@ -27,14 +27,16 @@ definitions:
       feed:
         $ref: '#/definitions/models.Feed'
       feedId:
-        example: 1
-        type: integer
+        example: "1"
+        type: string
       guid:
         example: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
         type: string
       id:
-        example: 1
-        type: integer
+        description: ID        uint           `gorm:"primarykey" json:"id" binding:"required"
+          example:"1"`
+        example: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
+        type: string
       imageUrl:
         example: https://example.com/image.jpg
         type: string
@@ -63,8 +65,10 @@ definitions:
       deletedAt:
         $ref: '#/definitions/gorm.DeletedAt'
       id:
-        example: 1
-        type: integer
+        description: ID        uint           `gorm:"primarykey" json:"id" binding:"required"
+          example:"1"`
+        example: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
+        type: string
       name:
         example: Example
         type: string
@@ -114,10 +118,8 @@ definitions:
     type: object
   server.FeedCreateResponse:
     properties:
-      feed:
-        allOf:
-        - $ref: '#/definitions/models.Feed'
-        description: 'TODO: limit fields'
+      id:
+        type: string
     type: object
   server.FeedResponse:
     properties:
@@ -168,7 +170,7 @@ paths:
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -235,10 +237,9 @@ paths:
       parameters:
       - description: Feed ID
         in: path
-        minimum: 1
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -260,7 +261,7 @@ paths:
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       - description: feed data
         in: body
         name: request
@@ -291,7 +292,7 @@ paths:
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
