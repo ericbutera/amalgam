@@ -6,7 +6,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **CreatedAt** | Pointer to **string** |  | [optional] 
 **DeletedAt** | Pointer to [**GormDeletedAt**](GormDeletedAt.md) |  | [optional] 
-**Id** | **int32** |  | 
+**Id** | **string** | ID        uint           &#x60;gorm:\&quot;primarykey\&quot; json:\&quot;id\&quot; binding:\&quot;required\&quot; example:\&quot;1\&quot;&#x60; | 
 **Name** | Pointer to **string** |  | [optional] 
 **UpdatedAt** | Pointer to **string** |  | [optional] 
 **Url** | **string** |  | 
@@ -15,7 +15,7 @@ Name | Type | Description | Notes
 
 ### NewModelsFeed
 
-`func NewModelsFeed(id int32, url string, ) *ModelsFeed`
+`func NewModelsFeed(id string, url string, ) *ModelsFeed`
 
 NewModelsFeed instantiates a new ModelsFeed object
 This constructor will assign default values to properties that have it defined,
@@ -82,20 +82,20 @@ HasDeletedAt returns a boolean if a field has been set.
 
 ### GetId
 
-`func (o *ModelsFeed) GetId() int32`
+`func (o *ModelsFeed) GetId() string`
 
 GetId returns the Id field if non-nil, zero value otherwise.
 
 ### GetIdOk
 
-`func (o *ModelsFeed) GetIdOk() (*int32, bool)`
+`func (o *ModelsFeed) GetIdOk() (*string, bool)`
 
 GetIdOk returns a tuple with the Id field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetId
 
-`func (o *ModelsFeed) SetId(v int32)`
+`func (o *ModelsFeed) SetId(v string)`
 
 SetId sets Id field to given value.
 

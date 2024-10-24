@@ -6,89 +6,59 @@ package graph
 
 import (
 	"context"
-	"fmt"
-
-	pb "github.com/ericbutera/amalgam/pkg/rpc/proto"
 
 	"github.com/ericbutera/amalgam/graph/graph/model"
 	rest "github.com/ericbutera/amalgam/pkg/client"
-	"github.com/ericbutera/amalgam/pkg/convert"
+	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
 	"github.com/samber/lo"
 )
 
-func (r *mutationResolver) AddFeed(ctx context.Context, url string, name string) (*model.Feed, error) {
+// AddFeed is the resolver for the addFeed field.
+func (r *mutationResolver) AddFeed(ctx context.Context, url string, name string) (*model.AddFeedResponse, error) {
 	req := rest.ServerCreateFeedRequest{
 		Feed: &rest.ServerCreateFeed{
-			Url: url,
-			// TODO: support name `Name: &name,`
+			Url:  url,
+			Name: lo.ToPtr(name),
 		},
 	}
 	resp, _, err := r.apiClient.DefaultAPI.FeedsPost(ctx).Request(req).Execute()
 	if err != nil {
 		return nil, err
 	}
-	feed := model.Feed{
-		ID:   fmt.Sprintf("%d", resp.Feed.Id),
-		URL:  resp.Feed.Url,
-		Name: lo.FromPtr(resp.Feed.Name),
-	}
-	return &feed, nil
+	return &model.AddFeedResponse{
+		ID: lo.FromPtr(resp.Id),
+	}, nil
 }
 
-func (r *mutationResolver) UpdateFeed(ctx context.Context, id string, url *string, name *string) (*model.Feed, error) {
-	uid, err := convert.ParseUInt(id)
-	if err != nil {
-		return nil, err
-	}
+// UpdateFeed is the resolver for the updateFeed field.
+func (r *mutationResolver) UpdateFeed(ctx context.Context, id string, url *string, name *string) (*model.UpdateFeedResponse, error) {
 	req := rest.ServerUpdateFeedRequest{
 		Feed: &rest.ServerUpdateFeed{
-			Url: lo.FromPtr(url),
-			// TODO: support name `Name: &name,`
+			Name: name,
+			Url:  lo.FromPtr(url),
 		},
 	}
-	resp, _, err := r.apiClient.DefaultAPI.FeedsIdPut(ctx, int32(uid)).Request(req).Execute()
+	_, _, err := r.apiClient.DefaultAPI.FeedsIdPut(ctx, id).Request(req).Execute()
 	if err != nil {
 		return nil, err
 	}
-	feed := model.Feed{
-		ID:   fmt.Sprintf("%d", resp.Feed.Id),
-		URL:  resp.Feed.Url,
-		Name: lo.FromPtr(resp.Feed.Name),
-	}
-	return &feed, nil
+	// TODO: revisit returning id (rpc returns empty)
+	return &model.UpdateFeedResponse{
+		ID: id,
+	}, nil
 }
 
-/*
-// example calling api /v1/feeds
-func restFeeds(ctx context.Context, apiClient *rest.APIClient) ([]*model.Feed, error) {
+// Feeds is the resolver for the feeds field.
+func (r *queryResolver) Feeds(ctx context.Context) ([]*model.Feed, error) {
 	var feeds []*model.Feed
-	resp, _, err := apiClient.DefaultAPI.FeedsGet(ctx).Execute()
-	if err != nil {
-		return nil, err
-	}
-	for _, feed := range resp.Feeds {
-		// TODO: mapstructure!
-		feeds = append(feeds, &model.Feed{
-			ID:   fmt.Sprintf("%d", feed.Id),
-			URL:  feed.Url,
-			Name: lo.FromPtr(feed.Name),
-		})
-	}
-	return feeds, nil
-}
-*/
-
-// example showing gRPC call to feed service
-func rpcFeeds(ctx context.Context, rpcClient pb.FeedServiceClient) ([]*model.Feed, error) {
-	var feeds []*model.Feed
-	res, err := rpcClient.ListFeeds(ctx, &pb.Empty{})
+	res, err := r.rpcClient.ListFeeds(ctx, &pb.ListFeedsRequest{})
 	if err != nil {
 		return nil, err
 	}
 	for _, feed := range res.Feeds {
 		// TODO mapper
 		feeds = append(feeds, &model.Feed{
-			ID:   fmt.Sprintf("%d", feed.Id),
+			ID:   feed.Id,
 			URL:  feed.Url,
 			Name: feed.Name,
 		})
@@ -96,18 +66,9 @@ func rpcFeeds(ctx context.Context, rpcClient pb.FeedServiceClient) ([]*model.Fee
 	return feeds, nil
 }
 
-func (r *queryResolver) Feeds(ctx context.Context) ([]*model.Feed, error) {
-	// TODO: A/B test between REST and gRPC
-	// return restFeeds(ctx, r.apiClient)
-	return rpcFeeds(ctx, r.rpcClient)
-}
-
+// Feed is the resolver for the feed field.
 func (r *queryResolver) Feed(ctx context.Context, id string) (*model.Feed, error) {
-	uid, err := convert.ParseUInt(id)
-	if err != nil {
-		return nil, err
-	}
-	resp, _, err := r.apiClient.DefaultAPI.FeedsIdGet(ctx, int32(uid)).Execute()
+	resp, _, err := r.apiClient.DefaultAPI.FeedsIdGet(ctx, id).Execute()
 	if err != nil {
 		return nil, err
 	}
@@ -121,12 +82,9 @@ func (r *queryResolver) Feed(ctx context.Context, id string) (*model.Feed, error
 	return &feed, nil
 }
 
+// Articles is the resolver for the articles field.
 func (r *queryResolver) Articles(ctx context.Context, feedID string) ([]*model.Article, error) {
-	uid, err := convert.ParseUInt(feedID)
-	if err != nil {
-		return nil, err
-	}
-	resp, _, err := r.apiClient.DefaultAPI.FeedsIdArticlesGet(ctx, int32(uid)).Execute()
+	resp, _, err := r.apiClient.DefaultAPI.FeedsIdArticlesGet(ctx, feedID).Execute()
 	if err != nil {
 		return nil, err
 	}
@@ -141,12 +99,9 @@ func (r *queryResolver) Articles(ctx context.Context, feedID string) ([]*model.A
 	return articles, nil
 }
 
+// Article is the resolver for the article field.
 func (r *queryResolver) Article(ctx context.Context, id string) (*model.Article, error) {
-	uid, err := convert.ParseUInt(id)
-	if err != nil {
-		return nil, err
-	}
-	resp, _, err := r.apiClient.DefaultAPI.ArticlesIdGet(ctx, int32(uid)).Execute()
+	resp, _, err := r.apiClient.DefaultAPI.ArticlesIdGet(ctx, id).Execute()
 	if err != nil {
 		return nil, err
 	}
@@ -159,8 +114,11 @@ func (r *queryResolver) Article(ctx context.Context, id string) (*model.Article,
 	return &article, nil
 }
 
+// Mutation returns MutationResolver implementation.
 func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
-func (r *Resolver) Query() QueryResolver       { return &queryResolver{r} }
+
+// Query returns QueryResolver implementation.
+func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }

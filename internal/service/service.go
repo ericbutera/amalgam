@@ -5,13 +5,15 @@ import (
 	"errors"
 
 	"github.com/ericbutera/amalgam/internal/db/models"
-	"github.com/ericbutera/amalgam/pkg/convert"
 	"gorm.io/gorm"
 )
 
 var (
 	ErrNotFound = errors.New("not found")
 )
+
+// TODO: move validation from api into service
+// this will include changing go tags binding -> validation
 
 // domain logic for feeds & articles
 type Service struct {
@@ -57,20 +59,20 @@ func (s *Service) CreateFeed(ctx context.Context, feed *models.Feed) error {
 }
 
 func (s *Service) UpdateFeed(ctx context.Context, id string, feed *models.Feed) error {
-	// TODO: make this update user's feed (user_feed)
-	// TODO: deny changing of URL (create specific model for update fields)
-	// TODO: prevent changing created_at Incorrect datetime value: '0000-00-00' for column 'created_at'
-	uid, err := convert.ParseUInt(id)
-	if err != nil {
-		return err
-	}
-	feed.Base.ID = uid
-	result := s.query(ctx).Save(feed)
+	result := s.query(ctx).Model(&feed).Where("id=?", id).Updates(map[string]interface{}{
+		"name": feed.Name,
+	})
 	if result.Error != nil {
 		return result.Error
 	}
+	if result.RowsAffected == 0 {
+		return ErrNotFound
+	}
 	return nil
 }
+
+// TODO: make this update user's feed (user_feed)
+//UpdateUserFeed() error {
 
 func (s *Service) GetFeed(ctx context.Context, id string) (*models.Feed, error) {
 	var feed models.Feed

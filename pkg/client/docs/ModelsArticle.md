@@ -10,9 +10,9 @@ Name | Type | Description | Notes
 **CreatedAt** | Pointer to **string** |  | [optional] 
 **DeletedAt** | Pointer to [**GormDeletedAt**](GormDeletedAt.md) |  | [optional] 
 **Feed** | Pointer to [**ModelsFeed**](ModelsFeed.md) |  | [optional] 
-**FeedId** | **int32** |  | 
+**FeedId** | **string** |  | 
 **Guid** | Pointer to **string** |  | [optional] 
-**Id** | **int32** |  | 
+**Id** | **string** | ID        uint           &#x60;gorm:\&quot;primarykey\&quot; json:\&quot;id\&quot; binding:\&quot;required\&quot; example:\&quot;1\&quot;&#x60; | 
 **ImageUrl** | Pointer to **string** |  | [optional] 
 **Preview** | Pointer to **string** |  | [optional] 
 **Title** | Pointer to **string** |  | [optional] 
@@ -23,7 +23,7 @@ Name | Type | Description | Notes
 
 ### NewModelsArticle
 
-`func NewModelsArticle(feedId int32, id int32, url string, ) *ModelsArticle`
+`func NewModelsArticle(feedId string, id string, url string, ) *ModelsArticle`
 
 NewModelsArticle instantiates a new ModelsArticle object
 This constructor will assign default values to properties that have it defined,
@@ -190,20 +190,20 @@ HasFeed returns a boolean if a field has been set.
 
 ### GetFeedId
 
-`func (o *ModelsArticle) GetFeedId() int32`
+`func (o *ModelsArticle) GetFeedId() string`
 
 GetFeedId returns the FeedId field if non-nil, zero value otherwise.
 
 ### GetFeedIdOk
 
-`func (o *ModelsArticle) GetFeedIdOk() (*int32, bool)`
+`func (o *ModelsArticle) GetFeedIdOk() (*string, bool)`
 
 GetFeedIdOk returns a tuple with the FeedId field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetFeedId
 
-`func (o *ModelsArticle) SetFeedId(v int32)`
+`func (o *ModelsArticle) SetFeedId(v string)`
 
 SetFeedId sets FeedId field to given value.
 
@@ -235,20 +235,20 @@ HasGuid returns a boolean if a field has been set.
 
 ### GetId
 
-`func (o *ModelsArticle) GetId() int32`
+`func (o *ModelsArticle) GetId() string`
 
 GetId returns the Id field if non-nil, zero value otherwise.
 
 ### GetIdOk
 
-`func (o *ModelsArticle) GetIdOk() (*int32, bool)`
+`func (o *ModelsArticle) GetIdOk() (*string, bool)`
 
 GetIdOk returns a tuple with the Id field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetId
 
-`func (o *ModelsArticle) SetId(v int32)`
+`func (o *ModelsArticle) SetId(v string)`
 
 SetId sets Id field to given value.
 

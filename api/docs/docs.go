@@ -27,7 +27,7 @@ const docTemplate = `{
                 "summary": "view article",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "Article ID",
                         "name": "id",
                         "in": "path",
@@ -132,8 +132,7 @@ const docTemplate = `{
                 "summary": "view feed",
                 "parameters": [
                     {
-                        "minimum": 1,
-                        "type": "integer",
+                        "type": "string",
                         "description": "Feed ID",
                         "name": "id",
                         "in": "path",
@@ -166,7 +165,7 @@ const docTemplate = `{
                 "summary": "update feed",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "Feed ID",
                         "name": "id",
                         "in": "path",
@@ -213,7 +212,7 @@ const docTemplate = `{
                 "summary": "list articles for a feed",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "Feed ID",
                         "name": "id",
                         "in": "path",
@@ -284,16 +283,17 @@ const docTemplate = `{
                     "$ref": "#/definitions/models.Feed"
                 },
                 "feedId": {
-                    "type": "integer",
-                    "example": 1
+                    "type": "string",
+                    "example": "1"
                 },
                 "guid": {
                     "type": "string",
                     "example": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
                 },
                 "id": {
-                    "type": "integer",
-                    "example": 1
+                    "description": "ID        uint           ` + "`" + `gorm:\"primarykey\" json:\"id\" binding:\"required\" example:\"1\"` + "`" + `",
+                    "type": "string",
+                    "example": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
                 },
                 "imageUrl": {
                     "type": "string",
@@ -332,8 +332,9 @@ const docTemplate = `{
                     "$ref": "#/definitions/gorm.DeletedAt"
                 },
                 "id": {
-                    "type": "integer",
-                    "example": 1
+                    "description": "ID        uint           ` + "`" + `gorm:\"primarykey\" json:\"id\" binding:\"required\" example:\"1\"` + "`" + `",
+                    "type": "string",
+                    "example": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
                 },
                 "name": {
                     "type": "string",
@@ -404,13 +405,8 @@ const docTemplate = `{
         "server.FeedCreateResponse": {
             "type": "object",
             "properties": {
-                "feed": {
-                    "description": "TODO: limit fields",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/models.Feed"
-                        }
-                    ]
+                "id": {
+                    "type": "string"
                 }
             }
         },

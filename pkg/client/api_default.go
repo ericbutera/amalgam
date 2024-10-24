@@ -26,7 +26,7 @@ type DefaultAPIService service
 type ApiArticlesIdGetRequest struct {
 	ctx context.Context
 	ApiService *DefaultAPIService
-	id int32
+	id string
 }
 
 func (r ApiArticlesIdGetRequest) Execute() (*ServerArticleResponse, *http.Response, error) {
@@ -42,7 +42,7 @@ view article
  @param id Article ID
  @return ApiArticlesIdGetRequest
 */
-func (a *DefaultAPIService) ArticlesIdGet(ctx context.Context, id int32) ApiArticlesIdGetRequest {
+func (a *DefaultAPIService) ArticlesIdGet(ctx context.Context, id string) ApiArticlesIdGetRequest {
 	return ApiArticlesIdGetRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -248,7 +248,7 @@ func (a *DefaultAPIService) FeedsGetExecute(r ApiFeedsGetRequest) (*ServerFeedsR
 type ApiFeedsIdArticlesGetRequest struct {
 	ctx context.Context
 	ApiService *DefaultAPIService
-	id int32
+	id string
 }
 
 func (r ApiFeedsIdArticlesGetRequest) Execute() (*ServerFeedArticlesResponse, *http.Response, error) {
@@ -264,7 +264,7 @@ list articles for a feed
  @param id Feed ID
  @return ApiFeedsIdArticlesGetRequest
 */
-func (a *DefaultAPIService) FeedsIdArticlesGet(ctx context.Context, id int32) ApiFeedsIdArticlesGetRequest {
+func (a *DefaultAPIService) FeedsIdArticlesGet(ctx context.Context, id string) ApiFeedsIdArticlesGetRequest {
 	return ApiFeedsIdArticlesGetRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -361,7 +361,7 @@ func (a *DefaultAPIService) FeedsIdArticlesGetExecute(r ApiFeedsIdArticlesGetReq
 type ApiFeedsIdGetRequest struct {
 	ctx context.Context
 	ApiService *DefaultAPIService
-	id int32
+	id string
 }
 
 func (r ApiFeedsIdGetRequest) Execute() (*ServerFeedResponse, *http.Response, error) {
@@ -377,7 +377,7 @@ view feed
  @param id Feed ID
  @return ApiFeedsIdGetRequest
 */
-func (a *DefaultAPIService) FeedsIdGet(ctx context.Context, id int32) ApiFeedsIdGetRequest {
+func (a *DefaultAPIService) FeedsIdGet(ctx context.Context, id string) ApiFeedsIdGetRequest {
 	return ApiFeedsIdGetRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -406,9 +406,6 @@ func (a *DefaultAPIService) FeedsIdGetExecute(r ApiFeedsIdGetRequest) (*ServerFe
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
-	if r.id < 1 {
-		return localVarReturnValue, nil, reportError("id must be greater than 1")
-	}
 
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
@@ -477,7 +474,7 @@ func (a *DefaultAPIService) FeedsIdGetExecute(r ApiFeedsIdGetRequest) (*ServerFe
 type ApiFeedsIdPutRequest struct {
 	ctx context.Context
 	ApiService *DefaultAPIService
-	id int32
+	id string
 	request *ServerUpdateFeedRequest
 }
 
@@ -500,7 +497,7 @@ update feed
  @param id Feed ID
  @return ApiFeedsIdPutRequest
 */
-func (a *DefaultAPIService) FeedsIdPut(ctx context.Context, id int32) ApiFeedsIdPutRequest {
+func (a *DefaultAPIService) FeedsIdPut(ctx context.Context, id string) ApiFeedsIdPutRequest {
 	return ApiFeedsIdPutRequest{
 		ApiService: a,
 		ctx: ctx,

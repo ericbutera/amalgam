@@ -1,5 +1,5 @@
 CREATE TABLE `feeds` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `id` VARCHAR(36) NOT NULL DEFAULT(UUID()),
   `created_at` datetime(3) DEFAULT NULL,
   `updated_at` datetime(3) DEFAULT NULL,
   `deleted_at` datetime(3) DEFAULT NULL,
@@ -10,11 +10,11 @@ CREATE TABLE `feeds` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `articles` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `id` VARCHAR(36) NOT NULL DEFAULT(UUID()),
+  `feed_id` VARCHAR(36) NOT NULL,
   `created_at` datetime(3) DEFAULT NULL,
   `updated_at` datetime(3) DEFAULT NULL,
   `deleted_at` datetime(3) DEFAULT NULL,
-  `feed_id` bigint unsigned DEFAULT NULL,
   `url` longtext,
   `title` longtext,
   `image_url` longtext,
@@ -30,7 +30,7 @@ CREATE TABLE `articles` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `users` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `id` VARCHAR(36) NOT NULL DEFAULT(UUID()),
   `created_at` datetime(3) DEFAULT NULL,
   `updated_at` datetime(3) DEFAULT NULL,
   `deleted_at` datetime(3) DEFAULT NULL,
@@ -45,8 +45,8 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `user_feeds` (
-  `user_id` int NOT NULL,
-  `feed_id` int NOT NULL,
+  `user_id` VARCHAR(36) NOT NULL,
+  `feed_id` VARCHAR(36) NOT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `viewed_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `unread_start_at` datetime NOT NULL,
@@ -54,9 +54,9 @@ CREATE TABLE `user_feeds` (
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
 
 CREATE TABLE `user_articles` (
-  `feed_id` int NOT NULL,
-  `user_id` int NOT NULL,
-  `article_id` int NOT NULL,
+  `feed_id` VARCHAR(36) NOT NULL,
+  `user_id` VARCHAR(36) NOT NULL,
+  `article_id` VARCHAR(36) NOT NULL,
   `viewed_at` datetime NOT NULL,
   PRIMARY KEY (`feed_id`, `user_id`, `article_id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb3;

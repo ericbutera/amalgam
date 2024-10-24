@@ -15,7 +15,7 @@ paths:
         name: id
         required: true
         schema:
-          type: integer
+          type: string
       responses:
         "200":
           content:
@@ -86,8 +86,7 @@ paths:
         name: id
         required: true
         schema:
-          minimum: 1
-          type: integer
+          type: string
       responses:
         "200":
           content:
@@ -110,7 +109,7 @@ paths:
         name: id
         required: true
         schema:
-          type: integer
+          type: string
       requestBody:
         content:
           application/json:
@@ -144,7 +143,7 @@ paths:
         name: id
         required: true
         schema:
-          type: integer
+          type: string
       responses:
         "200":
           content:
@@ -188,17 +187,17 @@ components:
             valid: true
             time: time
           name: Example
-          id: 1
+          id: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
           url: https://example.com/
           updatedAt: 2021-01-01T00:00:00Z
         deletedAt:
           valid: true
           time: time
-        feedId: 1
+        feedId: "1"
         authorName: Eric Butera
         imageUrl: https://example.com/image.jpg
         guid: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
-        id: 1
+        id: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
         updatedAt: 2021-01-01T00:00:00Z
       properties:
         authorEmail:
@@ -218,14 +217,16 @@ components:
         feed:
           $ref: '#/components/schemas/models.Feed'
         feedId:
-          example: 1
-          type: integer
+          example: "1"
+          type: string
         guid:
           example: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
           type: string
         id:
-          example: 1
-          type: integer
+          description: ID        uint           `gorm:"primarykey" json:"id" binding:"required"
+            example:"1"`
+          example: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
+          type: string
         imageUrl:
           example: https://example.com/image.jpg
           type: string
@@ -253,7 +254,7 @@ components:
           valid: true
           time: time
         name: Example
-        id: 1
+        id: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
         url: https://example.com/
         updatedAt: 2021-01-01T00:00:00Z
       properties:
@@ -263,8 +264,10 @@ components:
         deletedAt:
           $ref: '#/components/schemas/gorm.DeletedAt'
         id:
-          example: 1
-          type: integer
+          description: ID        uint           `gorm:"primarykey" json:"id" binding:"required"
+            example:"1"`
+          example: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
+          type: string
         name:
           example: Example
           type: string
@@ -293,17 +296,17 @@ components:
               valid: true
               time: time
             name: Example
-            id: 1
+            id: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
             url: https://example.com/
             updatedAt: 2021-01-01T00:00:00Z
           deletedAt:
             valid: true
             time: time
-          feedId: 1
+          feedId: "1"
           authorName: Eric Butera
           imageUrl: https://example.com/image.jpg
           guid: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
-          id: 1
+          id: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
           updatedAt: 2021-01-01T00:00:00Z
       properties:
         article:
@@ -348,17 +351,17 @@ components:
               valid: true
               time: time
             name: Example
-            id: 1
+            id: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
             url: https://example.com/
             updatedAt: 2021-01-01T00:00:00Z
           deletedAt:
             valid: true
             time: time
-          feedId: 1
+          feedId: "1"
           authorName: Eric Butera
           imageUrl: https://example.com/image.jpg
           guid: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
-          id: 1
+          id: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
           updatedAt: 2021-01-01T00:00:00Z
         - preview: Article preview text. May contain HTML.
           authorEmail: example@example.com
@@ -372,17 +375,17 @@ components:
               valid: true
               time: time
             name: Example
-            id: 1
+            id: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
             url: https://example.com/
             updatedAt: 2021-01-01T00:00:00Z
           deletedAt:
             valid: true
             time: time
-          feedId: 1
+          feedId: "1"
           authorName: Eric Butera
           imageUrl: https://example.com/image.jpg
           guid: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
-          id: 1
+          id: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
           updatedAt: 2021-01-01T00:00:00Z
       properties:
         articles:
@@ -392,13 +395,10 @@ components:
       type: object
     server.FeedCreateResponse:
       example:
-        feed: "{}"
+        id: id
       properties:
-        feed:
-          allOf:
-          - $ref: '#/components/schemas/models.Feed'
-          description: "TODO: limit fields"
-          type: object
+        id:
+          type: string
       type: object
     server.FeedResponse:
       example:
@@ -408,7 +408,7 @@ components:
             valid: true
             time: time
           name: Example
-          id: 1
+          id: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
           url: https://example.com/
           updatedAt: 2021-01-01T00:00:00Z
       properties:
@@ -423,7 +423,7 @@ components:
             valid: true
             time: time
           name: Example
-          id: 1
+          id: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
           url: https://example.com/
           updatedAt: 2021-01-01T00:00:00Z
       properties:
@@ -438,7 +438,7 @@ components:
             valid: true
             time: time
           name: Example
-          id: 1
+          id: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
           url: https://example.com/
           updatedAt: 2021-01-01T00:00:00Z
         - createdAt: 2021-01-01T00:00:00Z
@@ -446,7 +446,7 @@ components:
             valid: true
             time: time
           name: Example
-          id: 1
+          id: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
           url: https://example.com/
           updatedAt: 2021-01-01T00:00:00Z
       properties:

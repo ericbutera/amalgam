@@ -27,9 +27,10 @@ type ModelsArticle struct {
 	CreatedAt *string `json:"createdAt,omitempty"`
 	DeletedAt *GormDeletedAt `json:"deletedAt,omitempty"`
 	Feed *ModelsFeed `json:"feed,omitempty"`
-	FeedId int32 `json:"feedId"`
+	FeedId string `json:"feedId"`
 	Guid *string `json:"guid,omitempty"`
-	Id int32 `json:"id"`
+	// ID        uint           `gorm:\"primarykey\" json:\"id\" binding:\"required\" example:\"1\"`
+	Id string `json:"id"`
 	ImageUrl *string `json:"imageUrl,omitempty"`
 	Preview *string `json:"preview,omitempty"`
 	Title *string `json:"title,omitempty"`
@@ -43,7 +44,7 @@ type _ModelsArticle ModelsArticle
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewModelsArticle(feedId int32, id int32, url string) *ModelsArticle {
+func NewModelsArticle(feedId string, id string, url string) *ModelsArticle {
 	this := ModelsArticle{}
 	this.FeedId = feedId
 	this.Id = id
@@ -252,9 +253,9 @@ func (o *ModelsArticle) SetFeed(v ModelsFeed) {
 }
 
 // GetFeedId returns the FeedId field value
-func (o *ModelsArticle) GetFeedId() int32 {
+func (o *ModelsArticle) GetFeedId() string {
 	if o == nil {
-		var ret int32
+		var ret string
 		return ret
 	}
 
@@ -263,7 +264,7 @@ func (o *ModelsArticle) GetFeedId() int32 {
 
 // GetFeedIdOk returns a tuple with the FeedId field value
 // and a boolean to check if the value has been set.
-func (o *ModelsArticle) GetFeedIdOk() (*int32, bool) {
+func (o *ModelsArticle) GetFeedIdOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -271,7 +272,7 @@ func (o *ModelsArticle) GetFeedIdOk() (*int32, bool) {
 }
 
 // SetFeedId sets field value
-func (o *ModelsArticle) SetFeedId(v int32) {
+func (o *ModelsArticle) SetFeedId(v string) {
 	o.FeedId = v
 }
 
@@ -308,9 +309,9 @@ func (o *ModelsArticle) SetGuid(v string) {
 }
 
 // GetId returns the Id field value
-func (o *ModelsArticle) GetId() int32 {
+func (o *ModelsArticle) GetId() string {
 	if o == nil {
-		var ret int32
+		var ret string
 		return ret
 	}
 
@@ -319,7 +320,7 @@ func (o *ModelsArticle) GetId() int32 {
 
 // GetIdOk returns a tuple with the Id field value
 // and a boolean to check if the value has been set.
-func (o *ModelsArticle) GetIdOk() (*int32, bool) {
+func (o *ModelsArticle) GetIdOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -327,7 +328,7 @@ func (o *ModelsArticle) GetIdOk() (*int32, bool) {
 }
 
 // SetId sets field value
-func (o *ModelsArticle) SetId(v int32) {
+func (o *ModelsArticle) SetId(v string) {
 	o.Id = v
 }
 

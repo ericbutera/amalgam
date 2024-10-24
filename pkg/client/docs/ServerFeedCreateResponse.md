@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Feed** | Pointer to [**ModelsFeed**](ModelsFeed.md) | TODO: limit fields | [optional] 
+**Id** | Pointer to **string** |  | [optional] 
 
 ## Methods
 
@@ -25,30 +25,30 @@ NewServerFeedCreateResponseWithDefaults instantiates a new ServerFeedCreateRespo
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
 
-### GetFeed
+### GetId
 
-`func (o *ServerFeedCreateResponse) GetFeed() ModelsFeed`
+`func (o *ServerFeedCreateResponse) GetId() string`
 
-GetFeed returns the Feed field if non-nil, zero value otherwise.
+GetId returns the Id field if non-nil, zero value otherwise.
 
-### GetFeedOk
+### GetIdOk
 
-`func (o *ServerFeedCreateResponse) GetFeedOk() (*ModelsFeed, bool)`
+`func (o *ServerFeedCreateResponse) GetIdOk() (*string, bool)`
 
-GetFeedOk returns a tuple with the Feed field if it's non-nil, zero value otherwise
+GetIdOk returns a tuple with the Id field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetFeed
+### SetId
 
-`func (o *ServerFeedCreateResponse) SetFeed(v ModelsFeed)`
+`func (o *ServerFeedCreateResponse) SetId(v string)`
 
-SetFeed sets Feed field to given value.
+SetId sets Id field to given value.
 
-### HasFeed
+### HasId
 
-`func (o *ServerFeedCreateResponse) HasFeed() bool`
+`func (o *ServerFeedCreateResponse) HasId() bool`
 
-HasFeed returns a boolean if a field has been set.
+HasId returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
