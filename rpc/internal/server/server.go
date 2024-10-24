@@ -32,6 +32,8 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+// TODO: combine common boilerplate code from rpc client & server
+
 type Server struct {
 	metricAddress string
 	port          string
@@ -139,7 +141,7 @@ func New(opts ...Option) (*Server, error) {
 	srvMetrics := newServerMetrics()
 	registry.MustRegister(srvMetrics)
 	server.newPromMetrics(registry)
-	logger, logOpts := newServerLogger()
+	logger, logOpts := newLogger()
 
 	server.srv = grpc.NewServer(
 		grpc.StatsHandler(otelgrpc.NewServerHandler()),
@@ -188,11 +190,17 @@ func New(opts ...Option) (*Server, error) {
 	return &server, nil
 }
 
-func newServerLogger() (logging.Logger, []logging.Option) {
+func newLogger() (logging.Logger, []logging.Option) {
+	logTraceID := func(ctx context.Context) logging.Fields {
+		if span := trace.SpanContextFromContext(ctx); span.IsSampled() {
+			return logging.Fields{"traceID", span.TraceID().String()}
+		}
+		return nil
+	}
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil)) // TODO: why does go insist on using stderr?
 	opts := []logging.Option{
 		logging.WithLogOnEvents(logging.StartCall, logging.FinishCall),
-		// Add any other option (check functions starting with logging.With).
+		logging.WithFieldsFromContext(logTraceID),
 	}
 	return interceptorLogger(logger), opts
 }

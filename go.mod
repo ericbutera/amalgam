@@ -4,6 +4,7 @@ go 1.23.2
 
 require (
 	github.com/99designs/gqlgen v0.17.55
+	github.com/99designs/gqlgen-contrib v0.1.0
 	github.com/gin-contrib/cors v1.7.2
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-errors/errors v1.4.2
@@ -18,6 +19,7 @@ require (
 	github.com/orandin/slog-gorm v1.4.0
 	github.com/penglongli/gin-metrics v0.1.10
 	github.com/prometheus/client_golang v1.20.5
+	github.com/ravilushqa/otelgqlgen v0.17.0
 	github.com/samber/lo v1.47.0
 	github.com/samber/slog-gin v1.13.5
 	github.com/spf13/cobra v1.8.1
@@ -356,6 +358,7 @@ require (
 	gitlab.com/bosi/decorder v0.4.2 // indirect
 	go-simpler.org/musttag v0.12.2 // indirect
 	go-simpler.org/sloglint v0.7.2 // indirect
+	go.opentelemetry.io/contrib v1.29.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.54.0 // indirect
 	go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc v1.28.0 // indirect
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc v1.29.0 // indirect

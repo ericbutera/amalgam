@@ -18,26 +18,28 @@ curl -v http://localhost:3000/ # or open in browser
 
 ### [Monolith REST API](./api/README.md)
 
-A classic "monolith" REST api built with gin-gonic.
+A classic "monolith" REST api built with gin-gonic. This service would be available to the public. It will be replaced with GraphQL as the project progresses.
+
+One of the major points of this project is the OpenAPI specification. It is generated from the gin endpoint code and is used to generate API clients in various languages.
 
 - [API](http://localhost:8080)
 - [metrics](http://localhost:8080/metrics)
 
 ### [Graph (GraphQL)](./graph/README.md)
 
-[GraphQL API](http://localhost:8082). The goal is to show how to quickly build out public facing features.
+[GraphQL API](http://localhost:8082). The goal is to show how to quickly build out public facing features. GraphQL would be available to public.
 
 ### [User Interface (UI)](./ui/README.md)
 
-A Next.JS app [user interface](http://localhost:3000/) for interacting with the project.
+A Next.JS app [user interface](http://localhost:3000/) for interacting with the project. At first it uses the REST API, but will be updated to use the GraphQL API.
 
 ### [Command Line Interface (CLI)](./cli/README.md)
 
-A way to interact with the project using the command line. A stretch goal will be to add a Text User Interface (TUI).
+A way to interact with the project using the command line. This project aims to be low-code as it uses a pre-generated REST API client. A stretch goal will be to add a Text User Interface (TUI).
 
 ### [RPC (gRPC)](./rpc/README.md)
 
-A simple gRPC service that can be used to show how to convert a monolith into microservices architecture.
+A simple gRPC service that can be used to show how to convert a monolith into microservices architecture. This service would only be available on the internal VPC.
 
 ### Data Pipeline
 
@@ -51,6 +53,10 @@ Observability is the heart of quality software. This project uses a demonstratio
 - [Prometheus](http://localhost:9090/)
 - [API Dashboard](http://localhost:3001/d/amalgam-gin-dashboard/gin-application-metrics?orgId=1&refresh=5s)
 - [Amalgam Dashboard](http://localhost:3001/d/amalgam-dashboard/amalgam?orgId=1&refresh=5s)
+
+TODO:
+
+- correlate cross service traces (currently graph won't show the rpc to database call)
 
 ### [K6 (testing)](./k6/README.md)
 
@@ -72,6 +78,7 @@ One of the major goals of this project is to show how to quickly build integrati
   - service account
   - ingress
   - deployment + service
+  - base chart to share otel conf
 - [just](https://github.com/casey/just)
 - ~~graphql~~
 - data pipeline demos
