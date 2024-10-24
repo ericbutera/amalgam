@@ -1,0 +1,7 @@
+query Feeds {
+    feeds {
+        id
+        url
+        name
+    }
+}

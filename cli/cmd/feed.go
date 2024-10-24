@@ -3,9 +3,11 @@ package cmd
 import (
 	"fmt"
 	"log/slog"
+	"net/http"
 	"net/url"
 
-	"github.com/ericbutera/amalgam/pkg/client"
+	graph "github.com/Khan/genqlient/graphql"
+	graph_client "github.com/ericbutera/amalgam/graph/pkg/client"
 	"github.com/spf13/cobra"
 )
 
@@ -17,11 +19,24 @@ func NewFeedCmd() *cobra.Command {
 	}
 }
 
-func newClient() *client.APIClient {
-	cfg := client.NewConfiguration()
-	cfg.Scheme = "http"
-	cfg.Host = "localhost:8080" // TODO: make this configurable
-	return client.NewAPIClient(cfg)
+// Before:
+// func newClient() *client.APIClient {
+// 	cfg := client.NewConfiguration()
+// 	cfg.Scheme = "http"
+// 	cfg.Host = "localhost:8080" // TODO: make this configurable
+// 	return client.NewAPIClient(cfg)
+// }
+// res, _, err := newClient().
+// 	DefaultAPI.
+// 	FeedsGet(cmd.Context()).
+// 	Execute()
+
+func newGraphClient() graph.Client {
+	httpClient := http.Client{}
+	return graph.NewClient(
+		"http://localhost:8082/query", // TODO: make this configurable
+		&httpClient,
+	)
 }
 
 func NewFeedListCmd() *cobra.Command {
@@ -29,15 +44,12 @@ func NewFeedListCmd() *cobra.Command {
 		Use:   "list",
 		Short: "list feeds",
 		Run: func(cmd *cobra.Command, args []string) {
-			res, http, err := newClient().
-				DefaultAPI.
-				FeedsGet(cmd.Context()).
-				Execute()
+			res, err := graph_client.Feeds(cmd.Context(), newGraphClient())
 			if err != nil {
 				slog.Error("failed to list feeds", "error", err)
 				return
 			}
-			slog.Debug("feed count", "feeds", len(res.Feeds), "code", http.StatusCode)
+			slog.Debug("feed count", "feeds", len(res.Feeds))
 			for _, feed := range res.Feeds {
 				fmt.Printf("feed id: %s, url: %s\n", feed.Id, feed.Url)
 			}

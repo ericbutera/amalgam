@@ -4,7 +4,7 @@ go 1.23.2
 
 require (
 	github.com/99designs/gqlgen v0.17.55
-	github.com/99designs/gqlgen-contrib v0.1.0
+	github.com/Khan/genqlient v0.7.0
 	github.com/gin-contrib/cors v1.7.2
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-errors/errors v1.4.2

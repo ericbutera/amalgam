@@ -11,6 +11,8 @@ import (
 	_ "github.com/ericbutera/amalgam/api/docs"
 )
 
+// TODO: do not show raw errors to the user
+
 /*
 Routes:
 GET /health
