@@ -4,10 +4,12 @@ import (
 	"context"
 	"errors"
 	"log/slog"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 
+	"github.com/Khan/genqlient/graphql"
 	"github.com/spf13/cobra"
 
 	"github.com/ericbutera/amalgam/api/internal/config"
@@ -55,10 +57,15 @@ func runServer(cmd *cobra.Command, args []string) {
 	if err != nil {
 		quit(ctx, err)
 	}
+	graphClient, err := newGraphClient(cfg.GraphHost)
+	if err != nil {
+		quit(ctx, err)
+	}
 
 	srv, err := server.New(
 		server.WithConfig(cfg),
 		server.WithDb(d),
+		server.WithGraphClient(graphClient),
 	)
 	if err != nil {
 		quit(ctx, err)
@@ -77,4 +84,15 @@ func runServer(cmd *cobra.Command, args []string) {
 		stop()
 	}
 	quit(ctx, err)
+}
+
+func newGraphClient(host string) (graphql.Client, error) {
+	if host == "" {
+		return nil, errors.New("graph host not set")
+	}
+	httpClient := http.Client{}
+	return graphql.NewClient(
+		host,
+		&httpClient,
+	), nil
 }

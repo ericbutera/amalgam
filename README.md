@@ -29,9 +29,18 @@ One of the major points of this project is the OpenAPI specification. It is gene
 
 [GraphQL API](http://localhost:8082). The goal is to show how to quickly build out public facing features. GraphQL would be available to public.
 
+Resources:
+
+- [tools and libraries](https://graphql.org/community/tools-and-libraries/?tags=go)
+
 ### [User Interface (UI)](./ui/README.md)
 
 A Next.JS app [user interface](http://localhost:3000/) for interacting with the project. At first it uses the REST API, but will be updated to use the GraphQL API.
+
+TODO:
+
+- [apollo-client](https://github.com/apollographql/apollo-client)
+- [relay](https://github.com/facebook/relay)
 
 ### [Command Line Interface (CLI)](./cli/README.md)
 
@@ -45,7 +54,7 @@ A simple gRPC service that can be used to show how to convert a monolith into mi
 
 TODO: ingest various RSS feeds using different technologies and strategies.
 
-## [LGTM Observability Stack](./lgtm/README.md)
+### [LGTM Observability Stack](./lgtm/README.md)
 
 Observability is the heart of quality software. This project uses a demonstration LGTM stack to show how various pieces of the system can be monitored.
 
@@ -56,11 +65,21 @@ Observability is the heart of quality software. This project uses a demonstratio
 
 TODO:
 
-- correlate cross service traces (currently graph won't show the rpc to database call)
+- [configure Loki](https://grafana.com/docs/loki/latest/)
 
 ### [K6 (testing)](./k6/README.md)
 
 K6 tests have been [generated](./k6/tests/README.md) from the OpenAPI spec. They are a high level way of verifying the API is working as expected. This is a wonderful way to have end-to-end tests that are easy to write and maintain. Next steps might be adding load testing.
+
+## Domain Logic
+
+A simplified version of domain driven design.
+
+- [service](./internal/service/service.go)
+
+TODO:
+
+- [validation](https://github.com/go-playground/validator/blob/master/_examples/struct-level/main.go)
 
 ## Code generation
 
@@ -81,8 +100,5 @@ One of the major goals of this project is to show how to quickly build integrati
   - base chart to share otel conf
 - [just](https://github.com/casey/just)
 - ~~graphql~~
-- data pipeline demos
 - fake feed data generation
-- move api/docs to static file server
-  - research: <https://github.com/scalar/scalar>
 - [ci gate: coverage](https://github.com/vladopajic/go-test-coverage)

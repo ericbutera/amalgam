@@ -35,6 +35,8 @@ spec:
           env:
             - name: PORT
               value: "8080"
+            - name: GRAPH_HOST
+              value: "http://graph:8080/query"
             - name: GIN_MODE
               value: "debug"
             - name: OTEL_ENABLE
@@ -69,6 +71,7 @@ spec:
               value: "mysql"
             - name: DB_MYSQL_DSN # Note: DB_MYSQL_DSN must be a secret in production env
               value: "amalgam-user:amalgam-password@tcp(mysql:3306)/amalgam-db?charset=utf8mb4&parseTime=True&loc=Local"
+
             # root can be used to allow gorm migrations (but shouldn't be used during operation):
             # - name: DB_MYSQL_DSN # Note: DB_MYSQL_DSN must be a secret in production env
             #   value: "root:password@tcp(mysql:3306)/amalgam-db?charset=utf8mb4&parseTime=True&loc=Local"
