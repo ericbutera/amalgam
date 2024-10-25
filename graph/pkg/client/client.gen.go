@@ -32,6 +32,38 @@ type FeedsResponse struct {
 // GetFeeds returns FeedsResponse.Feeds, and is useful for accessing the field via an interface.
 func (v *FeedsResponse) GetFeeds() []FeedsFeedsFeed { return v.Feeds }
 
+// __getArticlesInput is used internally by genqlient
+type __getArticlesInput struct {
+	FeedId string `json:"feedId"`
+}
+
+// GetFeedId returns __getArticlesInput.FeedId, and is useful for accessing the field via an interface.
+func (v *__getArticlesInput) GetFeedId() string { return v.FeedId }
+
+// getArticlesArticlesArticle includes the requested fields of the GraphQL type Article.
+type getArticlesArticlesArticle struct {
+	Id      string `json:"id"`
+	Title   string `json:"title"`
+	Content string `json:"content"`
+}
+
+// GetId returns getArticlesArticlesArticle.Id, and is useful for accessing the field via an interface.
+func (v *getArticlesArticlesArticle) GetId() string { return v.Id }
+
+// GetTitle returns getArticlesArticlesArticle.Title, and is useful for accessing the field via an interface.
+func (v *getArticlesArticlesArticle) GetTitle() string { return v.Title }
+
+// GetContent returns getArticlesArticlesArticle.Content, and is useful for accessing the field via an interface.
+func (v *getArticlesArticlesArticle) GetContent() string { return v.Content }
+
+// getArticlesResponse is returned by getArticles on success.
+type getArticlesResponse struct {
+	Articles []getArticlesArticlesArticle `json:"articles"`
+}
+
+// GetArticles returns getArticlesResponse.Articles, and is useful for accessing the field via an interface.
+func (v *getArticlesResponse) GetArticles() []getArticlesArticlesArticle { return v.Articles }
+
 // The query or mutation executed by Feeds.
 const Feeds_Operation = `
 query Feeds {
@@ -54,6 +86,43 @@ func Feeds(
 	var err_ error
 
 	var data_ FeedsResponse
+	resp_ := &graphql.Response{Data: &data_}
+
+	err_ = client_.MakeRequest(
+		ctx_,
+		req_,
+		resp_,
+	)
+
+	return &data_, err_
+}
+
+// The query or mutation executed by getArticles.
+const getArticles_Operation = `
+query getArticles ($feedId: ID!) {
+	articles(feedId: $feedId) {
+		id
+		title
+		content
+	}
+}
+`
+
+func getArticles(
+	ctx_ context.Context,
+	client_ graphql.Client,
+	feedId string,
+) (*getArticlesResponse, error) {
+	req_ := &graphql.Request{
+		OpName: "getArticles",
+		Query:  getArticles_Operation,
+		Variables: &__getArticlesInput{
+			FeedId: feedId,
+		},
+	}
+	var err_ error
+
+	var data_ getArticlesResponse
 	resp_ := &graphql.Response{Data: &data_}
 
 	err_ = client_.MakeRequest(
