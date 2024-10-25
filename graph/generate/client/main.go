@@ -28,6 +28,4 @@ func main() {
 	generate.Main()
 }
 
-//go:generate go get github.com/suessflorian/gqlfetch
-//go:generate go get github.com/Khan/genqlient/generate
 //go:generate go run github.com/Khan/genqlient genqlient.yaml
