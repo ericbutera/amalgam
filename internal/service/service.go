@@ -11,6 +11,7 @@ import (
 	svc_model "github.com/ericbutera/amalgam/internal/service/models"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 var (
@@ -25,6 +26,7 @@ type Service interface {
 	GetFeed(ctx context.Context, id string) (*svc_model.Feed, error)
 	GetArticlesByFeed(ctx context.Context, feedId string) ([]svc_model.Article, error)
 	GetArticle(ctx context.Context, id string) (*svc_model.Article, error)
+	SaveArticle(ctx context.Context, article *svc_model.Article) error
 }
 
 // TODO: move validation from api into service
@@ -58,6 +60,7 @@ func (s *GormService) Feeds(ctx context.Context) ([]svc_model.Feed, error) {
 
 func (s *GormService) CreateFeed(ctx context.Context, feed *svc_model.Feed) error {
 	// TODO: normalize URL to prevent duplicates
+	// TODO: validation
 	dbFeed := &db_model.Feed{}
 	copygen.ServiceToDbFeed(dbFeed, feed)
 	return s.query(ctx).Transaction(func(tx *gorm.DB) error {
@@ -77,6 +80,7 @@ func (s *GormService) CreateFeed(ctx context.Context, feed *svc_model.Feed) erro
 }
 
 func (s *GormService) UpdateFeed(ctx context.Context, id string, feed *svc_model.Feed) error {
+	// TODO: validation
 	dbFeed := &db_model.Feed{}
 	copygen.ServiceToDbFeed(dbFeed, feed)
 	result := s.query(ctx).
@@ -129,4 +133,22 @@ func (s *GormService) GetArticle(ctx context.Context, id string) (*svc_model.Art
 		return nil, result.Error
 	}
 	return &article, nil
+}
+
+func (s *GormService) SaveArticle(ctx context.Context, article *svc_model.Article) error {
+	// TODO: validation
+	if article.FeedID == "" {
+		return errors.New("missing feed ID")
+	}
+	dbArticle := &db_model.Article{}
+	copygen.ServiceToDbArticle(dbArticle, article)
+	result := s.query(ctx).
+		Model(&db_model.Article{}).
+		Omit(clause.Associations).
+		Create(&dbArticle)
+	if err := result.Error; err != nil {
+		return err
+	}
+	article.ID = dbArticle.ID
+	return nil
 }

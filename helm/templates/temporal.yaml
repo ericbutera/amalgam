@@ -6,7 +6,7 @@ spec:
   selector:
     app: temporal
   ports:
-    - name: temporal-service
+    - name: temporal
       protocol: TCP
       port: 7233
       targetPort: 7233
@@ -16,8 +16,8 @@ spec:
       targetPort: 8233
     - name: metrics
       protocol: TCP
-      port: 19090
-      targetPort: 19090
+      port: 9090
+      targetPort: 9090
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -37,8 +37,16 @@ spec:
         - name: temporal
           image: temporalio/server
           command:
-            ["temporal", "server", "start-dev", "--metrics-port", "19090"]
+            [
+              "temporal",
+              "server",
+              "start-dev",
+              "--metrics-port",
+              "9090",
+              "--ip",
+              "0.0.0.0",
+            ]
           ports:
             - containerPort: 7233
             - containerPort: 8233
-            - containerPort: 19090
+            - containerPort: 9090

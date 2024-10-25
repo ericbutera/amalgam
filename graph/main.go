@@ -47,7 +47,7 @@ func main() {
 
 	gql_prom.Register()
 
-	c, err := rpc.NewClient(cfg.RpcHost)
+	c, err := rpc.NewClient(cfg.RpcHost, cfg.RpcInsecure)
 	if err != nil {
 		slog.Error("failed to connect to rpc server", "error", err)
 		os.Exit(1)

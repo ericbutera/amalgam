@@ -1,4 +1,3 @@
-# TODO: helm chart w/ values.yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -39,6 +38,8 @@ spec:
               value: "http"
             - name: RPC_HOST
               value: "rpc:50051"
+            - name: RPC_INSECURE
+              value: "true"
             - name: OTEL_ENABLE
               value: "true"
             - name: OTEL_SERVICE_NAME

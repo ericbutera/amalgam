@@ -18,19 +18,16 @@ import (
 
 // TODO: combine common boilerplate code from rpc client & server
 
-type client struct {
+type Rpc struct {
 	Client pb.FeedServiceClient
 	Conn   *grpc.ClientConn
 }
 
-func NewClient(target string, opts ...Option) (*client, error) {
+// TODO: find a cleaner way to handle Client and Conn. this return value is confusing
+func NewClient(target string, useInsecure bool) (*Rpc, error) {
 	logger, logOpts := newLogger()
 
-	creds := insecure.NewCredentials() // TODO: use secure by default!
-
-	conn, err := grpc.NewClient(
-		target,
-		grpc.WithTransportCredentials(creds),
+	dialOpts := []grpc.DialOption{
 		grpc.WithStatsHandler(otelgrpc.NewClientHandler()),
 		grpc.WithChainUnaryInterceptor(
 			timeout.UnaryClientInterceptor(10*time.Second),
@@ -39,21 +36,25 @@ func NewClient(target string, opts ...Option) (*client, error) {
 		grpc.WithChainStreamInterceptor(
 			logging.StreamClientInterceptor(logger, logOpts...),
 		),
+	}
+
+	if useInsecure {
+		dialOpts = append(dialOpts, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	}
+
+	conn, err := grpc.NewClient(
+		target,
+		dialOpts...,
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	return &client{
+	return &Rpc{
 		Client: pb.NewFeedServiceClient(conn),
 		Conn:   conn,
 	}, nil
 }
-
-type Option func(*client) error
-
-// TODO: options!
-// func WithTimeout(seconds int) Option {}
 
 func newLogger() (logging.Logger, []logging.Option) {
 	logTraceID := func(ctx context.Context) logging.Fields {
