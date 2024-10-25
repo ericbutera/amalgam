@@ -143,7 +143,14 @@ load('ext://tests/golang', 'test_go')
 
 # these unit tests are fast/well cached, so it's easy to run them all whenever a file changes and get fast feedback
 # (The `skipintegration` tag prevents this test resource from running our very slow integration test suite)
-test_go('go-unit-tests', '.', '.', recursive=True, tags=['skipintegration'], labels=['test'])
+test_go('go-unit-tests', '.', '.',
+  recursive=True,
+  tags=['skipintegration'],
+  labels=['test'],
+  ignore=[
+    '**/bin/app',
+  ]
+)
 
 # TODO: integration tests
 # the integration tests are slow and clunky, so make them available from the sidebar
