@@ -7,6 +7,7 @@ type Config struct {
 	CorsAllowMethods  []string `mapstructure:"cors_allow_methods"`
 	CorsAllowHeaders  []string `mapstructure:"cors_allow_headers"`
 	CorsExposeHeaders []string `mapstructure:"cors_expose_headers"`
+	GraphHost         string   `mapstructure:"graph_host"`
 	// TODO:
 	// log level
 }
@@ -16,4 +17,5 @@ func init() {
 	viper.SetDefault("cors_allow_methods", []string{})
 	viper.SetDefault("cors_allow_headers", []string{})
 	viper.SetDefault("cors_expose_headers", []string{})
+	viper.SetDefault("graph_host", "")
 }

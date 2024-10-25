@@ -3,6 +3,7 @@ package server
 import (
 	"errors"
 
+	"github.com/Khan/genqlient/graphql"
 	"github.com/ericbutera/amalgam/api/internal/config"
 	"github.com/ericbutera/amalgam/internal/service"
 	"github.com/gin-gonic/gin"
@@ -14,9 +15,12 @@ const (
 )
 
 type server struct {
-	config  *config.Config
-	router  *gin.Engine
-	db      *gorm.DB
+	config      *config.Config
+	router      *gin.Engine
+	graphClient graphql.Client
+	// Deprecated: use graphClient
+	db *gorm.DB
+	// Deprecated: use graphClient
 	service *service.Service
 }
 
@@ -55,6 +59,13 @@ func WithConfig(cfg *config.Config) func(*server) error {
 func WithDb(db *gorm.DB) func(*server) error {
 	return func(s *server) error {
 		s.db = db
+		return nil
+	}
+}
+
+func WithGraphClient(client graphql.Client) func(*server) error {
+	return func(s *server) error {
+		s.graphClient = client
 		return nil
 	}
 }

@@ -57,6 +57,9 @@ k8s_resource(
       port_forward(9091, 9090, 'metrics'),
     ],
     resource_deps=["mysql-migrate"],
+    links=[
+      link("https://learning.postman.com/docs/sending-requests/grpc/grpc-client-overview/", "gRPC in postman"),
+    ],
     labels=["app"],
 )
 
@@ -81,6 +84,7 @@ k8s_resource("graph",
   links=[
     link("http://localhost:8082/query", "query"),
     link("http://localhost:8082/metrics", "metrics"),
+    link("https://learning.postman.com/docs/sending-requests/graphql/graphql-overview/", "GraphQL in postman"),
   ],
   labels=["app"]
 )

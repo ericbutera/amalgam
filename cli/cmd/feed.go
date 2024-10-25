@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"net/url"
 
-	graph "github.com/Khan/genqlient/graphql"
+	"github.com/Khan/genqlient/graphql"
 	graph_client "github.com/ericbutera/amalgam/graph/pkg/client"
 	"github.com/spf13/cobra"
 )
@@ -19,21 +19,9 @@ func NewFeedCmd() *cobra.Command {
 	}
 }
 
-// Before:
-// func newClient() *client.APIClient {
-// 	cfg := client.NewConfiguration()
-// 	cfg.Scheme = "http"
-// 	cfg.Host = "localhost:8080" // TODO: make this configurable
-// 	return client.NewAPIClient(cfg)
-// }
-// res, _, err := newClient().
-// 	DefaultAPI.
-// 	FeedsGet(cmd.Context()).
-// 	Execute()
-
-func newGraphClient() graph.Client {
+func newGraphClient() graphql.Client {
 	httpClient := http.Client{}
-	return graph.NewClient(
+	return graphql.NewClient(
 		"http://localhost:8082/query", // TODO: make this configurable
 		&httpClient,
 	)
