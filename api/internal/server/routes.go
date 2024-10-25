@@ -3,13 +3,18 @@ package server
 import (
 	"net/http"
 
+	"github.com/Khan/genqlient/graphql"
 	"github.com/ericbutera/amalgam/api/internal"
 	"github.com/ericbutera/amalgam/internal/db/models"
 	"github.com/ericbutera/amalgam/internal/service"
 	"github.com/gin-gonic/gin"
 
+	graph_client "github.com/ericbutera/amalgam/graph/pkg/client"
+
 	_ "github.com/ericbutera/amalgam/api/docs"
 )
+
+// TODO: do not show raw errors to the user
 
 /*
 Routes:
@@ -28,7 +33,7 @@ GET /article/:id
 */
 
 func (s *server) routes() {
-	handlers := newHandlers(s.service)
+	handlers := newHandlers(s.service, s.graphClient)
 
 	s.router.GET("/", func(c *gin.Context) { c.Redirect(http.StatusMovedPermanently, internal.SwaggerUri) })
 	s.router.GET("/health", handlers.health)
@@ -51,12 +56,14 @@ func (s *server) routes() {
 }
 
 type handlers struct {
-	svc *service.Service
+	svc         *service.Service
+	graphClient graphql.Client
 }
 
-func newHandlers(svc *service.Service) *handlers {
+func newHandlers(svc *service.Service, graphClient graphql.Client) *handlers {
 	return &handlers{
-		svc: svc,
+		svc:         svc,
+		graphClient: graphClient,
 	}
 }
 
@@ -185,17 +192,34 @@ type FeedUpdateResponse struct {
 // @Failure 500 {object} map[string]string
 // @Router /feeds [get]
 func (h *handlers) feedsList(c *gin.Context) {
-	feeds, err := h.svc.Feeds(c.Request.Context())
+	resp, err := graph_client.Feeds(c.Request.Context(), h.graphClient)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: "unable to fetch feeds"})
+		c.JSON(http.StatusInternalServerError, ErrorResponse{
+			Error: err.Error(),
+		})
+	}
+
+	feeds := []ListFeed{}
+	for _, feed := range resp.Feeds {
+		feeds = append(feeds, ListFeed{
+			Id:   feed.Id,
+			Name: feed.Name,
+			Url:  feed.Url,
+		})
 	}
 	c.JSON(http.StatusOK, FeedsResponse{
 		Feeds: feeds,
 	})
 }
 
+type ListFeed struct {
+	Id   string `json:"id" example:"aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"`
+	Name string `json:"name" example:"Example"`
+	Url  string `json:"url" example:"https://example.com/"`
+}
+
 type FeedsResponse struct {
-	Feeds []models.Feed `json:"feeds"`
+	Feeds []ListFeed `json:"feeds"`
 }
 
 // @Summary view article
