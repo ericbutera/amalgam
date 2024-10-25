@@ -83,3 +83,4 @@ scalar String
 type UpdateFeedResponse {
 	id: ID!
 }
+

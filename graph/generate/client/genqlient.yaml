@@ -1,5 +1,5 @@
 # documentation https://github.com/Khan/genqlient/blob/main/docs/introduction.md
-schema: ../schema/schema.graphql
+schema: schema.graphql
 operations:
   - genqlient.graphql
 generated: ../../pkg/client/client.gen.go
