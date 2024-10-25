@@ -31,7 +31,7 @@ func (s *ServiceSuite) SetupTest() {
 
 func mustNewTestDb(t *testing.T) *gorm.DB {
 	db, err := db.NewSqlite(
-		"file::memory:?cache=shared",
+		"file::memory:", // do not share (no cleanup)
 		db.WithAutoMigrate(),
 		// Debug: db.WithTraceAll(),
 	)
