@@ -2,11 +2,26 @@
 
 This document outlines how to grow a project from a monolithic REST API to a microservices architecture.
 
+## Beginnings
+
+This is the typical web application starting point. A single codebase that handles all the web traffic, business logic, and data access.
+
+```mermaid
+flowchart LR
+  subgraph Frontend
+    NextJS
+  end
+  subgraph Backend
+    API
+    DB
+  end
+  NextJS --> API
+  API --> DB
+```
+
 ## [v0.1.0](https://github.com/ericbutera/amalgam/releases/tag/v0.1.0) Monolithic REST API
 
-This is the typical web application starting point. A single codebase that handles all the web traffic, business logic, and data access. This is a good starting point for a tech demo.
-
-The REST Clients are [generated](https://github.com/OpenAPITools/openapi-generator) via the OpenAPI spec. Writing and maintaining clients by hand is error prone and time consuming. Using a generator ensures that our clients are always in sync with our API. We also get the benefit of strong typing in languages like TypeScript and Go.
+Next up I have added a simple CLI to list feeds. At this point it is important to notice that we have multiple consumers of the API. Writing and maintaining clients by hand is time consuming and error prone. To ease this burden I will also introduce [openapi-generator](https://github.com/OpenAPITools/openapi-generator), which can generate clients in multiple languages. We also get the benefit of strong typing in languages like TypeScript and Go moving some errors from runtime to compile time.
 
 ```mermaid
 flowchart LR
