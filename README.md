@@ -14,6 +14,10 @@ tilt up
 curl -v http://localhost:3000/ # or open in browser
 ```
 
+## Architecture
+
+[Architecture](./docs/architecture.md) contains an overview of how to convert a project from a monolith to a microservices architecture.
+
 ## Services
 
 ### [Monolith REST API](./api/README.md)

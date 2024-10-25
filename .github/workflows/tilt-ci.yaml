@@ -1,3 +1,6 @@
+# tilt-ci is a platform agnostic continuous integration tool. this gives the
+# flexibility to move to different CI platforms (ie GitHub Actions, GitLab CI,
+# Jenkins, etc) with a guaranteed consistent experience.
 name: Run Tilt CI
 
 on:
