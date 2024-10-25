@@ -86,10 +86,10 @@ func (s *Service) GetFeed(ctx context.Context, id string) (*models.Feed, error) 
 	return &feed, nil
 }
 
-func (s *Service) GetArticlesByFeed(ctx context.Context, id string) ([]models.Article, error) {
+func (s *Service) GetArticlesByFeed(ctx context.Context, feedId string) ([]models.Article, error) {
 	var articles []models.Article
 	result := s.query(ctx).
-		Find(&articles, "feed_id = ?", id).
+		Find(&articles, "feed_id = ?", feedId).
 		Limit(100) // TODO: pagination (cursor)
 	if result.Error != nil {
 		return nil, result.Error
