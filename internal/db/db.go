@@ -28,7 +28,7 @@ type Config struct {
 
 func init() {
 	viper.SetDefault("db_adapter", SqliteAdapter)
-	viper.SetDefault("db_sqlite_name", "test.sqlite")
+	viper.SetDefault("db_sqlite_name", "file::memory?cache=shared")
 	viper.SetDefault("db_mysql_dsn", "user:pass@tcp(127.0.0.1:3306)/dbname?charset=utf8mb4&parseTime=True&loc=Local")
 }
 
@@ -44,13 +44,14 @@ func NewFromEnv() (*gorm.DB, error) {
 func NewFromConfig(cfg *Config) (*gorm.DB, error) {
 	switch cfg.DbAdapter {
 	case MysqlAdapter:
-		return NewMysql(cfg.DbMysqlDsn, WithMiddleware())
+		return NewMysql(cfg.DbMysqlDsn, WithMiddleware(), WithTraceAll())
 	case SqliteAdapter:
 		return NewSqlite(
 			cfg.DbSqliteName,
 			WithAutoMigrate(),
 			WithSeedData(),
 			WithMiddleware(),
+			WithTraceAll(),
 		)
 
 	}
@@ -117,12 +118,18 @@ func WithSeedData() DbOptions {
 		return db.Transaction(func(tx *gorm.DB) error {
 			feed := f.NewDbFeed()
 			article := f.NewDbArticle()
-			if err := tx.Create(&feed).Error; err != nil {
+			if err := models.Create(tx, &feed); err != nil {
 				return err
 			}
-			if err := tx.Create(&article).Error; err != nil {
+			if err := models.Create(tx, &article); err != nil {
 				return err
 			}
+			// if err := tx.Create(&feed).Error; err != nil {
+			// 	return err
+			// }
+			// if err := tx.Create(&article).Error; err != nil {
+			// 	return err
+			// }
 			return nil
 		})
 	}
