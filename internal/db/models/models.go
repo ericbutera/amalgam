@@ -7,7 +7,18 @@ import (
 	"gorm.io/gorm"
 )
 
-// TODO: decouple API models from database models
+type AllowedModels interface {
+	*Feed | *Article
+}
+
+func Create[T AllowedModels](db *gorm.DB, records ...*T) error {
+	for _, record := range records {
+		if err := db.Create(&record).Error; err != nil {
+			return err
+		}
+	}
+	return nil
+}
 
 type Feed struct {
 	Base
@@ -40,7 +51,6 @@ type User struct {
 }
 
 type Base struct {
-	//ID        uint           `gorm:"primarykey" json:"id" binding:"required" example:"1"`
 	ID        string         `gorm:"type:uuid;primary_key;" json:"id" binding:"required" example:"aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"`
 	CreatedAt time.Time      `json:"createdAt" example:"2021-01-01T00:00:00Z"`
 	UpdatedAt time.Time      `json:"updatedAt" example:"2021-01-01T00:00:00Z"`
