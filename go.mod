@@ -322,6 +322,7 @@ require (
 	github.com/stbenjam/no-sprintf-host-port v0.1.1 // indirect
 	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
+	github.com/suessflorian/gqlfetch v0.6.0 // indirect
 	github.com/tdakkota/asciicheck v0.2.0 // indirect
 	github.com/tetafro/godot v1.4.17 // indirect
 	github.com/theupdateframework/notary v0.7.0 // indirect
@@ -343,6 +344,7 @@ require (
 	github.com/ultraware/whitespace v0.1.1 // indirect
 	github.com/urfave/cli/v2 v2.27.4 // indirect
 	github.com/uudashr/gocognit v1.1.3 // indirect
+	github.com/vektah/gqlparser v1.3.1 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
 	github.com/xen0n/gosmopolitan v1.2.2 // indirect
 	github.com/xlab/treeprint v1.2.0 // indirect

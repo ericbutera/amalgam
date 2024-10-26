@@ -17,11 +17,11 @@ type Article {
   authorEmail: String
 }
 
-type AddFeedResponse {
+type AddResponse {
   id: ID!
 }
 
-type UpdateFeedResponse {
+type UpdateResponse {
   id: ID!
 }
 
@@ -33,6 +33,6 @@ type Query {
 }
 
 type Mutation {
-  addFeed(url: String!, name: String!): AddFeedResponse!
-  updateFeed(id: ID!, url: String, name: String): UpdateFeedResponse!
+  addFeed(url: String!, name: String!): AddResponse!
+  updateFeed(id: ID!, url: String, name: String): UpdateResponse!
 }

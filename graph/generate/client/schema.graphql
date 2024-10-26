@@ -30,8 +30,15 @@ type AddFeedResponse {
 
 type Article {
 	id: ID!
+	feedId: ID!
+	url: String!
 	title: String!
+	imageUrl: String
 	content: String!
+	preview: String!
+	guid: String
+	authorName: String
+	authorEmail: String
 }
 
 """The `Boolean` scalar type represents `true` or `false`."""
@@ -83,4 +90,3 @@ scalar String
 type UpdateFeedResponse {
 	id: ID!
 }
-
