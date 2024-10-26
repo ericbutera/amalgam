@@ -4,11 +4,11 @@ import (
 	"errors"
 
 	"github.com/ericbutera/amalgam/pkg/config"
-	f "github.com/ericbutera/amalgam/pkg/test/fixtures"
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
 
 	"github.com/ericbutera/amalgam/internal/db/models"
+	"github.com/ericbutera/amalgam/internal/test/fixtures"
 	slog_gorm "github.com/orandin/slog-gorm"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/sqlite"
@@ -116,20 +116,14 @@ func WithAutoMigrate() DbOptions {
 func WithSeedData() DbOptions {
 	return func(db *gorm.DB) error {
 		return db.Transaction(func(tx *gorm.DB) error {
-			feed := f.NewDbFeed()
-			article := f.NewDbArticle()
-			if err := models.Create(tx, &feed); err != nil {
+			feed := fixtures.NewFeed()
+			article := fixtures.NewArticle()
+			if err := tx.Create(&feed).Error; err != nil {
 				return err
 			}
-			if err := models.Create(tx, &article); err != nil {
+			if err := tx.Create(&article).Error; err != nil {
 				return err
 			}
-			// if err := tx.Create(&feed).Error; err != nil {
-			// 	return err
-			// }
-			// if err := tx.Create(&article).Error; err != nil {
-			// 	return err
-			// }
 			return nil
 		})
 	}

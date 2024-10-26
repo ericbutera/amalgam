@@ -11,10 +11,11 @@ package client
 
 import (
 	"context"
+	"testing"
+
+	openapiclient "github.com/ericbutera/amalgam/pkg/client"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"testing"
-	openapiclient "github.com/GIT_USER_ID/GIT_REPO_ID"
 )
 
 func Test_client_DefaultAPIService(t *testing.T) {
@@ -24,7 +25,7 @@ func Test_client_DefaultAPIService(t *testing.T) {
 
 	t.Run("Test DefaultAPIService ArticlesIdGet", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var id string
 
@@ -38,7 +39,7 @@ func Test_client_DefaultAPIService(t *testing.T) {
 
 	t.Run("Test DefaultAPIService FeedsGet", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.DefaultAPI.FeedsGet(context.Background()).Execute()
 
@@ -50,7 +51,7 @@ func Test_client_DefaultAPIService(t *testing.T) {
 
 	t.Run("Test DefaultAPIService FeedsIdArticlesGet", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var id string
 
@@ -64,7 +65,7 @@ func Test_client_DefaultAPIService(t *testing.T) {
 
 	t.Run("Test DefaultAPIService FeedsIdGet", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var id string
 
@@ -78,7 +79,7 @@ func Test_client_DefaultAPIService(t *testing.T) {
 
 	t.Run("Test DefaultAPIService FeedsIdPut", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		var id string
 
@@ -92,7 +93,7 @@ func Test_client_DefaultAPIService(t *testing.T) {
 
 	t.Run("Test DefaultAPIService FeedsPost", func(t *testing.T) {
 
-		t.Skip("skip test")  // remove to run test
+		t.Skip("skip test") // remove to run test
 
 		resp, httpRes, err := apiClient.DefaultAPI.FeedsPost(context.Background()).Execute()
 
