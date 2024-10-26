@@ -484,7 +484,7 @@ func (r ApiFeedsIdPutRequest) Request(request ServerUpdateFeedRequest) ApiFeedsI
 	return r
 }
 
-func (r ApiFeedsIdPutRequest) Execute() (*ServerFeedUpdateResponse, *http.Response, error) {
+func (r ApiFeedsIdPutRequest) Execute() (*ServerUpdateResponse, *http.Response, error) {
 	return r.ApiService.FeedsIdPutExecute(r)
 }
 
@@ -506,13 +506,13 @@ func (a *DefaultAPIService) FeedsIdPut(ctx context.Context, id string) ApiFeedsI
 }
 
 // Execute executes the request
-//  @return ServerFeedUpdateResponse
-func (a *DefaultAPIService) FeedsIdPutExecute(r ApiFeedsIdPutRequest) (*ServerFeedUpdateResponse, *http.Response, error) {
+//  @return ServerUpdateResponse
+func (a *DefaultAPIService) FeedsIdPutExecute(r ApiFeedsIdPutRequest) (*ServerUpdateResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPut
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *ServerFeedUpdateResponse
+		localVarReturnValue  *ServerUpdateResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DefaultAPIService.FeedsIdPut")
@@ -608,7 +608,7 @@ func (r ApiFeedsPostRequest) Request(request ServerCreateFeedRequest) ApiFeedsPo
 	return r
 }
 
-func (r ApiFeedsPostRequest) Execute() (*ServerFeedCreateResponse, *http.Response, error) {
+func (r ApiFeedsPostRequest) Execute() (*ServerCreateResponse, *http.Response, error) {
 	return r.ApiService.FeedsPostExecute(r)
 }
 
@@ -628,13 +628,13 @@ func (a *DefaultAPIService) FeedsPost(ctx context.Context) ApiFeedsPostRequest {
 }
 
 // Execute executes the request
-//  @return ServerFeedCreateResponse
-func (a *DefaultAPIService) FeedsPostExecute(r ApiFeedsPostRequest) (*ServerFeedCreateResponse, *http.Response, error) {
+//  @return ServerCreateResponse
+func (a *DefaultAPIService) FeedsPostExecute(r ApiFeedsPostRequest) (*ServerCreateResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
 		formFiles            []formFile
-		localVarReturnValue  *ServerFeedCreateResponse
+		localVarReturnValue  *ServerCreateResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DefaultAPIService.FeedsPost")

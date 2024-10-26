@@ -1,91 +1,9 @@
 basePath: /v1
 definitions:
-  gorm.DeletedAt:
-    properties:
-      time:
-        type: string
-      valid:
-        description: Valid is true if Time is not NULL
-        type: boolean
-    type: object
-  models.Article:
-    properties:
-      authorEmail:
-        example: example@example.com
-        type: string
-      authorName:
-        example: Eric Butera
-        type: string
-      content:
-        example: Article content text. May contain HTML.
-        type: string
-      createdAt:
-        example: "2021-01-01T00:00:00Z"
-        type: string
-      deletedAt:
-        $ref: '#/definitions/gorm.DeletedAt'
-      feed:
-        $ref: '#/definitions/models.Feed'
-      feedId:
-        example: "1"
-        type: string
-      guid:
-        example: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
-        type: string
-      id:
-        description: ID        uint           `gorm:"primarykey" json:"id" binding:"required"
-          example:"1"`
-        example: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
-        type: string
-      imageUrl:
-        example: https://example.com/image.jpg
-        type: string
-      preview:
-        example: Article preview text. May contain HTML.
-        type: string
-      title:
-        example: Example Article
-        type: string
-      updatedAt:
-        example: "2021-01-01T00:00:00Z"
-        type: string
-      url:
-        example: https://example.com/
-        type: string
-    required:
-    - feedId
-    - id
-    - url
-    type: object
-  models.Feed:
-    properties:
-      createdAt:
-        example: "2021-01-01T00:00:00Z"
-        type: string
-      deletedAt:
-        $ref: '#/definitions/gorm.DeletedAt'
-      id:
-        description: ID        uint           `gorm:"primarykey" json:"id" binding:"required"
-          example:"1"`
-        example: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
-        type: string
-      name:
-        example: Example
-        type: string
-      updatedAt:
-        example: "2021-01-01T00:00:00Z"
-        type: string
-      url:
-        example: https://example.com/
-        type: string
-    required:
-    - id
-    - url
-    type: object
   server.ArticleResponse:
     properties:
       article:
-        $ref: '#/definitions/models.Article'
+        $ref: '#/definitions/service.Article'
     type: object
   server.CreateFeed:
     properties:
@@ -103,6 +21,11 @@ definitions:
       feed:
         $ref: '#/definitions/server.CreateFeed'
     type: object
+  server.CreateResponse:
+    properties:
+      id:
+        type: string
+    type: object
   server.ErrorResponse:
     properties:
       error:
@@ -113,30 +36,32 @@ definitions:
     properties:
       articles:
         items:
-          $ref: '#/definitions/models.Article'
+          $ref: '#/definitions/service.Article'
         type: array
-    type: object
-  server.FeedCreateResponse:
-    properties:
-      id:
-        type: string
     type: object
   server.FeedResponse:
     properties:
       feed:
-        $ref: '#/definitions/models.Feed'
-    type: object
-  server.FeedUpdateResponse:
-    properties:
-      feed:
-        $ref: '#/definitions/models.Feed'
+        $ref: '#/definitions/service.Feed'
     type: object
   server.FeedsResponse:
     properties:
       feeds:
         items:
-          $ref: '#/definitions/models.Feed'
+          $ref: '#/definitions/server.ListFeed'
         type: array
+    type: object
+  server.ListFeed:
+    properties:
+      id:
+        example: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
+        type: string
+      name:
+        example: Example
+        type: string
+      url:
+        example: https://example.com/
+        type: string
     type: object
   server.UpdateFeed:
     properties:
@@ -153,6 +78,43 @@ definitions:
     properties:
       feed:
         $ref: '#/definitions/server.UpdateFeed'
+    type: object
+  server.UpdateResponse:
+    properties:
+      id:
+        type: string
+    type: object
+  service.Article:
+    properties:
+      authorEmail:
+        type: string
+      authorName:
+        type: string
+      content:
+        type: string
+      feedId:
+        type: string
+      guid:
+        type: string
+      id:
+        type: string
+      imageUrl:
+        type: string
+      preview:
+        type: string
+      title:
+        type: string
+      url:
+        type: string
+    type: object
+  service.Feed:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      url:
+        type: string
     type: object
 host: localhost:8080
 info:
@@ -221,7 +183,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/server.FeedCreateResponse'
+            $ref: '#/definitions/server.CreateResponse'
         "500":
           description: Internal Server Error
           schema:
@@ -274,7 +236,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/server.FeedUpdateResponse'
+            $ref: '#/definitions/server.UpdateResponse'
         "500":
           description: Internal Server Error
           schema:

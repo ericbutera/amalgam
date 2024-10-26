@@ -32,7 +32,7 @@ func NewFeedListCmd() *cobra.Command {
 		Use:   "list",
 		Short: "list feeds",
 		Run: func(cmd *cobra.Command, args []string) {
-			res, err := graph_client.Feeds(cmd.Context(), newGraphClient())
+			res, err := graph_client.ListFeeds(cmd.Context(), newGraphClient())
 			if err != nil {
 				slog.Error("failed to list feeds", "error", err)
 				return

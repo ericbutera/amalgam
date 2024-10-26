@@ -5,6 +5,7 @@ package feeds.v1;
 option go_package = "github.com/ericbutera/amalgam/rpc/gen/go/feeds";  // Adjust this path
 
 service FeedService {
+  rpc GetFeed (GetFeedRequest) returns (GetFeedResponse);
   rpc ListFeeds (ListFeedsRequest) returns (ListFeedsResponse);
   rpc CreateFeed (CreateFeedRequest) returns (CreateFeedResponse);
   rpc UpdateFeed (UpdateFeedRequest) returns (UpdateFeedResponse);
@@ -23,9 +24,23 @@ message Article {
   string title = 2;
   string content = 3;
   string feed_id = 4;
+  string url = 5;
+  string imageUrl = 6;
+  string preview = 7;
+  string guid = 8;
+  string authorName = 9;
+  string authorEmail = 10;
 }
 
 message Empty {}
+
+message GetFeedRequest {
+  string id = 1;
+}
+
+message GetFeedResponse {
+  Feed feed = 1;
+}
 
 message ListFeedsRequest {}
 

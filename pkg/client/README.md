@@ -88,20 +88,20 @@ Class | Method | HTTP request | Description
 
 ## Documentation For Models
 
- - [GormDeletedAt](docs/GormDeletedAt.md)
- - [ModelsArticle](docs/ModelsArticle.md)
- - [ModelsFeed](docs/ModelsFeed.md)
  - [ServerArticleResponse](docs/ServerArticleResponse.md)
  - [ServerCreateFeed](docs/ServerCreateFeed.md)
  - [ServerCreateFeedRequest](docs/ServerCreateFeedRequest.md)
+ - [ServerCreateResponse](docs/ServerCreateResponse.md)
  - [ServerErrorResponse](docs/ServerErrorResponse.md)
  - [ServerFeedArticlesResponse](docs/ServerFeedArticlesResponse.md)
- - [ServerFeedCreateResponse](docs/ServerFeedCreateResponse.md)
  - [ServerFeedResponse](docs/ServerFeedResponse.md)
- - [ServerFeedUpdateResponse](docs/ServerFeedUpdateResponse.md)
  - [ServerFeedsResponse](docs/ServerFeedsResponse.md)
+ - [ServerListFeed](docs/ServerListFeed.md)
  - [ServerUpdateFeed](docs/ServerUpdateFeed.md)
  - [ServerUpdateFeedRequest](docs/ServerUpdateFeedRequest.md)
+ - [ServerUpdateResponse](docs/ServerUpdateResponse.md)
+ - [ServiceArticle](docs/ServiceArticle.md)
+ - [ServiceFeed](docs/ServiceFeed.md)
 
 
 ## Documentation For Authorization
@@ -126,6 +126,3 @@ Each of these functions takes a value of the given basic type and returns a poin
 * `PtrTime`
 
 ## Author
-
-
-

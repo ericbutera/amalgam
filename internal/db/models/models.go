@@ -7,19 +7,6 @@ import (
 	"gorm.io/gorm"
 )
 
-type AllowedModels interface {
-	*Feed | *Article
-}
-
-func Create[T AllowedModels](db *gorm.DB, records ...*T) error {
-	for _, record := range records {
-		if err := db.Create(&record).Error; err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
 type Feed struct {
 	Base
 	Url  string `json:"url" gorm:"uniqueIndex" binding:"required,url" example:"https://example.com/"`

@@ -105,7 +105,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/server.FeedCreateResponse"
+                            "$ref": "#/definitions/server.CreateResponse"
                         }
                     },
                     "500": {
@@ -185,7 +185,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/server.FeedUpdateResponse"
+                            "$ref": "#/definitions/server.UpdateResponse"
                         }
                     },
                     "500": {
@@ -240,121 +240,11 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "gorm.DeletedAt": {
-            "type": "object",
-            "properties": {
-                "time": {
-                    "type": "string"
-                },
-                "valid": {
-                    "description": "Valid is true if Time is not NULL",
-                    "type": "boolean"
-                }
-            }
-        },
-        "models.Article": {
-            "type": "object",
-            "required": [
-                "feedId",
-                "id",
-                "url"
-            ],
-            "properties": {
-                "authorEmail": {
-                    "type": "string",
-                    "example": "example@example.com"
-                },
-                "authorName": {
-                    "type": "string",
-                    "example": "Eric Butera"
-                },
-                "content": {
-                    "type": "string",
-                    "example": "Article content text. May contain HTML."
-                },
-                "createdAt": {
-                    "type": "string",
-                    "example": "2021-01-01T00:00:00Z"
-                },
-                "deletedAt": {
-                    "$ref": "#/definitions/gorm.DeletedAt"
-                },
-                "feed": {
-                    "$ref": "#/definitions/models.Feed"
-                },
-                "feedId": {
-                    "type": "string",
-                    "example": "1"
-                },
-                "guid": {
-                    "type": "string",
-                    "example": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
-                },
-                "id": {
-                    "description": "ID        uint           ` + "`" + `gorm:\"primarykey\" json:\"id\" binding:\"required\" example:\"1\"` + "`" + `",
-                    "type": "string",
-                    "example": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
-                },
-                "imageUrl": {
-                    "type": "string",
-                    "example": "https://example.com/image.jpg"
-                },
-                "preview": {
-                    "type": "string",
-                    "example": "Article preview text. May contain HTML."
-                },
-                "title": {
-                    "type": "string",
-                    "example": "Example Article"
-                },
-                "updatedAt": {
-                    "type": "string",
-                    "example": "2021-01-01T00:00:00Z"
-                },
-                "url": {
-                    "type": "string",
-                    "example": "https://example.com/"
-                }
-            }
-        },
-        "models.Feed": {
-            "type": "object",
-            "required": [
-                "id",
-                "url"
-            ],
-            "properties": {
-                "createdAt": {
-                    "type": "string",
-                    "example": "2021-01-01T00:00:00Z"
-                },
-                "deletedAt": {
-                    "$ref": "#/definitions/gorm.DeletedAt"
-                },
-                "id": {
-                    "description": "ID        uint           ` + "`" + `gorm:\"primarykey\" json:\"id\" binding:\"required\" example:\"1\"` + "`" + `",
-                    "type": "string",
-                    "example": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
-                },
-                "name": {
-                    "type": "string",
-                    "example": "Example"
-                },
-                "updatedAt": {
-                    "type": "string",
-                    "example": "2021-01-01T00:00:00Z"
-                },
-                "url": {
-                    "type": "string",
-                    "example": "https://example.com/"
-                }
-            }
-        },
         "server.ArticleResponse": {
             "type": "object",
             "properties": {
                 "article": {
-                    "$ref": "#/definitions/models.Article"
+                    "$ref": "#/definitions/service.Article"
                 }
             }
         },
@@ -382,6 +272,14 @@ const docTemplate = `{
                 }
             }
         },
+        "server.CreateResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
         "server.ErrorResponse": {
             "type": "object",
             "properties": {
@@ -397,16 +295,8 @@ const docTemplate = `{
                 "articles": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/models.Article"
+                        "$ref": "#/definitions/service.Article"
                     }
-                }
-            }
-        },
-        "server.FeedCreateResponse": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "string"
                 }
             }
         },
@@ -414,15 +304,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "feed": {
-                    "$ref": "#/definitions/models.Feed"
-                }
-            }
-        },
-        "server.FeedUpdateResponse": {
-            "type": "object",
-            "properties": {
-                "feed": {
-                    "$ref": "#/definitions/models.Feed"
+                    "$ref": "#/definitions/service.Feed"
                 }
             }
         },
@@ -432,8 +314,25 @@ const docTemplate = `{
                 "feeds": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/models.Feed"
+                        "$ref": "#/definitions/server.ListFeed"
                     }
+                }
+            }
+        },
+        "server.ListFeed": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "example": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Example"
+                },
+                "url": {
+                    "type": "string",
+                    "example": "https://example.com/"
                 }
             }
         },
@@ -458,6 +357,63 @@ const docTemplate = `{
             "properties": {
                 "feed": {
                     "$ref": "#/definitions/server.UpdateFeed"
+                }
+            }
+        },
+        "server.UpdateResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "service.Article": {
+            "type": "object",
+            "properties": {
+                "authorEmail": {
+                    "type": "string"
+                },
+                "authorName": {
+                    "type": "string"
+                },
+                "content": {
+                    "type": "string"
+                },
+                "feedId": {
+                    "type": "string"
+                },
+                "guid": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "imageUrl": {
+                    "type": "string"
+                },
+                "preview": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "service.Feed": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
                 }
             }
         }
