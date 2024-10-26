@@ -8,14 +8,13 @@ generate-server: ## Generate graph
 	@echo Generating graph server
 	gqlgen generate
 
-generate-go-client: ## Generate the golang graph client
-	@echo TODO: genqlient needs to be ran manually for now
-	@echo Generating graph client
-	go get github.com/alexflint/go-arg
+generate-gqlclient-schema: ## Generate the gql client schema
 	go get github.com/suessflorian/gqlfetch
-	go get github.com/Khan/genqlient/generate
-	cd generate/client
-	go run github.com/Khan/genqlient genqlient.yaml
+	go run generate/client/main.go
+
+generate-go-client: ## Generate the golang graph client
+	@echo Generating graph client
+	go run github.com/Khan/genqlient generate/client/genqlient.yaml
 	go generate ./...
 
 .PHONY: build

@@ -14,7 +14,6 @@ import (
 
 	"github.com/ericbutera/amalgam/api/internal/config"
 	"github.com/ericbutera/amalgam/api/internal/server"
-	"github.com/ericbutera/amalgam/internal/db"
 	cfg "github.com/ericbutera/amalgam/pkg/config"
 	"github.com/ericbutera/amalgam/pkg/otel"
 )
@@ -53,10 +52,6 @@ func runServer(cmd *cobra.Command, args []string) {
 	if err != nil {
 		quit(ctx, err)
 	}
-	d, err := db.NewFromEnv()
-	if err != nil {
-		quit(ctx, err)
-	}
 	graphClient, err := newGraphClient(cfg.GraphHost)
 	if err != nil {
 		quit(ctx, err)
@@ -64,7 +59,6 @@ func runServer(cmd *cobra.Command, args []string) {
 
 	srv, err := server.New(
 		server.WithConfig(cfg),
-		server.WithDb(d),
 		server.WithGraphClient(graphClient),
 	)
 	if err != nil {
@@ -90,9 +84,53 @@ func newGraphClient(host string) (graphql.Client, error) {
 	if host == "" {
 		return nil, errors.New("graph host not set")
 	}
-	httpClient := http.Client{}
+	logger := slog.Default()
+	httpClient := http.Client{Transport: NewLoggingTransport(WithLogger(logger))}
+	// TODO: add timeouts, expo backoff, jitter
 	return graphql.NewClient(
 		host,
 		&httpClient,
 	), nil
+}
+
+// https://www.piotrbelina.com/blog/http-log/
+type LoggingTransport struct {
+	rt             http.RoundTripper
+	logger         *slog.Logger
+	detailedTiming bool
+}
+
+func (t *LoggingTransport) RoundTrip(r *http.Request) (*http.Response, error) {
+	// do before request is sent, ex. start timer, log request
+	resp, err := t.rt.RoundTrip(r)
+	// do after the response is received, ex. end timer, log response
+	return resp, err
+}
+
+type Option func(transport *LoggingTransport)
+
+func NewLoggingTransport(options ...Option) *LoggingTransport {
+	t := &LoggingTransport{
+		rt:             http.DefaultTransport,
+		logger:         slog.Default(),
+		detailedTiming: false,
+	}
+
+	for _, option := range options {
+		option(t)
+	}
+
+	return t
+}
+
+func WithRoundTripper(rt http.RoundTripper) Option {
+	return func(t *LoggingTransport) {
+		t.rt = rt
+	}
+}
+
+func WithLogger(logger *slog.Logger) Option {
+	return func(t *LoggingTransport) {
+		t.logger = logger
+	}
 }

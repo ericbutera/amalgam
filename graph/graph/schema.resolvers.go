@@ -6,44 +6,44 @@ package graph
 
 import (
 	"context"
+	"log/slog"
 
 	"github.com/ericbutera/amalgam/graph/graph/model"
-	rest "github.com/ericbutera/amalgam/pkg/client"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
 	"github.com/samber/lo"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 // AddFeed is the resolver for the addFeed field.
-func (r *mutationResolver) AddFeed(ctx context.Context, url string, name string) (*model.AddFeedResponse, error) {
-	req := rest.ServerCreateFeedRequest{
-		Feed: &rest.ServerCreateFeed{
-			Url:  url,
-			Name: lo.ToPtr(name),
-		},
-	}
-	resp, _, err := r.apiClient.DefaultAPI.FeedsPost(ctx).Request(req).Execute()
+func (r *mutationResolver) AddFeed(ctx context.Context, url string, name string) (*model.AddResponse, error) {
+	// TODO: grpc middleware to log errors
+	resp, err := r.rpcClient.CreateFeed(ctx, &pb.CreateFeedRequest{
+		Url:  url,
+		Name: name,
+	})
 	if err != nil {
-		return nil, err
+		return nil, status.Error(codes.Internal, "failed to create feed")
 	}
-	return &model.AddFeedResponse{
-		ID: lo.FromPtr(resp.Id),
+	// TODO: converter.ServiceToGraphFeed
+	return &model.AddResponse{
+		ID: resp.Id,
 	}, nil
 }
 
 // UpdateFeed is the resolver for the updateFeed field.
-func (r *mutationResolver) UpdateFeed(ctx context.Context, id string, url *string, name *string) (*model.UpdateFeedResponse, error) {
-	req := rest.ServerUpdateFeedRequest{
-		Feed: &rest.ServerUpdateFeed{
-			Name: name,
-			Url:  lo.FromPtr(url),
-		},
-	}
-	_, _, err := r.apiClient.DefaultAPI.FeedsIdPut(ctx, id).Request(req).Execute()
+func (r *mutationResolver) UpdateFeed(ctx context.Context, id string, url *string, name *string) (*model.UpdateResponse, error) {
+	_, err := r.rpcClient.UpdateFeed(ctx, &pb.UpdateFeedRequest{
+		Id:   id,
+		Url:  lo.FromPtr(url),
+		Name: lo.FromPtr(name),
+	})
 	if err != nil {
-		return nil, err
+		return nil, status.Error(codes.Internal, "failed to update feed")
 	}
+	// TODO: converter.ServiceToGraphFeed
 	// TODO: revisit returning id (rpc returns empty)
-	return &model.UpdateFeedResponse{
+	return &model.UpdateResponse{
 		ID: id,
 	}, nil
 }
@@ -53,10 +53,10 @@ func (r *queryResolver) Feeds(ctx context.Context) ([]*model.Feed, error) {
 	var feeds []*model.Feed
 	res, err := r.rpcClient.ListFeeds(ctx, &pb.ListFeedsRequest{})
 	if err != nil {
-		return nil, err
+		return nil, status.Error(codes.Internal, "failed to list feeds")
 	}
+	// TODO: converter.ServiceToGraph
 	for _, feed := range res.Feeds {
-		// TODO mapper
 		feeds = append(feeds, &model.Feed{
 			ID:   feed.Id,
 			URL:  feed.Url,
@@ -68,32 +68,41 @@ func (r *queryResolver) Feeds(ctx context.Context) ([]*model.Feed, error) {
 
 // Feed is the resolver for the feed field.
 func (r *queryResolver) Feed(ctx context.Context, id string) (*model.Feed, error) {
-	resp, _, err := r.apiClient.DefaultAPI.FeedsIdGet(ctx, id).Execute()
+	resp, err := r.rpcClient.GetFeed(ctx, &pb.GetFeedRequest{Id: id})
 	if err != nil {
-		return nil, err
+		slog.ErrorContext(ctx, "failed to get feed", "error", err) // TODO: use middleware
+		return nil, status.Error(codes.Internal, "failed to get feed")
 	}
-	// convert resp.Feed into model.Feed
-	// note: both have json tags which might be usable for conversion (instead of mapstructure)
-	feed := model.Feed{
-		ID:   id,
+	// TODO: converter.ServiceToGraph
+	return &model.Feed{
+		ID:   resp.Feed.Id,
 		URL:  resp.Feed.Url,
-		Name: lo.FromPtr(resp.Feed.Name),
-	}
-	return &feed, nil
+		Name: resp.Feed.Name,
+	}, nil
 }
 
 // Articles is the resolver for the articles field.
 func (r *queryResolver) Articles(ctx context.Context, feedID string) ([]*model.Article, error) {
-	resp, _, err := r.apiClient.DefaultAPI.FeedsIdArticlesGet(ctx, feedID).Execute()
+	resp, err := r.rpcClient.ListArticles(ctx, &pb.ListArticlesRequest{FeedId: feedID})
 	if err != nil {
-		return nil, err
+		return nil, status.Error(codes.Internal, "failed to list articles")
 	}
+
 	var articles []*model.Article
 	for _, article := range resp.Articles {
+		// TODO: converter.ServiceToGraph
 		articles = append(articles, &model.Article{
-			ID:      string(article.Id),
-			Title:   lo.FromPtr(article.Title),
-			Content: lo.FromPtr(article.Content),
+			// TODO: limit fields on listing (return preview instead of content)
+			ID:          article.Id,
+			Title:       article.Title,
+			Content:     article.Content,
+			FeedID:      article.FeedId,
+			URL:         article.Url,
+			Preview:     article.Preview,
+			GUID:        lo.ToPtr(article.Guid),
+			ImageURL:    lo.ToPtr(article.ImageUrl),
+			AuthorName:  lo.ToPtr(article.AuthorName),
+			AuthorEmail: lo.ToPtr(article.AuthorEmail),
 		})
 	}
 	return articles, nil
@@ -101,17 +110,24 @@ func (r *queryResolver) Articles(ctx context.Context, feedID string) ([]*model.A
 
 // Article is the resolver for the article field.
 func (r *queryResolver) Article(ctx context.Context, id string) (*model.Article, error) {
-	resp, _, err := r.apiClient.DefaultAPI.ArticlesIdGet(ctx, id).Execute()
+	resp, err := r.rpcClient.GetArticle(ctx, &pb.GetArticleRequest{Id: id})
 	if err != nil {
-		return nil, err
+		return nil, status.Error(codes.Internal, "failed to get article")
 	}
-	// TODO: auto map fields
-	article := model.Article{
-		ID:      id,
-		Title:   lo.FromPtr(resp.Article.Title),
-		Content: lo.FromPtr(resp.Article.Content),
-	}
-	return &article, nil
+	article := resp.Article
+	// TODO: converter.ServiceToGraph
+	return &model.Article{
+		ID:          article.Id,
+		Title:       article.Title,
+		Content:     article.Content,
+		FeedID:      article.FeedId,
+		URL:         article.Url,
+		Preview:     article.Preview,
+		GUID:        lo.ToPtr(article.Guid),
+		ImageURL:    lo.ToPtr(article.ImageUrl),
+		AuthorName:  lo.ToPtr(article.AuthorName),
+		AuthorEmail: lo.ToPtr(article.AuthorEmail),
+	}, nil
 }
 
 // Mutation returns MutationResolver implementation.

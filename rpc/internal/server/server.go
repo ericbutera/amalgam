@@ -42,7 +42,7 @@ type Server struct {
 	panicsTotal   prometheus.Counter
 	metricSrv     *http.Server
 	db            *gorm.DB
-	service       *service.Service
+	service       service.Service
 	shutdowns     []func(context.Context) error
 	pb.UnimplementedFeedServiceServer
 }
@@ -103,7 +103,7 @@ func WithListener(lis net.Listener) Option {
 }
 func WithDb(db *gorm.DB) Option {
 	return func(s *Server) error {
-		s.service = service.New(db)
+		s.service = service.NewGorm(db)
 		s.db = db
 		return nil
 	}
@@ -117,7 +117,7 @@ func WithDbFromEnv() Option {
 		return WithDb(db)(s)
 	}
 }
-func WithService(service *service.Service) Option {
+func WithService(service service.Service) Option {
 	return func(s *Server) error {
 		s.service = service
 		return nil
@@ -179,7 +179,7 @@ func New(opts ...Option) (*Server, error) {
 		if err != nil {
 			return nil, err
 		}
-		server.service = service.New(db)
+		server.service = service.NewGorm(db)
 	}
 
 	server.metricSrv = newMetricsServer(registry, server.metricAddress)

@@ -7,8 +7,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/Khan/genqlient/generate"
-	"github.com/suessflorian/gqlfetch"
+	generate "github.com/Khan/genqlient/generate"
+	_ "github.com/alexflint/go-arg"
+	gqlfetch "github.com/suessflorian/gqlfetch"
 )
 
 // Downloads the GraphQL schema from the locally running server.

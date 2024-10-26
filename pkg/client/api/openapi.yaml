@@ -65,7 +65,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/server.FeedCreateResponse'
+                $ref: '#/components/schemas/server.CreateResponse'
           description: OK
         "500":
           content:
@@ -122,7 +122,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/server.FeedUpdateResponse'
+                $ref: '#/components/schemas/server.UpdateResponse'
           description: OK
         "500":
           content:
@@ -162,155 +162,22 @@ paths:
       summary: list articles for a feed
 components:
   schemas:
-    gorm.DeletedAt:
-      example:
-        valid: true
-        time: time
-      properties:
-        time:
-          type: string
-        valid:
-          description: Valid is true if Time is not NULL
-          type: boolean
-      type: object
-    models.Article:
-      example:
-        preview: Article preview text. May contain HTML.
-        authorEmail: example@example.com
-        title: Example Article
-        content: Article content text. May contain HTML.
-        url: https://example.com/
-        createdAt: 2021-01-01T00:00:00Z
-        feed:
-          createdAt: 2021-01-01T00:00:00Z
-          deletedAt:
-            valid: true
-            time: time
-          name: Example
-          id: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
-          url: https://example.com/
-          updatedAt: 2021-01-01T00:00:00Z
-        deletedAt:
-          valid: true
-          time: time
-        feedId: "1"
-        authorName: Eric Butera
-        imageUrl: https://example.com/image.jpg
-        guid: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
-        id: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
-        updatedAt: 2021-01-01T00:00:00Z
-      properties:
-        authorEmail:
-          example: example@example.com
-          type: string
-        authorName:
-          example: Eric Butera
-          type: string
-        content:
-          example: Article content text. May contain HTML.
-          type: string
-        createdAt:
-          example: 2021-01-01T00:00:00Z
-          type: string
-        deletedAt:
-          $ref: '#/components/schemas/gorm.DeletedAt'
-        feed:
-          $ref: '#/components/schemas/models.Feed'
-        feedId:
-          example: "1"
-          type: string
-        guid:
-          example: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
-          type: string
-        id:
-          description: ID        uint           `gorm:"primarykey" json:"id" binding:"required"
-            example:"1"`
-          example: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
-          type: string
-        imageUrl:
-          example: https://example.com/image.jpg
-          type: string
-        preview:
-          example: Article preview text. May contain HTML.
-          type: string
-        title:
-          example: Example Article
-          type: string
-        updatedAt:
-          example: 2021-01-01T00:00:00Z
-          type: string
-        url:
-          example: https://example.com/
-          type: string
-      required:
-      - feedId
-      - id
-      - url
-      type: object
-    models.Feed:
-      example:
-        createdAt: 2021-01-01T00:00:00Z
-        deletedAt:
-          valid: true
-          time: time
-        name: Example
-        id: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
-        url: https://example.com/
-        updatedAt: 2021-01-01T00:00:00Z
-      properties:
-        createdAt:
-          example: 2021-01-01T00:00:00Z
-          type: string
-        deletedAt:
-          $ref: '#/components/schemas/gorm.DeletedAt'
-        id:
-          description: ID        uint           `gorm:"primarykey" json:"id" binding:"required"
-            example:"1"`
-          example: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
-          type: string
-        name:
-          example: Example
-          type: string
-        updatedAt:
-          example: 2021-01-01T00:00:00Z
-          type: string
-        url:
-          example: https://example.com/
-          type: string
-      required:
-      - id
-      - url
-      type: object
     server.ArticleResponse:
       example:
         article:
-          preview: Article preview text. May contain HTML.
-          authorEmail: example@example.com
-          title: Example Article
-          content: Article content text. May contain HTML.
-          url: https://example.com/
-          createdAt: 2021-01-01T00:00:00Z
-          feed:
-            createdAt: 2021-01-01T00:00:00Z
-            deletedAt:
-              valid: true
-              time: time
-            name: Example
-            id: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
-            url: https://example.com/
-            updatedAt: 2021-01-01T00:00:00Z
-          deletedAt:
-            valid: true
-            time: time
-          feedId: "1"
-          authorName: Eric Butera
-          imageUrl: https://example.com/image.jpg
-          guid: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
-          id: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
-          updatedAt: 2021-01-01T00:00:00Z
+          preview: preview
+          authorEmail: authorEmail
+          feedId: feedId
+          authorName: authorName
+          imageUrl: imageUrl
+          guid: guid
+          id: id
+          title: title
+          content: content
+          url: url
       properties:
         article:
-          $ref: '#/components/schemas/models.Article'
+          $ref: '#/components/schemas/service.Article'
       type: object
     server.CreateFeed:
       properties:
@@ -328,6 +195,13 @@ components:
         feed:
           $ref: '#/components/schemas/server.CreateFeed'
       type: object
+    server.CreateResponse:
+      example:
+        id: id
+      properties:
+        id:
+          type: string
+      type: object
     server.ErrorResponse:
       example:
         error: unable to fetch feeds
@@ -339,121 +213,72 @@ components:
     server.FeedArticlesResponse:
       example:
         articles:
-        - preview: Article preview text. May contain HTML.
-          authorEmail: example@example.com
-          title: Example Article
-          content: Article content text. May contain HTML.
-          url: https://example.com/
-          createdAt: 2021-01-01T00:00:00Z
-          feed:
-            createdAt: 2021-01-01T00:00:00Z
-            deletedAt:
-              valid: true
-              time: time
-            name: Example
-            id: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
-            url: https://example.com/
-            updatedAt: 2021-01-01T00:00:00Z
-          deletedAt:
-            valid: true
-            time: time
-          feedId: "1"
-          authorName: Eric Butera
-          imageUrl: https://example.com/image.jpg
-          guid: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
-          id: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
-          updatedAt: 2021-01-01T00:00:00Z
-        - preview: Article preview text. May contain HTML.
-          authorEmail: example@example.com
-          title: Example Article
-          content: Article content text. May contain HTML.
-          url: https://example.com/
-          createdAt: 2021-01-01T00:00:00Z
-          feed:
-            createdAt: 2021-01-01T00:00:00Z
-            deletedAt:
-              valid: true
-              time: time
-            name: Example
-            id: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
-            url: https://example.com/
-            updatedAt: 2021-01-01T00:00:00Z
-          deletedAt:
-            valid: true
-            time: time
-          feedId: "1"
-          authorName: Eric Butera
-          imageUrl: https://example.com/image.jpg
-          guid: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
-          id: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
-          updatedAt: 2021-01-01T00:00:00Z
+        - preview: preview
+          authorEmail: authorEmail
+          feedId: feedId
+          authorName: authorName
+          imageUrl: imageUrl
+          guid: guid
+          id: id
+          title: title
+          content: content
+          url: url
+        - preview: preview
+          authorEmail: authorEmail
+          feedId: feedId
+          authorName: authorName
+          imageUrl: imageUrl
+          guid: guid
+          id: id
+          title: title
+          content: content
+          url: url
       properties:
         articles:
           items:
-            $ref: '#/components/schemas/models.Article'
+            $ref: '#/components/schemas/service.Article'
           type: array
-      type: object
-    server.FeedCreateResponse:
-      example:
-        id: id
-      properties:
-        id:
-          type: string
       type: object
     server.FeedResponse:
       example:
         feed:
-          createdAt: 2021-01-01T00:00:00Z
-          deletedAt:
-            valid: true
-            time: time
-          name: Example
-          id: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
-          url: https://example.com/
-          updatedAt: 2021-01-01T00:00:00Z
+          name: name
+          id: id
+          url: url
       properties:
         feed:
-          $ref: '#/components/schemas/models.Feed'
-      type: object
-    server.FeedUpdateResponse:
-      example:
-        feed:
-          createdAt: 2021-01-01T00:00:00Z
-          deletedAt:
-            valid: true
-            time: time
-          name: Example
-          id: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
-          url: https://example.com/
-          updatedAt: 2021-01-01T00:00:00Z
-      properties:
-        feed:
-          $ref: '#/components/schemas/models.Feed'
+          $ref: '#/components/schemas/service.Feed'
       type: object
     server.FeedsResponse:
       example:
         feeds:
-        - createdAt: 2021-01-01T00:00:00Z
-          deletedAt:
-            valid: true
-            time: time
-          name: Example
+        - name: Example
           id: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
           url: https://example.com/
-          updatedAt: 2021-01-01T00:00:00Z
-        - createdAt: 2021-01-01T00:00:00Z
-          deletedAt:
-            valid: true
-            time: time
-          name: Example
+        - name: Example
           id: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
           url: https://example.com/
-          updatedAt: 2021-01-01T00:00:00Z
       properties:
         feeds:
           items:
-            $ref: '#/components/schemas/models.Feed'
+            $ref: '#/components/schemas/server.ListFeed'
           type: array
+      type: object
+    server.ListFeed:
+      example:
+        name: Example
+        id: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
+        url: https://example.com/
+      properties:
+        id:
+          example: aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa
+          type: string
+        name:
+          example: Example
+          type: string
+        url:
+          example: https://example.com/
+          type: string
       type: object
     server.UpdateFeed:
       properties:
@@ -470,5 +295,59 @@ components:
       properties:
         feed:
           $ref: '#/components/schemas/server.UpdateFeed'
+      type: object
+    server.UpdateResponse:
+      example:
+        id: id
+      properties:
+        id:
+          type: string
+      type: object
+    service.Article:
+      example:
+        preview: preview
+        authorEmail: authorEmail
+        feedId: feedId
+        authorName: authorName
+        imageUrl: imageUrl
+        guid: guid
+        id: id
+        title: title
+        content: content
+        url: url
+      properties:
+        authorEmail:
+          type: string
+        authorName:
+          type: string
+        content:
+          type: string
+        feedId:
+          type: string
+        guid:
+          type: string
+        id:
+          type: string
+        imageUrl:
+          type: string
+        preview:
+          type: string
+        title:
+          type: string
+        url:
+          type: string
+      type: object
+    service.Feed:
+      example:
+        name: name
+        id: id
+        url: url
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        url:
+          type: string
       type: object
 x-original-swagger-version: "2.0"

@@ -1,9 +1,11 @@
 //go:build tools
+// +build tools
 
 package tools
 
 import (
 	_ "github.com/99designs/gqlgen"
+	_ "github.com/Khan/genqlient"
 	_ "github.com/golang/protobuf/protoc-gen-go"
 	_ "github.com/golangci/golangci-lint/cmd/golangci-lint"
 	_ "github.com/swaggo/swag/cmd/swag"       // @v1.16.4

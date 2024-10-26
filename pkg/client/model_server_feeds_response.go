@@ -19,7 +19,7 @@ var _ MappedNullable = &ServerFeedsResponse{}
 
 // ServerFeedsResponse struct for ServerFeedsResponse
 type ServerFeedsResponse struct {
-	Feeds []ModelsFeed `json:"feeds,omitempty"`
+	Feeds []ServerListFeed `json:"feeds,omitempty"`
 }
 
 // NewServerFeedsResponse instantiates a new ServerFeedsResponse object
@@ -40,9 +40,9 @@ func NewServerFeedsResponseWithDefaults() *ServerFeedsResponse {
 }
 
 // GetFeeds returns the Feeds field value if set, zero value otherwise.
-func (o *ServerFeedsResponse) GetFeeds() []ModelsFeed {
+func (o *ServerFeedsResponse) GetFeeds() []ServerListFeed {
 	if o == nil || IsNil(o.Feeds) {
-		var ret []ModelsFeed
+		var ret []ServerListFeed
 		return ret
 	}
 	return o.Feeds
@@ -50,7 +50,7 @@ func (o *ServerFeedsResponse) GetFeeds() []ModelsFeed {
 
 // GetFeedsOk returns a tuple with the Feeds field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ServerFeedsResponse) GetFeedsOk() ([]ModelsFeed, bool) {
+func (o *ServerFeedsResponse) GetFeedsOk() ([]ServerListFeed, bool) {
 	if o == nil || IsNil(o.Feeds) {
 		return nil, false
 	}
@@ -66,8 +66,8 @@ func (o *ServerFeedsResponse) HasFeeds() bool {
 	return false
 }
 
-// SetFeeds gets a reference to the given []ModelsFeed and assigns it to the Feeds field.
-func (o *ServerFeedsResponse) SetFeeds(v []ModelsFeed) {
+// SetFeeds gets a reference to the given []ServerListFeed and assigns it to the Feeds field.
+func (o *ServerFeedsResponse) SetFeeds(v []ServerListFeed) {
 	o.Feeds = v
 }
 
@@ -122,5 +122,3 @@ func (v *NullableServerFeedsResponse) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

@@ -19,6 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
+	FeedService_GetFeed_FullMethodName      = "/feeds.v1.FeedService/GetFeed"
 	FeedService_ListFeeds_FullMethodName    = "/feeds.v1.FeedService/ListFeeds"
 	FeedService_CreateFeed_FullMethodName   = "/feeds.v1.FeedService/CreateFeed"
 	FeedService_UpdateFeed_FullMethodName   = "/feeds.v1.FeedService/UpdateFeed"
@@ -30,6 +31,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type FeedServiceClient interface {
+	GetFeed(ctx context.Context, in *GetFeedRequest, opts ...grpc.CallOption) (*GetFeedResponse, error)
 	ListFeeds(ctx context.Context, in *ListFeedsRequest, opts ...grpc.CallOption) (*ListFeedsResponse, error)
 	CreateFeed(ctx context.Context, in *CreateFeedRequest, opts ...grpc.CallOption) (*CreateFeedResponse, error)
 	UpdateFeed(ctx context.Context, in *UpdateFeedRequest, opts ...grpc.CallOption) (*UpdateFeedResponse, error)
@@ -43,6 +45,16 @@ type feedServiceClient struct {
 
 func NewFeedServiceClient(cc grpc.ClientConnInterface) FeedServiceClient {
 	return &feedServiceClient{cc}
+}
+
+func (c *feedServiceClient) GetFeed(ctx context.Context, in *GetFeedRequest, opts ...grpc.CallOption) (*GetFeedResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetFeedResponse)
+	err := c.cc.Invoke(ctx, FeedService_GetFeed_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *feedServiceClient) ListFeeds(ctx context.Context, in *ListFeedsRequest, opts ...grpc.CallOption) (*ListFeedsResponse, error) {
@@ -99,6 +111,7 @@ func (c *feedServiceClient) GetArticle(ctx context.Context, in *GetArticleReques
 // All implementations must embed UnimplementedFeedServiceServer
 // for forward compatibility.
 type FeedServiceServer interface {
+	GetFeed(context.Context, *GetFeedRequest) (*GetFeedResponse, error)
 	ListFeeds(context.Context, *ListFeedsRequest) (*ListFeedsResponse, error)
 	CreateFeed(context.Context, *CreateFeedRequest) (*CreateFeedResponse, error)
 	UpdateFeed(context.Context, *UpdateFeedRequest) (*UpdateFeedResponse, error)
@@ -114,6 +127,9 @@ type FeedServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedFeedServiceServer struct{}
 
+func (UnimplementedFeedServiceServer) GetFeed(context.Context, *GetFeedRequest) (*GetFeedResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetFeed not implemented")
+}
 func (UnimplementedFeedServiceServer) ListFeeds(context.Context, *ListFeedsRequest) (*ListFeedsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListFeeds not implemented")
 }
@@ -148,6 +164,24 @@ func RegisterFeedServiceServer(s grpc.ServiceRegistrar, srv FeedServiceServer) {
 		t.testEmbeddedByValue()
 	}
 	s.RegisterService(&FeedService_ServiceDesc, srv)
+}
+
+func _FeedService_GetFeed_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetFeedRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FeedServiceServer).GetFeed(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FeedService_GetFeed_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FeedServiceServer).GetFeed(ctx, req.(*GetFeedRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _FeedService_ListFeeds_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -247,6 +281,10 @@ var FeedService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "feeds.v1.FeedService",
 	HandlerType: (*FeedServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "GetFeed",
+			Handler:    _FeedService_GetFeed_Handler,
+		},
 		{
 			MethodName: "ListFeeds",
 			Handler:    _FeedService_ListFeeds_Handler,
