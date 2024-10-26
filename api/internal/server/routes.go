@@ -5,7 +5,6 @@ import (
 
 	"github.com/Khan/genqlient/graphql"
 	"github.com/ericbutera/amalgam/api/internal"
-	"github.com/ericbutera/amalgam/internal/db/models"
 	"github.com/ericbutera/amalgam/internal/service"
 	"github.com/gin-gonic/gin"
 
@@ -56,11 +55,12 @@ func (s *server) routes() {
 }
 
 type handlers struct {
-	svc         *service.Service
+	// Deprecated: use graphClient
+	svc         service.Service
 	graphClient graphql.Client
 }
 
-func newHandlers(svc *service.Service, graphClient graphql.Client) *handlers {
+func newHandlers(svc service.Service, graphClient graphql.Client) *handlers {
 	return &handlers{
 		svc:         svc,
 		graphClient: graphClient,
@@ -85,6 +85,7 @@ func (h *handlers) health(c *gin.Context) {
 // @Failure 500 {object} ErrorResponse
 // @Router /feeds/{id} [get]
 func (h *handlers) feedGet(c *gin.Context) {
+	// TODO: convert to graph client
 	feed, err := h.svc.GetFeed(c.Request.Context(), c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: "unable to get feed"})
@@ -95,7 +96,7 @@ func (h *handlers) feedGet(c *gin.Context) {
 }
 
 type FeedResponse struct {
-	Feed *models.Feed `json:"feed"`
+	Feed *service.Feed `json:"feed"`
 }
 
 // @Summary create feed
@@ -113,13 +114,16 @@ func (h *handlers) feedCreate(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, ErrorResponse{Error: err.Error()})
 		return
 	}
-	feed := models.Feed{
+	feed := service.Feed{
 		Url: req.Feed.Url,
 	}
 	if err := h.svc.CreateFeed(c.Request.Context(), &feed); err != nil {
 		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: "unable to create feed"})
 		return
 	}
+	// TODO: convert to graph client
+	//resp, err := graph_client.CreateFeed(c.Request.Context(), h.graphClient)
+
 	c.JSON(http.StatusOK, FeedCreateResponse{
 		Id: feed.ID,
 	})
@@ -153,9 +157,10 @@ func (h *handlers) feedUpdate(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, ErrorResponse{Error: err.Error()})
 		return
 	}
-	feed := models.Feed{
+	feed := service.Feed{
 		Url: req.Feed.Url,
 	}
+	// TODO: convert to graph client
 	if err := h.svc.UpdateFeed(c.Request.Context(), c.Param("id"), &feed); err != nil {
 		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: "unable to create feed"})
 		return
@@ -176,7 +181,7 @@ type UpdateFeedRequest struct {
 }
 
 type FeedUpdateResponse struct {
-	Feed *models.Feed `json:"feed"`
+	Feed *service.Feed `json:"feed"`
 }
 
 // TODO feedDelete
@@ -232,6 +237,7 @@ type FeedsResponse struct {
 // @Failure 500 {object} map[string]string
 // @Router /articles/{id} [get]
 func (h *handlers) article(c *gin.Context) {
+	// TODO: convert to graph client
 	article, err := h.svc.GetArticle(c.Request.Context(), c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: "unable to fetch articles"})
@@ -242,7 +248,7 @@ func (h *handlers) article(c *gin.Context) {
 }
 
 type ArticleResponse struct {
-	Article *models.Article `json:"article"`
+	Article *service.Article `json:"article"`
 }
 
 // @Summary list articles for a feed
@@ -255,6 +261,7 @@ type ArticleResponse struct {
 // @Failure 500 {object} map[string]string
 // @Router /feeds/{id}/articles [get]
 func (h *handlers) articles(c *gin.Context) {
+	// TODO: convert to graph client
 	articles, err := h.svc.GetArticlesByFeed(c.Request.Context(), c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: "unable to fetch articles"})
@@ -265,5 +272,5 @@ func (h *handlers) articles(c *gin.Context) {
 }
 
 type FeedArticlesResponse struct {
-	Articles []models.Article `json:"articles"`
+	Articles []service.Article `json:"articles"`
 }

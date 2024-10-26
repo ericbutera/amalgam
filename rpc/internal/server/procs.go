@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/ericbutera/amalgam/internal/db/models"
+	"github.com/ericbutera/amalgam/internal/service"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -27,7 +27,7 @@ func (s *Server) ListFeeds(ctx context.Context, in *pb.ListFeedsRequest) (*pb.Li
 }
 
 func (s *Server) CreateFeed(ctx context.Context, in *pb.CreateFeedRequest) (*pb.CreateFeedResponse, error) {
-	feed := &models.Feed{
+	feed := &service.Feed{
 		Url:  in.Url,
 		Name: in.Name,
 	}
@@ -40,7 +40,7 @@ func (s *Server) CreateFeed(ctx context.Context, in *pb.CreateFeedRequest) (*pb.
 }
 
 func (s *Server) UpdateFeed(ctx context.Context, in *pb.UpdateFeedRequest) (*pb.UpdateFeedResponse, error) {
-	feed := &models.Feed{
+	feed := &service.Feed{
 		Name: in.Name,
 	}
 	if err := s.service.UpdateFeed(ctx, in.Id, feed); err != nil {

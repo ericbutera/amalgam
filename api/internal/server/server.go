@@ -21,7 +21,7 @@ type server struct {
 	// Deprecated: use graphClient
 	db *gorm.DB
 	// Deprecated: use graphClient
-	service *service.Service
+	service service.Service
 }
 
 type ServerOption func(*server) error
@@ -41,7 +41,7 @@ func New(options ...ServerOption) (*server, error) {
 		return nil, errors.New("database not set")
 	}
 
-	s.service = service.New(s.db)
+	s.service = service.NewGorm(s.db)
 	s.middleware()
 	s.metrics()
 	s.routes()

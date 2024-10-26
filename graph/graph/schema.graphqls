@@ -6,8 +6,15 @@ type Feed {
 
 type Article {
   id: ID!
+  feedId: ID!
+  url: String!
   title: String!
+  imageUrl: String
   content: String!
+  preview: String!
+  guid: String
+  authorName: String
+  authorEmail: String
 }
 
 type AddFeedResponse {

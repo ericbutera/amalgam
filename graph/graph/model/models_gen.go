@@ -7,9 +7,16 @@ type AddFeedResponse struct {
 }
 
 type Article struct {
-	ID      string `json:"id"`
-	Title   string `json:"title"`
-	Content string `json:"content"`
+	ID          string  `json:"id"`
+	FeedID      string  `json:"feedId"`
+	URL         string  `json:"url"`
+	Title       string  `json:"title"`
+	ImageURL    *string `json:"imageUrl,omitempty"`
+	Content     string  `json:"content"`
+	Preview     string  `json:"preview"`
+	GUID        *string `json:"guid,omitempty"`
+	AuthorName  *string `json:"authorName,omitempty"`
+	AuthorEmail *string `json:"authorEmail,omitempty"`
 }
 
 type Feed struct {
