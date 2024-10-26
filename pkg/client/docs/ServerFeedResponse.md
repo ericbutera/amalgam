@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Feed** | Pointer to [**ModelsFeed**](ModelsFeed.md) |  | [optional] 
+**Feed** | Pointer to [**ServiceFeed**](ServiceFeed.md) |  | [optional]
 
 ## Methods
 
@@ -27,20 +27,20 @@ but it doesn't guarantee that properties required by API are set
 
 ### GetFeed
 
-`func (o *ServerFeedResponse) GetFeed() ModelsFeed`
+`func (o *ServerFeedResponse) GetFeed() ServiceFeed`
 
 GetFeed returns the Feed field if non-nil, zero value otherwise.
 
 ### GetFeedOk
 
-`func (o *ServerFeedResponse) GetFeedOk() (*ModelsFeed, bool)`
+`func (o *ServerFeedResponse) GetFeedOk() (*ServiceFeed, bool)`
 
 GetFeedOk returns a tuple with the Feed field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetFeed
 
-`func (o *ServerFeedResponse) SetFeed(v ModelsFeed)`
+`func (o *ServerFeedResponse) SetFeed(v ServiceFeed)`
 
 SetFeed sets Feed field to given value.
 
@@ -52,5 +52,3 @@ HasFeed returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

@@ -19,7 +19,7 @@ var _ MappedNullable = &ServerFeedArticlesResponse{}
 
 // ServerFeedArticlesResponse struct for ServerFeedArticlesResponse
 type ServerFeedArticlesResponse struct {
-	Articles []ModelsArticle `json:"articles,omitempty"`
+	Articles []ServiceArticle `json:"articles,omitempty"`
 }
 
 // NewServerFeedArticlesResponse instantiates a new ServerFeedArticlesResponse object
@@ -40,9 +40,9 @@ func NewServerFeedArticlesResponseWithDefaults() *ServerFeedArticlesResponse {
 }
 
 // GetArticles returns the Articles field value if set, zero value otherwise.
-func (o *ServerFeedArticlesResponse) GetArticles() []ModelsArticle {
+func (o *ServerFeedArticlesResponse) GetArticles() []ServiceArticle {
 	if o == nil || IsNil(o.Articles) {
-		var ret []ModelsArticle
+		var ret []ServiceArticle
 		return ret
 	}
 	return o.Articles
@@ -50,7 +50,7 @@ func (o *ServerFeedArticlesResponse) GetArticles() []ModelsArticle {
 
 // GetArticlesOk returns a tuple with the Articles field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ServerFeedArticlesResponse) GetArticlesOk() ([]ModelsArticle, bool) {
+func (o *ServerFeedArticlesResponse) GetArticlesOk() ([]ServiceArticle, bool) {
 	if o == nil || IsNil(o.Articles) {
 		return nil, false
 	}
@@ -66,8 +66,8 @@ func (o *ServerFeedArticlesResponse) HasArticles() bool {
 	return false
 }
 
-// SetArticles gets a reference to the given []ModelsArticle and assigns it to the Articles field.
-func (o *ServerFeedArticlesResponse) SetArticles(v []ModelsArticle) {
+// SetArticles gets a reference to the given []ServiceArticle and assigns it to the Articles field.
+func (o *ServerFeedArticlesResponse) SetArticles(v []ServiceArticle) {
 	o.Articles = v
 }
 
@@ -122,5 +122,3 @@ func (v *NullableServerFeedArticlesResponse) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

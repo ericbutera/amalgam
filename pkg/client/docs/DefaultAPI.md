@@ -54,7 +54,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**id** | **string** | Article ID | 
+**id** | **string** | Article ID |
 
 ### Other Parameters
 
@@ -185,7 +185,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**id** | **string** | Feed ID | 
+**id** | **string** | Feed ID |
 
 ### Other Parameters
 
@@ -255,7 +255,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**id** | **string** | Feed ID | 
+**id** | **string** | Feed ID |
 
 ### Other Parameters
 
@@ -286,7 +286,7 @@ No authorization required
 
 ## FeedsIdPut
 
-> ServerFeedUpdateResponse FeedsIdPut(ctx, id).Request(request).Execute()
+> ServerUpdateResponse FeedsIdPut(ctx, id).Request(request).Execute()
 
 update feed
 
@@ -315,7 +315,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `DefaultAPI.FeedsIdPut``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `FeedsIdPut`: ServerFeedUpdateResponse
+	// response from `FeedsIdPut`: ServerUpdateResponse
 	fmt.Fprintf(os.Stdout, "Response from `DefaultAPI.FeedsIdPut`: %v\n", resp)
 }
 ```
@@ -326,7 +326,7 @@ func main() {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
-**id** | **string** | Feed ID | 
+**id** | **string** | Feed ID |
 
 ### Other Parameters
 
@@ -336,11 +336,11 @@ Other parameters are passed through a pointer to a apiFeedsIdPutRequest struct v
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
- **request** | [**ServerUpdateFeedRequest**](ServerUpdateFeedRequest.md) | feed data | 
+ **request** | [**ServerUpdateFeedRequest**](ServerUpdateFeedRequest.md) | feed data |
 
 ### Return type
 
-[**ServerFeedUpdateResponse**](ServerFeedUpdateResponse.md)
+[**ServerUpdateResponse**](ServerUpdateResponse.md)
 
 ### Authorization
 
@@ -358,7 +358,7 @@ No authorization required
 
 ## FeedsPost
 
-> ServerFeedCreateResponse FeedsPost(ctx).Request(request).Execute()
+> ServerCreateResponse FeedsPost(ctx).Request(request).Execute()
 
 create feed
 
@@ -386,7 +386,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Error when calling `DefaultAPI.FeedsPost``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `FeedsPost`: ServerFeedCreateResponse
+	// response from `FeedsPost`: ServerCreateResponse
 	fmt.Fprintf(os.Stdout, "Response from `DefaultAPI.FeedsPost`: %v\n", resp)
 }
 ```
@@ -402,11 +402,11 @@ Other parameters are passed through a pointer to a apiFeedsPostRequest struct vi
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **request** | [**ServerCreateFeedRequest**](ServerCreateFeedRequest.md) | feed data | 
+ **request** | [**ServerCreateFeedRequest**](ServerCreateFeedRequest.md) | feed data |
 
 ### Return type
 
-[**ServerFeedCreateResponse**](ServerFeedCreateResponse.md)
+[**ServerCreateResponse**](ServerCreateResponse.md)
 
 ### Authorization
 
@@ -420,4 +420,3 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)
 [[Back to README]](../README.md)
-
