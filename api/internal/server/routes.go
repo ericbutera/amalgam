@@ -32,7 +32,7 @@ GET /article/:id
 */
 
 func (s *server) routes() {
-	handlers := newHandlers(s.service, s.graphClient)
+	handlers := newHandlers(s.graphClient)
 
 	s.router.GET("/", func(c *gin.Context) { c.Redirect(http.StatusMovedPermanently, internal.SwaggerUri) })
 	s.router.GET("/health", handlers.health)
@@ -56,13 +56,11 @@ func (s *server) routes() {
 
 type handlers struct {
 	// Deprecated: use graphClient
-	svc         service.Service
 	graphClient graphql.Client
 }
 
-func newHandlers(svc service.Service, graphClient graphql.Client) *handlers {
+func newHandlers(graphClient graphql.Client) *handlers {
 	return &handlers{
-		svc:         svc,
 		graphClient: graphClient,
 	}
 }
@@ -85,13 +83,19 @@ func (h *handlers) health(c *gin.Context) {
 // @Failure 500 {object} ErrorResponse
 // @Router /feeds/{id} [get]
 func (h *handlers) feedGet(c *gin.Context) {
-	// TODO: convert to graph client
-	feed, err := h.svc.GetFeed(c.Request.Context(), c.Param("id"))
+	resp, err := graph_client.GetFeed(c.Request.Context(), h.graphClient, c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: "unable to get feed"})
+		return
 	}
+
 	c.JSON(http.StatusOK, FeedResponse{
-		Feed: feed,
+		// TODO: convert.GraphToApi
+		Feed: &service.Feed{
+			ID:   resp.Feed.Id,
+			Name: resp.Feed.Name,
+			Url:  resp.Feed.Url,
+		},
 	})
 }
 
@@ -105,7 +109,7 @@ type FeedResponse struct {
 // @Accept json
 // @Produce json
 // @Param request body CreateFeedRequest true "feed data"
-// @Success 200 {object} FeedCreateResponse
+// @Success 200 {object} CreateResponse
 // @Failure 500 {object} map[string]string
 // @Router /feeds [post]
 func (h *handlers) feedCreate(c *gin.Context) {
@@ -114,18 +118,14 @@ func (h *handlers) feedCreate(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, ErrorResponse{Error: err.Error()})
 		return
 	}
-	feed := service.Feed{
-		Url: req.Feed.Url,
-	}
-	if err := h.svc.CreateFeed(c.Request.Context(), &feed); err != nil {
+	resp, err := graph_client.AddFeed(c.Request.Context(), h.graphClient, req.Feed.Url, req.Feed.Name)
+	if err != nil {
+		// TODO show validation errs
 		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: "unable to create feed"})
 		return
 	}
-	// TODO: convert to graph client
-	//resp, err := graph_client.CreateFeed(c.Request.Context(), h.graphClient)
-
-	c.JSON(http.StatusOK, FeedCreateResponse{
-		Id: feed.ID,
+	c.JSON(http.StatusOK, CreateResponse{
+		Id: resp.AddFeed.Id,
 	})
 }
 
@@ -137,7 +137,7 @@ type CreateFeed struct {
 type CreateFeedRequest struct {
 	Feed CreateFeed `json:"feed"`
 }
-type FeedCreateResponse struct {
+type CreateResponse struct {
 	Id string `json:"id"`
 }
 
@@ -148,25 +148,23 @@ type FeedCreateResponse struct {
 // @Produce json
 // @Param id path string true "Feed ID"
 // @Param request body UpdateFeedRequest true "feed data"
-// @Success 200 {object} FeedUpdateResponse
+// @Success 200 {object} UpdateResponse
 // @Failure 500 {object} map[string]string
 // @Router /feeds/{id} [put]
 func (h *handlers) feedUpdate(c *gin.Context) {
 	var req UpdateFeedRequest
 	if err := c.Bind(&req); err != nil {
-		c.JSON(http.StatusBadRequest, ErrorResponse{Error: err.Error()})
+		// TODO show validation errs
+		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "unable to update feed"})
 		return
 	}
-	feed := service.Feed{
-		Url: req.Feed.Url,
-	}
-	// TODO: convert to graph client
-	if err := h.svc.UpdateFeed(c.Request.Context(), c.Param("id"), &feed); err != nil {
-		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: "unable to create feed"})
+	_, err := graph_client.UpdateFeed(c.Request.Context(), h.graphClient, c.Param("id"), req.Feed.Name, req.Feed.Url)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: "unable to update feed"})
 		return
 	}
-	c.JSON(http.StatusOK, FeedUpdateResponse{
-		Feed: &feed,
+	c.JSON(http.StatusOK, UpdateResponse{
+		Id: c.Param("id"),
 	})
 }
 
@@ -180,8 +178,8 @@ type UpdateFeedRequest struct {
 	Feed UpdateFeed `json:"feed"`
 }
 
-type FeedUpdateResponse struct {
-	Feed *service.Feed `json:"feed"`
+type UpdateResponse struct {
+	Id string `json:"id"`
 }
 
 // TODO feedDelete
@@ -197,15 +195,15 @@ type FeedUpdateResponse struct {
 // @Failure 500 {object} map[string]string
 // @Router /feeds [get]
 func (h *handlers) feedsList(c *gin.Context) {
-	resp, err := graph_client.Feeds(c.Request.Context(), h.graphClient)
+	resp, err := graph_client.ListFeeds(c.Request.Context(), h.graphClient)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, ErrorResponse{
-			Error: err.Error(),
-		})
+		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: "unable to fetch feeds"})
+		return
 	}
 
 	feeds := []ListFeed{}
 	for _, feed := range resp.Feeds {
+		// TODO: convert.GraphToApi
 		feeds = append(feeds, ListFeed{
 			Id:   feed.Id,
 			Name: feed.Name,
@@ -238,12 +236,25 @@ type FeedsResponse struct {
 // @Router /articles/{id} [get]
 func (h *handlers) article(c *gin.Context) {
 	// TODO: convert to graph client
-	article, err := h.svc.GetArticle(c.Request.Context(), c.Param("id"))
+	resp, err := graph_client.GetArticle(c.Request.Context(), h.graphClient, c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: "unable to fetch articles"})
+		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: "unable to fetch article"})
+		return
 	}
 	c.JSON(http.StatusOK, ArticleResponse{
-		Article: article,
+		// TODO converter.GraphToApi
+		Article: &service.Article{
+			ID:          resp.Article.Id,
+			Title:       resp.Article.Title,
+			Content:     resp.Article.Content,
+			FeedID:      resp.Article.FeedId,
+			Url:         resp.Article.Url,
+			ImageUrl:    resp.Article.ImageUrl,
+			Preview:     resp.Article.Preview,
+			Guid:        resp.Article.Guid,
+			AuthorName:  resp.Article.AuthorName,
+			AuthorEmail: resp.Article.AuthorEmail,
+		},
 	})
 }
 
@@ -262,9 +273,22 @@ type ArticleResponse struct {
 // @Router /feeds/{id}/articles [get]
 func (h *handlers) articles(c *gin.Context) {
 	// TODO: convert to graph client
-	articles, err := h.svc.GetArticlesByFeed(c.Request.Context(), c.Param("id"))
+	resp, err := graph_client.ListArticles(c.Request.Context(), h.graphClient, c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: "unable to fetch articles"})
+		return
+	}
+	articles := []service.Article{}
+	for _, article := range resp.Articles {
+		articles = append(articles, service.Article{
+			ID:          article.Id,
+			Title:       article.Title,
+			Url:         article.Url,
+			ImageUrl:    article.ImageUrl,
+			Preview:     article.Preview,
+			AuthorName:  article.AuthorName,
+			AuthorEmail: article.AuthorEmail,
+		})
 	}
 	c.JSON(http.StatusOK, FeedArticlesResponse{
 		Articles: articles,
