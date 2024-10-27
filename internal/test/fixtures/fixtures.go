@@ -1,7 +1,7 @@
 package fixtures
 
 import (
-	svc_model "github.com/ericbutera/amalgam/internal/service"
+	svc_model "github.com/ericbutera/amalgam/internal/service/models"
 )
 
 // TODO: figure out how to auto-generate these. for now copilot makes this easy enough

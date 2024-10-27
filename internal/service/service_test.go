@@ -6,6 +6,7 @@ import (
 
 	"github.com/ericbutera/amalgam/internal/db"
 	service "github.com/ericbutera/amalgam/internal/service"
+	models "github.com/ericbutera/amalgam/internal/service/models"
 	"github.com/ericbutera/amalgam/internal/test/fixtures"
 	helpers "github.com/ericbutera/amalgam/pkg/test"
 	"github.com/stretchr/testify/assert"
@@ -41,7 +42,7 @@ func mustNewTestDb(t *testing.T) *gorm.DB {
 }
 
 type AllowedModels interface {
-	*service.Feed | *service.Article
+	*models.Feed | *models.Article
 }
 
 func Create[T AllowedModels](db *gorm.DB, records ...*T) error {
@@ -78,7 +79,7 @@ func (s *ServiceSuite) TestCreateFeed() {
 	err := s.svc.CreateFeed(context.Background(), expected)
 	require.NoError(t, err)
 
-	actual := &service.Feed{}
+	actual := &models.Feed{}
 	res := s.db.First(actual, "url=?", expected.Url)
 	require.NoError(t, res.Error)
 
@@ -92,14 +93,14 @@ func (s *ServiceSuite) TestUpdateFeed() {
 	feed := fixtures.NewFeed()
 	mustCreate(t, s.db, &feed)
 
-	expected := &service.Feed{
+	expected := &models.Feed{
 		Name: feed.Name,
 		Url:  feed.Url,
 	}
 	err := s.svc.UpdateFeed(context.Background(), feed.ID, expected)
 	require.NoError(t, err)
 
-	var actual service.Feed
+	var actual models.Feed
 	require.NoError(t, s.db.First(&actual, "id=?", feed.ID).Error)
 
 	assert.Equal(t, expected.Url, actual.Url)

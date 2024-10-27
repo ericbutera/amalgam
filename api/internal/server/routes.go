@@ -5,7 +5,8 @@ import (
 
 	"github.com/Khan/genqlient/graphql"
 	"github.com/ericbutera/amalgam/api/internal"
-	"github.com/ericbutera/amalgam/internal/service"
+	"github.com/ericbutera/amalgam/internal/copygen"
+	"github.com/ericbutera/amalgam/internal/service/models"
 	"github.com/gin-gonic/gin"
 
 	graph_client "github.com/ericbutera/amalgam/graph/pkg/client"
@@ -14,6 +15,7 @@ import (
 )
 
 // TODO: do not show raw errors to the user
+// TODO: this shouldn't have used the db or service models in responses. should have used own dto
 
 /*
 Routes:
@@ -55,7 +57,6 @@ func (s *server) routes() {
 }
 
 type handlers struct {
-	// Deprecated: use graphClient
 	graphClient graphql.Client
 }
 
@@ -88,19 +89,15 @@ func (h *handlers) feedGet(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: "unable to get feed"})
 		return
 	}
-
+	feed := &models.Feed{}
+	copygen.GraphClientToApiFeedGet(feed, &resp.Feed)
 	c.JSON(http.StatusOK, FeedResponse{
-		// TODO: convert.GraphToApi
-		Feed: &service.Feed{
-			ID:   resp.Feed.Id,
-			Name: resp.Feed.Name,
-			Url:  resp.Feed.Url,
-		},
+		Feed: feed,
 	})
 }
 
 type FeedResponse struct {
-	Feed *service.Feed `json:"feed"`
+	Feed *models.Feed `json:"feed"`
 }
 
 // @Summary create feed
@@ -182,10 +179,6 @@ type UpdateResponse struct {
 	Id string `json:"id"`
 }
 
-// TODO feedDelete
-// - delete from feeds_users
-// - note: prevent fetch if feed not in feeds_users
-
 // @Summary list feeds
 // @Schemes
 // @Description list feeds
@@ -203,7 +196,6 @@ func (h *handlers) feedsList(c *gin.Context) {
 
 	feeds := []ListFeed{}
 	for _, feed := range resp.Feeds {
-		// TODO: convert.GraphToApi
 		feeds = append(feeds, ListFeed{
 			Id:   feed.Id,
 			Name: feed.Name,
@@ -235,31 +227,20 @@ type FeedsResponse struct {
 // @Failure 500 {object} map[string]string
 // @Router /articles/{id} [get]
 func (h *handlers) article(c *gin.Context) {
-	// TODO: convert to graph client
 	resp, err := graph_client.GetArticle(c.Request.Context(), h.graphClient, c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: "unable to fetch article"})
 		return
 	}
+	article := &models.Article{}
+	copygen.GraphClientToApiArticle(article, &resp.Article)
 	c.JSON(http.StatusOK, ArticleResponse{
-		// TODO converter.GraphToApi
-		Article: &service.Article{
-			ID:          resp.Article.Id,
-			Title:       resp.Article.Title,
-			Content:     resp.Article.Content,
-			FeedID:      resp.Article.FeedId,
-			Url:         resp.Article.Url,
-			ImageUrl:    resp.Article.ImageUrl,
-			Preview:     resp.Article.Preview,
-			Guid:        resp.Article.Guid,
-			AuthorName:  resp.Article.AuthorName,
-			AuthorEmail: resp.Article.AuthorEmail,
-		},
+		Article: article,
 	})
 }
 
 type ArticleResponse struct {
-	Article *service.Article `json:"article"`
+	Article *models.Article `json:"article"`
 }
 
 // @Summary list articles for a feed
@@ -272,23 +253,16 @@ type ArticleResponse struct {
 // @Failure 500 {object} map[string]string
 // @Router /feeds/{id}/articles [get]
 func (h *handlers) articles(c *gin.Context) {
-	// TODO: convert to graph client
 	resp, err := graph_client.ListArticles(c.Request.Context(), h.graphClient, c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: "unable to fetch articles"})
 		return
 	}
-	articles := []service.Article{}
-	for _, article := range resp.Articles {
-		articles = append(articles, service.Article{
-			ID:          article.Id,
-			Title:       article.Title,
-			Url:         article.Url,
-			ImageUrl:    article.ImageUrl,
-			Preview:     article.Preview,
-			AuthorName:  article.AuthorName,
-			AuthorEmail: article.AuthorEmail,
-		})
+	articles := []models.Article{}
+	for _, g_article := range resp.Articles {
+		m_article := &models.Article{}
+		copygen.GraphClientToApiArticleList(m_article, &g_article)
+		articles = append(articles, *m_article)
 	}
 	c.JSON(http.StatusOK, FeedArticlesResponse{
 		Articles: articles,
@@ -296,5 +270,5 @@ func (h *handlers) articles(c *gin.Context) {
 }
 
 type FeedArticlesResponse struct {
-	Articles []service.Article `json:"articles"`
+	Articles []models.Article `json:"articles"`
 }
