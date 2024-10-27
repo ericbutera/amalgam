@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
 
+	"github.com/ericbutera/amalgam/internal/copygen"
 	"github.com/ericbutera/amalgam/internal/db/models"
 	"github.com/ericbutera/amalgam/internal/test/fixtures"
 	slog_gorm "github.com/orandin/slog-gorm"
@@ -116,8 +117,11 @@ func WithAutoMigrate() DbOptions {
 func WithSeedData() DbOptions {
 	return func(db *gorm.DB) error {
 		return db.Transaction(func(tx *gorm.DB) error {
-			feed := fixtures.NewFeed()
-			article := fixtures.NewArticle()
+			feed := models.Feed{}
+			copygen.ServiceToDbFeed(&feed, fixtures.NewFeed())
+
+			article := models.Article{}
+			copygen.ServiceToDbArticle(&article, fixtures.NewArticle())
 			if err := tx.Create(&feed).Error; err != nil {
 				return err
 			}
