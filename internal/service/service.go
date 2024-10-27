@@ -5,7 +5,11 @@ import (
 	"errors"
 
 	//converter "github.com/ericbutera/amalgam/internal/copygen"
-	"github.com/ericbutera/amalgam/internal/db/models"
+
+	"github.com/ericbutera/amalgam/internal/copygen"
+	db_model "github.com/ericbutera/amalgam/internal/db/models"
+	svc_model "github.com/ericbutera/amalgam/internal/service/models"
+
 	"gorm.io/gorm"
 )
 
@@ -14,32 +18,13 @@ var (
 	ErrDuplicate = errors.New("duplicate entry")
 )
 
-type Feed struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
-	Url  string `json:"url"`
-}
-
-type Article struct {
-	ID          string `json:"id"`
-	FeedID      string `json:"feedId"`
-	Url         string `json:"url"`
-	Title       string `json:"title"`
-	ImageUrl    string `json:"imageUrl"`
-	Preview     string `json:"preview"`
-	Content     string `json:"content"`
-	Guid        string `json:"guid"`
-	AuthorName  string `json:"authorName"`
-	AuthorEmail string `json:"authorEmail"`
-}
-
 type Service interface {
-	Feeds(ctx context.Context) ([]Feed, error)
-	CreateFeed(ctx context.Context, feed *Feed) error
-	UpdateFeed(ctx context.Context, id string, feed *Feed) error
-	GetFeed(ctx context.Context, id string) (*Feed, error)
-	GetArticlesByFeed(ctx context.Context, feedId string) ([]Article, error)
-	GetArticle(ctx context.Context, id string) (*Article, error)
+	Feeds(ctx context.Context) ([]svc_model.Feed, error)
+	CreateFeed(ctx context.Context, feed *svc_model.Feed) error
+	UpdateFeed(ctx context.Context, id string, feed *svc_model.Feed) error
+	GetFeed(ctx context.Context, id string) (*svc_model.Feed, error)
+	GetArticlesByFeed(ctx context.Context, feedId string) ([]svc_model.Article, error)
+	GetArticle(ctx context.Context, id string) (*svc_model.Article, error)
 }
 
 // TODO: move validation from api into service
@@ -59,9 +44,8 @@ func (s *GormService) query(ctx context.Context) *gorm.DB {
 	return s.db.WithContext(ctx)
 }
 
-func (s *GormService) Feeds(ctx context.Context) ([]Feed, error) {
-	//var feeds []models.Feed
-	var feeds []Feed
+func (s *GormService) Feeds(ctx context.Context) ([]svc_model.Feed, error) {
+	var feeds []svc_model.Feed
 	result := s.query(ctx).
 		Find(&feeds).
 		Limit(100) // TODO: pagination
@@ -72,17 +56,12 @@ func (s *GormService) Feeds(ctx context.Context) ([]Feed, error) {
 	return feeds, nil
 }
 
-func (s *GormService) CreateFeed(ctx context.Context, feed *Feed) error {
+func (s *GormService) CreateFeed(ctx context.Context, feed *svc_model.Feed) error {
 	// TODO: normalize URL to prevent duplicates
-	// TODO: create user_feed if not exists
-	//var dbFeed models.Feed
-	dbFeed := models.Feed{
-		Name: feed.Name,
-		Url:  feed.Url,
-	}
-	// converter.ServiceToDbFeed(dbFeed, feed)
+	dbFeed := &db_model.Feed{}
+	copygen.ServiceToDbFeed(dbFeed, feed)
 	return s.query(ctx).Transaction(func(tx *gorm.DB) error {
-		res := tx.Find(&Feed{}, "url=?", feed.Url)
+		res := tx.Find(&svc_model.Feed{}, "url=?", feed.Url)
 		if res.Error != nil {
 			return res.Error
 		}
@@ -97,9 +76,11 @@ func (s *GormService) CreateFeed(ctx context.Context, feed *Feed) error {
 	})
 }
 
-func (s *GormService) UpdateFeed(ctx context.Context, id string, feed *Feed) error {
+func (s *GormService) UpdateFeed(ctx context.Context, id string, feed *svc_model.Feed) error {
+	dbFeed := &db_model.Feed{}
+	copygen.ServiceToDbFeed(dbFeed, feed)
 	result := s.query(ctx).
-		Model(&feed).
+		Model(&dbFeed).
 		Where("id=?", id).
 		Updates(map[string]interface{}{
 			"name": feed.Name,
@@ -114,9 +95,8 @@ func (s *GormService) UpdateFeed(ctx context.Context, id string, feed *Feed) err
 	return nil
 }
 
-func (s *GormService) GetFeed(ctx context.Context, id string) (*Feed, error) {
-	//var feed models.Feed
-	var feed Feed
+func (s *GormService) GetFeed(ctx context.Context, id string) (*svc_model.Feed, error) {
+	var feed svc_model.Feed
 	result := s.query(ctx).First(&feed, "id=?", id)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -127,8 +107,8 @@ func (s *GormService) GetFeed(ctx context.Context, id string) (*Feed, error) {
 	return &feed, nil
 }
 
-func (s *GormService) GetArticlesByFeed(ctx context.Context, feedId string) ([]Article, error) {
-	var articles []Article //[]models.Article
+func (s *GormService) GetArticlesByFeed(ctx context.Context, feedId string) ([]svc_model.Article, error) {
+	var articles []svc_model.Article
 	result := s.query(ctx).
 		Find(&articles, "feed_id=?", feedId).
 		Limit(100) // TODO: pagination (cursor)
@@ -139,9 +119,8 @@ func (s *GormService) GetArticlesByFeed(ctx context.Context, feedId string) ([]A
 	return articles, nil
 }
 
-func (s *GormService) GetArticle(ctx context.Context, id string) (*Article, error) {
-	//var article models.Article
-	var article Article
+func (s *GormService) GetArticle(ctx context.Context, id string) (*svc_model.Article, error) {
+	var article svc_model.Article
 	result := s.query(ctx).First(&article, "id=?", id)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
