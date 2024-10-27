@@ -19,8 +19,10 @@ import (
 func (r *mutationResolver) AddFeed(ctx context.Context, url string, name string) (*model.AddResponse, error) {
 	// TODO: grpc middleware to log errors
 	resp, err := r.rpcClient.CreateFeed(ctx, &pb.CreateFeedRequest{
-		Url:  url,
-		Name: name,
+		Feed: &pb.CreateFeedRequest_Feed{
+			Url:  url,
+			Name: name,
+		},
 	})
 	if err != nil {
 		return nil, status.Error(codes.Internal, "failed to create feed")
@@ -34,9 +36,11 @@ func (r *mutationResolver) AddFeed(ctx context.Context, url string, name string)
 // UpdateFeed is the resolver for the updateFeed field.
 func (r *mutationResolver) UpdateFeed(ctx context.Context, id string, url *string, name *string) (*model.UpdateResponse, error) {
 	_, err := r.rpcClient.UpdateFeed(ctx, &pb.UpdateFeedRequest{
-		Id:   id,
-		Url:  lo.FromPtr(url),
-		Name: lo.FromPtr(name),
+		Feed: &pb.UpdateFeedRequest_Feed{
+			Id:   id,
+			Url:  lo.FromPtr(url),
+			Name: lo.FromPtr(name),
+		},
 	})
 	if err != nil {
 		return nil, status.Error(codes.Internal, "failed to update feed")

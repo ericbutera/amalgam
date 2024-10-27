@@ -4,9 +4,12 @@
 package copygen
 
 import (
+	// TODO: add API models
 	gql_model "github.com/ericbutera/amalgam/graph/graph/model"
+	gql_client "github.com/ericbutera/amalgam/graph/pkg/client"
 	db_model "github.com/ericbutera/amalgam/internal/db/models"
-	svc_model "github.com/ericbutera/amalgam/internal/service"
+	svc_model "github.com/ericbutera/amalgam/internal/service/models"
+	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
 )
 
 // DbToServiceFeed copies a *db_model.Feed to a *svc_model.Feed.
@@ -95,8 +98,84 @@ func ServiceToGraphArticle(tA *gql_model.Article, fA *svc_model.Article) {
 	tA.AuthorEmail = &fA.AuthorEmail
 }
 
-// CreateFeedToServiceFeed copies a *svc_model.Feed to a *svc_model.Feed.
-func CreateFeedToServiceFeed(tF *svc_model.Feed, fF *svc_model.Feed) {
+// GraphClientToApiFeedGet copies a *gql_client.GetFeedFeed to a *svc_model.Feed.
+func GraphClientToApiFeedGet(tF *svc_model.Feed, fG *gql_client.GetFeedFeed) {
 	// *svc_model.Feed fields
-	tF = fF
+	tF.Name = fG.Name
+	tF.Url = fG.Url
+}
+
+// GraphClientToApiArticle copies a *gql_client.GetArticleArticle to a *svc_model.Article.
+func GraphClientToApiArticle(tA *svc_model.Article, fG *gql_client.GetArticleArticle) {
+	// *svc_model.Article fields
+	tA.Url = fG.Url
+	tA.Title = fG.Title
+	tA.ImageUrl = fG.ImageUrl
+	tA.Preview = fG.Preview
+	tA.Content = fG.Content
+	tA.Guid = fG.Guid
+	tA.AuthorName = fG.AuthorName
+	tA.AuthorEmail = fG.AuthorEmail
+}
+
+// GraphClientToApiArticleList copies a *gql_client.ListArticlesArticlesArticle to a *svc_model.Article.
+func GraphClientToApiArticleList(tA *svc_model.Article, fL *gql_client.ListArticlesArticlesArticle) {
+	// *svc_model.Article fields
+	tA.Url = fL.Url
+	tA.Title = fL.Title
+	tA.ImageUrl = fL.ImageUrl
+	tA.Preview = fL.Preview
+	tA.AuthorName = fL.AuthorName
+	tA.AuthorEmail = fL.AuthorEmail
+}
+
+// ProtoCreateFeedToService copies a *pb.CreateFeedRequest_Feed to a *svc_model.Feed.
+func ProtoCreateFeedToService(tF *svc_model.Feed, fC *pb.CreateFeedRequest_Feed) {
+	// *svc_model.Feed fields
+	tF.Name = fC.Name
+	tF.Url = fC.Url
+}
+
+// ProtoUpdateFeedToService copies a *pb.UpdateFeedRequest_Feed to a *svc_model.Feed.
+func ProtoUpdateFeedToService(tF *svc_model.Feed, fU *pb.UpdateFeedRequest_Feed) {
+	// *svc_model.Feed fields
+	tF.ID = fU.Id
+	tF.Name = fU.Name
+	tF.Url = fU.Url
+}
+
+// ServiceToProtoFeed copies a *svc_model.Feed to a *pb.Feed.
+func ServiceToProtoFeed(tF *pb.Feed, fF *svc_model.Feed) {
+	// *pb.Feed fields
+	tF.Id = fF.ID
+	tF.Url = fF.Url
+	tF.Name = fF.Name
+}
+
+// ProtoToServiceArticle copies a *pb.Article to a *svc_model.Article.
+func ProtoToServiceArticle(tA *svc_model.Article, fA *pb.Article) {
+	// *svc_model.Article fields
+	tA.ID = fA.Id
+	tA.Url = fA.Url
+	tA.Title = fA.Title
+	tA.ImageUrl = fA.ImageUrl
+	tA.Preview = fA.Preview
+	tA.Content = fA.Content
+	tA.Guid = fA.Guid
+	tA.AuthorName = fA.AuthorName
+	tA.AuthorEmail = fA.AuthorEmail
+}
+
+// ServiceToProtoArticle copies a *svc_model.Article to a *pb.Article.
+func ServiceToProtoArticle(tA *pb.Article, fA *svc_model.Article) {
+	// *pb.Article fields
+	tA.Id = fA.ID
+	tA.Title = fA.Title
+	tA.Content = fA.Content
+	tA.Url = fA.Url
+	tA.ImageUrl = fA.ImageUrl
+	tA.Preview = fA.Preview
+	tA.Guid = fA.Guid
+	tA.AuthorName = fA.AuthorName
+	tA.AuthorEmail = fA.AuthorEmail
 }

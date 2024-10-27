@@ -48,9 +48,14 @@ message ListFeedsResponse {
   repeated Feed feeds = 1;
 }
 
+
+
 message CreateFeedRequest {
-  string url = 1;
-  string name = 2;
+  message Feed {
+    string url = 1;
+    string name = 2;
+  }
+  Feed feed = 1;
 }
 
 message CreateFeedResponse {
@@ -58,10 +63,12 @@ message CreateFeedResponse {
 }
 
 message UpdateFeedRequest {
-  string id = 1;
-  // Deprecated: URL is read only!
-  string url = 2;
-  string name = 3;
+  message Feed {
+    string id = 1;
+    string url = 2 [deprecated=true];
+    string name = 3;
+  }
+  Feed feed = 1;
 }
 
 message UpdateFeedResponse {}
