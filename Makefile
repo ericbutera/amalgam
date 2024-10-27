@@ -76,9 +76,13 @@ generate-typescript-api-client: ## Generate Typescript API client
 
 generate-proto: ## Generate protobuf
 	@echo Generating protobuf
-	go get google.golang.org/protobuf/cmd/protoc-gen-go@latest
-	go get google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+	go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 	buf generate
+
+generate-converters: ## Generate copygen type converters
+	@echo Generating converters
+	copygen -yml internal/copygen/setup.yml
 
 download:
 	@echo Download go.mod dependencies
