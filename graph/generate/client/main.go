@@ -2,6 +2,8 @@
 
 package main
 
+// TODO: move to tools
+
 import (
 	"context"
 	"fmt"
