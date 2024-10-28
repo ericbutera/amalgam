@@ -20,8 +20,11 @@ type Copygen interface {
 	GraphToServiceArticle(*gql_model.Article) *svc_model.Article
 	ServiceToGraphArticle(*svc_model.Article) *gql_model.Article
 
+	// tag .* json
 	GraphClientToApiFeedGet(*gql_client.GetFeedFeed) *svc_model.Feed
+	// tag .* json
 	GraphClientToApiArticle(*gql_client.GetArticleArticle) *svc_model.Article
+	// tag .* json
 	GraphClientToApiArticleList(*gql_client.ListArticlesArticlesArticle) *svc_model.Article
 
 	// tag .* json

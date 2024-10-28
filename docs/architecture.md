@@ -102,7 +102,7 @@ flowchart LR
   gRPC --> DomainLayer
 ```
 
-## [v1.2.0](https://github.com/ericbutera/amalgam/releases/tag/v1.2.0) Refactor REST to use GraphQL backend
+## [v1.3.2](https://github.com/ericbutera/amalgam/releases/tag/v1.3.2) Refactor REST to use GraphQL backend
 
 Phase 3: Refactor REST, Introduce GraphQL Clients.
 
