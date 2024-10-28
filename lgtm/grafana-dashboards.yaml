@@ -1,33 +1,58 @@
 apiVersion: 1
 
 providers:
-  - name: "RED Metrics (classic histogram)"
+  # - name: "RED Metrics (classic histogram)"
+  #   type: file
+  #   options:
+  #     path: /otel-lgtm/grafana-dashboard-red-metrics-classic.json
+  #     foldersFromFilesStructure: false
+  # - name: "RED Metrics (exponential/native histogram)"
+  #   type: file
+  #   options:
+  #     path: /otel-lgtm/grafana-dashboard-red-metrics-native.json
+  #     foldersFromFilesStructure: false
+  # - name: "JVM Metrics"
+  #   type: file
+  #   options:
+  #     path: /otel-lgtm/grafana-dashboard-jvm-metrics.json
+  #     foldersFromFilesStructure: false
+  - name: "api service"
     type: file
     options:
-      path: /otel-lgtm/grafana-dashboard-red-metrics-classic.json
+      path: /otel-lgtm/api-dashboard.json
       foldersFromFilesStructure: false
-  - name: "RED Metrics (exponential/native histogram)"
+  - name: "api database (gorm)"
     type: file
     options:
-      path: /otel-lgtm/grafana-dashboard-red-metrics-native.json
+      path: /otel-lgtm/api-db-dashboard.json
       foldersFromFilesStructure: false
-  - name: "JVM Metrics"
+  - name: "rpc service"
     type: file
     options:
-      path: /otel-lgtm/grafana-dashboard-jvm-metrics.json
+      path: /otel-lgtm/rpc-dashboard.json
       foldersFromFilesStructure: false
-  - name: "Go REST API - Gin"
+  - name: "graph service"
     type: file
     options:
-      path: /otel-lgtm/gin.json
+      path: /otel-lgtm/graph-dashboard.json
       foldersFromFilesStructure: false
-  - name: "Go REST API - Gorm Metrics"
+
+  # more info: https://github.com/temporalio/dashboards
+  - name: "temporal server"
     type: file
     options:
-      path: /otel-lgtm/gorm-metric-dashboard.json
+      path: /otel-lgtm/temporal-server-dashboard.json
       foldersFromFilesStructure: false
-  - name: "Amalgam Dashboard"
+  - name: "temporal sdk"
     type: file
     options:
-      path: /otel-lgtm/amalgam-dashboard.json
+      path: /otel-lgtm/temporal-sdk-dashboard.json
       foldersFromFilesStructure: false
+
+
+  # TODO: all services overview
+  # - name: "Amalgam Dashboard"
+  #   type: file
+  #   options:
+  #     path: /otel-lgtm/amalgam-dashboard.json
+  #     foldersFromFilesStructure: false
