@@ -101,6 +101,7 @@ func ServiceToGraphArticle(tA *gql_model.Article, fA *svc_model.Article) {
 // GraphClientToApiFeedGet copies a *gql_client.GetFeedFeed to a *svc_model.Feed.
 func GraphClientToApiFeedGet(tF *svc_model.Feed, fG *gql_client.GetFeedFeed) {
 	// *svc_model.Feed fields
+	tF.ID = fG.Id
 	tF.Name = fG.Name
 	tF.Url = fG.Url
 }
@@ -108,6 +109,8 @@ func GraphClientToApiFeedGet(tF *svc_model.Feed, fG *gql_client.GetFeedFeed) {
 // GraphClientToApiArticle copies a *gql_client.GetArticleArticle to a *svc_model.Article.
 func GraphClientToApiArticle(tA *svc_model.Article, fG *gql_client.GetArticleArticle) {
 	// *svc_model.Article fields
+	tA.ID = fG.Id
+	tA.FeedID = fG.FeedId
 	tA.Url = fG.Url
 	tA.Title = fG.Title
 	tA.ImageUrl = fG.ImageUrl
@@ -121,6 +124,7 @@ func GraphClientToApiArticle(tA *svc_model.Article, fG *gql_client.GetArticleArt
 // GraphClientToApiArticleList copies a *gql_client.ListArticlesArticlesArticle to a *svc_model.Article.
 func GraphClientToApiArticleList(tA *svc_model.Article, fL *gql_client.ListArticlesArticlesArticle) {
 	// *svc_model.Article fields
+	tA.ID = fL.Id
 	tA.Url = fL.Url
 	tA.Title = fL.Title
 	tA.ImageUrl = fL.ImageUrl

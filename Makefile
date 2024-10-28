@@ -82,6 +82,8 @@ generate-proto: ## Generate protobuf
 
 generate-converters: ## Generate copygen type converters
 	@echo Generating converters
+	@go get github.com/switchupcb/copygen
+	@go install github.com/switchupcb/copygen
 	copygen -yml internal/copygen/setup.yml
 
 download:
