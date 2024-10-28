@@ -4,9 +4,8 @@ This uses a LGTM demonstration image. I then override a few configurations to ma
 
 ## Add a Dashboard
 
-1. add dashboard json file to this directory
-2. modify Dockerfile to `COPY <dashboard> /otel-lgtm/<dashboard.json>`
-3. modify `grafana-dashboards.yaml` to include the dashboard
+1. add dashboard json file to this directory (filename format `<service>-<dashboard>.json`)
+2. add dashboard entry to `grafana-dashboards.yaml`
 
 ```yaml
   - name: "Amalgam Dashboard"

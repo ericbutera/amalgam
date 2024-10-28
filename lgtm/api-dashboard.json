@@ -18,7 +18,6 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 4,
   "links": [],
   "panels": [
     {
@@ -68,7 +67,7 @@
         "showThresholdMarkers": true,
         "sizing": "auto"
       },
-      "pluginVersion": "11.2.1",
+      "pluginVersion": "11.2.2",
       "targets": [
         {
           "datasource": {
@@ -435,7 +434,7 @@
         "sizing": "auto",
         "valueMode": "color"
       },
-      "pluginVersion": "11.2.1",
+      "pluginVersion": "11.2.2",
       "targets": [
         {
           "datasource": {
@@ -765,7 +764,7 @@
         "sizing": "auto",
         "valueMode": "color"
       },
-      "pluginVersion": "11.2.1",
+      "pluginVersion": "11.2.2",
       "targets": [
         {
           "datasource": {
@@ -797,8 +796,8 @@
   },
   "timepicker": {},
   "timezone": "",
-  "title": "Gin Application Metrics",
-  "uid": "amalgam-gin-dashboard",
+  "title": "api - service",
+  "uid": "api-gin-dashboard",
   "version": 1,
   "weekStart": ""
 }

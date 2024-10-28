@@ -1,11 +1,17 @@
 # -*- mode: Python -*-
 
+
 load('ext://helm_resource', 'helm_resource', 'helm_repo')
 load('ext://restart_process', 'docker_build_with_restart')
 
 k8s_yaml(helm('./helm'))
 
-is_ci = config.tilt_subcommand == 'ci'
+IS_CI = config.tilt_subcommand == 'ci'
+ENABLE_LGTM=(not IS_CI)
+GRAFANA_PORT_FORWARD=3001
+API_PORT_FORWARD=8080
+GRAPH_PORT_FORWARD=8082
+RPC_PORT_FORWARD=50055
 
 local_resource(
   'api-compile',
@@ -25,11 +31,12 @@ docker_build_with_restart(
 )
 k8s_resource(
     "api",
-    port_forwards=[port_forward(8080, 8080)],
-    resource_deps=["mysql-migrate"],
+    port_forwards=[port_forward(API_PORT_FORWARD, 8080, "api")],
+    resource_deps=["graph"],
     links=[
-        link("localhost:8080/swagger/index.html", "swagger"),
-        link("localhost:8080/v1/feeds", "/v1/feeds"),
+        link("localhost:%s/swagger/index.html" % API_PORT_FORWARD, "swagger"),
+        link("localhost:%s/d/api-gin-dashboard/api-service?orgId=1&refresh=5s" % GRAFANA_PORT_FORWARD, "api dashboard"),
+        link("localhost:%s/d/api-db-dashboard/api-database?orgId=1" % GRAFANA_PORT_FORWARD, "db dashboard"),
     ],
     labels=["app"],
 )
@@ -53,12 +60,13 @@ docker_build_with_restart(
 k8s_resource(
     "rpc",
     port_forwards=[
-      port_forward(50055, 50051, 'grpc'),
+      port_forward(RPC_PORT_FORWARD, 50051, 'grpc'),
       port_forward(9091, 9090, 'metrics'),
     ],
     resource_deps=["mysql-migrate"],
     links=[
-      link("https://learning.postman.com/docs/sending-requests/grpc/grpc-client-overview/", "gRPC in postman"),
+      link('http://localhost:%s/d/rpc-service-dashboard/rpc-service?orgId=1&refresh=10s' % GRAFANA_PORT_FORWARD, 'dashboard'),
+      link("https://learning.postman.com/docs/sending-requests/grpc/grpc-client-overview/", "postman"),
     ],
     labels=["app"],
 )
@@ -80,11 +88,15 @@ docker_build_with_restart(
   live_update=[sync('graph/bin', '/app/bin')],
 )
 k8s_resource("graph",
-  port_forwards=[port_forward(8082, 8080, "graphql playground")],
+  port_forwards=[
+    port_forward(GRAPH_PORT_FORWARD, 8080, "playground")
+  ],
+  resource_deps=["rpc"],
   links=[
-    link("http://localhost:8082/query", "query"),
-    link("http://localhost:8082/metrics", "metrics"),
-    link("https://learning.postman.com/docs/sending-requests/graphql/graphql-overview/", "GraphQL in postman"),
+    link("http://localhost:%s/query" % GRAPH_PORT_FORWARD, "query"),
+    link("http://localhost:%s/metrics" % GRAPH_PORT_FORWARD, "metrics"),
+    link('http://localhost:%s/d/graph-dashboard/graph-service?orgId=1&refresh=10s' % GRAFANA_PORT_FORWARD, 'dashboard'),
+    link("https://learning.postman.com/docs/sending-requests/graphql/graphql-overview/", "postman"),
   ],
   labels=["app"]
 )
@@ -106,13 +118,13 @@ docker_build("lgtm-image", "lgtm")
 k8s_resource(
     "lgtm",
     port_forwards=[
-        port_forward(3001, 3000, "grafana"),
+        port_forward(GRAFANA_PORT_FORWARD, 3000, "grafana"),
         port_forward(9090, 9090, "prometheus"),
-        "4317:4317",
-        "4318:4318",
+        port_forward(4317,4317, "collector - grpc"),
+        port_forward(4318,4318, "collector - http"),
     ],
     labels=["services"],
-    auto_init=not is_ci,
+    auto_init=ENABLE_LGTM,
     trigger_mode=TRIGGER_MODE_MANUAL,
 )
 
@@ -121,9 +133,7 @@ docker_build("k6-image", "k6")
 k8s_resource("k6", trigger_mode=TRIGGER_MODE_MANUAL, resource_deps=["api"], labels=["test"])
 
 k8s_resource("mysql", port_forwards=["3306:3306"], labels=["services"])
-docker_build(
-    "mysql-migrate-image", "mysql/migrations", dockerfile="mysql/migrate.Dockerfile"
-)
+docker_build("mysql-migrate-image", "mysql/migrations", dockerfile="mysql/migrate.Dockerfile")
 k8s_resource("mysql-migrate", resource_deps=["mysql"], labels=["services"])
 
 # https://temporal.io/
