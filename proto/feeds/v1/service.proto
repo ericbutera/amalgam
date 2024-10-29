@@ -11,6 +11,7 @@ service FeedService {
   rpc UpdateFeed (UpdateFeedRequest) returns (UpdateFeedResponse);
   rpc ListArticles (ListArticlesRequest) returns (ListArticlesResponse);
   rpc GetArticle (GetArticleRequest) returns (GetArticleResponse);
+  rpc SaveArticle (SaveArticleRequest) returns (SaveArticleResponse);
 }
 
 message Feed {
@@ -87,4 +88,12 @@ message GetArticleRequest {
 
 message GetArticleResponse {
   Article article = 1;
+}
+
+message SaveArticleRequest {
+  Article article = 2;
+}
+
+message SaveArticleResponse {
+  string id = 1;
 }

@@ -33,6 +33,7 @@ type Copygen interface {
 	ProtoUpdateFeedToService(*pb.UpdateFeedRequest_Feed) *svc_model.Feed
 	// tag .* json
 	ServiceToProtoFeed(*svc_model.Feed) *pb.Feed
+	// TODO: feed busted (json is feed_id -> feedId)
 	// tag .* json
 	ProtoToServiceArticle(*pb.Article) *svc_model.Article
 	// tag .* json

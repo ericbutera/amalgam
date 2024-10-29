@@ -1,6 +1,9 @@
 package parse
 
+// TODO: rename package to "rss"
+
 import (
+	"io"
 	"os"
 	"time"
 
@@ -9,7 +12,10 @@ import (
 )
 
 type Articles []*Article
+
+// TODO: possibly use service layer
 type Article struct {
+	FeedId        string    `json:"feed_id"`
 	Title         string    `json:"title"`
 	Url           string    `json:"url"`
 	Preview       string    `json:"preview"`
@@ -34,7 +40,7 @@ func ParseWithPath(path string) (Articles, error) {
 }
 
 // Convert an RSS feed into articles
-func Parse(reader *os.File) (articles Articles, err error) {
+func Parse(reader io.Reader) (articles Articles, err error) {
 	parsed, err := parser.NewParser().Parse(reader)
 	if err != nil {
 		return

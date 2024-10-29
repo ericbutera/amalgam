@@ -83,3 +83,16 @@ func (s *Server) GetArticle(ctx context.Context, in *pb.GetArticleRequest) (*pb.
 		Article: &pbArticle,
 	}, nil
 }
+
+func (s *Server) SaveArticle(ctx context.Context, in *pb.SaveArticleRequest) (*pb.SaveArticleResponse, error) {
+	article := &models.Article{}
+	copygen.ProtoToServiceArticle(article, in.Article)
+	// TODO: bug with ProtoToServiceArticle
+	article.FeedID = in.Article.FeedId
+	if err := s.service.SaveArticle(ctx, article); err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to save article: %v", err)
+	}
+	return &pb.SaveArticleResponse{
+		Id: article.ID,
+	}, nil
+}

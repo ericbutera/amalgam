@@ -1,0 +1,41 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  labels:
+    service: feed-worker
+  name: feed-worker
+spec:
+  template:
+    metadata:
+      name: feed-worker
+      labels:
+        service: feed-worker
+    spec:
+      containers:
+        - name: feed-worker
+          image: feed-worker-image
+          env:
+            - name: TEMPORAL_HOST
+              value: "temporal:7233"
+            - name: RPC_HOST
+              value: "rpc:50051"
+            - name: RPC_INSECURE
+              value: "true"
+            - name: MINIO_ENDPOINT
+              value: "minio:9000"
+            - name: MINIO_USE_SSL
+              value: "false"
+            - name: MINIO_ACCESS_KEY
+              value: "minio"
+            - name: MINIO_SECRET_ACCESS_KEY
+              value: "minio-password" # TODO: use secrets
+            - name: OTEL_ENABLE
+              value: "true"
+            - name: OTEL_SERVICE_NAME
+              value: "feed-worker"
+            - name: OTEL_EXPORTER_OTLP_INSECURE
+              value: "true"
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "http://lgtm:4318"
+      restartPolicy: Never
+  backoffLimit: 10

@@ -25,6 +25,7 @@ const (
 	FeedService_UpdateFeed_FullMethodName   = "/feeds.v1.FeedService/UpdateFeed"
 	FeedService_ListArticles_FullMethodName = "/feeds.v1.FeedService/ListArticles"
 	FeedService_GetArticle_FullMethodName   = "/feeds.v1.FeedService/GetArticle"
+	FeedService_SaveArticle_FullMethodName  = "/feeds.v1.FeedService/SaveArticle"
 )
 
 // FeedServiceClient is the client API for FeedService service.
@@ -37,6 +38,7 @@ type FeedServiceClient interface {
 	UpdateFeed(ctx context.Context, in *UpdateFeedRequest, opts ...grpc.CallOption) (*UpdateFeedResponse, error)
 	ListArticles(ctx context.Context, in *ListArticlesRequest, opts ...grpc.CallOption) (*ListArticlesResponse, error)
 	GetArticle(ctx context.Context, in *GetArticleRequest, opts ...grpc.CallOption) (*GetArticleResponse, error)
+	SaveArticle(ctx context.Context, in *SaveArticleRequest, opts ...grpc.CallOption) (*SaveArticleResponse, error)
 }
 
 type feedServiceClient struct {
@@ -107,6 +109,16 @@ func (c *feedServiceClient) GetArticle(ctx context.Context, in *GetArticleReques
 	return out, nil
 }
 
+func (c *feedServiceClient) SaveArticle(ctx context.Context, in *SaveArticleRequest, opts ...grpc.CallOption) (*SaveArticleResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SaveArticleResponse)
+	err := c.cc.Invoke(ctx, FeedService_SaveArticle_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // FeedServiceServer is the server API for FeedService service.
 // All implementations must embed UnimplementedFeedServiceServer
 // for forward compatibility.
@@ -117,6 +129,7 @@ type FeedServiceServer interface {
 	UpdateFeed(context.Context, *UpdateFeedRequest) (*UpdateFeedResponse, error)
 	ListArticles(context.Context, *ListArticlesRequest) (*ListArticlesResponse, error)
 	GetArticle(context.Context, *GetArticleRequest) (*GetArticleResponse, error)
+	SaveArticle(context.Context, *SaveArticleRequest) (*SaveArticleResponse, error)
 	mustEmbedUnimplementedFeedServiceServer()
 }
 
@@ -144,6 +157,9 @@ func (UnimplementedFeedServiceServer) ListArticles(context.Context, *ListArticle
 }
 func (UnimplementedFeedServiceServer) GetArticle(context.Context, *GetArticleRequest) (*GetArticleResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetArticle not implemented")
+}
+func (UnimplementedFeedServiceServer) SaveArticle(context.Context, *SaveArticleRequest) (*SaveArticleResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SaveArticle not implemented")
 }
 func (UnimplementedFeedServiceServer) mustEmbedUnimplementedFeedServiceServer() {}
 func (UnimplementedFeedServiceServer) testEmbeddedByValue()                     {}
@@ -274,6 +290,24 @@ func _FeedService_GetArticle_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _FeedService_SaveArticle_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SaveArticleRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FeedServiceServer).SaveArticle(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FeedService_SaveArticle_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FeedServiceServer).SaveArticle(ctx, req.(*SaveArticleRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // FeedService_ServiceDesc is the grpc.ServiceDesc for FeedService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -304,6 +338,10 @@ var FeedService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetArticle",
 			Handler:    _FeedService_GetArticle_Handler,
+		},
+		{
+			MethodName: "SaveArticle",
+			Handler:    _FeedService_SaveArticle_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
