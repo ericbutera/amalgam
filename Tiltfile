@@ -1,13 +1,13 @@
 # -*- mode: Python -*-
 
-
+load('ext://uibutton', 'cmd_button')
 load('ext://helm_resource', 'helm_resource', 'helm_repo')
 load('ext://restart_process', 'docker_build_with_restart')
+load('ext://secret', 'secret_create_generic', 'secret_from_dict')
 
 k8s_yaml(helm('./helm'))
 
 IS_CI = config.tilt_subcommand == 'ci'
-ENABLE_LGTM=(not IS_CI)
 GRAFANA_PORT_FORWARD=3001
 API_PORT_FORWARD=8080
 GRAPH_PORT_FORWARD=8082
@@ -102,12 +102,23 @@ k8s_resource("graph",
 )
 
 docker_build(
-    "ui-image",
-    context="./ui",
-    live_update=[sync("./ui", "/usr/src/app")],
-    dockerfile="ui/dev.Dockerfile",
+  "ui-image",
+  context="./ui",
+  live_update=[sync("./ui", "/usr/src/app")],
+  dockerfile="ui/dev.Dockerfile",
 )
 k8s_resource("ui", port_forwards=[port_forward(3000, 3000, "ui")], labels=["app"])
+
+docker_build(
+  "sws-image",
+  context=".",
+  dockerfile="containers/sws/Dockerfile",
+)
+k8s_resource(
+  "sws",
+  port_forwards=[port_forward(8388, 8080, "sws")],
+  labels=["services"]
+)
 
 # https://grafana.com/go/webinar/getting-started-with-grafana-lgtm-stack/
 # TODO: exclude during CI
@@ -124,7 +135,7 @@ k8s_resource(
         port_forward(4318,4318, "collector - http"),
     ],
     labels=["services"],
-    auto_init=ENABLE_LGTM,
+    auto_init=(not IS_CI),
     trigger_mode=TRIGGER_MODE_MANUAL,
 )
 
@@ -140,11 +151,87 @@ k8s_resource("mysql-migrate", resource_deps=["mysql"], labels=["services"])
 k8s_resource(
     "temporal",
     port_forwards=[
+        port_forward(7233, 7233, "service"),
         port_forward(8233, 8233, "workflows ui"),
-        port_forward(19090, 19090, "metrics"),
-        port_forward(7233, 7233),
+        port_forward(9290, 9090, "metrics"),
     ],
-    labels=["services"],
+    links=[
+        link("http://localhost:8233", "workflows ui"),
+        link("http://localhost:%s/d/temporal-dashboard/temporal?orgId=1" % GRAFANA_PORT_FORWARD, "dashboard"),
+        link("http://localhost:9290/metrics", "metrics"),
+    ],
+    auto_init=(not IS_CI),
+    labels=["data-pipeline"],
+)
+cmd_button('run-start',
+  argv=['sh', '-c', 'cd data-pipeline/temporal/feed && make run-start'],
+  resource='temporal',
+  icon_name='add_to_queue',
+  text='run-start',
+)
+# cmd_button('run-worker',
+#   argv=['sh', '-c', 'cd data-pipeline/temporal/feed && make run-worker'],
+#   resource='temporal',
+#   icon_name='bolt',
+#   text='run-worker',
+# )
+
+local_resource('feed-start-compile', 'make build',
+  dir='./data-pipeline/temporal/feed/start',
+  ignore=['**/bin'],
+  deps=['./data-pipeline/temporal','./pkg','./tools','./internal'],
+  auto_init=False,
+  labels=['data-pipeline'],
+)
+docker_build_with_restart('feed-start-image', './data-pipeline/temporal/feed/start',
+  entrypoint=['/app/bin/app'],
+  dockerfile='./containers/tilt.go.Dockerfile',
+  only=['./bin'],
+  live_update=[sync('data-pipeline/temporal/feed/start/bin', '/app/bin')],
+)
+local_resource('feed-worker-compile', 'make build',
+  dir='./data-pipeline/temporal/feed/worker',
+  ignore=['**/bin'],
+  deps=['./data-pipeline/temporal','./pkg','./tools','./internal'],
+  auto_init=False,
+  labels=['data-pipeline'],
+)
+docker_build_with_restart('feed-worker-image', './data-pipeline/temporal/feed/worker',
+  entrypoint=['/app/bin/app'],
+  dockerfile='./containers/tilt.go.Dockerfile',
+  only=['./bin'],
+  live_update=[sync('data-pipeline/temporal/feed/worker/bin', '/app/bin')],
+)
+
+k8s_resource("feed-start", resource_deps=["temporal"], labels=["data-pipeline"], auto_init=False)
+k8s_resource("feed-worker", resource_deps=["temporal"], labels=["data-pipeline"], auto_init=False)
+
+# Minio object storage
+# https://github.com/bitnami/charts/tree/main/bitnami/minio
+k8s_yaml(secret_from_dict("feed-minio-auth", inputs = {
+    'root-user' : "minio",
+    'root-password' : "minio-password",
+}))
+helm_repo('bitnami', 'https://charts.bitnami.com/bitnami')
+helm_resource(
+    name='minio',
+    chart='bitnami/minio',
+    flags=[
+        '--set=auth.existingSecret=feed-minio-auth',
+        '--set=defaultBuckets="icons;feeds"',
+        '--set=service.type=LoadBalancer',
+        '--set=mode=standalone',
+        '--set=persistence.enabled=false',
+        '--set=replicas=1',
+        '--set=consoleService.type=LoadBalancer',
+        '--set=resources.requests.memory=256Mi',
+    ],
+    port_forwards=[
+      port_forward(9100, 9000, 'minio-service'),
+      port_forward(9101, 9001, 'minio-admin'),
+    ],
+    auto_init=(not IS_CI),
+    labels=["data-pipeline"],
 )
 
 # For more on the `test_go` extension: https://github.com/tilt-dev/tilt-extensions/tree/master/tests/golang
