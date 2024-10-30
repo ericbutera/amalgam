@@ -35,13 +35,18 @@ func NewActivities(bucket *bucket.MinioBucket, feeds *feeds.FeedHelper) *Activit
 // Download RSS feeds
 func (a *Activities) DownloadActivity(ctx context.Context, feedId string, url string) (string, error) {
 	rssFile := fmt.Sprintf(RssPathFormat, feedId)
+	entry := slog.Default().With(
+		"feed_id", feedId,
+		"rss_file", rssFile,
+		"url", url,
+	)
 	err := FetchUrl(url, func(params FetchCallbackParams) error {
 		upload, err := a.bucket.WriteStream(ctx, BucketName, rssFile, params.Reader, params.ContentType, params.Size)
 		if err != nil {
-			slog.Error("fetch: upload error", "file", rssFile, "error", err)
+			entry.Error("download error", "error", err)
 			return err
 		}
-		slog.Info("fetch: upload info", "file", rssFile, "key", upload.Key, "bucket", upload.Bucket)
+		entry.Info("downloaded", "key", upload.Key, "bucket", upload.Bucket)
 		return nil
 	})
 	if err != nil {
@@ -51,19 +56,23 @@ func (a *Activities) DownloadActivity(ctx context.Context, feedId string, url st
 }
 
 // Transform raw rss file into structured articles
-func (a *Activities) ParseActivity(ctx context.Context, rssFile string, feedId string) (string, error) { // TODO: ParseActivity -> ArticleActivity
+func (a *Activities) ParseActivity(ctx context.Context, feedId string, rssFile string) (string, error) { // TODO: ParseActivity -> ArticleActivity
 	articlesFile := fmt.Sprintf(ArticlePathFormat, feedId)
+	entry := slog.Default().With(
+		"feed_id", feedId,
+		"article_file", articlesFile,
+	)
 
 	rssReader, err := a.bucket.Read(ctx, BucketName, rssFile)
 	if err != nil {
-		slog.Error("parse: read error", "file", rssFile, "error", err)
+		entry.Error("bucket read error", "error", err)
 		return "", err
 	}
 	defer rssReader.Close()
 
 	articles, err := parse.Parse(rssReader)
 	if err != nil {
-		slog.Error("parse: parse error", "file", rssFile, "error", err)
+		entry.Error("parse: parse error", "error", err)
 		return "", err
 	}
 
@@ -74,7 +83,7 @@ func (a *Activities) ParseActivity(ctx context.Context, rssFile string, feedId s
 	for _, article := range articles {
 		article.FeedId = feedId
 		if err := encoder.Encode(article); err != nil {
-			slog.Error("parse: error writing jsonlines", "article_url", article.Url, "feed_id", feedId, "error", err)
+			entry.Error("parse: error writing jsonlines", "article_url", article.Url, "feed_id", feedId, "error", err)
 			return "", err
 		}
 	}
@@ -84,46 +93,66 @@ func (a *Activities) ParseActivity(ctx context.Context, rssFile string, feedId s
 	if err != nil {
 		return "", err
 	}
-	slog.Info("parse: upload info", "file", articlesFile, "key", upload.Key, "bucket", upload.Bucket)
+	entry.Info("parse: upload info", "file", articlesFile, "key", upload.Key, "bucket", upload.Bucket)
 	return articlesFile, nil
 }
 
+type SaveResults struct {
+	Succeeded int
+	Failed    int
+}
+
 // Load articles into database
-func (a *Activities) SaveActivity(ctx context.Context, articlesPath string, feedId string) error {
+func (a *Activities) SaveActivity(ctx context.Context, feedId string, articlesPath string) error {
+	entry := slog.Default().With(
+		"feed_id", feedId,
+	)
+
 	articleReader, err := a.bucket.Read(ctx, BucketName, articlesPath)
 	if err != nil {
-		slog.Error("save: read error", "file", articlesPath, "error", err)
+		entry.Error("save: read error", "file", articlesPath, "error", err)
 		return err
 	}
+
+	results := SaveResults{}
 
 	defer articleReader.Close()
 	decoder := json.NewDecoder(articleReader)
 
+	// TODO: refactor to use a batch upsert
+	// TODO: reduce branch complexity
 	for {
 		var article parse.Article
 		if err := decoder.Decode(&article); err != nil {
 			if err == context.Canceled {
-				slog.Error("save: context canceled")
-				return nil
+				entry.Error("save: context canceled")
+				results.Failed++
+				continue //return nil
 			}
 			if err == context.DeadlineExceeded {
-				slog.Error("save: context deadline exceeded")
-				return nil
+				entry.Error("save: context deadline exceeded")
+				continue // return nil
 			}
 			if err == io.EOF {
 				break
 			}
-			slog.Error("save: decode error", "error", err)
+
+			results.Failed++
+			entry.Error("save: decode error", "error", err)
 			return err
 		}
 
-		id, err := a.feeds.SaveArticle(ctx, article)
+		id, err := a.feeds.SaveArticle(ctx, article) // TODO: ensure idempotent upsert
 		if err != nil {
-			slog.Error("save: error saving article", "article_url", article.Url, "feed_id", feedId, "error", err)
+			entry.Error("save article", "article_url", article.Url, "feed_id", feedId, "error", err)
+			results.Failed++
 			continue
 		}
-		slog.Debug("save: saved article", "article_url", article.Url, "feed_id", feedId, "article_id", id)
+
+		results.Succeeded++
+		entry.Debug("saved article", "article_url", article.Url, "feed_id", feedId, "article_id", id)
 	}
 
+	entry.Info("save results", "succeeded", results.Succeeded, "failed", results.Failed)
 	return nil
 }
