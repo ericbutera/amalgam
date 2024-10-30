@@ -243,6 +243,24 @@ helm_resource(
     labels=["data-pipeline"],
 )
 
+# nats pubsub
+# https://nats.io/
+# https://github.com/nats-io/nats.go
+k8s_resource(
+    "nats",
+    port_forwards=[
+        port_forward(4222, 4222, "service"),
+        port_forward(8222, 8222, "web reporting"),
+        port_forward(9094, 9090, "metrics"),
+    ],
+    links=[
+      link('https://nats.io','nats.io'),
+      link('https://github.com/nats-io/nats.go','nats.go'),
+    ],
+    auto_init=(not IS_CI),
+    labels=["services"],
+)
+
 # For more on the `test_go` extension: https://github.com/tilt-dev/tilt-extensions/tree/master/tests/golang
 # For more on tests in Tilt: https://docs.tilt.dev/tests_in_tilt.html
 load('ext://tests/golang', 'test_go')

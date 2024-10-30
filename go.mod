@@ -19,6 +19,7 @@ require (
 	github.com/microcosm-cc/bluemonday v1.0.27
 	github.com/minio/minio-go/v7 v7.0.79
 	github.com/mmcdole/gofeed v1.3.0
+	github.com/nats-io/nats.go v1.34.0
 	github.com/oklog/run v1.1.0
 	github.com/orandin/slog-gorm v1.4.0
 	github.com/penglongli/gin-metrics v0.1.10
@@ -281,6 +282,8 @@ require (
 	github.com/mstoykov/k6-taskqueue-lib v0.1.0 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/nakabonne/nestif v0.3.1 // indirect
+	github.com/nats-io/nkeys v0.4.7 // indirect
+	github.com/nats-io/nuid v1.0.1 // indirect
 	github.com/nexus-rpc/sdk-go v0.0.10 // indirect
 	github.com/nishanths/exhaustive v0.12.0 // indirect
 	github.com/nishanths/predeclared v0.2.2 // indirect
