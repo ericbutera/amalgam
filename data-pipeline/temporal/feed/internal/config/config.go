@@ -11,6 +11,8 @@ type Config struct {
 	MinioAccessKey       string `mapstructure:"minio_access_key"`
 	MinioSecretAccessKey string `mapstructure:"minio_secret_access_key"`
 	MinioUseSsl          bool   `mapstructure:"minio_use_ssl"`
+	MinioTrace           bool   `mapstructure:"minio_trace"`
+	MinioRegion          string `mapstructure:"minio_region"`
 }
 
 func init() {
@@ -22,4 +24,6 @@ func init() {
 	viper.SetDefault("minio_access_key", "")
 	viper.SetDefault("minio_secret_access_key", "")
 	viper.SetDefault("minio_use_ssl", true)
+	viper.SetDefault("minio_trace", false)
+	viper.SetDefault("minio_region", "us-east-1")
 }

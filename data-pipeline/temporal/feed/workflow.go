@@ -26,12 +26,12 @@ func FeedWorkflow(ctx workflow.Context, feeds []feeds.Feed) error {
 		}
 
 		var articlesFile string
-		err = workflow.ExecuteActivity(ctx, a.ParseActivity, rssFile, feed.ID).Get(ctx, &articlesFile)
+		err = workflow.ExecuteActivity(ctx, a.ParseActivity, feed.ID, rssFile).Get(ctx, &articlesFile)
 		if err != nil {
 			return err
 		}
 
-		err = workflow.ExecuteActivity(ctx, a.SaveActivity, articlesFile, feed.ID).Get(ctx, nil)
+		err = workflow.ExecuteActivity(ctx, a.SaveActivity, feed.ID, articlesFile).Get(ctx, nil)
 		if err != nil {
 			return err
 		}
