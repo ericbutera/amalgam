@@ -14,6 +14,8 @@ import (
 
 	"github.com/ericbutera/amalgam/api/internal/config"
 	"github.com/ericbutera/amalgam/api/internal/server"
+	"github.com/ericbutera/amalgam/internal/http/transport"
+	"github.com/ericbutera/amalgam/internal/logger"
 	cfg "github.com/ericbutera/amalgam/pkg/config"
 	"github.com/ericbutera/amalgam/pkg/otel"
 )
@@ -34,8 +36,7 @@ func quit(ctx context.Context, err error) {
 }
 
 func runServer(cmd *cobra.Command, args []string) {
-	h := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug})
-	slog.SetDefault(slog.New(h))
+	slog := logger.New()
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
@@ -52,7 +53,7 @@ func runServer(cmd *cobra.Command, args []string) {
 	if err != nil {
 		quit(ctx, err)
 	}
-	graphClient, err := newGraphClient(cfg.GraphHost)
+	graphClient, err := newGraphClient(cfg.GraphHost, slog)
 	if err != nil {
 		quit(ctx, err)
 	}
@@ -80,57 +81,18 @@ func runServer(cmd *cobra.Command, args []string) {
 	quit(ctx, err)
 }
 
-func newGraphClient(host string) (graphql.Client, error) {
+func newGraphClient(host string, logger *slog.Logger) (graphql.Client, error) {
 	if host == "" {
 		return nil, errors.New("graph host not set")
 	}
-	logger := slog.Default()
-	httpClient := http.Client{Transport: NewLoggingTransport(WithLogger(logger))}
-	// TODO: add timeouts, expo backoff, jitter
+	httpClient := http.Client{
+		Transport: transport.NewLoggingTransport(
+			transport.WithLogger(logger),
+		),
+	}
+	// TODO: timeouts, retries, backoff, jitter
 	return graphql.NewClient(
 		host,
 		&httpClient,
 	), nil
-}
-
-// https://www.piotrbelina.com/blog/http-log/
-type LoggingTransport struct {
-	rt             http.RoundTripper
-	logger         *slog.Logger
-	detailedTiming bool
-}
-
-func (t *LoggingTransport) RoundTrip(r *http.Request) (*http.Response, error) {
-	// do before request is sent, ex. start timer, log request
-	resp, err := t.rt.RoundTrip(r)
-	// do after the response is received, ex. end timer, log response
-	return resp, err
-}
-
-type Option func(transport *LoggingTransport)
-
-func NewLoggingTransport(options ...Option) *LoggingTransport {
-	t := &LoggingTransport{
-		rt:             http.DefaultTransport,
-		logger:         slog.Default(),
-		detailedTiming: false,
-	}
-
-	for _, option := range options {
-		option(t)
-	}
-
-	return t
-}
-
-func WithRoundTripper(rt http.RoundTripper) Option {
-	return func(t *LoggingTransport) {
-		t.rt = rt
-	}
-}
-
-func WithLogger(logger *slog.Logger) Option {
-	return func(t *LoggingTransport) {
-		t.logger = logger
-	}
 }

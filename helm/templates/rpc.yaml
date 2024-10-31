@@ -10,6 +10,10 @@ spec:
       protocol: TCP
       port: 50051
       targetPort: 50051
+    - name: metrics
+      protocol: TCP
+      port: 9090
+      targetPort: 9090
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -31,6 +35,7 @@ spec:
           image: rpc-image
           ports:
             - containerPort: 50051
+            - containerPort: 9090
           env:
             - name: PORT
               value: "50051"
