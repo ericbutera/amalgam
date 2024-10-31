@@ -1,19 +1,36 @@
-apiVersion: batch/v1
-kind: Job
+apiVersion: v1
+kind: Service
 metadata:
-  labels:
-    service: feed-worker
   name: feed-worker
 spec:
+  selector:
+    app: feed-worker
+  ports:
+    - name: metrics
+      protocol: TCP
+      port: 9090
+      targetPort: 9090
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: feed-worker
+  labels:
+    app: feed-worker
+spec:
+  selector:
+    matchLabels:
+      app: feed-worker
   template:
     metadata:
-      name: feed-worker
       labels:
-        service: feed-worker
+        app: feed-worker
     spec:
       containers:
         - name: feed-worker
           image: feed-worker-image
+          ports:
+            - containerPort: 9090
           env:
             - name: TEMPORAL_HOST
               value: "temporal:7233"
@@ -37,5 +54,3 @@ spec:
               value: "true"
             - name: OTEL_EXPORTER_OTLP_ENDPOINT
               value: "http://lgtm:4318"
-      restartPolicy: Never
-  backoffLimit: 10
