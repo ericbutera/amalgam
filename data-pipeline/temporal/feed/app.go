@@ -10,7 +10,6 @@ import (
 )
 
 func NewTemporalClient(host string) (client.Client, error) {
-	// TODO: otel https://github.com/temporalio/samples-go/tree/main/ctxpropagation
 	h := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug})
 	slog.SetDefault(slog.New(h))
 	slog.SetLogLoggerLevel(slog.LevelDebug) // TODO: move to config
