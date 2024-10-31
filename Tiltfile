@@ -133,11 +133,17 @@ k8s_resource(
         port_forward(9090, 9090, "prometheus"),
         port_forward(4317,4317, "collector - grpc"),
         port_forward(4318,4318, "collector - http"),
+        port_forward(3100, 3100, "loki"),
     ],
     labels=["services"],
     auto_init=(not IS_CI),
     trigger_mode=TRIGGER_MODE_MANUAL,
 )
+# https://grafana.com/docs/loki/latest/send-data/promtail/
+# Promtail is an agent which ships the contents of local logs to a private Grafana Loki instance
+docker_build("promtail-image", "containers/promtail", dockerfile="containers/promtail/Dockerfile")
+k8s_resource("promtail", auto_init=(not IS_CI), labels=["services"])
+# TODO: alertmanager
 
 # https://k6.io/
 docker_build("k6-image", "k6")

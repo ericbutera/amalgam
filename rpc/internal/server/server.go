@@ -197,7 +197,9 @@ func newLogger() (logging.Logger, []logging.Option) {
 		}
 		return nil
 	}
-	logger := slog.New(slog.NewTextHandler(os.Stdout, nil)) // TODO: why does go insist on using stderr?
+
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}))
+	slog.SetDefault(logger)
 	opts := []logging.Option{
 		logging.WithLogOnEvents(logging.StartCall, logging.FinishCall),
 		logging.WithFieldsFromContext(logTraceID),
@@ -206,6 +208,7 @@ func newLogger() (logging.Logger, []logging.Option) {
 }
 
 func newServerMetrics() *grpcprom.ServerMetrics {
+	// TODO: these aren't exporting for some reason
 	return grpcprom.NewServerMetrics(
 		grpcprom.WithServerHandlingTimeHistogram(
 			grpcprom.WithHistogramBuckets([]float64{0.001, 0.01, 0.1, 0.3, 0.6, 1, 3, 6, 9, 20, 30, 60, 90, 120}),

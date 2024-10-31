@@ -12,6 +12,10 @@ spec:
       protocol: TCP
       port: 3000
       targetPort: 3000
+    - name: loki
+      protocol: TCP
+      port: 3100
+      targetPort: 3100
     - name: otel-grpc
       protocol: TCP
       port: 4317
@@ -47,6 +51,7 @@ spec:
           #     value: "true"
           ports:
             - containerPort: 3000
+            - containerPort: 3100
             - containerPort: 4317
             - containerPort: 4318
             - containerPort: 9090
