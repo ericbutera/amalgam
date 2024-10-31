@@ -3,6 +3,9 @@ package config
 import "github.com/spf13/viper"
 
 type Config struct {
+	UseSchedule          bool   `mapstructure:"use_schedule"`
+	ScheduleID           string `mapstructure:"schedule_id"`
+	WorkflowID           string `mapstructure:"workflow_id"`
 	TaskQueue            string `mapstructure:"task_queue"`
 	TemporalHost         string `mapstructure:"temporal_host"`
 	RpcHost              string `mapstructure:"rpc_host"`
@@ -16,9 +19,12 @@ type Config struct {
 }
 
 func init() {
+	viper.SetDefault("use_schedule", true)
 	viper.SetDefault("temporal_host", "")
 	viper.SetDefault("rpc_host", "")
 	viper.SetDefault("rpc_insecure", false)
+	viper.SetDefault("schedule_id", "feed-schedule-id")
+	viper.SetDefault("workflow_id", "feed-workflow-id")
 	viper.SetDefault("task_queue", "feed-task-queue")
 	viper.SetDefault("minio_endpoint", "localhost:9001")
 	viper.SetDefault("minio_access_key", "")

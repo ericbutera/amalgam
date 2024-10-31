@@ -208,7 +208,12 @@ docker_build_with_restart('feed-worker-image', './data-pipeline/temporal/feed/wo
 )
 
 k8s_resource("feed-start", resource_deps=["temporal"], labels=["data-pipeline"], auto_init=False)
-k8s_resource("feed-worker", resource_deps=["temporal"], labels=["data-pipeline"], auto_init=False)
+k8s_resource("feed-worker", resource_deps=["temporal"], labels=["data-pipeline"],
+  port_forwards=[
+    port_forward(9096, 9090, "metrics")
+  ],
+  auto_init=False,
+)
 
 # Minio object storage
 # https://github.com/bitnami/charts/tree/main/bitnami/minio
