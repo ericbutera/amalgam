@@ -54,9 +54,13 @@ A way to interact with the project using the command line. This project aims to 
 
 A simple gRPC service that can be used to show how to convert a monolith into microservices architecture. This service would only be available on the internal VPC.
 
-### Data Pipeline
+## Data Pipeline
 
-TODO: ingest various RSS feeds using different technologies and strategies.
+### Temporal
+
+The first [pipeline](./data-pipeline/temporal/feed) that I have built is a rudimentary batch process for ingesting RSS feeds.
+
+## Supporting Services
 
 ### [LGTM Observability Stack](./lgtm/README.md)
 
@@ -70,6 +74,14 @@ Observability is the heart of quality software. This project uses a demonstratio
 TODO:
 
 - [configure Loki](https://grafana.com/docs/loki/latest/)
+
+### Minio
+
+[Minio](https://min.io/) is a drop in object storage similar to AWS S3. I mainly will be using it as a data storage mechanism for data pipelines, but also as a fake CDN.
+
+### Nats
+
+[Nats](https://nats.io/) is a cloud native event messaging system. It will be used to show how event driven architecture can be implemented. [Jetstream](https://docs.nats.io/nats-concepts/jetstream) offers a persistent message store enabling GCP Pubsub like functionality.
 
 ### [K6 (testing)](./k6/README.md)
 

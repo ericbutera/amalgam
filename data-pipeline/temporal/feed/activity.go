@@ -1,5 +1,7 @@
 package app
 
+// TODO: https://docs.temporal.io/develop/go/testing-suite
+
 import (
 	"bytes"
 	"context"
@@ -17,8 +19,6 @@ import (
 const BucketName = "feeds"
 const RssPathFormat = "/feeds/%s/raw.xml"
 const ArticlePathFormat = "/feeds/%s/articles.jsonlines"
-
-// TODO: common log fields
 
 type Activities struct {
 	bucket *bucket.MinioBucket

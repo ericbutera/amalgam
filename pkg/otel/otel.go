@@ -2,6 +2,8 @@
 package otel
 
 // TODO: i can't seem to find metric & log exporter data in LGTM
+// TODO: sample traces (with keep parent)
+// TODO: tail call sampling
 
 import (
 	"context"
@@ -29,9 +31,6 @@ var (
 	Tracer = otel.Tracer(schemaName)
 	Logger = otelslog.NewLogger(schemaName)
 )
-
-// TODO: sample traces (with keep parent)
-// TODO: tail call sampling
 
 // bootstrap the OpenTelemetry pipeline
 // If it does not return an error, make sure to call shutdown for proper cleanup.
