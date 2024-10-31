@@ -6,11 +6,11 @@ import (
 	"log/slog"
 	"net"
 	"net/http"
-	"os"
 	"runtime/debug"
 	"syscall"
 
 	"github.com/ericbutera/amalgam/internal/db"
+	"github.com/ericbutera/amalgam/internal/logger"
 	"github.com/ericbutera/amalgam/internal/service"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
 	"github.com/ericbutera/amalgam/pkg/otel"
@@ -198,13 +198,11 @@ func newLogger() (logging.Logger, []logging.Option) {
 		return nil
 	}
 
-	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}))
-	slog.SetDefault(logger)
 	opts := []logging.Option{
 		logging.WithLogOnEvents(logging.StartCall, logging.FinishCall),
 		logging.WithFieldsFromContext(logTraceID),
 	}
-	return interceptorLogger(logger), opts
+	return interceptorLogger(logger.New()), opts
 }
 
 func newServerMetrics() *grpcprom.ServerMetrics {

@@ -4,7 +4,6 @@ package main
 import (
 	"context"
 	"errors"
-	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
@@ -15,6 +14,7 @@ import (
 	gql_prom "github.com/ericbutera/amalgam/graph/extensions/prometheus"
 	"github.com/ericbutera/amalgam/graph/graph"
 	"github.com/ericbutera/amalgam/graph/internal/config"
+	"github.com/ericbutera/amalgam/internal/logger"
 	cfg "github.com/ericbutera/amalgam/pkg/config"
 	"github.com/ericbutera/amalgam/pkg/otel"
 	rpc "github.com/ericbutera/amalgam/rpc/pkg/client"
@@ -23,8 +23,7 @@ import (
 )
 
 func main() {
-	h := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug})
-	slog.SetDefault(slog.New(h))
+	slog := logger.New()
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()

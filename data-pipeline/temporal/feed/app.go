@@ -4,18 +4,15 @@ import (
 	"io"
 	"log/slog"
 	"net/http"
-	"os"
 
+	"github.com/ericbutera/amalgam/internal/http/transport"
+	"github.com/ericbutera/amalgam/internal/logger"
 	"go.temporal.io/sdk/client"
 )
 
 func NewTemporalClient(host string) (client.Client, error) {
-	h := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug})
-	slog.SetDefault(slog.New(h))
-	slog.SetLogLoggerLevel(slog.LevelDebug) // TODO: move to config
-
 	opts := client.Options{
-		Logger:   slog.Default(),
+		Logger:   logger.New(),
 		HostPort: host,
 	}
 	c, err := client.Dial(opts)
@@ -34,7 +31,12 @@ type FetchCallbackParams struct {
 type FetchCallback = func(params FetchCallbackParams) error
 
 func FetchUrl(url string, fetchCb FetchCallback) error {
-	client := &http.Client{}
+	// TODO: timeouts, retries, backoff, jitter
+	client := &http.Client{
+		Transport: transport.NewLoggingTransport(
+			transport.WithLogger(slog.Default()),
+		),
+	}
 	req, err := http.NewRequest("GET", url, nil)
 	req.Header.Set("User-Agent", "curl/7.79.1")
 	if err != nil {
