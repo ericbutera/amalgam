@@ -17,6 +17,7 @@ import (
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/recovery"
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/collectors"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"gorm.io/gorm"
@@ -140,6 +141,7 @@ func New(opts ...Option) (*Server, error) {
 	registry := prometheus.NewRegistry()
 	srvMetrics := newServerMetrics()
 	registry.MustRegister(srvMetrics)
+	registry.MustRegister(collectors.NewGoCollector(collectors.WithGoCollectorRuntimeMetrics()))
 	server.newPromMetrics(registry)
 	logger, logOpts := newLogger()
 
@@ -206,7 +208,6 @@ func newLogger() (logging.Logger, []logging.Option) {
 }
 
 func newServerMetrics() *grpcprom.ServerMetrics {
-	// TODO: these aren't exporting for some reason
 	return grpcprom.NewServerMetrics(
 		grpcprom.WithServerHandlingTimeHistogram(
 			grpcprom.WithHistogramBuckets([]float64{0.001, 0.01, 0.1, 0.3, 0.6, 1, 3, 6, 9, 20, 30, 60, 90, 120}),
@@ -215,16 +216,18 @@ func newServerMetrics() *grpcprom.ServerMetrics {
 }
 
 func newMetricsServer(registry *prometheus.Registry, address string) *http.Server {
-	srv := &http.Server{Addr: address}
 	m := http.NewServeMux()
 	m.Handle("/metrics", promhttp.HandlerFor(
 		registry,
 		promhttp.HandlerOpts{
+
 			EnableOpenMetrics: true, // Opt into OpenMetrics e.g. to support exemplars.
 		},
 	))
-	srv.Handler = m
-	return srv
+	return &http.Server{
+		Addr:    address,
+		Handler: m,
+	}
 }
 
 func (s *Server) newPromMetrics(reg prometheus.Registerer) {
