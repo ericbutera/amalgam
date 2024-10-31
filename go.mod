@@ -30,6 +30,7 @@ require (
 	github.com/swaggo/gin-swagger v1.6.0
 	github.com/swaggo/swag v1.16.4
 	github.com/tilt-dev/ctlptl v0.8.34
+	github.com/uber-go/tally/v4 v4.1.16
 	github.com/vektah/gqlparser/v2 v2.5.17
 	go.k6.io/k6 v0.54.0
 	go.opentelemetry.io/contrib/bridges/otelslog v0.6.0
@@ -48,6 +49,7 @@ require (
 	go.opentelemetry.io/otel/trace v1.31.0
 	go.temporal.io/sdk v1.29.1
 	go.temporal.io/sdk/contrib/opentelemetry v0.6.0
+	go.temporal.io/sdk/contrib/tally v0.2.0
 	google.golang.org/grpc v1.67.1
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.5.1
 	google.golang.org/protobuf v1.35.1
@@ -352,6 +354,7 @@ require (
 	github.com/tomarrell/wrapcheck/v2 v2.9.0 // indirect
 	github.com/tommy-muehle/go-mnd/v2 v2.5.1 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
+	github.com/twmb/murmur3 v1.1.5 // indirect
 	github.com/ugorji/go/codec v1.2.12 // indirect
 	github.com/ultraware/funlen v0.1.0 // indirect
 	github.com/ultraware/whitespace v0.1.1 // indirect

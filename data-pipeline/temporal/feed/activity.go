@@ -83,8 +83,8 @@ func (a *Activities) ParseActivity(ctx context.Context, feedId string, rssFile s
 	for _, article := range articles {
 		article.FeedId = feedId
 		if err := encoder.Encode(article); err != nil {
-			entry.Error("parse: error writing jsonlines", "article_url", article.Url, "feed_id", feedId, "error", err)
-			return "", err
+			entry.Error("parse: error writing jsonlines", "error", err)
+			continue // next article
 		}
 	}
 
@@ -93,7 +93,7 @@ func (a *Activities) ParseActivity(ctx context.Context, feedId string, rssFile s
 	if err != nil {
 		return "", err
 	}
-	entry.Info("parse: upload info", "file", articlesFile, "key", upload.Key, "bucket", upload.Bucket)
+	entry.Info("parse: upload info", "key", upload.Key, "bucket", upload.Bucket)
 	return articlesFile, nil
 }
 
@@ -144,13 +144,13 @@ func (a *Activities) SaveActivity(ctx context.Context, feedId string, articlesPa
 
 		id, err := a.feeds.SaveArticle(ctx, article) // TODO: ensure idempotent upsert
 		if err != nil {
-			entry.Error("save article", "article_url", article.Url, "feed_id", feedId, "error", err)
+			entry.Error("save article", "article_url", article.Url, "error", err)
 			results.Failed++
 			continue
 		}
 
 		results.Succeeded++
-		entry.Debug("saved article", "article_url", article.Url, "feed_id", feedId, "article_id", id)
+		entry.Debug("saved article", "article_url", article.Url, "article_id", id)
 	}
 
 	entry.Info("save results", "succeeded", results.Succeeded, "failed", results.Failed)
