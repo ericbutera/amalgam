@@ -1,5 +1,8 @@
 package main
 
+// TODO: https://docs.temporal.io/develop/go/schedules
+// TODO: https://docs.temporal.io/develop/go/failure-detection#workflow-timeouts
+
 import (
 	"context"
 	"log/slog"
