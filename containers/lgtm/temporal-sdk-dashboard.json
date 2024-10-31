@@ -2935,6 +2935,7 @@
     },
     "timezone": "",
     "title": "temporal - sdk metrics",
+    "uid": "temporal-sdk-dashboard",
     "variables": {
         "list": []
     },

@@ -19,7 +19,7 @@ local_resource(
   dir='./api',
   ignore=['./api/bin'],
   deps=['./api','./pkg','./tools','./internal'],
-  labels=['app'],
+  labels=['compile'],
 )
 docker_build_with_restart(
   'api-image',
@@ -47,7 +47,7 @@ local_resource(
   dir='./rpc',
   ignore=['./rpc/bin'],
   deps=['./rpc','./pkg','./tools','./internal'],
-  labels=['app'],
+  labels=['compile'],
 )
 docker_build_with_restart(
   'rpc-image',
@@ -77,7 +77,7 @@ local_resource(
   dir='./graph',
   ignore=['./graph/bin'],
   deps=['./graph','./pkg','./tools','./internal'],
-  labels=['app'],
+  labels=['compile'],
 )
 docker_build_with_restart(
   'graph-image',
@@ -121,11 +121,9 @@ k8s_resource(
 )
 
 # https://grafana.com/go/webinar/getting-started-with-grafana-lgtm-stack/
-# TODO: exclude during CI
 # TODO: figure out:
-# - loki log exporter
 # - metric exporter isn't working
-docker_build("lgtm-image", "lgtm")
+docker_build("lgtm-image", "containers/lgtm", dockerfile="containers/lgtm/Dockerfile")
 k8s_resource(
     "lgtm",
     port_forwards=[
@@ -133,11 +131,17 @@ k8s_resource(
         port_forward(9090, 9090, "prometheus"),
         port_forward(4317,4317, "collector - grpc"),
         port_forward(4318,4318, "collector - http"),
+        port_forward(3100, 3100, "loki"),
     ],
     labels=["services"],
     auto_init=(not IS_CI),
     trigger_mode=TRIGGER_MODE_MANUAL,
 )
+# https://grafana.com/docs/loki/latest/send-data/promtail/
+# Promtail is an agent which ships the contents of local logs to a private Grafana Loki instance
+docker_build("promtail-image", "containers/promtail", dockerfile="containers/promtail/Dockerfile")
+k8s_resource("promtail", auto_init=(not IS_CI), labels=["services"])
+# TODO: alertmanager
 
 # https://k6.io/
 docker_build("k6-image", "k6")
@@ -168,7 +172,7 @@ cmd_button('run-start',
   resource='temporal',
   icon_name='add_to_queue',
   text='run-start',
-)
+) # TODO: this won't curently work because .env values are missing
 # cmd_button('run-worker',
 #   argv=['sh', '-c', 'cd data-pipeline/temporal/feed && make run-worker'],
 #   resource='temporal',
@@ -181,7 +185,7 @@ local_resource('feed-start-compile', 'make build',
   ignore=['**/bin'],
   deps=['./data-pipeline/temporal','./pkg','./tools','./internal'],
   auto_init=False,
-  labels=['data-pipeline'],
+  labels=['compile'],
 )
 docker_build_with_restart('feed-start-image', './data-pipeline/temporal/feed/start',
   entrypoint=['/app/bin/app'],
@@ -194,7 +198,7 @@ local_resource('feed-worker-compile', 'make build',
   ignore=['**/bin'],
   deps=['./data-pipeline/temporal','./pkg','./tools','./internal'],
   auto_init=False,
-  labels=['data-pipeline'],
+  labels=['compile'],
 )
 docker_build_with_restart('feed-worker-image', './data-pipeline/temporal/feed/worker',
   entrypoint=['/app/bin/app'],

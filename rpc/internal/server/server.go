@@ -6,17 +6,18 @@ import (
 	"log/slog"
 	"net"
 	"net/http"
-	"os"
 	"runtime/debug"
 	"syscall"
 
 	"github.com/ericbutera/amalgam/internal/db"
+	"github.com/ericbutera/amalgam/internal/logger"
 	"github.com/ericbutera/amalgam/internal/service"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
 	"github.com/ericbutera/amalgam/pkg/otel"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/recovery"
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/collectors"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"gorm.io/gorm"
@@ -140,6 +141,7 @@ func New(opts ...Option) (*Server, error) {
 	registry := prometheus.NewRegistry()
 	srvMetrics := newServerMetrics()
 	registry.MustRegister(srvMetrics)
+	registry.MustRegister(collectors.NewGoCollector(collectors.WithGoCollectorRuntimeMetrics()))
 	server.newPromMetrics(registry)
 	logger, logOpts := newLogger()
 
@@ -197,12 +199,12 @@ func newLogger() (logging.Logger, []logging.Option) {
 		}
 		return nil
 	}
-	logger := slog.New(slog.NewTextHandler(os.Stdout, nil)) // TODO: why does go insist on using stderr?
+
 	opts := []logging.Option{
 		logging.WithLogOnEvents(logging.StartCall, logging.FinishCall),
 		logging.WithFieldsFromContext(logTraceID),
 	}
-	return interceptorLogger(logger), opts
+	return interceptorLogger(logger.New()), opts
 }
 
 func newServerMetrics() *grpcprom.ServerMetrics {
@@ -214,16 +216,18 @@ func newServerMetrics() *grpcprom.ServerMetrics {
 }
 
 func newMetricsServer(registry *prometheus.Registry, address string) *http.Server {
-	srv := &http.Server{Addr: address}
 	m := http.NewServeMux()
 	m.Handle("/metrics", promhttp.HandlerFor(
 		registry,
 		promhttp.HandlerOpts{
+
 			EnableOpenMetrics: true, // Opt into OpenMetrics e.g. to support exemplars.
 		},
 	))
-	srv.Handler = m
-	return srv
+	return &http.Server{
+		Addr:    address,
+		Handler: m,
+	}
 }
 
 func (s *Server) newPromMetrics(reg prometheus.Registerer) {
