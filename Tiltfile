@@ -125,7 +125,7 @@ k8s_resource(
 # TODO: figure out:
 # - loki log exporter
 # - metric exporter isn't working
-docker_build("lgtm-image", "lgtm")
+docker_build("lgtm-image", "containers/lgtm", dockerfile="containers/lgtm/Dockerfile")
 k8s_resource(
     "lgtm",
     port_forwards=[
