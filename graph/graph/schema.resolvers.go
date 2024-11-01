@@ -8,16 +8,30 @@ import (
 	"context"
 	"log/slog"
 
+	"github.com/99designs/gqlgen/graphql"
 	"github.com/ericbutera/amalgam/graph/graph/model"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
 	"github.com/samber/lo"
+	"github.com/vektah/gqlparser/v2/gqlerror"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
+func validationToGraphErr(ctx context.Context, s *status.Status) error {
+	for _, detail := range s.Details() {
+		if v, ok := detail.(*pb.ValidationErrors); ok {
+			for _, err := range v.Errors {
+				graphql.AddError(ctx, gqlerror.Errorf(err.Message))
+			}
+			return gqlerror.Errorf("validation error")
+		}
+	}
+	return nil
+}
+
 // AddFeed is the resolver for the addFeed field.
 func (r *mutationResolver) AddFeed(ctx context.Context, url string, name string) (*model.AddResponse, error) {
-	// TODO: grpc middleware to log errors
+	// TODO: middleware to log errors
 	resp, err := r.rpcClient.CreateFeed(ctx, &pb.CreateFeedRequest{
 		Feed: &pb.CreateFeedRequest_Feed{
 			Url:  url,
@@ -25,9 +39,16 @@ func (r *mutationResolver) AddFeed(ctx context.Context, url string, name string)
 		},
 	})
 	if err != nil {
-		return nil, status.Error(codes.Internal, "failed to create feed")
+		s := status.Convert(err)
+		switch s.Code() {
+		case codes.AlreadyExists:
+			return nil, gqlerror.Errorf("record already exists")
+		case codes.InvalidArgument:
+			return nil, validationToGraphErr(ctx, s)
+		default:
+			return nil, gqlerror.Errorf("failed to create feed")
+		}
 	}
-	// TODO: converter.ServiceToGraphFeed
 	return &model.AddResponse{
 		ID: resp.Id,
 	}, nil

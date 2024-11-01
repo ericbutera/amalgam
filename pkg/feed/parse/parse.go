@@ -7,7 +7,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/microcosm-cc/bluemonday"
 	parser "github.com/mmcdole/gofeed"
 )
 
@@ -56,7 +55,7 @@ func newArticleFromItem(item *parser.Item) *Article {
 	return &Article{
 		Title:         item.Title,
 		Url:           item.Link,
-		Preview:       sanitize(item.Description),
+		Preview:       item.Description,
 		Content:       item.Content,
 		ImageUrl:      getImageUrl(item),
 		GUID:          item.GUID,
@@ -97,13 +96,4 @@ func getDatePublished(item *parser.Item) time.Time {
 		return *item.PublishedParsed
 	}
 	return time.Now().UTC()
-}
-
-// attempt to sanitize HTML content
-func sanitize(html string) string {
-	// quoting https://github.com/microcosm-cc/bluemonday:
-	// bluemonday takes untrusted user generated content as an input, and will return HTML that has been
-	// sanitised against an allowlist of approved HTML elements and attributes so that you can safely
-	// include the content in your web page.
-	return bluemonday.UGCPolicy().Sanitize(html)
 }
