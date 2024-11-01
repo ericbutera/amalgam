@@ -5,8 +5,11 @@ go 1.23.2
 require (
 	github.com/99designs/gqlgen v0.17.55
 	github.com/Khan/genqlient v0.7.0
+	github.com/PuerkitoBio/purell v1.1.1
 	github.com/gin-contrib/cors v1.7.2
 	github.com/gin-gonic/gin v1.10.0
+	github.com/go-playground/validator/v10 v10.22.1
+	github.com/go-sanitize/sanitize v1.1.0
 	github.com/golang/protobuf v1.5.4
 	github.com/golangci/golangci-lint v1.61.0
 	github.com/google/go-cmp v0.6.0
@@ -83,6 +86,7 @@ require (
 	github.com/Microsoft/go-winio v0.5.2 // indirect
 	github.com/OpenPeeDeeP/depguard/v2 v2.2.0 // indirect
 	github.com/PuerkitoBio/goquery v1.9.3 // indirect
+	github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578 // indirect
 	github.com/Soontao/goHttpDigestClient v0.0.0-20170320082612-6d28bb1415c5 // indirect
 	github.com/agnivade/levenshtein v1.1.1 // indirect
 	github.com/alecthomas/go-check-sumtype v0.1.4 // indirect
@@ -168,7 +172,6 @@ require (
 	github.com/go-openapi/swag v0.22.4 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
-	github.com/go-playground/validator/v10 v10.22.1 // indirect
 	github.com/go-sourcemap/sourcemap v2.1.4+incompatible // indirect
 	github.com/go-sql-driver/mysql v1.7.1 // indirect
 	github.com/go-toolsmith/astcast v1.1.0 // indirect
@@ -336,8 +339,6 @@ require (
 	github.com/stbenjam/no-sprintf-host-port v0.1.1 // indirect
 	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
-	github.com/switchupcb/copygen v0.4.0 // indirect
-	github.com/switchupcb/yaegi v0.10.2 // indirect
 	github.com/tdakkota/asciicheck v0.2.0 // indirect
 	github.com/tetafro/godot v1.4.17 // indirect
 	github.com/theupdateframework/notary v0.7.0 // indirect

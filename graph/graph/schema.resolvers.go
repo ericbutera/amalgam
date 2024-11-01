@@ -8,16 +8,30 @@ import (
 	"context"
 	"log/slog"
 
+	"github.com/99designs/gqlgen/graphql"
 	"github.com/ericbutera/amalgam/graph/graph/model"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
 	"github.com/samber/lo"
+	"github.com/vektah/gqlparser/v2/gqlerror"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
+func validationToGraphErr(ctx context.Context, s *status.Status) error {
+	for _, detail := range s.Details() {
+		if v, ok := detail.(*pb.ValidationErrors); ok {
+			for _, err := range v.Errors {
+				graphql.AddError(ctx, gqlerror.Errorf(err.Message))
+			}
+			return gqlerror.Errorf("validation error")
+		}
+	}
+	return nil
+}
+
 // AddFeed is the resolver for the addFeed field.
 func (r *mutationResolver) AddFeed(ctx context.Context, url string, name string) (*model.AddResponse, error) {
-	// TODO: grpc middleware to log errors
+	// TODO: middleware to log errors
 	resp, err := r.rpcClient.CreateFeed(ctx, &pb.CreateFeedRequest{
 		Feed: &pb.CreateFeedRequest_Feed{
 			Url:  url,
@@ -25,9 +39,16 @@ func (r *mutationResolver) AddFeed(ctx context.Context, url string, name string)
 		},
 	})
 	if err != nil {
-		return nil, status.Error(codes.Internal, "failed to create feed")
+		s := status.Convert(err)
+		switch s.Code() {
+		case codes.AlreadyExists:
+			return nil, gqlerror.Errorf("record already exists")
+		case codes.InvalidArgument:
+			return nil, validationToGraphErr(ctx, s)
+		default:
+			return nil, gqlerror.Errorf("failed to create feed")
+		}
 	}
-	// TODO: converter.ServiceToGraphFeed
 	return &model.AddResponse{
 		ID: resp.Id,
 	}, nil
@@ -43,7 +64,7 @@ func (r *mutationResolver) UpdateFeed(ctx context.Context, id string, url *strin
 		},
 	})
 	if err != nil {
-		return nil, status.Error(codes.Internal, "failed to update feed")
+		return nil, gqlerror.Errorf("failed to update feed")
 	}
 	// TODO: converter.ServiceToGraphFeed
 	// TODO: revisit returning id (rpc returns empty)
@@ -57,7 +78,7 @@ func (r *queryResolver) Feeds(ctx context.Context) ([]*model.Feed, error) {
 	var feeds []*model.Feed
 	res, err := r.rpcClient.ListFeeds(ctx, &pb.ListFeedsRequest{})
 	if err != nil {
-		return nil, status.Error(codes.Internal, "failed to list feeds")
+		return nil, gqlerror.Errorf("failed to list feeds")
 	}
 	// TODO: converter.ServiceToGraph
 	for _, feed := range res.Feeds {
@@ -75,7 +96,7 @@ func (r *queryResolver) Feed(ctx context.Context, id string) (*model.Feed, error
 	resp, err := r.rpcClient.GetFeed(ctx, &pb.GetFeedRequest{Id: id})
 	if err != nil {
 		slog.ErrorContext(ctx, "failed to get feed", "error", err) // TODO: use middleware
-		return nil, status.Error(codes.Internal, "failed to get feed")
+		return nil, gqlerror.Errorf("failed to get feed")
 	}
 	// TODO: converter.ServiceToGraph
 	return &model.Feed{
@@ -89,7 +110,7 @@ func (r *queryResolver) Feed(ctx context.Context, id string) (*model.Feed, error
 func (r *queryResolver) Articles(ctx context.Context, feedID string) ([]*model.Article, error) {
 	resp, err := r.rpcClient.ListArticles(ctx, &pb.ListArticlesRequest{FeedId: feedID})
 	if err != nil {
-		return nil, status.Error(codes.Internal, "failed to list articles")
+		return nil, gqlerror.Errorf("failed to list articles")
 	}
 
 	var articles []*model.Article
@@ -116,7 +137,7 @@ func (r *queryResolver) Articles(ctx context.Context, feedID string) ([]*model.A
 func (r *queryResolver) Article(ctx context.Context, id string) (*model.Article, error) {
 	resp, err := r.rpcClient.GetArticle(ctx, &pb.GetArticleRequest{Id: id})
 	if err != nil {
-		return nil, status.Error(codes.Internal, "failed to get article")
+		return nil, gqlerror.Errorf("failed to get article")
 	}
 	article := resp.Article
 	// TODO: converter.ServiceToGraph

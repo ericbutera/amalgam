@@ -60,7 +60,7 @@ func (h *FeedHelper) GetFeeds() ([]Feed, error) {
 	// return feeds, nil
 	return []Feed{
 		// TODO: this will expire in 30 days from 2024-10-29
-		{ID: "1", Url: "https://run.mocky.io/v3/883f6eb9-81d3-4648-9adf-6395c4e1567c"},
+		{ID: "0e597e90-ece5-463e-8608-ff687bf286da", Url: "https://run.mocky.io/v3/883f6eb9-81d3-4648-9adf-6395c4e1567c"},
 	}, nil
 }
 
