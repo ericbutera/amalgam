@@ -49,8 +49,6 @@ message ListFeedsResponse {
   repeated Feed feeds = 1;
 }
 
-
-
 message CreateFeedRequest {
   message Feed {
     string url = 1;
@@ -91,9 +89,19 @@ message GetArticleResponse {
 }
 
 message SaveArticleRequest {
-  Article article = 2;
+  Article article = 1;
 }
 
 message SaveArticleResponse {
   string id = 1;
+}
+
+message ValidationErrors {
+  repeated ValidationError errors = 1;
+}
+message ValidationError {
+  string field = 1;
+  string tag = 2;
+  string raw_message = 3;
+  string message = 4;
 }

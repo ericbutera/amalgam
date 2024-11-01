@@ -4,7 +4,9 @@ import (
 	"context"
 
 	"github.com/ericbutera/amalgam/internal/copygen"
+	"github.com/ericbutera/amalgam/internal/service"
 	models "github.com/ericbutera/amalgam/internal/service/models"
+	"github.com/ericbutera/amalgam/internal/validate"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -27,12 +29,29 @@ func (s *Server) ListFeeds(ctx context.Context, in *pb.ListFeedsRequest) (*pb.Li
 func (s *Server) CreateFeed(ctx context.Context, in *pb.CreateFeedRequest) (*pb.CreateFeedResponse, error) {
 	feed := &models.Feed{}
 	copygen.ProtoCreateFeedToService(feed, in.Feed)
-	if err := s.service.CreateFeed(ctx, feed); err != nil {
+	res, err := s.service.CreateFeed(ctx, feed)
+	if err != nil {
+		if err == service.ErrDuplicate {
+			return nil, status.Errorf(codes.AlreadyExists, "feed already exists")
+		} else if err == service.ErrValidation {
+			return nil, validationErr(res.ValidationErrors)
+		}
 		return nil, status.Errorf(codes.Internal, "failed to create feed: %v", err)
 	}
 	return &pb.CreateFeedResponse{
-		Id: feed.ID,
+		Id: res.ID,
 	}, nil
+}
+
+func validationErr(errors []validate.ValidationError) error {
+	st := status.New(codes.InvalidArgument, "validation error")
+	ds, err := st.WithDetails(&pb.ValidationErrors{
+		Errors: validationErrToProto(errors),
+	})
+	if err != nil {
+		return err
+	}
+	return ds.Err()
 }
 
 func (s *Server) UpdateFeed(ctx context.Context, in *pb.UpdateFeedRequest) (*pb.UpdateFeedResponse, error) {
@@ -86,13 +105,31 @@ func (s *Server) GetArticle(ctx context.Context, in *pb.GetArticleRequest) (*pb.
 
 func (s *Server) SaveArticle(ctx context.Context, in *pb.SaveArticleRequest) (*pb.SaveArticleResponse, error) {
 	article := &models.Article{}
+
 	copygen.ProtoToServiceArticle(article, in.Article)
-	// TODO: bug with ProtoToServiceArticle
-	article.FeedID = in.Article.FeedId
-	if err := s.service.SaveArticle(ctx, article); err != nil {
+	article.FeedID = in.Article.FeedId // TODO: bug with ProtoToServiceArticle
+
+	res, err := s.service.SaveArticle(ctx, article)
+	if err != nil {
+		if err == service.ErrValidation {
+			return nil, validationErr(res.ValidationErrors)
+		}
 		return nil, status.Errorf(codes.Internal, "failed to save article: %v", err)
 	}
 	return &pb.SaveArticleResponse{
-		Id: article.ID,
+		Id: res.ID,
 	}, nil
+}
+
+func validationErrToProto(errs []validate.ValidationError) []*pb.ValidationError {
+	protoErrs := []*pb.ValidationError{}
+	for _, err := range errs {
+		protoErrs = append(protoErrs, &pb.ValidationError{
+			Field:      err.Field,
+			Tag:        err.Tag,
+			RawMessage: err.RawMessage,
+			Message:    err.FriendlyMessage,
+		})
+	}
+	return protoErrs
 }

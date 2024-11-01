@@ -20,9 +20,13 @@ const BASE_URL = "http://api:8080/v1";
 const SLEEP_DURATION = 0.1;
 // Global variables should be initialized.
 
+const FEED_ID = "0e597e90-ece5-463e-8608-ff687bf286da";
+const FEED_ID_UPDATE = "1e597e90-ece5-463e-8608-ff687bf286da";
+const ARTICLE_ID = "2e597e90-ece5-463e-8608-ff687bf286da";
+
 export default function () {
     group("/feeds/{id}", () => {
-        let id = '1'; // specify value as there is no example value for this parameter in OpenAPI spec
+        let id = FEED_ID; // specify value as there is no example value for this parameter in OpenAPI spec
 
         // Request No. 1:
         {
@@ -39,7 +43,7 @@ export default function () {
         // Request No. 2:
         // TODO: this test fails because rest api isn't handling updates correctly (currently trying to set created_at=null)
         {
-            let url = BASE_URL + `/feeds/${id}`;
+            let url = BASE_URL + `/feeds/${FEED_ID_UPDATE}`;
             let body = { "feed": { "url": "https://example.com/k6" } };
             let params = {
                 headers: {
@@ -86,7 +90,7 @@ export default function () {
     });
 
     group("/articles/{id}", () => {
-        let id = '1'; // specify value as there is no example value for this parameter in OpenAPI spec
+        let id = ARTICLE_ID; // specify value as there is no example value for this parameter in OpenAPI spec
 
         // Request No. 1:
         {
@@ -100,7 +104,7 @@ export default function () {
     });
 
     group("/feeds/{id}/articles", () => {
-        let id = '1'; // specify value as there is no example value for this parameter in OpenAPI spec
+        let id = FEED_ID; // specify value as there is no example value for this parameter in OpenAPI spec
 
         // Request No. 1:
         {

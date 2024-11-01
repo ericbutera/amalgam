@@ -76,13 +76,14 @@ func (s *ServiceSuite) TestCreateFeed() {
 	t := s.T()
 
 	expected := fixtures.NewFeed(fixtures.WithFeedUrl("https://example.com/moo"))
-	err := s.svc.CreateFeed(context.Background(), expected)
+	result, err := s.svc.CreateFeed(context.Background(), expected)
 	require.NoError(t, err)
 
 	actual := &models.Feed{}
 	res := s.db.First(actual, "url=?", expected.Url)
 	require.NoError(t, res.Error)
 
+	assert.Len(t, result.ValidationErrors, 0)
 	assert.Equal(t, expected.Url, actual.Url)
 	helpers.Diff(t, *expected, *actual, "ID")
 }
@@ -162,4 +163,23 @@ func (s *ServiceSuite) TestGetArticle() {
 
 	assert.Equal(t, article.Url, actual.Url)
 	assert.Equal(t, article.Title, actual.Title)
+}
+
+func (s *ServiceSuite) TestSaveArticle() {
+	t := s.T()
+
+	expected := fixtures.NewArticle(
+		fixtures.WithArticleUrl("https://example.com/moo"),
+		fixtures.WithArticleFeedID("0e597e90-ece5-463e-8608-ff687bf286da"),
+	)
+	result, err := s.svc.SaveArticle(context.Background(), expected)
+	require.NoError(t, err)
+
+	actual := &models.Article{}
+	res := s.db.First(actual, "url=?", expected.Url)
+	require.NoError(t, res.Error)
+
+	assert.Len(t, result.ValidationErrors, 0)
+	assert.Equal(t, expected.Url, actual.Url)
+	helpers.Diff(t, *expected, *actual, "ID")
 }
