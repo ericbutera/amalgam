@@ -4,7 +4,7 @@ metadata:
   name: sws
 spec:
   selector:
-    name: sws
+    app: sws
   ports:
     - name: sws
       protocol: TCP
@@ -32,8 +32,8 @@ spec:
           ports:
             - containerPort: 8080
           env:
-            - name: SERVER_HOST
-              value: "::"
+            # - name: SERVER_HOST
+            #   value: "::"
             - name: SERVER_ROOT
               value: "/www"
             - name: SERVER_PORT
