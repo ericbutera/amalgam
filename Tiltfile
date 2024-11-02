@@ -25,7 +25,7 @@ docker_build_with_restart(
   'api-image',
   './api',
   entrypoint=['/app/bin/app','server'],
-  dockerfile='./containers/tilt.go.Dockerfile',
+  dockerfile='./containers/tilt/go/Dockerfile',
   only=['./bin'],
   live_update=[sync('api/bin', '/app/bin')],
 )
@@ -53,7 +53,7 @@ docker_build_with_restart(
   'rpc-image',
   './rpc',
   entrypoint=['/app/bin/app','server'],
-  dockerfile='./containers/tilt.go.Dockerfile',
+  dockerfile='./containers/tilt/go/Dockerfile',
   only=['./bin'],
   live_update=[sync('rpc/bin', '/app/bin')],
 )
@@ -83,7 +83,7 @@ docker_build_with_restart(
   'graph-image',
   './graph',
   entrypoint=['/app/bin/app','server'],
-  dockerfile='./containers/tilt.go.Dockerfile',
+  dockerfile='./containers/tilt/go/Dockerfile',
   only=['./bin'],
   live_update=[sync('graph/bin', '/app/bin')],
 )
@@ -109,16 +109,25 @@ docker_build(
 )
 k8s_resource("ui", port_forwards=[port_forward(3000, 3000, "ui")], labels=["app"])
 
-docker_build(
-  "sws-image",
-  context=".",
-  dockerfile="containers/sws/Dockerfile",
+docker_build("sws-image", context=".", dockerfile="containers/sws/Dockerfile",)
+k8s_resource("sws", port_forwards=[port_forward(8388, 8080, "http")], labels=["services"])
+
+local_resource('faker-compile', 'make build',
+  dir='./services/faker',
+  ignore=['**/bin'],
+  deps=['./services/faker','./internal','./pkg'],
+  labels=['compile'],
 )
-k8s_resource(
-  "sws",
-  port_forwards=[port_forward(8388, 8080, "sws")],
-  labels=["services"]
+docker_build_with_restart(
+  'faker-image',
+  './services/faker',
+  entrypoint=['/app/bin/app','server'],
+  dockerfile='./containers/tilt/go/Dockerfile',
+  only=['./bin'],
+  live_update=[sync('services/faker/bin', '/app/bin')],
 )
+k8s_resource("faker", port_forwards=[port_forward(8084, 8080, "http")], labels=["services"])
+
 
 # https://grafana.com/go/webinar/getting-started-with-grafana-lgtm-stack/
 # TODO: figure out:
@@ -189,7 +198,7 @@ local_resource('feed-start-compile', 'make build',
 )
 docker_build_with_restart('feed-start-image', './data-pipeline/temporal/feed/start',
   entrypoint=['/app/bin/app'],
-  dockerfile='./containers/tilt.go.Dockerfile',
+  dockerfile='./containers/tilt/go/Dockerfile',
   only=['./bin'],
   live_update=[sync('data-pipeline/temporal/feed/start/bin', '/app/bin')],
 )
@@ -202,7 +211,7 @@ local_resource('feed-worker-compile', 'make build',
 )
 docker_build_with_restart('feed-worker-image', './data-pipeline/temporal/feed/worker',
   entrypoint=['/app/bin/app'],
-  dockerfile='./containers/tilt.go.Dockerfile',
+  dockerfile='./containers/tilt/go/Dockerfile',
   only=['./bin'],
   live_update=[sync('data-pipeline/temporal/feed/worker/bin', '/app/bin')],
 )
