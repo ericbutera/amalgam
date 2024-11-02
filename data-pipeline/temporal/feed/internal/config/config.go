@@ -19,7 +19,7 @@ type Config struct {
 }
 
 func init() {
-	viper.SetDefault("use_schedule", true)
+	viper.SetDefault("use_schedule", false)
 	viper.SetDefault("temporal_host", "")
 	viper.SetDefault("rpc_host", "")
 	viper.SetDefault("rpc_insecure", false)

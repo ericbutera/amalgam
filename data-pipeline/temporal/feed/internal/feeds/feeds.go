@@ -2,11 +2,13 @@ package feeds
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/ericbutera/amalgam/data-pipeline/temporal/feed/internal/config"
 	rss "github.com/ericbutera/amalgam/pkg/feed/parse"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
 	rpc "github.com/ericbutera/amalgam/rpc/pkg/client"
+	"github.com/google/uuid"
 	"google.golang.org/grpc"
 )
 
@@ -58,10 +60,17 @@ func (h *FeedHelper) GetFeeds() ([]Feed, error) {
 	// 	})
 	// }
 	// return feeds, nil
-	return []Feed{
-		// TODO: this will expire in 30 days from 2024-10-29
-		{ID: "0e597e90-ece5-463e-8608-ff687bf286da", Url: "https://run.mocky.io/v3/883f6eb9-81d3-4648-9adf-6395c4e1567c"},
-	}, nil
+	// TODO: toggle between real & faker
+	base := "http://%s/feed/%s"
+	feeds := []Feed{}
+	for x := 0; x < 10; x++ {
+		id := uuid.New().String()
+		feeds = append(feeds, Feed{
+			ID:  id,
+			Url: fmt.Sprintf(base, "faker:8080", id),
+		})
+	}
+	return feeds, nil
 }
 
 // Returns the article ID on success

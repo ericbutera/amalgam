@@ -37,6 +37,7 @@ func main() {
 	w := worker.New(c, config.TaskQueue, worker.Options{
 		Interceptors: newInterceptors(otel.Tracer),
 	})
+	w.RegisterWorkflow(app.FetchFeedsWorkflow)
 	w.RegisterWorkflow(app.FeedWorkflow)
 	w.RegisterActivity(a)
 

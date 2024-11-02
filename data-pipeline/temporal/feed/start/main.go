@@ -14,6 +14,7 @@ import (
 	cfg "github.com/ericbutera/amalgam/pkg/config"
 	"github.com/samber/lo"
 	"go.temporal.io/sdk/client"
+	"go.temporal.io/sdk/temporal"
 )
 
 func main() {
@@ -23,6 +24,10 @@ func main() {
 
 	c := lo.Must(app.NewTemporalClient(config.TemporalHost))
 	defer c.Close()
+
+	retryPolicy := &temporal.RetryPolicy{
+		MaximumAttempts: 1,
+	}
 
 	if config.UseSchedule {
 		// docs: https://docs.temporal.io/develop/go/schedules
@@ -34,13 +39,14 @@ func main() {
 			ID: config.ScheduleID,
 			Spec: client.ScheduleSpec{
 				Intervals: []client.ScheduleIntervalSpec{
-					{Every: 2 * time.Minute},
+					{Every: 1 * time.Minute},
 				},
 			},
 			Action: &client.ScheduleWorkflowAction{
-				ID:        config.WorkflowID,
-				Workflow:  app.FeedWorkflow,
-				TaskQueue: config.TaskQueue,
+				ID:          config.WorkflowID,
+				Workflow:    app.FetchFeedsWorkflow,
+				TaskQueue:   config.TaskQueue,
+				RetryPolicy: retryPolicy,
 			},
 		})
 		if err != nil {
@@ -49,9 +55,10 @@ func main() {
 		slog.Info("started workflow", "schedule", schedule.GetID())
 	} else {
 		opts := client.StartWorkflowOptions{
-			TaskQueue: config.TaskQueue,
+			TaskQueue:   config.TaskQueue,
+			RetryPolicy: retryPolicy,
 		}
-		we, err := c.ExecuteWorkflow(ctx, opts, app.FeedWorkflow)
+		we, err := c.ExecuteWorkflow(ctx, opts, app.FetchFeedsWorkflow)
 		if err != nil {
 			slog.Error("unable to execute workflow", "error", err)
 			os.Exit(1)

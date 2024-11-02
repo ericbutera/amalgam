@@ -17,6 +17,8 @@ import (
 	sdktally "go.temporal.io/sdk/contrib/tally"
 )
 
+const FetchTimeout = 10 * time.Second
+
 func NewTemporalClient(host string) (client.Client, error) {
 	opts := client.Options{
 		Logger:   logger.New(),
@@ -67,11 +69,13 @@ type FetchCallbackParams struct {
 type FetchCallback = func(params FetchCallbackParams) error
 
 func FetchUrl(url string, fetchCb FetchCallback) error {
-	// TODO: timeouts, retries, backoff, jitter
+	// note: do not retry; workflow will handle retries
+	// TODO: otel
 	client := &http.Client{
 		Transport: transport.NewLoggingTransport(
 			transport.WithLogger(slog.Default()),
 		),
+		Timeout: FetchTimeout,
 	}
 	req, err := http.NewRequest("GET", url, nil)
 	req.Header.Set("User-Agent", "curl/7.79.1")
