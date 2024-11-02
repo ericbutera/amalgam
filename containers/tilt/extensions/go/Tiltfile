@@ -1,0 +1,23 @@
+load('ext://restart_process', 'docker_build_with_restart')
+
+GO_DEPS = ['./pkg','./tools','./internal']
+
+def go_compile(name, dir, deps):
+  local_resource(
+    name,
+    'make build',
+    dir=dir,
+    ignore=['**/bin'],
+    deps=GO_DEPS + deps,
+    labels=['compile'],
+  )
+
+def go_image(name, dir):
+  docker_build_with_restart(
+    name + '-image',
+    dir,
+    entrypoint=['/app/bin/app','server'],
+    dockerfile='./containers/tilt/go/Dockerfile',
+    only=['./bin'],
+    live_update=[sync(dir + '/bin', '/app/bin')],
+  )

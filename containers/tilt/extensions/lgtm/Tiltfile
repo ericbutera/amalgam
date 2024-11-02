@@ -1,0 +1,23 @@
+# https://grafana.com/go/webinar/getting-started-with-grafana-lgtm-stack/
+# TODO: metric exporter isn't working
+
+# TODO: make configurable
+def deploy_lgtm(grafana_port=3000, auto_init=True):
+    docker_build("lgtm-image", "containers/lgtm", dockerfile="containers/lgtm/Dockerfile")
+    k8s_resource(
+        "lgtm",
+        port_forwards=[
+            port_forward(grafana_port, 3000, "grafana"),
+            port_forward(9090, 9090, "prometheus"),
+            port_forward(4317,4317, "collector - grpc"),
+            port_forward(4318,4318, "collector - http"),
+            port_forward(3100, 3100, "loki"),
+        ],
+        labels=["services"],
+        auto_init=auto_init,
+        trigger_mode=TRIGGER_MODE_MANUAL,
+    )
+    # https://grafana.com/docs/loki/latest/send-data/promtail/
+    # Promtail is an agent which ships the contents of local logs to a private Grafana Loki instance
+    docker_build("promtail-image", "containers/promtail", dockerfile="containers/promtail/Dockerfile")
+    k8s_resource("promtail", auto_init=auto_init, labels=["services"])

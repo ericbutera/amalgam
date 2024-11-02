@@ -1,0 +1,8 @@
+# TODO: make configurable
+
+def deploy_mysql():
+    k8s_resource("mysql", port_forwards=["3306:3306"], labels=["services"])
+
+def deploy_mysql_migrate():
+    docker_build("mysql-migrate-image", "mysql/migrations", dockerfile="mysql/migrate.Dockerfile")
+    k8s_resource("mysql-migrate", resource_deps=["mysql"], labels=["services"])
