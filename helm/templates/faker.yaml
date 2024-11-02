@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: faker
+spec:
+  selector:
+    name: faker
+  ports:
+    - name: faker
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: faker
+  labels:
+    app: faker
+spec:
+  selector:
+    matchLabels:
+      app: faker
+  template:
+    metadata:
+      labels:
+        app: faker
+    spec:
+      containers:
+        - name: faker
+          image: faker-image
+          ports:
+            - containerPort: 8080

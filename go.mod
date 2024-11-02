@@ -6,6 +6,7 @@ require (
 	github.com/99designs/gqlgen v0.17.55
 	github.com/Khan/genqlient v0.7.0
 	github.com/PuerkitoBio/purell v1.1.1
+	github.com/brianvoe/gofakeit/v6 v6.28.0
 	github.com/gin-contrib/cors v1.7.2
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-playground/validator/v10 v10.22.1
