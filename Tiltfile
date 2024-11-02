@@ -13,22 +13,30 @@ API_PORT_FORWARD=8080
 GRAPH_PORT_FORWARD=8082
 RPC_PORT_FORWARD=50055
 
-local_resource(
-  'api-compile',
-  'make build',
-  dir='./api',
-  ignore=['./api/bin'],
-  deps=['./api','./pkg','./tools','./internal'],
-  labels=['compile'],
-)
-docker_build_with_restart(
-  'api-image',
-  './api',
-  entrypoint=['/app/bin/app','server'],
-  dockerfile='./containers/tilt/go/Dockerfile',
-  only=['./bin'],
-  live_update=[sync('api/bin', '/app/bin')],
-)
+GO_DEPS = ['./pkg','./tools','./internal']
+
+def go_compile(name, dir, deps):
+  local_resource(
+    name,
+    'make build',
+    dir=dir,
+    ignore=['**/bin'],
+    deps=GO_DEPS + deps,
+    labels=['compile'],
+  )
+
+def go_image(name, dir):
+  docker_build_with_restart(
+    name + '-image',
+    dir,
+    entrypoint=['/app/bin/app','server'],
+    dockerfile='./containers/tilt/go/Dockerfile',
+    only=['./bin'],
+    live_update=[sync(dir + '/bin', '/app/bin')],
+  )
+
+go_compile('api-compile', './api', GO_DEPS + ['./api'])
+go_image('api', './api')
 k8s_resource(
     "api",
     port_forwards=[port_forward(API_PORT_FORWARD, 8080, "api")],
@@ -41,22 +49,8 @@ k8s_resource(
     labels=["app"],
 )
 
-local_resource(
-  'rpc-compile',
-  'make build',
-  dir='./rpc',
-  ignore=['./rpc/bin'],
-  deps=['./rpc','./pkg','./tools','./internal'],
-  labels=['compile'],
-)
-docker_build_with_restart(
-  'rpc-image',
-  './rpc',
-  entrypoint=['/app/bin/app','server'],
-  dockerfile='./containers/tilt/go/Dockerfile',
-  only=['./bin'],
-  live_update=[sync('rpc/bin', '/app/bin')],
-)
+go_compile('rpc-compile', './rpc', GO_DEPS + ['./rpc'])
+go_image('rpc', './rpc')
 k8s_resource(
     "rpc",
     port_forwards=[
@@ -71,22 +65,8 @@ k8s_resource(
     labels=["app"],
 )
 
-local_resource(
-  'graph-compile',
-  'make build',
-  dir='./graph',
-  ignore=['./graph/bin'],
-  deps=['./graph','./pkg','./tools','./internal'],
-  labels=['compile'],
-)
-docker_build_with_restart(
-  'graph-image',
-  './graph',
-  entrypoint=['/app/bin/app','server'],
-  dockerfile='./containers/tilt/go/Dockerfile',
-  only=['./bin'],
-  live_update=[sync('graph/bin', '/app/bin')],
-)
+go_compile('graph-compile', './graph', GO_DEPS + ['./graph'])
+go_image('graph', './graph')
 k8s_resource("graph",
   port_forwards=[
     port_forward(GRAPH_PORT_FORWARD, 8080, "playground")
@@ -109,23 +89,8 @@ docker_build(
 )
 k8s_resource("ui", port_forwards=[port_forward(3000, 3000, "ui")], labels=["app"])
 
-docker_build("sws-image", context=".", dockerfile="containers/sws/Dockerfile",)
-k8s_resource("sws", port_forwards=[port_forward(8388, 8080, "http")], labels=["services"])
-
-local_resource('faker-compile', 'make build',
-  dir='./services/faker',
-  ignore=['**/bin'],
-  deps=['./services/faker','./internal','./pkg'],
-  labels=['compile'],
-)
-docker_build_with_restart(
-  'faker-image',
-  './services/faker',
-  entrypoint=['/app/bin/app','server'],
-  dockerfile='./containers/tilt/go/Dockerfile',
-  only=['./bin'],
-  live_update=[sync('services/faker/bin', '/app/bin')],
-)
+go_compile('faker-compile', './services/faker', GO_DEPS + ['./services/faker'])
+go_image('faker', './services/faker')
 k8s_resource("faker", port_forwards=[port_forward(8084, 8080, "http")], labels=["services"])
 
 
@@ -189,34 +154,12 @@ cmd_button('run-start',
 #   text='run-worker',
 # )
 
-local_resource('feed-start-compile', 'make build',
-  dir='./data-pipeline/temporal/feed/start',
-  ignore=['**/bin'],
-  deps=['./data-pipeline/temporal','./pkg','./tools','./internal'],
-  auto_init=False,
-  labels=['compile'],
-)
-docker_build_with_restart('feed-start-image', './data-pipeline/temporal/feed/start',
-  entrypoint=['/app/bin/app'],
-  dockerfile='./containers/tilt/go/Dockerfile',
-  only=['./bin'],
-  live_update=[sync('data-pipeline/temporal/feed/start/bin', '/app/bin')],
-)
-local_resource('feed-worker-compile', 'make build',
-  dir='./data-pipeline/temporal/feed/worker',
-  ignore=['**/bin'],
-  deps=['./data-pipeline/temporal','./pkg','./tools','./internal'],
-  auto_init=False,
-  labels=['compile'],
-)
-docker_build_with_restart('feed-worker-image', './data-pipeline/temporal/feed/worker',
-  entrypoint=['/app/bin/app'],
-  dockerfile='./containers/tilt/go/Dockerfile',
-  only=['./bin'],
-  live_update=[sync('data-pipeline/temporal/feed/worker/bin', '/app/bin')],
-)
-
+go_compile('feed-start-compile', './data-pipeline/temporal/feed/start', GO_DEPS + ['./data-pipeline/temporal'])
+go_image('feed-start', './data-pipeline/temporal/feed/start')
 k8s_resource("feed-start", resource_deps=["temporal"], labels=["data-pipeline"], auto_init=False)
+
+go_compile('feed-worker-compile', './data-pipeline/temporal/feed/worker', GO_DEPS + ['./data-pipeline/temporal'])
+go_image('feed-worker', './data-pipeline/temporal/feed/worker')
 k8s_resource("feed-worker", resource_deps=["temporal"], labels=["data-pipeline"],
   port_forwards=[
     port_forward(9096, 9090, "metrics")
@@ -224,55 +167,12 @@ k8s_resource("feed-worker", resource_deps=["temporal"], labels=["data-pipeline"]
   auto_init=False,
 )
 
-# Minio object storage
-# https://github.com/bitnami/charts/tree/main/bitnami/minio
-k8s_yaml(secret_from_dict("feed-minio-auth", inputs = {
-    'root-user' : "minio",
-    'root-password' : "minio-password",
-}))
-helm_repo('bitnami', 'https://charts.bitnami.com/bitnami')
-helm_resource(
-    name='minio',
-    chart='bitnami/minio',
-    flags=[
-        '--set=auth.existingSecret=feed-minio-auth',
-        '--set=defaultBuckets="icons;feeds"',
-        '--set=service.type=LoadBalancer',
-        '--set=mode=standalone',
-        '--set=persistence.enabled=false',
-        '--set=replicas=1',
-        '--set=consoleService.type=LoadBalancer',
-        '--set=resources.requests.memory=256Mi',
-    ],
-    port_forwards=[
-      port_forward(9100, 9000, 'minio-service'),
-      port_forward(9101, 9001, 'minio-admin'),
-    ],
-    auto_init=(not IS_CI),
-    labels=["data-pipeline"],
+load('./containers/tilt/extensions/minio/Tiltfile', 'deploy_minio')
+deploy_minio(
+    secret_name="feed-minio-auth",
+    root_user="minio",
+    root_password="minio-password",
+    auto_init=(not IS_CI)
 )
 
-# For more on the `test_go` extension: https://github.com/tilt-dev/tilt-extensions/tree/master/tests/golang
-# For more on tests in Tilt: https://docs.tilt.dev/tests_in_tilt.html
-load('ext://tests/golang', 'test_go')
-
-# these unit tests are fast/well cached, so it's easy to run them all whenever a file changes and get fast feedback
-# (The `skipintegration` tag prevents this test resource from running our very slow integration test suite)
-test_go('go-unit-tests', '.', '.',
-  recursive=True,
-  tags=['skipintegration'],
-  labels=['test'],
-  ignore=[
-    '**/bin/app',
-  ]
-)
-
-# TODO: integration tests
-# the integration tests are slow and clunky, so make them available from the sidebar
-# and let the developer run them manually whenever it's necessary
-# test_go('integration-tests', './integration', '.',
-#         extra_args=["-v"],
-#         trigger_mode=TRIGGER_MODE_MANUAL,
-#         # run this test automatically in CI mode; otherwise, only on manual trigger
-#         auto_init=config.tilt_subcommand == 'ci',
-#         labels=['test'])
+include('Tiltfile.tests')
