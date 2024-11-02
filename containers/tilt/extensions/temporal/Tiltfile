@@ -1,0 +1,18 @@
+# https://temporal.io/
+
+# TODO: make configurable
+def deploy_temporal(auto_init=True):
+    k8s_resource(
+        "temporal",
+        port_forwards=[
+            port_forward(7233, 7233, "service"),
+            port_forward(8233, 8233, "workflows ui"),
+            port_forward(9290, 9090, "metrics"),
+        ],
+        links=[
+            link("http://localhost:8233", "workflows ui"),
+            link("http://localhost:9290/metrics", "metrics"),
+        ],
+        auto_init=auto_init,
+        labels=["data-pipeline"],
+    )
