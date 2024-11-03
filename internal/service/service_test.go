@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/ericbutera/amalgam/internal/db"
+	db_model "github.com/ericbutera/amalgam/internal/db/models"
 	service "github.com/ericbutera/amalgam/internal/service"
 	models "github.com/ericbutera/amalgam/internal/service/models"
 	"github.com/ericbutera/amalgam/internal/test/fixtures"
@@ -42,7 +43,7 @@ func mustNewTestDb(t *testing.T) *gorm.DB {
 }
 
 type AllowedModels interface {
-	*models.Feed | *models.Article
+	*models.Feed | *models.Article | *db_model.Feed | *db_model.Article
 }
 
 func Create[T AllowedModels](db *gorm.DB, records ...*T) error {
@@ -70,6 +71,18 @@ func (s *ServiceSuite) TestFeeds() {
 	assert.Len(t, feeds, 1)
 	assert.Equal(t, feed.Url, feeds[0].Url)
 	assert.Equal(t, feed.Name, feeds[0].Name)
+}
+
+func (s *ServiceSuite) TestFeeds_IsActive() {
+	t := s.T()
+
+	feed := fixtures.NewFeed(fixtures.WithFeedIsActive(false))
+	mustCreate(t, s.db, &feed)
+
+	feeds, err := s.svc.Feeds(context.Background())
+	require.NoError(t, err)
+
+	assert.Len(t, feeds, 0)
 }
 
 func (s *ServiceSuite) TestCreateFeed() {

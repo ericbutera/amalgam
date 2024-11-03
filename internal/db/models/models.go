@@ -9,8 +9,9 @@ import (
 
 type Feed struct {
 	Base
-	Url  string `json:"url" gorm:"uniqueIndex" binding:"required,url" example:"https://example.com/"`
-	Name string `json:"name" example:"Example"`
+	Url      string `json:"url" gorm:"uniqueIndex" binding:"required,url" example:"https://example.com/"`
+	Name     string `json:"name" example:"Example"`
+	IsActive bool   `json:"isActive" example:"true"`
 }
 
 type Article struct {

@@ -1,8 +1,16 @@
 # TODO: make configurable
+load('ext://secret', 'secret_create_generic', 'secret_from_dict')
 
-def deploy_mysql():
+def deploy_mysql(root_pw="password", user_pw="amalgam-password", migration_pw="password"):
+    k8s_yaml(secret_from_dict("mysql-auth", inputs={
+        "MYSQL_ROOT_PASSWORD": root_pw,
+    }))
+    k8s_yaml(secret_from_dict("feed-mysql-auth", inputs={
+        "AMALGAM_MIGRATION_PASSWORD": migration_pw,
+        "AMALGAM_USER_PASSWORD": user_pw,
+    }))
+
     k8s_resource("mysql", port_forwards=["3306:3306"], labels=["services"])
 
-def deploy_mysql_migrate():
     docker_build("mysql-migrate-image", "mysql/migrations", dockerfile="mysql/migrate.Dockerfile")
     k8s_resource("mysql-migrate", resource_deps=["mysql"], labels=["services"])

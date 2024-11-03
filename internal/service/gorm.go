@@ -30,8 +30,9 @@ func (s *GormService) query(ctx context.Context) *gorm.DB {
 func (s *GormService) Feeds(ctx context.Context) ([]svc_model.Feed, error) {
 	var feeds []svc_model.Feed
 	result := s.query(ctx).
-		Find(&feeds).
-		Limit(100) // TODO: pagination
+		Where("is_active=?", true).
+		Limit(100). // TODO: pagination
+		Find(&feeds)
 
 	if result.Error != nil {
 		return nil, errors.New("failed to fetch feeds")
@@ -91,6 +92,9 @@ func (s *GormService) CreateFeed(ctx context.Context, data *svc_model.Feed) (Cre
 
 	dbFeed := &db_model.Feed{}
 	copygen.ServiceToDbFeed(dbFeed, &feed)
+
+	dbFeed.IsActive = true
+
 	err = s.query(ctx).Transaction(func(tx *gorm.DB) error {
 		if err := feedUrlExists(tx, feed.Url); err != nil {
 			return err
@@ -140,8 +144,8 @@ func (s *GormService) GetFeed(ctx context.Context, id string) (*svc_model.Feed, 
 func (s *GormService) GetArticlesByFeed(ctx context.Context, feedId string) ([]svc_model.Article, error) {
 	var articles []svc_model.Article
 	result := s.query(ctx).
-		Find(&articles, "feed_id=?", feedId).
-		Limit(100) // TODO: pagination (cursor)
+		Limit(100). // TODO: pagination (cursor)
+		Find(&articles, "feed_id=?", feedId)
 
 	if result.Error != nil {
 		return nil, result.Error

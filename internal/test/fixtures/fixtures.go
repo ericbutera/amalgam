@@ -10,8 +10,9 @@ import (
 
 func NewFeed(opts ...FeedOption) *svc_model.Feed {
 	f := &svc_model.Feed{
-		Name: "test feed name",
-		Url:  "https://example.com/test-feed",
+		Name:     "test feed name",
+		Url:      "https://example.com/test-feed",
+		IsActive: true,
 	}
 	for _, opt := range opts {
 		opt(f)
@@ -36,6 +37,12 @@ func WithFeedName(name string) FeedOption {
 func WithFeedUrl(url string) FeedOption {
 	return func(f *svc_model.Feed) {
 		f.Url = url
+	}
+}
+
+func WithFeedIsActive(isActive bool) FeedOption {
+	return func(f *svc_model.Feed) {
+		f.IsActive = isActive
 	}
 }
 
