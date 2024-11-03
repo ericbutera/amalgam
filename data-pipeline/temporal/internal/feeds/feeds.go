@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/ericbutera/amalgam/data-pipeline/temporal/feed/internal/config"
 	rss "github.com/ericbutera/amalgam/pkg/feed/parse"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
 	rpc "github.com/ericbutera/amalgam/rpc/pkg/client"
@@ -23,8 +22,8 @@ type FeedHelper struct {
 	closers []func() error
 }
 
-func NewFeeds(config *config.Config) (*FeedHelper, error) {
-	rpc, err := rpc.NewClient(config.RpcHost, config.RpcInsecure)
+func NewFeeds(host string, insecure bool) (*FeedHelper, error) {
+	rpc, err := rpc.NewClient(host, insecure)
 	if err != nil {
 		return nil, err
 	}
@@ -64,10 +63,18 @@ func (h *FeedHelper) GetFeeds() ([]Feed, error) {
 	base := "http://%s/feed/%s"
 	feeds := []Feed{}
 	for x := 0; x < 10; x++ {
-		id := uuid.New().String()
+		url := fmt.Sprintf(base, "faker:8080", uuid.New().String())
+		resp, err := h.client.CreateFeed(context.Background(), &pb.CreateFeedRequest{
+			Feed: &pb.CreateFeedRequest_Feed{
+				Url: url,
+			},
+		})
+		if err != nil {
+			return nil, err
+		}
 		feeds = append(feeds, Feed{
-			ID:  id,
-			Url: fmt.Sprintf(base, "faker:8080", id),
+			ID:  resp.Id,
+			Url: url,
 		})
 	}
 	return feeds, nil

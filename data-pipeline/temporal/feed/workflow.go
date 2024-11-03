@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/ericbutera/amalgam/data-pipeline/temporal/feed/internal/config"
-	"github.com/ericbutera/amalgam/data-pipeline/temporal/feed/internal/feeds"
+	"github.com/ericbutera/amalgam/data-pipeline/temporal/internal/feeds"
 	cfg "github.com/ericbutera/amalgam/pkg/config"
 	"github.com/samber/lo"
 	"go.temporal.io/sdk/temporal"
@@ -54,7 +54,7 @@ func FetchFeedsWorkflow(ctx workflow.Context) error {
 	})
 
 	config := lo.Must(cfg.NewFromEnv[config.Config]())
-	feeds := lo.Must(feeds.NewFeeds(config))
+	feeds := lo.Must(feeds.NewFeeds(config.RpcHost, config.RpcInsecure))
 	defer feeds.Close()
 	urls := lo.Must(feeds.GetFeeds())
 
