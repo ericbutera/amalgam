@@ -10,12 +10,13 @@ import (
 	"io"
 	"log/slog"
 
+	"github.com/ericbutera/amalgam/internal/http/fetch"
 	parse "github.com/ericbutera/amalgam/pkg/feed/parse"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/ericbutera/amalgam/data-pipeline/temporal/feed/internal/bucket"
-	"github.com/ericbutera/amalgam/data-pipeline/temporal/feed/internal/feeds"
+	"github.com/ericbutera/amalgam/data-pipeline/temporal/internal/bucket"
+	"github.com/ericbutera/amalgam/data-pipeline/temporal/internal/feeds"
 )
 
 const BucketName = "feeds"
@@ -45,7 +46,7 @@ func (a *Activities) DownloadActivity(ctx context.Context, feedId string, url st
 		"url", url,
 	)
 	entry.Info("download: start")
-	err := FetchUrl(url, func(params FetchCallbackParams) error {
+	err := fetch.FetchUrl(url, func(params fetch.FetchCallbackParams) error {
 		upload, err := a.bucket.WriteStream(ctx, BucketName, rssFile, params.Reader, params.ContentType, params.Size)
 		if err != nil {
 			entry.Error("download error", "error", err)
