@@ -26,11 +26,14 @@ func (s *UnitTestSuite) Test_GenerateFeedsWorkflow() {
 	})
 	var a *Activities
 
-	env.OnActivity(a.GenerateFeeds, mock.Anything).Return(nil)
+	host := "faker:8080"
+	count := 10
+
+	env.OnActivity(a.GenerateFeeds, mock.Anything, host, count).Return(nil)
 
 	env.RegisterActivity(a)
 
-	env.ExecuteWorkflow(GenerateFeedsWorkflow)
+	env.ExecuteWorkflow(GenerateFeedsWorkflow, host, count)
 
 	s.True(env.IsWorkflowCompleted())
 	s.NoError(env.GetWorkflowError())

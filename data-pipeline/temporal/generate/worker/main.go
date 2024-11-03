@@ -2,28 +2,25 @@ package main
 
 import (
 	"log/slog"
+	"net/http"
 	"os"
 
+	"github.com/Khan/genqlient/graphql"
 	"github.com/ericbutera/amalgam/data-pipeline/temporal/generate"
 	"github.com/ericbutera/amalgam/data-pipeline/temporal/internal/client"
 	"github.com/ericbutera/amalgam/pkg/config"
 	"github.com/samber/lo"
 
-	rpc "github.com/ericbutera/amalgam/rpc/pkg/client"
-
 	"go.temporal.io/sdk/worker"
 )
 
+const GraphHost = "localhost:8082" // TODO: find a cleaner way to run these "local scripts".. i don't want to use .env all over the place
+
 func main() {
 	config := lo.Must(config.NewFromEnv[generate.Config]())
-
-	config.RpcHost = "localhost:50055"
-	config.RpcInsecure = true
-
-	// TODO: use graph
-	rpc := lo.Must(rpc.NewClient(config.RpcHost, config.RpcInsecure))
-	defer rpc.Conn.Close()
-	a := generate.NewActivities(rpc.Client)
+	config.GraphHost = GraphHost
+	graphClient := graphql.NewClient(config.GraphHost, &http.Client{})
+	a := generate.NewActivities(graphClient)
 
 	client := lo.Must(client.NewTemporalClient(config.TemporalHost))
 	defer client.Close()
