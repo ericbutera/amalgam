@@ -5,6 +5,7 @@ CREATE TABLE `feeds` (
   `deleted_at` datetime(3) DEFAULT NULL,
   `url` longtext,
   `name` longtext,
+  `is_active` tinyint(1) DEFAULT '1',
   PRIMARY KEY (`id`),
   KEY `idx_feeds_deleted_at` (`deleted_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

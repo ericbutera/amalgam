@@ -1,9 +1,10 @@
 package models
 
 type Feed struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
-	Url  string `json:"url" validate:"required,url"`
+	ID       string `json:"id"`
+	Name     string `json:"name"`
+	Url      string `json:"url" validate:"required,url"`
+	IsActive bool   `json:"isActive"`
 }
 
 type Article struct {
