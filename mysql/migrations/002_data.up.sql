@@ -4,10 +4,10 @@ LOCK TABLES `feeds` WRITE;
 
 /*!40000 ALTER TABLE `feeds` DISABLE KEYS */;
 
-INSERT INTO `feeds` (`id`, `created_at`, `updated_at`, `deleted_at`, `url`, `name`)
+INSERT INTO `feeds` (`id`, `created_at`, `updated_at`, `deleted_at`, `url`, `name`,`is_active`)
 VALUES
-	("0e597e90-ece5-463e-8608-ff687bf286da",'2024-10-12 13:44:40.000',NULL,NULL,'https://news.ycombinator.com/rss','hacker news'),
-    ("1e597e90-ece5-463e-8608-ff687bf286da",'2024-10-12 13:44:40.000',NULL,NULL,'http://localhost:8388/feeds/atom.xml','example atom.xml');
+	("0e597e90-ece5-463e-8608-ff687bf286da",'2024-10-12 13:44:40.000',NULL,NULL,'https://news.ycombinator.com/rss','hacker news',0),
+    ("1e597e90-ece5-463e-8608-ff687bf286da",'2024-10-12 13:44:40.000',NULL,NULL,'http://localhost:8388/feeds/atom.xml','example atom.xml',0);
 
 /*!40000 ALTER TABLE `feeds` ENABLE KEYS */;
 

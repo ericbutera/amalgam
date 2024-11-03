@@ -6,7 +6,7 @@ metadata:
   name: mysql
 spec:
   ports:
-    - name: "3306"
+    - name: mysql-server
       port: 3306
       targetPort: 3306
   selector:
@@ -35,21 +35,16 @@ spec:
       containers:
         - name: mysql
           image: mysql:8
+          volumeMounts:
+            - name: mysql-setup
+              mountPath: /docker-entrypoint-initdb.d/setup.sql
+              subPath: setup.sql
           env:
             - name: MYSQL_ROOT_PASSWORD
-              value: password
-            # TODO: might be possible to use this instead of setup.sql entrypoint. i prefer entrypoint as it lets me configure different users for app vs migration
-            # - name: MYSQL_DATABASE
-            #   value: amalgam-db
-            # - name: MYSQL_USER
-            #   value: amalgam-migration
-            # - name: MYSQL_PASSWORD
-            #   value: password
-            # - name: MYSQL_ALLOW_EMPTY_PASSWORD
-            #   value: "false"
-          volumeMounts:
-            - name: mysql-setup-sql
-              mountPath: /docker-entrypoint-initdb.d
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-auth
+                  key: MYSQL_ROOT_PASSWORD
           ports:
             - containerPort: 3306
           resources: {}
@@ -59,10 +54,38 @@ spec:
             initialDelaySeconds: 30
             periodSeconds: 10
             timeoutSeconds: 5
+      initContainers:
+        - name: init-mysql-setup
+          image: alpine:latest
+          command:
+            [
+              "sh",
+              "-c",
+              "apk add --no-cache gettext && envsubst < /template/setup.sql > /config/setup.sql",
+            ]
+          env:
+            - name: AMALGAM_MIGRATION_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: feed-mysql-auth
+                  key: AMALGAM_MIGRATION_PASSWORD
+            - name: AMALGAM_USER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: feed-mysql-auth
+                  key: AMALGAM_USER_PASSWORD
+          volumeMounts:
+            - name: template
+              mountPath: /template
+            - name: mysql-setup
+              mountPath: /config
       volumes:
-        - name: mysql-setup-sql
+        - name: template
           configMap:
             name: mysql-setup-sql
+        - name: mysql-setup
+          emptyDir: {}
+
       restartPolicy: Always
 status: {}
 --- # configmap.yaml
@@ -71,22 +94,15 @@ kind: ConfigMap
 metadata:
   name: mysql-setup-sql
 data:
+  # TODO: secrets manager
   setup.sql: |
     SET GLOBAL max_allowed_packet=32505856;
     CREATE DATABASE `amalgam-db`;
 
-    CREATE USER 'amalgam-migration'@'%'
-      IDENTIFIED WITH caching_sha2_password BY 'amalgam-password';
-    GRANT
-      ALL PRIVILEGES
-      ON `amalgam-db`.*
-      TO 'amalgam-migration'@'%';
+    CREATE USER 'amalgam-migration'@'%' IDENTIFIED WITH caching_sha2_password BY '${AMALGAM_MIGRATION_PASSWORD}';
+    GRANT ALL PRIVILEGES ON `amalgam-db`.* TO 'amalgam-migration'@'%';
 
-    CREATE USER 'amalgam-user'@'%'
-      IDENTIFIED WITH caching_sha2_password BY 'amalgam-password';
-    GRANT
-      SELECT, INSERT, UPDATE, DELETE
-      ON `amalgam-db`.*
-      TO 'amalgam-user'@'%';
+    CREATE USER 'amalgam-user'@'%' IDENTIFIED WITH caching_sha2_password BY '${AMALGAM_USER_PASSWORD}';
+    GRANT SELECT, INSERT, UPDATE, DELETE ON `amalgam-db`.* TO 'amalgam-user'@'%';
 
     FLUSH PRIVILEGES;
