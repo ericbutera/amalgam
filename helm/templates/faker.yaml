@@ -4,7 +4,7 @@ metadata:
   name: faker
 spec:
   selector:
-    name: faker
+    app: faker
   ports:
     - name: faker
       protocol: TCP

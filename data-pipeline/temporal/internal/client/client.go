@@ -1,13 +1,9 @@
-package app
+package client
 
 import (
-	"io"
 	"log"
-	"log/slog"
-	"net/http"
 	"time"
 
-	"github.com/ericbutera/amalgam/internal/http/transport"
 	"github.com/ericbutera/amalgam/internal/logger"
 	"go.temporal.io/sdk/client"
 
@@ -56,36 +52,4 @@ func newPrometheusScope(c prometheus.Configuration) tally.Scope {
 	scope = sdktally.NewPrometheusNamingScope(scope)
 
 	return scope
-}
-
-type FetchCallbackParams struct {
-	Reader      io.Reader
-	Size        int64
-	ContentType string
-}
-
-type FetchCallback = func(params FetchCallbackParams) error
-
-func FetchUrl(url string, fetchCb FetchCallback) error {
-	// TODO: timeouts, retries, backoff, jitter
-	client := &http.Client{
-		Transport: transport.NewLoggingTransport(
-			transport.WithLogger(slog.Default()),
-		),
-	}
-	req, err := http.NewRequest("GET", url, nil)
-	req.Header.Set("User-Agent", "curl/7.79.1")
-	if err != nil {
-		return err
-	}
-	resp, err := client.Do(req)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-	return fetchCb(FetchCallbackParams{
-		ContentType: resp.Header.Get("Content-Type"),
-		Reader:      resp.Body,
-		Size:        resp.ContentLength,
-	})
 }

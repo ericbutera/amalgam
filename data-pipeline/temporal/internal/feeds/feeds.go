@@ -2,11 +2,15 @@ package feeds
 
 import (
 	"context"
+	"fmt"
+	"log/slog"
+	"os"
 
-	"github.com/ericbutera/amalgam/data-pipeline/temporal/feed/internal/config"
 	rss "github.com/ericbutera/amalgam/pkg/feed/parse"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
 	rpc "github.com/ericbutera/amalgam/rpc/pkg/client"
+	"github.com/google/uuid"
+	"github.com/samber/lo"
 	"google.golang.org/grpc"
 )
 
@@ -21,8 +25,8 @@ type FeedHelper struct {
 	closers []func() error
 }
 
-func NewFeeds(config *config.Config) (*FeedHelper, error) {
-	rpc, err := rpc.NewClient(config.RpcHost, config.RpcInsecure)
+func NewFeeds(host string, insecure bool) (*FeedHelper, error) {
+	rpc, err := rpc.NewClient(host, insecure)
 	if err != nil {
 		return nil, err
 	}
@@ -58,10 +62,27 @@ func (h *FeedHelper) GetFeeds() ([]Feed, error) {
 	// 	})
 	// }
 	// return feeds, nil
-	return []Feed{
-		// TODO: this will expire in 30 days from 2024-10-29
-		{ID: "0e597e90-ece5-463e-8608-ff687bf286da", Url: "https://run.mocky.io/v3/883f6eb9-81d3-4648-9adf-6395c4e1567c"},
-	}, nil
+	// TODO: toggle between real & faker
+	slog.Warn("using fake feeds, this should be replaced with generate feeds!")
+	base := "http://%s/feed/%s"
+	host := lo.CoalesceOrEmpty(os.Getenv("FAKE_HOST"), "faker:8080") // TODO: config value
+	feeds := []Feed{}
+	for x := 0; x < 25; x++ {
+		url := fmt.Sprintf(base, host, uuid.New().String())
+		resp, err := h.client.CreateFeed(context.Background(), &pb.CreateFeedRequest{
+			Feed: &pb.CreateFeedRequest_Feed{
+				Url: url,
+			},
+		})
+		if err != nil {
+			return nil, err
+		}
+		feeds = append(feeds, Feed{
+			ID:  resp.Id,
+			Url: url,
+		})
+	}
+	return feeds, nil
 }
 
 // Returns the article ID on success
