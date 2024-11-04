@@ -7,11 +7,20 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/ericbutera/amalgam/data-pipeline/temporal/feed/internal/config"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/minio/minio-go/v7/pkg/lifecycle"
+	"github.com/mitchellh/mapstructure"
 )
+
+type Config struct {
+	MinioEndpoint        string `mapstructure:"minio_endpoint"`
+	MinioAccessKey       string `mapstructure:"minio_access_key"`
+	MinioSecretAccessKey string `mapstructure:"minio_secret_access_key"`
+	MinioRegion          string `mapstructure:"minio_region"`
+	MinioUseSsl          bool   `mapstructure:"minio_use_ssl"`
+	MinioTrace           bool   `mapstructure:"minio_trace"`
+}
 
 type customRoundTripper struct {
 	Transport http.RoundTripper
@@ -33,7 +42,18 @@ type MinioBucket struct {
 	client *minio.Client
 }
 
-func NewMinioClient(config *config.Config) (*MinioBucket, error) {
+// use mapstructure to convert any existing struct to a Config
+// example: convert a temporal workflow config to a minio config
+func NewConfig(data interface{}) (*Config, error) {
+	config := &Config{}
+	err := mapstructure.Decode(data, config)
+	if err != nil {
+		return nil, err
+	}
+	return config, nil
+}
+
+func NewMinioClient(config *Config) (*MinioBucket, error) {
 	bucket := &MinioBucket{
 		Region: config.MinioRegion,
 	}

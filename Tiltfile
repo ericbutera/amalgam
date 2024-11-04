@@ -1,7 +1,11 @@
 # -*- mode: Python -*-
+load('ext://dotenv', 'dotenv')
+load('ext://secret', 'secret_create_generic', 'secret_from_dict')
+secret_settings(disable_scrub=True)
+
+dotenv('.env')
 
 k8s_yaml(helm('./helm'))
-load('ext://secret', 'secret_create_generic', 'secret_from_dict')
 
 IS_CI = config.tilt_subcommand == 'ci'
 GRAFANA_PORT_FORWARD=3001
@@ -72,12 +76,18 @@ go_image('faker', './services/faker')
 k8s_resource("faker", port_forwards=[port_forward(8084, 8080, "http")], labels=["services"])
 
 load('ext://uibutton', 'cmd_button')
-cmd_button('run-start',
-  argv=['sh', '-c', 'cd data-pipeline/temporal/feed && make run-start'],
+cmd_button('fetch feeds',
+  argv=['sh', '-c', 'cd data-pipeline/temporal/feed && go run start/main.go'],
   resource='temporal',
   icon_name='add_to_queue',
-  text='run-start',
-) # TODO: this won't curently work because .env values are missing
+  text='feeds',
+)
+cmd_button('generate feeds',
+  argv=['sh', '-c', 'cd data-pipeline/temporal/generate && go run start/main.go'],
+  resource='temporal',
+  icon_name='add_to_queue',
+  text='generate',
+)
 
 go_compile('feed-start-compile', './data-pipeline/temporal/feed/start', ['./data-pipeline/temporal'])
 go_image('feed-start', './data-pipeline/temporal/feed/start')
