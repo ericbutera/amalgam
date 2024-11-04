@@ -14,11 +14,8 @@ import (
 	"go.temporal.io/sdk/worker"
 )
 
-const GraphHost = "localhost:8082" // TODO: find a cleaner way to run these "local scripts".. i don't want to use .env all over the place
-
 func main() {
 	config := lo.Must(config.NewFromEnv[generate.Config]())
-	config.GraphHost = GraphHost
 	graphClient := graphql.NewClient(config.GraphHost, &http.Client{})
 	a := generate.NewActivities(graphClient)
 

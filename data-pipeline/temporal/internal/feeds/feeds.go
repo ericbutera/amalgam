@@ -3,11 +3,13 @@ package feeds
 import (
 	"context"
 	"fmt"
+	"os"
 
 	rss "github.com/ericbutera/amalgam/pkg/feed/parse"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
 	rpc "github.com/ericbutera/amalgam/rpc/pkg/client"
 	"github.com/google/uuid"
+	"github.com/samber/lo"
 	"google.golang.org/grpc"
 )
 
@@ -61,9 +63,10 @@ func (h *FeedHelper) GetFeeds() ([]Feed, error) {
 	// return feeds, nil
 	// TODO: toggle between real & faker
 	base := "http://%s/feed/%s"
+	host := lo.CoalesceOrEmpty(os.Getenv("FAKE_HOST"), "faker:8080") // TODO: config value
 	feeds := []Feed{}
 	for x := 0; x < 10; x++ {
-		url := fmt.Sprintf(base, "faker:8080", uuid.New().String())
+		url := fmt.Sprintf(base, host, uuid.New().String())
 		resp, err := h.client.CreateFeed(context.Background(), &pb.CreateFeedRequest{
 			Feed: &pb.CreateFeedRequest_Feed{
 				Url: url,

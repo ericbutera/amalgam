@@ -15,7 +15,6 @@ import (
 	"go.temporal.io/sdk/temporal"
 )
 
-const Host = "faker:8080"
 const Count = 10
 
 func main() {
@@ -34,7 +33,7 @@ func main() {
 			MaximumAttempts: 1,
 		},
 	}
-	we, err := client.ExecuteWorkflow(ctx, opts, generate.GenerateFeedsWorkflow, Host, Count)
+	we, err := client.ExecuteWorkflow(ctx, opts, generate.GenerateFeedsWorkflow, config.FakeHost, Count)
 	if err != nil {
 		slog.Error("unable to execute workflow", "error", err)
 		os.Exit(1)
