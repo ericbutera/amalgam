@@ -3,6 +3,7 @@ package feeds
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"os"
 
 	rss "github.com/ericbutera/amalgam/pkg/feed/parse"
@@ -62,10 +63,11 @@ func (h *FeedHelper) GetFeeds() ([]Feed, error) {
 	// }
 	// return feeds, nil
 	// TODO: toggle between real & faker
+	slog.Warn("using fake feeds, this should be replaced with generate feeds!")
 	base := "http://%s/feed/%s"
 	host := lo.CoalesceOrEmpty(os.Getenv("FAKE_HOST"), "faker:8080") // TODO: config value
 	feeds := []Feed{}
-	for x := 0; x < 10; x++ {
+	for x := 0; x < 25; x++ {
 		url := fmt.Sprintf(base, host, uuid.New().String())
 		resp, err := h.client.CreateFeed(context.Background(), &pb.CreateFeedRequest{
 			Feed: &pb.CreateFeedRequest_Feed{

@@ -15,8 +15,6 @@ import (
 	"go.temporal.io/sdk/temporal"
 )
 
-const Count = 10
-
 func main() {
 	ctx := context.Background()
 
@@ -33,7 +31,7 @@ func main() {
 			MaximumAttempts: 1,
 		},
 	}
-	we, err := client.ExecuteWorkflow(ctx, opts, generate.GenerateFeedsWorkflow, config.FakeHost, Count)
+	we, err := client.ExecuteWorkflow(ctx, opts, generate.GenerateFeedsWorkflow, config.FakeHost, config.GenerateCount)
 	if err != nil {
 		slog.Error("unable to execute workflow", "error", err)
 		os.Exit(1)

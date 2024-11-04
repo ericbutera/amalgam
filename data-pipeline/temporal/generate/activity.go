@@ -7,14 +7,12 @@ import (
 
 	"github.com/Khan/genqlient/graphql"
 	graph_client "github.com/ericbutera/amalgam/graph/pkg/client"
-	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
 	"github.com/google/uuid"
 )
 
 const UrlFormat = "http://%s/feed/%s"
 
 type Activities struct {
-	client      pb.FeedServiceClient
 	graphClient graphql.Client
 	logger      *slog.Logger
 }
