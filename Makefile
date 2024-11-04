@@ -13,13 +13,14 @@ test: install-tools ## Run tests
 	# TODO: typescript (ui)
 
 lint: install-tools ## Run linter
-	@echo Running linters
+	@echo Running linter
 	go vet ./... && \
 	golangci-lint run && \
 	staticcheck ./...
 	# TODO: buf lint (doesn't work in ci right now)
 	# TODO: typescript lint (ui)
 	# TODO: graphql lint
+
 
 ci: install-tools test lint ## Run CI pipeline
 	ctlptl create cluster kind --registry=ctlptl-registry \
