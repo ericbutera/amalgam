@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v2.3.0
+    rev: v5.0.0
     hooks:
       - id: check-yaml
         args: [--allow-multiple-documents]
@@ -13,3 +13,25 @@ repos:
       - id: conventional-pre-commit
         stages: [commit-msg]
         args: []
+  - repo: local
+    hooks:
+      - id: install-tools
+        name: Install Go tools
+        entry: make install-tools
+        language: system
+        pass_filenames: false
+        stages: [pre-commit, commit-msg, pre-push]
+      - id: local-lint
+        name: local lint
+        entry: make lint
+        description: run project linters
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]
+      - id: local-test
+        name: test
+        entry: make test
+        description: runs project unit tests
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]
