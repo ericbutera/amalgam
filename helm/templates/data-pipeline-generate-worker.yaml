@@ -1,0 +1,58 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: generate-worker
+spec:
+  selector:
+    app: generate-worker
+  ports:
+    - name: metrics
+      protocol: TCP
+      port: 9090
+      targetPort: 9090
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: generate-worker
+  labels:
+    app: generate-worker
+spec:
+  selector:
+    matchLabels:
+      app: generate-worker
+  template:
+    metadata:
+      labels:
+        app: generate-worker
+    spec:
+      containers:
+        - name: generate-worker
+          image: generate-worker-image
+          ports:
+            - containerPort: 9090
+          env:
+            - name: TEMPORAL_HOST
+              value: "temporal:7233"
+            - name: GRAPH_HOST
+              value: "http://graph:8080/query"
+            - name: RPC_HOST
+              value: "rpc:50051"
+            - name: RPC_INSECURE
+              value: "true"
+            - name: MINIO_ENDPOINT
+              value: "minio:9000"
+            - name: MINIO_USE_SSL
+              value: "false"
+            - name: MINIO_ACCESS_KEY
+              value: "minio"
+            - name: MINIO_SECRET_ACCESS_KEY
+              value: "minio-password" # TODO: use secrets
+            - name: OTEL_ENABLE
+              value: "true"
+            - name: OTEL_SERVICE_NAME
+              value: "generate-worker"
+            - name: OTEL_EXPORTER_OTLP_INSECURE
+              value: "true"
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "http://lgtm:4318"
