@@ -8,11 +8,6 @@ export default function useFeeds() {
   const { data, mutate, error } = useSWR(`/feeds`, fetcher);
   const loading = !data && !error;
 
-  if (error) {
-    // todo: splash
-    console.error(error);
-  }
-
   return {
     loading,
     error,
