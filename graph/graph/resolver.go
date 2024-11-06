@@ -12,14 +12,12 @@ import (
 
 type Resolver struct {
 	config    *config.Config
-	apiClient *client.APIClient
 	rpcClient pb.FeedServiceClient
 }
 
-func NewResolver(config *config.Config, apiClient *client.APIClient, rpcClient pb.FeedServiceClient) *Resolver {
+func NewResolver(config *config.Config, rpcClient pb.FeedServiceClient) *Resolver {
 	return &Resolver{
 		config:    config,
-		apiClient: apiClient,
 		rpcClient: rpcClient,
 	}
 }

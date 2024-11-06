@@ -9,12 +9,14 @@ require (
 	github.com/brianvoe/gofakeit/v6 v6.28.0
 	github.com/gin-contrib/cors v1.7.2
 	github.com/gin-gonic/gin v1.10.0
+	github.com/go-chi/chi v1.5.5
 	github.com/go-playground/validator/v10 v10.22.1
 	github.com/go-sanitize/sanitize v1.1.0
 	github.com/golang/protobuf v1.5.4
 	github.com/golangci/golangci-lint v1.61.0
 	github.com/google/go-cmp v0.6.0
 	github.com/google/uuid v1.6.0
+	github.com/gorilla/websocket v1.5.1
 	github.com/grpc-ecosystem/go-grpc-middleware/providers/prometheus v1.0.1
 	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.1.0
 	github.com/microcosm-cc/bluemonday v1.0.27
@@ -26,6 +28,7 @@ require (
 	github.com/penglongli/gin-metrics v0.1.10
 	github.com/prometheus/client_golang v1.20.5
 	github.com/ravilushqa/otelgqlgen v0.17.0
+	github.com/rs/cors v1.11.1
 	github.com/samber/lo v1.47.0
 	github.com/samber/slog-gin v1.13.5
 	github.com/spf13/cobra v1.8.1
@@ -206,7 +209,6 @@ require (
 	github.com/gordonklaus/ineffassign v0.1.0 // indirect
 	github.com/gorilla/css v1.0.1 // indirect
 	github.com/gorilla/mux v1.8.0 // indirect
-	github.com/gorilla/websocket v1.5.1 // indirect
 	github.com/gostaticanalysis/analysisutil v0.7.1 // indirect
 	github.com/gostaticanalysis/comment v1.4.2 // indirect
 	github.com/gostaticanalysis/forcetypeassert v0.1.0 // indirect

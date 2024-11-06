@@ -96,9 +96,15 @@ k8s_resource("feed-start", resource_deps=["temporal","rpc"], labels=["data-pipel
 go_compile('feed-worker-compile', './data-pipeline/temporal/feed/worker', ['./data-pipeline/temporal'])
 go_image('feed-worker', './data-pipeline/temporal/feed/worker')
 k8s_resource("feed-worker", resource_deps=["temporal","rpc"], labels=["data-pipeline"],
-  port_forwards=[
-    port_forward(9096, 9090, "metrics")
-  ],
+  port_forwards=[port_forward(9096, 9090, "metrics")],
+  trigger_mode=TRIGGER_MODE_MANUAL,
+  auto_init=False,
+)
+# TODO: convert to "feed-tasks" <- low quantity random things that share the same worker
+go_compile('generate-worker-compile', './data-pipeline/temporal/generate/worker', ['./data-pipeline/temporal'])
+go_image('generate-worker', './data-pipeline/temporal/generate/worker')
+k8s_resource("generate-worker", resource_deps=["temporal","rpc"], labels=["data-pipeline"],
+  port_forwards=[port_forward(9097, 9090, "metrics")],
   trigger_mode=TRIGGER_MODE_MANUAL,
   auto_init=False,
 )
