@@ -33,7 +33,7 @@ generate-openapi: install-tools  ## Generate OpenAPI spec
 	@echo Generating OpenAPI
 	swag init --parseDependency --parseInternal --dir api --output api/docs
 
-generate-api-clients: generate-openapi generate-go-api-client generate-typescript-api-client generate-k6 ## Generate API clients from OpenAPI spec
+generate-api-clients: generate-openapi generate-go-api-client generate-typescript-client generate-k6 ## Generate api & graphql clients
 	@echo "Generated API clients"
 
 generate-k6: ## Generate tests from OpenAPI spec
@@ -48,7 +48,6 @@ generate-k6: ## Generate tests from OpenAPI spec
 		--skip-validate-spec
 
 generate-go-api-client: ## Generate Golang API client
-	# TODO: regenerate OpenAPI spec before running (cd api && make docs)
 	# https://github.com/OpenAPITools/openapi-generator?tab=readme-ov-file#16---docker
 	@echo Generating Go API client
 	docker run \
@@ -62,18 +61,9 @@ generate-go-api-client: ## Generate Golang API client
 		-p packageName=client \
 		-p withGoMod=false
 
-generate-typescript-api-client: ## Generate Typescript API client
-	# TODO: regenerate OpenAPI spec before running (cd api && make docs)
-	# https://github.com/OpenAPITools/openapi-generator?tab=readme-ov-file#16---docker
-	@echo Generating Typescript API client
-	docker run \
-		-v "./api/docs/swagger.yaml:/local/swagger.yaml" \
-		-v "./ui/app/lib/client:/out" \
-		openapitools/openapi-generator-cli \
-		generate \
-		-i "/local/swagger.yaml" \
-		-g typescript-fetch \
-		-o "/out/"
+generate-typescript-client: ## Generate Typescript client
+	@echo Generating Typescript graphql client
+	cd ui && npx graphql-codegen
 
 generate-proto: ## Generate protobuf
 	@echo Generating protobuf
