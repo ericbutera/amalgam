@@ -1,8 +1,10 @@
 import useSWR from "swr";
-import { getApi } from '../lib/fetch';
+import { getGraph } from '../lib/fetch';
 
 export default function useFeeds() {
-  const fetcher = async () => await getApi().feedsGet();
+  const fetcher = async () => {
+    return await getGraph().ListFeeds();
+  }
   const { data, mutate, error } = useSWR(`/feeds`, fetcher);
   const loading = !data && !error;
 

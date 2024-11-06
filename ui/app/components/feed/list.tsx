@@ -15,7 +15,7 @@ export default function Feeds() {
       <ul>
         {feeds?.map((feed) => (
           <li key={feed.id}>
-            <Link href={`/feed/${feed.id}/articles`}>
+            <Link href={`/feeds/${feed.id}/articles`}>
               {feed.name || feed.url}
             </Link>
           </li>

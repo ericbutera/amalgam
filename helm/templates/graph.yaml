@@ -32,10 +32,8 @@ spec:
           ports:
             - containerPort: 8080
           env:
-            - name: API_HOST
-              value: "api:8080"
-            - name: API_SCHEME
-              value: "http"
+            - name: GRAPH_PORT
+              value: "8080"
             - name: RPC_HOST
               value: "rpc:50051"
             - name: RPC_INSECURE
@@ -50,3 +48,11 @@ spec:
               value: "http://lgtm:4318"
             - name: OTEL_LOGS_EXPORTER
               value: "otlp"
+            - name: CORS_ALLOW_ORIGINS
+              value: "http://localhost:3000"
+            - name: CORS_ALLOW_METHODS
+              value: "GET,POST,PUT"
+            - name: CORS_ALLOW_HEADERS
+              value: "Content-Type,Authorization,Origin"
+            - name: CORS_EXPOSE_HEADERS
+              value: "Content-Length"
