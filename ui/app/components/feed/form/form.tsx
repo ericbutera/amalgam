@@ -18,13 +18,6 @@ export default function FeedForm() {
 
   const onSubmit = async (data) => {
     try {
-      // const resp = getApi().feedsPost({
-      //   request: {
-      //     feed: {
-      //       url: data.url,
-      //     },
-      //   },
-      // });
       const resp = await getGraph().AddFeed({
         url: data.url,
         name: data.name,
