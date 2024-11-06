@@ -3,7 +3,7 @@
 import { useForm } from "react-hook-form";
 import { useFormStore } from "./store";
 
-import { getApi } from "../../../lib/fetch";
+import { getGraph } from "../../../lib/fetch";
 
 export default function FeedForm() {
   // const { mutate } = useSWRConfig();
@@ -18,15 +18,19 @@ export default function FeedForm() {
 
   const onSubmit = async (data) => {
     try {
-      const resp = await getApi().feedsPost({
-        request: {
-          feed: {
-            url: data.url,
-          },
-        },
+      // const resp = getApi().feedsPost({
+      //   request: {
+      //     feed: {
+      //       url: data.url,
+      //     },
+      //   },
+      // });
+      const resp = await getGraph().AddFeed({
+        url: data.url,
+        name: data.name,
       });
 
-      console.log("id %o", resp.feed?.id);
+      console.log("response id: %o", resp.addFeed.id);
       alert("Feed created successfully!");
       resetForm();
     } catch (error) {

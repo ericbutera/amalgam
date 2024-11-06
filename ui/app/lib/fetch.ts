@@ -8,5 +8,12 @@ export default async function fetcher<JSON = any>(
   return res.json()
 }
 
-// TODO: DefaultApi is probably the wrong usage of this; needs more research
-export const getApi = () => new DefaultApi();
+// replace with getGraph
+import { GraphQLClient } from 'graphql-request';
+import { getSdk } from '../generated/graphql';
+
+// TODO: url configuration, singleton
+const client = new GraphQLClient('http://localhost:8082/query');
+const sdk = getSdk(client);
+
+export const getGraph = () => sdk;

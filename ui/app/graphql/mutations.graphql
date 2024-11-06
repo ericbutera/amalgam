@@ -1,0 +1,11 @@
+mutation AddFeed($url: String!, $name: String!) {
+    addFeed(url: $url, name: $name) {
+        id
+    }
+}
+
+mutation UpdateFeed($id: ID!, $url: String, $name: String) {
+    updateFeed(id: $id, url: $url, name: $name) {
+        id
+    }
+}
