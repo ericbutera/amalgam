@@ -1,9 +1,9 @@
-name: typescript-lint
+name: typescript-checks
 on:
   workflow_call: # reusable
 
 jobs:
-  ts-lint:
+  ts-checks:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -16,3 +16,4 @@ jobs:
           node-version: "lts/*"
       - run: npm install
       - run: npm run lint
+      # TODO: - run: npm run test

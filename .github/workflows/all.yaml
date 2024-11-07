@@ -9,19 +9,13 @@ on:
     branches:
       - main
 
-# TODO: cache checkout (if possible)
-# TODO: cache go modules
 jobs:
-  golang-lint:
-    uses: ./.github/workflows/golang-lint.yaml
+  golang-checks:
+    uses: ./.github/workflows/golang-checks.yaml
     secrets: inherit
 
-  golang-test:
-    uses: ./.github/workflows/golang-test.yaml
-    secrets: inherit
-
-  ts-lint:
-    uses: ./.github/workflows/ts-lint.yaml
+  ts-checks:
+    uses: ./.github/workflows/ts-checks.yaml
     secrets: inherit
 
   # TODO: https://nextjs.org/docs/app/building-your-application/testing/jest
@@ -30,6 +24,6 @@ jobs:
   #   secrets: inherit
 
   tilt-ci:
-    needs: [golang-lint, golang-test, ts-lint] # TODO: ts-test
+    needs: [golang-checks, ts-checks]
     uses: ./.github/workflows/tilt-ci.yaml
     secrets: inherit

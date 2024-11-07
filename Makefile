@@ -7,10 +7,12 @@ help: ## Help
 act: ## Run act
 	act
 
-test: install-tools ## Run tests
+test: go-test ts-test ## Run tests
 	@echo Running tests
+
+go-test:
+	@echo Running golang tests
 	go test -v -timeout 30s ./... -short
-	# TODO: typescript (ui)
 
 # lint: install-tools ## Run linter
 # 	@echo Running UI linters
@@ -24,8 +26,13 @@ go-lint: install-tools ## Run golang linter
 	golangci-lint run
 	staticcheck ./...
 
+ts-test: ## Run typescript tests
+	@echo Running typescript tests
+	# TODO: cd ui && npm run test
+
 ts-lint: ## Run typescript linter
 	@echo Running typescript linters
+	echo $(PATH)
 	cd ui && npm run lint
 
 ci: install-tools ## Run CI pipeline

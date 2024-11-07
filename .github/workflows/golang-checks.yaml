@@ -1,15 +1,12 @@
-name: golangci-lint
+name: golang-checks
 on:
   workflow_call: # reusable
 
 permissions:
   contents: read
-  # Optional: allow read access to pull request. Use with `only-new-issues` option.
-  # pull-requests: read
 
 jobs:
-  golang-lint:
-    name: lint
+  golang-checks:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -23,3 +20,4 @@ jobs:
         with:
           install-go: false
       - run: "go vet ./..."
+      - run: make test
