@@ -5,6 +5,11 @@ help:
 act:
 	act
 
+# Parameterized build command for different projects
+build app: ## Build the binary for a given project directory (e.g., `just build path/to/project`)
+    @echo "Building binary for {{app}}"
+    cd {{app}} && CGO_ENABLED=0 GOOS=linux go build -o bin/app
+
 lint: go-lint ts-lint buf-lint
 test: go-test ts-test
 
@@ -115,3 +120,21 @@ install-ts-tools:
 
 setup:
 	pre-commit install --install-hook
+
+# Generate graph
+generate-graph-server:
+	@echo Generating graph server
+	go get github.com/99designs/gqlgen@v0.17.55
+	go install github.com/99designs/gqlgen
+	cd graph && gqlgen generate
+
+# Generate the gql client schema
+generate-gqlclient-schema:
+	go get github.com/suessflorian/gqlfetch
+	go run generate/client/main.go
+
+# Generate the golang graph client
+generate-graph-golang-client:
+	@echo Generating graph client
+	go run github.com/Khan/genqlient generate/client/genqlient.yaml
+	go generate ./...
