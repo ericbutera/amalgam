@@ -6,7 +6,7 @@ permissions:
   contents: read
 
 jobs:
-  golang-checks:
+  buf-lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
