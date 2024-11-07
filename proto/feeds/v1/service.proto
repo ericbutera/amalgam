@@ -26,11 +26,11 @@ message Article {
   string content = 3;
   string feed_id = 4;
   string url = 5;
-  string imageUrl = 6;
+  string image_url = 6;
   string preview = 7;
   string guid = 8;
-  string authorName = 9;
-  string authorEmail = 10;
+  string author_name = 9;
+  string author_email = 10;
 }
 
 message Empty {}

@@ -5,7 +5,7 @@ GO_DEPS = ['./pkg','./tools','./internal']
 def go_compile(name, dir, deps):
   local_resource(
     name,
-    'make build',
+    'just build ' + dir,
     dir=dir,
     ignore=['**/bin'],
     deps=GO_DEPS + deps,

@@ -8,26 +8,14 @@ import (
 	"context"
 	"log/slog"
 
-	"github.com/99designs/gqlgen/graphql"
 	"github.com/ericbutera/amalgam/graph/graph/model"
+	"github.com/ericbutera/amalgam/graph/internal/convert"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
 	"github.com/samber/lo"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
-
-func validationToGraphErr(ctx context.Context, s *status.Status) error {
-	for _, detail := range s.Details() {
-		if v, ok := detail.(*pb.ValidationErrors); ok {
-			for _, err := range v.Errors {
-				graphql.AddError(ctx, gqlerror.Errorf(err.Message))
-			}
-			return gqlerror.Errorf("validation error")
-		}
-	}
-	return nil
-}
 
 // AddFeed is the resolver for the addFeed field.
 func (r *mutationResolver) AddFeed(ctx context.Context, url string, name string) (*model.AddResponse, error) {
@@ -44,7 +32,7 @@ func (r *mutationResolver) AddFeed(ctx context.Context, url string, name string)
 		case codes.AlreadyExists:
 			return nil, gqlerror.Errorf("record already exists")
 		case codes.InvalidArgument:
-			return nil, validationToGraphErr(ctx, s)
+			return nil, convert.ValidationToGraphErr(ctx, s)
 		default:
 			return nil, gqlerror.Errorf("failed to create feed")
 		}

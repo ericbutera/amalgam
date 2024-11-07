@@ -1,0 +1,42 @@
+query ListFeeds {
+    feeds {
+        id
+        url
+        name
+    }
+}
+
+query GetFeed($id: ID!) {
+    feed(id: $id) {
+        id
+        url
+        name
+    }
+}
+
+query GetArticle($id: ID!) {
+    article(id: $id) {
+        id
+        feedId
+        url
+        title
+        imageUrl
+        content
+        preview
+        guid
+        authorName
+        authorEmail
+    }
+}
+
+query ListArticles($feedId: ID!) {
+  articles(feedId: $feedId) {
+    id
+    url
+    title
+    imageUrl
+    preview
+    authorName
+    authorEmail
+  }
+}

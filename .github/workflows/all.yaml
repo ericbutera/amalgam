@@ -10,6 +10,10 @@ on:
       - main
 
 jobs:
+  buf-lint:
+    uses: ./.github/workflows/buf-lint.yaml
+    secrets: inherit
+
   golang-checks:
     uses: ./.github/workflows/golang-checks.yaml
     secrets: inherit

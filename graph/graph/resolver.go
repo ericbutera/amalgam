@@ -2,7 +2,6 @@ package graph
 
 import (
 	"github.com/ericbutera/amalgam/graph/internal/config"
-	"github.com/ericbutera/amalgam/pkg/client"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
 )
 
@@ -20,12 +19,4 @@ func NewResolver(config *config.Config, rpcClient pb.FeedServiceClient) *Resolve
 		config:    config,
 		rpcClient: rpcClient,
 	}
-}
-
-func NewApiClient(scheme string, host string) *client.APIClient {
-	cfg := client.NewConfiguration()
-	cfg.Scheme = scheme
-	cfg.Host = host
-	cfg.Debug = true
-	return client.NewAPIClient(cfg)
 }

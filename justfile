@@ -5,17 +5,22 @@ help:
 act:
 	act
 
-lint: go-lint ts-lint
+# Parameterized build command for different projects
+build app:
+    @echo "Building binary for {{app}}"
+    cd {{app}} && CGO_ENABLED=0 GOOS=linux go build -o bin/app
+
+lint: go-lint ts-lint buf-lint
 test: go-test ts-test
+
+buf-lint:
+	buf lint
 
 go-checks: go-lint go-test
 ts-checks: ts-lint ts-test
 
 go-lint: install-go-tools
 	@echo Linting go
-	# go vet ./...
-	# golangci-lint run
-	# staticcheck ./...
 	pre-commit run golangci-lint || true
 	pre-commit run go-vet || true
 	pre-commit run go-staticcheck-mod || true
@@ -52,7 +57,8 @@ generate-openapi: install-go-tools
 	go install github.com/swaggo/swag/cmd/swag@latest
 	swag init --parseDependency --parseInternal --dir api --output api/docs
 
-generate-api-clients: generate-openapi generate-go-api-client generate-typescript-client generate-k6 ## Generate api & graphql clients
+# Generate api & graphql clients
+generate-api-clients: generate-openapi generate-go-api-client generate-typescript-client generate-k6
 	@echo Generated API clients
 
 # Generate tests from OpenAPI spec
@@ -73,7 +79,7 @@ generate-go-api-client:
 	@echo Generating Go API client
 	docker run \
 		-v "./api/docs/swagger.yaml:/local/swagger.yaml" \
-		-v "./pkg/client:/out" \
+		-v "./pkg/clients/api:/out" \
 		openapitools/openapi-generator-cli \
 		generate \
 		-i "/local/swagger.yaml" \
@@ -84,8 +90,9 @@ generate-go-api-client:
 
 # Generate Typescript client
 generate-typescript-client: install-ts-tools
-	@echo Generating Typescript graphql client
-	cd ui && npx graphql-codegen
+	@echo Deprecated: generating graphql instead
+	just generate-graph-ts-client
+
 
 # Generate protocol buffers with buf
 generate-proto:
@@ -115,3 +122,33 @@ install-ts-tools:
 
 setup:
 	pre-commit install --install-hook
+
+# Generate graph
+generate-graph-server:
+	@echo Generating graph server
+	go get github.com/99designs/gqlgen@v0.17.55
+	go install github.com/99designs/gqlgen
+	cd graph && gqlgen generate
+
+# Generate the gql client schema
+generate-graph-schema:
+	# TODO: run service, generate schema, produce artifact
+	@echo This requires the graph service running in tilt to generate the schema
+	go get github.com/alexflint/go-arg
+	go get github.com/suessflorian/gqlfetch
+	cd tools/graphql-schema && go run main.go
+
+# Generate the golang graph client
+generate-graph-golang-client: generate-graph-schema
+	# TODO: use artifact created from `generate-graph-schema` not ://service/query
+	@echo Generating golang graphql client
+	# cd graph/generate/client && go run github.com/Khan/genqlient genqlient.yaml
+	# cd tools/graphql-golang-client && go run github.com/Khan/genqlient genqlient.yaml
+	go run github.com/Khan/genqlient tools/graphql-golang-client/genqlient.yaml
+
+
+generate-graph-ts-client: generate-graph-schema
+	# TODO: use artifact created from `generate-graph-schema` not ://service/query
+	@echo Generating typescript graphql client
+	@echo This requires the graph service running in tilt to generate the schema
+	cd ui && npm run graphql-codegen

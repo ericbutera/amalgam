@@ -16,7 +16,7 @@ const config: CodegenConfig = {
         'typescript-graphql-request'
       ]
     },
-    "./graphql.schema.json": {
+    "./app/generated/graphql.schema.json": {
       plugins: ["introspection"]
     }
   }
