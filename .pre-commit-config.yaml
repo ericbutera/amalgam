@@ -13,6 +13,14 @@ repos:
       - id: conventional-pre-commit
         stages: [commit-msg]
         args: []
+  - repo: https://github.com/tekwizely/pre-commit-golang
+    rev: v1.0.0-rc.1
+    hooks:
+      - id: go-vet
+      - id: go-mod-tidy
+      - id: golangci-lint
+      - id: go-test-mod
+      - id: go-staticcheck-mod
   - repo: local
     hooks:
       - id: go-checks
