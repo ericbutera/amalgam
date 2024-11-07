@@ -5,17 +5,17 @@ help:
 act:
 	act
 
-lint: go-lint ts-lint
+lint: go-lint ts-lint buf-lint
 test: go-test ts-test
+
+buf-lint:
+	buf lint
 
 go-checks: go-lint go-test
 ts-checks: ts-lint ts-test
 
 go-lint: install-go-tools
 	@echo Linting go
-	# go vet ./...
-	# golangci-lint run
-	# staticcheck ./...
 	pre-commit run golangci-lint || true
 	pre-commit run go-vet || true
 	pre-commit run go-staticcheck-mod || true
