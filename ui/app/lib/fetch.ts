@@ -10,11 +10,3 @@ export const getGraph = (url: string) => {
   const endpoint = url || process.env.NEXT_PUBLIC_GRAPHQL_API_URL;
   return getSdk(new GraphQLClient(endpoint));
 }
-
-export default async function fetcher<JSON = any>(
-  input: RequestInfo,
-  init?: RequestInit
-): Promise<JSON> {
-  const res = await fetch(input, init)
-  return res.json()
-}

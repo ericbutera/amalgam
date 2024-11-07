@@ -13,25 +13,39 @@ repos:
       - id: conventional-pre-commit
         stages: [commit-msg]
         args: []
+  - repo: https://github.com/golangci/golangci-lint
+    rev: v1.41.1
+    hooks:
+      - id: golangci-lint
+        # args: ["--fast"]
+        args: ["run", "--new-from-rev", "HEAD", "--fix"]
   - repo: local
     hooks:
-      - id: install-tools
-        name: Install Go tools
-        entry: make install-tools
-        language: system
-        pass_filenames: false
-        stages: [pre-commit, commit-msg, pre-push]
-      - id: local-lint
-        name: local lint
-        entry: make lint
-        description: run project linters
-        language: system
-        pass_filenames: false
-        stages: [pre-commit]
+      # - id: local-lint
+      #   name: local lint
+      #   entry: make lint
+      #   description: run project linters
+      #   language: system
+      #   pass_filenames: false
+      #   stages: [pre-commit]
       - id: local-test
         name: test
         entry: make test
         description: runs project unit tests
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]
+      - id: go-lint
+        name: go-lint
+        entry: make go-lint
+        description: go linters
+        language: system
+        pass_filenames: false
+        stages: [pre-commit]
+      - id: ts-lint
+        name: ts-lint
+        entry: make ts-lint
+        description: typescript linters
         language: system
         pass_filenames: false
         stages: [pre-commit]
