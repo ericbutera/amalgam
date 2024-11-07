@@ -12,22 +12,24 @@ on:
 # TODO: cache checkout (if possible)
 # TODO: cache go modules
 jobs:
-  # TODO: break into lint-go, lint-typescript
-  lint:
-    uses: ./.github/workflows/lint.yaml
+  golang-lint:
+    uses: ./.github/workflows/golang-lint.yaml
     secrets: inherit
 
-  # TODO: break into unit-test-go, unit-test-typescript
-  unit-test:
-    uses: ./.github/workflows/unit-test.yaml
+  golang-test:
+    uses: ./.github/workflows/golang-test.yaml
     secrets: inherit
+
+  ts-lint:
+    uses: ./.github/workflows/ts-lint.yaml
+    secrets: inherit
+
+  # TODO: https://nextjs.org/docs/app/building-your-application/testing/jest
+  # ts-test:
+  #   uses: ./.github/workflows/ts-test.yaml
+  #   secrets: inherit
 
   tilt-ci:
-    needs: [lint, unit-test]
+    needs: [golang-lint, golang-test, ts-lint] # TODO: ts-test
     uses: ./.github/workflows/tilt-ci.yaml
     secrets: inherit
-
-  # TODO: PR environment
-  # TODO: build images
-  # TODO: push images
-  # TODO: seperate deploy workflow

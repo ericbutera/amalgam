@@ -3,8 +3,8 @@
 import Link from 'next/link';
 import useArticle from '../../data/article';
 
-export default function Page({ params }: { params: { id: number } }) {
-    const { loading, error, article, mutate } = useArticle(params.id);
+export default function Page({ params }: { params: { id: string } }) {
+    const { loading, error, article } = useArticle(params.id);
 
     if (error) return <div>An error has occurred.</div>
     if (loading) <div>Loading...</div>
