@@ -9,7 +9,7 @@ import (
 	"github.com/ericbutera/amalgam/internal/service/models"
 	"github.com/gin-gonic/gin"
 
-	graph_client "github.com/ericbutera/amalgam/graph/pkg/client"
+	graph_client "github.com/ericbutera/amalgam/pkg/clients/graphql"
 
 	_ "github.com/ericbutera/amalgam/api/docs"
 )

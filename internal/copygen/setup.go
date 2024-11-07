@@ -3,9 +3,9 @@ package copygen
 import (
 	// TODO: add API models
 	gql_model "github.com/ericbutera/amalgam/graph/graph/model"
-	gql_client "github.com/ericbutera/amalgam/graph/pkg/client"
 	db_model "github.com/ericbutera/amalgam/internal/db/models"
 	svc_model "github.com/ericbutera/amalgam/internal/service/models"
+	gql_client "github.com/ericbutera/amalgam/pkg/clients/graphql"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
 )
 
