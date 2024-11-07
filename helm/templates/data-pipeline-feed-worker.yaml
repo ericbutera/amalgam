@@ -43,9 +43,15 @@ spec:
             - name: MINIO_USE_SSL
               value: "false"
             - name: MINIO_ACCESS_KEY
-              value: "minio"
+              valueFrom:
+                secretKeyRef:
+                  name: data-pipeline-auth
+                  key: MINIO_SECRET_ACCESS_KEY
             - name: MINIO_SECRET_ACCESS_KEY
-              value: "minio-password" # TODO: use secrets
+              valueFrom:
+                secretKeyRef:
+                  name: data-pipeline-auth
+                  key: MINIO_SECRET_ACCESS_KEY
             - name: OTEL_ENABLE
               value: "true"
             - name: OTEL_SERVICE_NAME

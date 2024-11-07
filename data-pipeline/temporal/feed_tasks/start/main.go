@@ -7,7 +7,7 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/ericbutera/amalgam/data-pipeline/temporal/generate"
+	"github.com/ericbutera/amalgam/data-pipeline/temporal/feed_tasks"
 
 	"github.com/ericbutera/amalgam/pkg/config"
 	"github.com/samber/lo"
@@ -18,7 +18,7 @@ import (
 func main() {
 	ctx := context.Background()
 
-	config := lo.Must(config.NewFromEnv[generate.Config]())
+	config := lo.Must(config.NewFromEnv[feed_tasks.Config]())
 
 	client := lo.Must(sdk.Dial(sdk.Options{
 		HostPort: config.TemporalHost,
@@ -31,7 +31,7 @@ func main() {
 			MaximumAttempts: 1,
 		},
 	}
-	we, err := client.ExecuteWorkflow(ctx, opts, generate.GenerateFeedsWorkflow, config.FakeHost, config.GenerateCount)
+	we, err := client.ExecuteWorkflow(ctx, opts, feed_tasks.GenerateFeedsWorkflow, config.FakeHost, config.GenerateCount)
 	if err != nil {
 		slog.Error("unable to execute workflow", "error", err)
 		os.Exit(1)
