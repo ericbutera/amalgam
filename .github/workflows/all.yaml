@@ -18,11 +18,6 @@ jobs:
     uses: ./.github/workflows/ts-checks.yaml
     secrets: inherit
 
-  # TODO: https://nextjs.org/docs/app/building-your-application/testing/jest
-  # ts-test:
-  #   uses: ./.github/workflows/ts-test.yaml
-  #   secrets: inherit
-
   tilt-ci:
     needs: [golang-checks, ts-checks]
     uses: ./.github/workflows/tilt-ci.yaml

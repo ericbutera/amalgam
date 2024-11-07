@@ -13,40 +13,30 @@ repos:
       - id: conventional-pre-commit
         stages: [commit-msg]
         args: []
+  - repo: https://github.com/tekwizely/pre-commit-golang
+    rev: v1.0.0-rc.1
+    hooks:
+      - id: go-vet-mod
+      - id: go-vet
+      - id: go-fmt
+      - id: go-mod-tidy
+      - id: golangci-lint
+      - id: go-test-mod
+      - id: go-staticcheck-mod
   - repo: local
     hooks:
-      # - id: local-lint
-      #   name: local lint
-      #   entry: make lint
-      #   description: run project linters
-      #   language: system
-      #   pass_filenames: false
-      #   stages: [pre-commit]
-      - id: go-test
-        name: go-test
-        entry: make go-test
-        description: golang tests
+      - id: go-checks
+        name: go-checks
+        entry: just go-checks
+        description: golang lint & tests
         language: system
         pass_filenames: false
         stages: [pre-commit]
-      - id: go-lint
-        name: go-lint
-        entry: make go-lint
-        description: go linters
-        language: system
-        pass_filenames: false
-        stages: [pre-commit]
-      - id: ts-test
-        name: ts-test
-        entry: make ts-test
-        description: typescript tests
-        language: system
-        pass_filenames: false
-        stages: [pre-commit]
-      - id: ts-lint
-        name: ts-lint
-        entry: make ts-lint
-        description: typescript linters
+        types: [go]
+      - id: ts-checks
+        name: ts-checks
+        entry: just ts-checks
+        description: typescript lint & tests
         language: system
         pass_filenames: false
         stages: [pre-commit]

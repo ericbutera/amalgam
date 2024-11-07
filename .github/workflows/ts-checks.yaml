@@ -8,12 +8,10 @@ jobs:
     defaults:
       run:
         working-directory: ./ui
-
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: "lts/*"
-      - run: npm install
-      - run: npm run lint
-      # TODO: - run: npm run test
+      - uses: extractions/setup-just@v2
+      - run: just ts-checks
