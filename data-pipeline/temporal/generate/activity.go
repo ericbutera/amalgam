@@ -6,7 +6,7 @@ import (
 	"log/slog"
 
 	"github.com/Khan/genqlient/graphql"
-	graph_client "github.com/ericbutera/amalgam/graph/pkg/client"
+	graph_client "github.com/ericbutera/amalgam/pkg/clients/graphql"
 	"github.com/google/uuid"
 )
 

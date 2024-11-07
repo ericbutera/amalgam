@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/Khan/genqlient/graphql"
-	graph_client "github.com/ericbutera/amalgam/graph/pkg/client"
+	graph_client "github.com/ericbutera/amalgam/pkg/clients/graphql"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -39,7 +39,7 @@ func TestGenerateFeedsActivity(t *testing.T) {
 	// graph mock: yikes, this is a lot of work
 	// this might be better: https://github.com/Yamashou/gqlgenc
 	expectedResponse := graph_client.AddFeedResponse{
-		AddFeed: graph_client.AddFeedAddFeedAddFeedResponse{
+		AddFeed: graph_client.AddFeedAddFeedAddResponse{
 			Id: "feed-id-123",
 		},
 	}

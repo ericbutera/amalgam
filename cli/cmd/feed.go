@@ -7,7 +7,7 @@ import (
 	"net/url"
 
 	"github.com/Khan/genqlient/graphql"
-	graph_client "github.com/ericbutera/amalgam/graph/pkg/client"
+	client "github.com/ericbutera/amalgam/pkg/clients/graphql"
 	"github.com/spf13/cobra"
 )
 
@@ -32,7 +32,7 @@ func NewFeedListCmd() *cobra.Command {
 		Use:   "list",
 		Short: "list feeds",
 		Run: func(cmd *cobra.Command, args []string) {
-			res, err := graph_client.ListFeeds(cmd.Context(), newGraphClient())
+			res, err := client.ListFeeds(cmd.Context(), newGraphClient())
 			if err != nil {
 				slog.Error("failed to list feeds", "error", err)
 				return
