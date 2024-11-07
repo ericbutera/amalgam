@@ -1,0 +1,23 @@
+name: golang-checks
+on:
+  workflow_call: # reusable
+
+permissions:
+  contents: read
+
+jobs:
+  golang-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+      # - uses: golangci/golangci-lint-action@v6
+      #   with:
+      #     version: v1.60
+      # - uses: dominikh/staticcheck-action@v1.3.1
+      #   with:
+      #     install-go: false
+      - uses: extractions/setup-just@v2
+      - run: just go-checks
