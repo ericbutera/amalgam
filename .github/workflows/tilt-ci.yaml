@@ -21,5 +21,6 @@ jobs:
           curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
           chmod +x ./kubectl
           sudo mv ./kubectl /usr/local/bin/kubectl
+      - run: curl -fsSL https://github.com/tilt-dev/ctlptl/releases/download/v0.8.35/ctlptl.0.8.35.linux.x86_64.tar.gz | sudo tar -xzv -C /usr/local/bin ctlptl
       - uses: extractions/setup-just@v2
       - run: just ci

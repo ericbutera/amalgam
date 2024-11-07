@@ -49,6 +49,7 @@ ci: install-tools
 # Generate OpenAPI spec
 generate-openapi: install-go-tools
 	@echo Generating OpenAPI
+	go install github.com/swaggo/swag/cmd/swag@latest
 	swag init --parseDependency --parseInternal --dir api --output api/docs
 
 generate-api-clients: generate-openapi generate-go-api-client generate-typescript-client generate-k6 ## Generate api & graphql clients
@@ -106,7 +107,7 @@ go-mod-download:
 
 install-go-tools: go-mod-download
 	@echo Installing tools from tools.go
-	cat tools/tools.go | grep _ | awk -F'"' '{print $2}' | xargs -tI % go install %
+	# cat tools/tools.go | grep _ | awk -F'"' '{print $2}' | xargs -tI % go install %
 
 install-ts-tools:
 	@echo Installing tools from package.json
