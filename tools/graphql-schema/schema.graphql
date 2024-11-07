@@ -24,7 +24,7 @@ directive @specifiedBy(
 	url: String!
 ) on SCALAR
 
-type AddFeedResponse {
+type AddResponse {
 	id: ID!
 }
 
@@ -63,12 +63,12 @@ type Mutation {
 	addFeed(
 		url: String!
 		name: String!
-	): AddFeedResponse!
+	): AddResponse!
 	updateFeed(
 		id: ID!
 		url: String
 		name: String
-	): UpdateFeedResponse!
+	): UpdateResponse!
 }
 
 type Query {
@@ -87,6 +87,6 @@ type Query {
 """The `String`scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text."""
 scalar String
 
-type UpdateFeedResponse {
+type UpdateResponse {
 	id: ID!
 }

@@ -1,8 +1,9 @@
 # documentation https://github.com/Khan/genqlient/blob/main/docs/introduction.md
-schema: schema.graphql
+schema: ../graphql-schema/schema.graphql
 operations:
-  - genqlient.graphql
-generated: ../../pkg/client/client.gen.go
+  - queries.graphql
+  - mutations.graphql
+generated: ../../pkg/clients/graphql/graphql.gen.go
 package: client
 
 # We bind github's DateTime scalar type to Go's time.Time (which conveniently
