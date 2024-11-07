@@ -4,7 +4,7 @@ import Link from "next/link";
 import useFeeds from "../../data/feeds";
 
 export default function Feeds() {
-  const { loading, error, feeds, mutate } = useFeeds();
+  const { loading, error, feeds } = useFeeds();
 
   if (error) return <div>failed to load</div>;
   if (loading) return <div>loading...</div>;

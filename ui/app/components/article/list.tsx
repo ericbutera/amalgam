@@ -3,8 +3,12 @@
 import Link from 'next/link'
 import useArticles from '../../data/articles';
 
-export default function Articles({ id }) {
-    const { loading, error, articles, mutate } = useArticles(id);
+interface ArticlesProps {
+    id: string;
+}
+
+export default function Articles({ id }: ArticlesProps) {
+    const { loading, error, articles } = useArticles(id);
 
     if (error) return <div>An error has occurred.</div>
     if (loading) <div>Loading...</div>
