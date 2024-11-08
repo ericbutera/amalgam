@@ -2,12 +2,14 @@ package server
 
 import (
 	"context"
+	"errors"
 
 	"github.com/ericbutera/amalgam/internal/copygen"
 	"github.com/ericbutera/amalgam/internal/service"
 	models "github.com/ericbutera/amalgam/internal/service/models"
 	"github.com/ericbutera/amalgam/internal/validate"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
+	"github.com/ericbutera/amalgam/rpc/internal/tasks"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -46,7 +48,7 @@ func (s *Server) CreateFeed(ctx context.Context, in *pb.CreateFeedRequest) (*pb.
 func validationErr(errors []validate.ValidationError) error {
 	st := status.New(codes.InvalidArgument, "validation error")
 	ds, err := st.WithDetails(&pb.ValidationErrors{
-		Errors: validationErrToProto(errors),
+		Errors: validationErrToPb(errors),
 	})
 	if err != nil {
 		return err
@@ -121,7 +123,7 @@ func (s *Server) SaveArticle(ctx context.Context, in *pb.SaveArticleRequest) (*p
 	}, nil
 }
 
-func validationErrToProto(errs []validate.ValidationError) []*pb.ValidationError {
+func validationErrToPb(errs []validate.ValidationError) []*pb.ValidationError {
 	protoErrs := []*pb.ValidationError{}
 	for _, err := range errs {
 		protoErrs = append(protoErrs, &pb.ValidationError{
@@ -132,4 +134,26 @@ func validationErrToProto(errs []validate.ValidationError) []*pb.ValidationError
 		})
 	}
 	return protoErrs
+}
+
+func pbTaskToTaskType(task pb.FeedTaskRequest_Task) (tasks.TaskType, error) {
+	switch task {
+	case pb.FeedTaskRequest_TASK_GENERATE_FEEDS:
+		return tasks.TaskGenerateFeeds, nil
+	}
+	return tasks.TaskUnspecified, errors.New("invalid task type")
+}
+
+func (s *Server) FeedTask(ctx context.Context, in *pb.FeedTaskRequest) (*pb.FeedTaskResponse, error) {
+	taskType, err := pbTaskToTaskType(in.Task)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid task type")
+	}
+	task, err := tasks.New(ctx, taskType)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to start feed task: %s", err)
+	}
+	return &pb.FeedTaskResponse{
+		Id: task.ID,
+	}, nil
 }

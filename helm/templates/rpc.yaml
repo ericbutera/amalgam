@@ -54,3 +54,10 @@ spec:
                 secretKeyRef:
                   name: rpc-auth
                   key: DB_MYSQL_DSN
+            # data pipeline tasks
+            - name: TEMPORAL_HOST
+              value: "temporal:7233"
+            - name: GRAPHQL_HOST
+              value: "graphql:8080"
+            - name: FAKE_HOST
+              value: "fake:8080"
