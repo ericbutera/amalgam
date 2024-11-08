@@ -36,7 +36,6 @@ linters:
     - thelper
     - forcetypeassert
     - mnd
-    - noctx
     - intrange
     - errorlint
     - err113

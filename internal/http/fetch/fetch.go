@@ -1,6 +1,7 @@
 package fetch
 
 import (
+	"context"
 	"io"
 	"log/slog"
 	"net/http"
@@ -19,7 +20,7 @@ type FetchCallbackParams struct {
 
 type FetchCallback = func(params FetchCallbackParams) error
 
-func FetchUrl(url string, fetchCb FetchCallback) error {
+func FetchUrl(ctx context.Context, url string, fetchCb FetchCallback) error {
 	// note: do not retry; workflow will handle retries
 	// TODO: otel
 	client := &http.Client{
@@ -28,11 +29,11 @@ func FetchUrl(url string, fetchCb FetchCallback) error {
 		),
 		Timeout: FetchTimeout,
 	}
-	req, err := http.NewRequest(http.MethodGet, url, nil)
-	req.Header.Set("User-Agent", "curl/7.79.1")
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return err
 	}
+	req.Header.Set("User-Agent", "curl/7.79.1")
 	resp, err := client.Do(req)
 	if err != nil {
 		return err

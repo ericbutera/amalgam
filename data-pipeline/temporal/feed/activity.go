@@ -47,7 +47,7 @@ func (a *Activities) DownloadActivity(ctx context.Context, feedId string, url st
 		"url", url,
 	)
 	entry.Info("download: start")
-	err := fetch.FetchUrl(url, func(params fetch.FetchCallbackParams) error {
+	err := fetch.FetchUrl(ctx, url, func(params fetch.FetchCallbackParams) error {
 		upload, err := a.bucket.WriteStream(ctx, BucketName, rssFile, params.Reader, params.ContentType, params.Size)
 		if err != nil {
 			entry.Error("download error", "error", err)
