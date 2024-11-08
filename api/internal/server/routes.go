@@ -4,14 +4,12 @@ import (
 	"net/http"
 
 	"github.com/Khan/genqlient/graphql"
+	_ "github.com/ericbutera/amalgam/api/docs"
 	"github.com/ericbutera/amalgam/api/internal"
 	"github.com/ericbutera/amalgam/internal/copygen"
 	"github.com/ericbutera/amalgam/internal/service/models"
-	"github.com/gin-gonic/gin"
-
 	graph_client "github.com/ericbutera/amalgam/pkg/clients/graphql"
-
-	_ "github.com/ericbutera/amalgam/api/docs"
+	"github.com/gin-gonic/gin"
 )
 
 // TODO: do not show raw errors to the user
@@ -53,7 +51,6 @@ func (s *server) routes() {
 		v1.GET("/feeds/:id/articles", handlers.articles)
 		v1.GET("/articles/:id", handlers.article)
 	}
-
 }
 
 type handlers struct {
@@ -128,8 +125,8 @@ func (h *handlers) feedCreate(c *gin.Context) {
 
 // TODO: separate api from db
 type CreateFeed struct {
-	Name string `json:"name" binding:"omitempty" example:"My Feed"`
-	Url  string `json:"url" binding:"required,url" example:"https://example.com/feed.xml"`
+	Name string `json:"name" binding:"omitempty"    example:"My Feed"`
+	Url  string `json:"url"  binding:"required,url" example:"https://example.com/feed.xml"`
 }
 type CreateFeedRequest struct {
 	Feed CreateFeed `json:"feed"`
@@ -167,8 +164,8 @@ func (h *handlers) feedUpdate(c *gin.Context) {
 
 // TODO: separate api from db
 type UpdateFeed struct {
-	Name string `json:"name" binding:"omitempty" example:"My Feed"`
-	Url  string `json:"url" binding:"required,url" example:"https://example.com/feed.xml"`
+	Name string `json:"name" binding:"omitempty"    example:"My Feed"`
+	Url  string `json:"url"  binding:"required,url" example:"https://example.com/feed.xml"`
 }
 
 type UpdateFeedRequest struct {
@@ -208,9 +205,9 @@ func (h *handlers) feedsList(c *gin.Context) {
 }
 
 type ListFeed struct {
-	Id   string `json:"id" example:"aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"`
+	Id   string `json:"id"   example:"aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"`
 	Name string `json:"name" example:"Example"`
-	Url  string `json:"url" example:"https://example.com/"`
+	Url  string `json:"url"  example:"https://example.com/"`
 }
 
 type FeedsResponse struct {

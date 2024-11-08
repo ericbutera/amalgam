@@ -49,10 +49,10 @@ func (h *FeedHelper) GetFeeds() ([]Feed, error) {
 		return nil, err
 	}
 	feeds := []Feed{}
-	for _, feed := range resp.Feeds {
+	for _, feed := range resp.GetFeeds() {
 		feeds = append(feeds, Feed{
-			ID:  feed.Id,
-			Url: feed.Url,
+			ID:  feed.GetId(),
+			Url: feed.GetUrl(),
 		})
 	}
 	return feeds, nil
@@ -76,5 +76,5 @@ func (h *FeedHelper) SaveArticle(ctx context.Context, article rss.Article) (stri
 	if err != nil {
 		return "", err
 	}
-	return res.Id, nil
+	return res.GetId(), nil
 }

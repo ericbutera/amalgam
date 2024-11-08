@@ -11,11 +11,9 @@ import (
 	"go.temporal.io/sdk/workflow"
 )
 
-var (
-	retryPolicy = temporal.RetryPolicy{
-		MaximumAttempts: 1,
-	}
-)
+var retryPolicy = temporal.RetryPolicy{
+	MaximumAttempts: 1,
+}
 
 func FeedWorkflow(ctx workflow.Context, feedId string, url string) error {
 	ctx = workflow.WithActivityOptions(ctx, workflow.ActivityOptions{

@@ -11,6 +11,49 @@ linters:
     - execinquery
     - gomnd
     - exportloopref
+    - godot
+    - godox
+    - exhaustruct
+    - depguard
+    - gochecknoinits
+    - nlreturn
+    - gomoddirectives
+    - revive
+    - wsl
+    - wrapcheck
+    - nonamedreturns
+    - paralleltest
+    - varnamelen
+    - ireturn
+    - tagliatelle
+    - forbidigo
+    - gochecknoglobals
+    - inamedparam
+    - interfacebloat
+    - perfsprint
+    - nilnil
+    - stylecheck
+    - testpackage
+    - testifylint
+    - thelper
+    - forcetypeassert
+    - mnd
+    - noctx
+    - intrange
+    - errorlint
+    - err113
+    - lll
+    - promlinter
+    - gosec
+    - gocritic
+    - exhaustive
+    - funlen
+
+linters-settings:
+  tagalign:
+    align: true
+    sort: false
+    strict: false
 
 # https://golangci-lint.run/usage/configuration/#issues-configuration
 issues:

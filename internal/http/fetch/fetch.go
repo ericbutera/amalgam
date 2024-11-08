@@ -28,7 +28,7 @@ func FetchUrl(url string, fetchCb FetchCallback) error {
 		),
 		Timeout: FetchTimeout,
 	}
-	req, err := http.NewRequest("GET", url, nil)
+	req, err := http.NewRequest(http.MethodGet, url, nil)
 	req.Header.Set("User-Agent", "curl/7.79.1")
 	if err != nil {
 		return err

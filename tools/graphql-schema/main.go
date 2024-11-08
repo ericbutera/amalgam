@@ -5,16 +5,16 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
 	"os"
 
 	"github.com/suessflorian/gqlfetch"
 )
 
-var (
-	serviceUrl = "http://localhost:8082/query"
-	outfile    = "schema.graphql"
+const (
+	serviceURL  = "http://localhost:8082/query"
+	destination = "schema.graphql"
+	fileMode    = 0o600
 )
 
 // Downloads the GraphQL schema from the locally running server.
@@ -22,17 +22,16 @@ var (
 func main() {
 	slog.Info("starting")
 
-	schema, err := gqlfetch.BuildClientSchema(context.Background(), serviceUrl, false)
+	schema, err := gqlfetch.BuildClientSchema(context.Background(), serviceURL, false)
 	if err != nil {
 		slog.Error("unable to query graph service", "error", err)
 		os.Exit(1)
 	}
 
-	if err = os.WriteFile(outfile, []byte(schema), 0644); err != nil {
-		fmt.Println(err)
+	if err = os.WriteFile(destination, []byte(schema), fileMode); err != nil {
 		slog.Error("unable to write schema", "error", err)
 		os.Exit(1)
 	}
 
-	slog.Info("schema written", "outfile", outfile)
+	slog.Info("schema written", "destination", destination)
 }

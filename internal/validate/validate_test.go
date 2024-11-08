@@ -6,18 +6,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var (
-	customMessages = CustomMessages{
-		"ID.required":     "The ID field is required.",
-		"ID.uuid4":        "The ID must be a valid UUID.",
-		"FeedID.required": "The FeedID field is required.",
-		"FeedID.uuid4":    "The FeedID must be a valid UUID.",
-		"Url.required":    "The URL is required.",
-		"Url.url":         "The URL must be a valid URL.",
-		"Title.required":  "The title is required.",
-		"Title.min":       "The title must be at least 3 characters long.",
-	}
-)
+var customMessages = CustomMessages{
+	"ID.required":     "The ID field is required.",
+	"ID.uuid4":        "The ID must be a valid UUID.",
+	"FeedID.required": "The FeedID field is required.",
+	"FeedID.uuid4":    "The FeedID must be a valid UUID.",
+	"Url.required":    "The URL is required.",
+	"Url.url":         "The URL must be a valid URL.",
+	"Title.required":  "The title is required.",
+	"Title.min":       "The title must be at least 3 characters long.",
+}
 
 type TestStruct struct {
 	ID     string `validate:"required,uuid4"`

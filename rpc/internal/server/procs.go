@@ -30,7 +30,7 @@ func (s *Server) ListFeeds(ctx context.Context, in *pb.ListFeedsRequest) (*pb.Li
 
 func (s *Server) CreateFeed(ctx context.Context, in *pb.CreateFeedRequest) (*pb.CreateFeedResponse, error) {
 	feed := &models.Feed{}
-	copygen.ProtoCreateFeedToService(feed, in.Feed)
+	copygen.ProtoCreateFeedToService(feed, in.GetFeed())
 	res, err := s.service.CreateFeed(ctx, feed)
 	if err != nil {
 		if err == service.ErrDuplicate {
@@ -58,7 +58,7 @@ func validationErr(errors []validate.ValidationError) error {
 
 func (s *Server) UpdateFeed(ctx context.Context, in *pb.UpdateFeedRequest) (*pb.UpdateFeedResponse, error) {
 	feed := &models.Feed{}
-	copygen.ProtoUpdateFeedToService(feed, in.Feed)
+	copygen.ProtoUpdateFeedToService(feed, in.GetFeed())
 	if err := s.service.UpdateFeed(ctx, feed.ID, feed); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to create feed: %v", err)
 	}
@@ -66,7 +66,7 @@ func (s *Server) UpdateFeed(ctx context.Context, in *pb.UpdateFeedRequest) (*pb.
 }
 
 func (s *Server) GetFeed(ctx context.Context, in *pb.GetFeedRequest) (*pb.GetFeedResponse, error) {
-	feed, err := s.service.GetFeed(ctx, in.Id)
+	feed, err := s.service.GetFeed(ctx, in.GetId())
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to fetch feed: %v", err)
 	}
@@ -80,7 +80,7 @@ func (s *Server) GetFeed(ctx context.Context, in *pb.GetFeedRequest) (*pb.GetFee
 func (s *Server) ListArticles(ctx context.Context, in *pb.ListArticlesRequest) (*pb.ListArticlesResponse, error) {
 	// TODO: support filters (sorting, pagination)
 	// TODO: convert ByFeedId to a filter
-	articles, err := s.service.GetArticlesByFeed(ctx, in.FeedId)
+	articles, err := s.service.GetArticlesByFeed(ctx, in.GetFeedId())
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to fetch articles: %v", err)
 	}
@@ -94,7 +94,7 @@ func (s *Server) ListArticles(ctx context.Context, in *pb.ListArticlesRequest) (
 }
 
 func (s *Server) GetArticle(ctx context.Context, in *pb.GetArticleRequest) (*pb.GetArticleResponse, error) {
-	article, err := s.service.GetArticle(ctx, in.Id)
+	article, err := s.service.GetArticle(ctx, in.GetId())
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to fetch article: %v", err)
 	}
@@ -108,8 +108,8 @@ func (s *Server) GetArticle(ctx context.Context, in *pb.GetArticleRequest) (*pb.
 func (s *Server) SaveArticle(ctx context.Context, in *pb.SaveArticleRequest) (*pb.SaveArticleResponse, error) {
 	article := &models.Article{}
 
-	copygen.ProtoToServiceArticle(article, in.Article)
-	article.FeedID = in.Article.FeedId // TODO: bug with ProtoToServiceArticle
+	copygen.ProtoToServiceArticle(article, in.GetArticle())
+	article.FeedID = in.GetArticle().GetFeedId() // TODO: bug with ProtoToServiceArticle
 
 	res, err := s.service.SaveArticle(ctx, article)
 	if err != nil {
@@ -145,7 +145,7 @@ func pbTaskToTaskType(task pb.FeedTaskRequest_Task) (tasks.TaskType, error) {
 }
 
 func (s *Server) FeedTask(ctx context.Context, in *pb.FeedTaskRequest) (*pb.FeedTaskResponse, error) {
-	taskType, err := pbTaskToTaskType(in.Task)
+	taskType, err := pbTaskToTaskType(in.GetTask())
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid task type")
 	}

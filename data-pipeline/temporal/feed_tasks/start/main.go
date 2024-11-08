@@ -8,7 +8,6 @@ import (
 	"os"
 
 	"github.com/ericbutera/amalgam/data-pipeline/temporal/feed_tasks"
-
 	"github.com/ericbutera/amalgam/pkg/config"
 	"github.com/samber/lo"
 	sdk "go.temporal.io/sdk/client"

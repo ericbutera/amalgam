@@ -10,14 +10,13 @@ import (
 	"syscall"
 
 	"github.com/Khan/genqlient/graphql"
-	"github.com/spf13/cobra"
-
 	"github.com/ericbutera/amalgam/api/internal/config"
 	"github.com/ericbutera/amalgam/api/internal/server"
 	"github.com/ericbutera/amalgam/internal/http/transport"
 	"github.com/ericbutera/amalgam/internal/logger"
 	cfg "github.com/ericbutera/amalgam/pkg/config"
 	"github.com/ericbutera/amalgam/pkg/otel"
+	"github.com/spf13/cobra"
 )
 
 func NewServerCmd() *cobra.Command {

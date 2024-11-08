@@ -1,6 +1,6 @@
 package main
 
-//"github.com/99designs/gqlgen-contrib/prometheus"
+// github.com/99designs/gqlgen-contrib/prometheus
 import (
 	"context"
 	"net/http"

@@ -10,18 +10,19 @@ import (
 	"io"
 	"log/slog"
 
+	"github.com/ericbutera/amalgam/data-pipeline/temporal/internal/bucket"
+	"github.com/ericbutera/amalgam/data-pipeline/temporal/internal/feeds"
 	"github.com/ericbutera/amalgam/internal/http/fetch"
 	parse "github.com/ericbutera/amalgam/pkg/feed/parse"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-
-	"github.com/ericbutera/amalgam/data-pipeline/temporal/internal/bucket"
-	"github.com/ericbutera/amalgam/data-pipeline/temporal/internal/feeds"
 )
 
-const BucketName = "feeds"
-const RssPathFormat = "/feeds/%s/raw.xml"
-const ArticlePathFormat = "/feeds/%s/articles.jsonlines"
+const (
+	BucketName        = "feeds"
+	RssPathFormat     = "/feeds/%s/raw.xml"
+	ArticlePathFormat = "/feeds/%s/articles.jsonlines"
+)
 
 type Activities struct {
 	bucket *bucket.MinioBucket
@@ -35,7 +36,7 @@ func NewActivities(bucket *bucket.MinioBucket, feeds *feeds.FeedHelper) *Activit
 	}
 }
 
-// Download RSS feeds
+// Download RSS feeds.
 func (a *Activities) DownloadActivity(ctx context.Context, feedId string, url string) (string, error) {
 	// TODO: research temporal metrics to see if there is a built in way to view how long "downloads" are taking
 	// TODO: also research to get counts of how many downloads are happening
@@ -61,7 +62,7 @@ func (a *Activities) DownloadActivity(ctx context.Context, feedId string, url st
 	return rssFile, nil
 }
 
-// Transform raw rss file into structured articles
+// Transform raw rss file into structured articles.
 func (a *Activities) ParseActivity(ctx context.Context, feedId string, rssFile string) (string, error) { // TODO: ParseActivity -> ArticleActivity
 	articlesFile := fmt.Sprintf(ArticlePathFormat, feedId)
 	entry := slog.Default().With(
@@ -108,7 +109,7 @@ type SaveResults struct {
 	Failed    int
 }
 
-// Load articles into database
+// Load articles into database.
 func (a *Activities) SaveActivity(ctx context.Context, feedId string, articlesPath string) error {
 	entry := slog.Default().With(
 		"feed_id", feedId,
@@ -133,7 +134,7 @@ func (a *Activities) SaveActivity(ctx context.Context, feedId string, articlesPa
 			if err == context.Canceled {
 				entry.Error("save: context canceled")
 				results.Failed++
-				continue //return nil
+				continue // return nil
 			}
 			if err == context.DeadlineExceeded {
 				entry.Error("save: context deadline exceeded")

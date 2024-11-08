@@ -3,23 +3,29 @@ package db
 import (
 	"errors"
 
-	"github.com/ericbutera/amalgam/pkg/config"
-	"github.com/spf13/viper"
-	"gorm.io/gorm"
-
 	"github.com/ericbutera/amalgam/internal/copygen"
 	"github.com/ericbutera/amalgam/internal/db/models"
 	"github.com/ericbutera/amalgam/internal/test/fixtures"
+	"github.com/ericbutera/amalgam/pkg/config"
 	slog_gorm "github.com/orandin/slog-gorm"
+	"github.com/spf13/viper"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 	"gorm.io/plugin/opentelemetry/tracing"
 )
 
 type Adapters string
 
-const MysqlAdapter Adapters = "mysql"
-const SqliteAdapter Adapters = "sqlite"
+const (
+	MysqlAdapter  Adapters = "mysql"
+	SqliteAdapter Adapters = "sqlite"
+)
+
+var (
+	ErrDsnNotSet  = errors.New("dsn not set")
+	ErrNameNotSet = errors.New("name not set")
+)
 
 type Config struct {
 	DbAdapter    Adapters `mapstructure:"db_adapter"`
@@ -54,7 +60,6 @@ func NewFromConfig(cfg *Config) (*gorm.DB, error) {
 			WithMiddleware(),
 			WithTraceAll(),
 		)
-
 	}
 	return nil, errors.New("db adapter not supported")
 }
@@ -81,7 +86,7 @@ func newDb(d gorm.Dialector, opts ...DbOptions) (*gorm.DB, error) {
 
 func NewMysql(dsn string, opts ...DbOptions) (*gorm.DB, error) {
 	if dsn == "" {
-		return nil, errors.New("dsn not set")
+		return nil, ErrDsnNotSet
 	}
 	return newDb(mysql.Open(dsn), opts...)
 }
@@ -90,7 +95,7 @@ func NewMysql(dsn string, opts ...DbOptions) (*gorm.DB, error) {
 // Runs migrations (sqlite is for local dev only)
 func NewSqlite(name string, opts ...DbOptions) (*gorm.DB, error) {
 	if name == "" {
-		return nil, errors.New("name not set")
+		return nil, ErrNameNotSet
 	}
 	return newDb(sqlite.Open(name), opts...)
 }

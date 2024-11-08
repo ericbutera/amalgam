@@ -34,6 +34,7 @@ func New(ctx context.Context, task TaskType) (*TaskResult, error) {
 	client := lo.Must(sdk.Dial(sdk.Options{
 		HostPort: config.TemporalHost,
 	}))
+
 	defer client.Close()
 
 	opts := sdk.StartWorkflowOptions{

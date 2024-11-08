@@ -16,10 +16,9 @@ import (
 	grpc_server "github.com/ericbutera/amalgam/rpc/internal/server/grpc"
 	metrics_server "github.com/ericbutera/amalgam/rpc/internal/server/metrics"
 	"github.com/ericbutera/amalgam/rpc/internal/server/observability"
-	"gorm.io/gorm"
-
 	"github.com/oklog/run"
 	"google.golang.org/grpc"
+	"gorm.io/gorm"
 )
 
 // TODO: combine common boilerplate code from rpc client & server
@@ -82,6 +81,7 @@ func WithDb(db *gorm.DB) Option {
 		return nil
 	}
 }
+
 func WithDbFromEnv() Option {
 	return func(s *Server) error {
 		db, err := db.NewFromEnv()
@@ -91,18 +91,21 @@ func WithDbFromEnv() Option {
 		return WithDb(db)(s)
 	}
 }
+
 func WithService(service service.Service) Option {
 	return func(s *Server) error {
 		s.service = service
 		return nil
 	}
 }
+
 func WithConfig(cfg *config.Config) Option {
 	return func(s *Server) error {
 		s.config = cfg
 		return nil
 	}
 }
+
 func WithOtel(ctx context.Context) Option {
 	return func(s *Server) error {
 		shutdown, err := otel.Setup(ctx)
@@ -113,12 +116,14 @@ func WithOtel(ctx context.Context) Option {
 		return nil
 	}
 }
+
 func WithMetricServer(srv *http.Server) Option {
 	return func(s *Server) error {
 		s.metricSrv = srv
 		return nil
 	}
 }
+
 func WithGrpcServer(srv *grpc.Server) Option {
 	return func(s *Server) error {
 		s.grpcSrv = srv

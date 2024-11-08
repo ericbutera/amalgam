@@ -37,8 +37,8 @@ func TestCreateFeedValidateError(t *testing.T) {
 	s := status.Convert(err)
 	for _, detail := range s.Details() {
 		if v, ok := detail.(*pb.ValidationErrors); ok {
-			assert.Len(t, v.Errors, 1)
-			assert.Equal(t, "The URL must be valid.", v.Errors[0].Message)
+			assert.Len(t, v.GetErrors(), 1)
+			assert.Equal(t, "The URL must be valid.", v.GetErrors()[0].GetMessage())
 			return
 		}
 	}
@@ -54,7 +54,7 @@ func TestCreateFeed(t *testing.T) {
 		},
 	})
 	assert.NoError(t, err)
-	assert.NotEmpty(t, resp.Id)
+	assert.NotEmpty(t, resp.GetId())
 }
 
 func TestSaveArticleValidateError(t *testing.T) {
@@ -67,9 +67,9 @@ func TestSaveArticleValidateError(t *testing.T) {
 	s := status.Convert(err)
 	for _, detail := range s.Details() {
 		if v, ok := detail.(*pb.ValidationErrors); ok {
-			assert.Len(t, v.Errors, 2)
-			assert.Equal(t, "The FeedID field is required.", v.Errors[0].Message)
-			assert.Equal(t, "The URL is required.", v.Errors[1].Message)
+			assert.Len(t, v.GetErrors(), 2)
+			assert.Equal(t, "The FeedID field is required.", v.GetErrors()[0].GetMessage())
+			assert.Equal(t, "The URL is required.", v.GetErrors()[1].GetMessage())
 			return
 		}
 	}
@@ -85,7 +85,7 @@ func TestSaveArticleFeed(t *testing.T) {
 		},
 	})
 	assert.NoError(t, err)
-	assert.NotEmpty(t, resp.Id)
+	assert.NotEmpty(t, resp.GetId())
 }
 
 // TODO:

@@ -11,9 +11,11 @@ import (
 	"github.com/google/uuid"
 )
 
-const Version = "2.0"
-const ItemCount = 25
-const LinkTemplate = "https://faker:8080/feed/%s"
+const (
+	Version      = "2.0"
+	ItemCount    = 25
+	LinkTemplate = "https://faker:8080/feed/%s"
+)
 
 type RSS struct {
 	XMLName xml.Name `xml:"rss"`

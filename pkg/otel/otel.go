@@ -8,6 +8,7 @@ package otel
 import (
 	"context"
 	"errors"
+	"fmt"
 	"os"
 	"time"
 
@@ -53,7 +54,7 @@ func Setup(ctx context.Context) (shutdown func(context.Context) error, err error
 
 	if os.Getenv("OTEL_ENABLE") != "true" {
 		Logger.Info("OpenTelemetry is disabled")
-		return
+		return nil, nil
 	}
 
 	// handleErr calls shutdown for cleanup and makes sure that all errors are returned.
@@ -75,7 +76,7 @@ func Setup(ctx context.Context) (shutdown func(context.Context) error, err error
 	tracerProvider := trace.NewTracerProvider(trace.WithBatcher(traceExporter))
 	if err != nil {
 		handleErr(err)
-		return
+		return nil, err
 	}
 	shutdownFuncs = append(shutdownFuncs, tracerProvider.Shutdown)
 	otel.SetTracerProvider(tracerProvider)
@@ -88,7 +89,7 @@ func Setup(ctx context.Context) (shutdown func(context.Context) error, err error
 	meterProvider := metric.NewMeterProvider(metric.WithReader(metric.NewPeriodicReader(metricExporter)))
 	if err != nil {
 		handleErr(err)
-		return
+		return nil, err
 	}
 	shutdownFuncs = append(shutdownFuncs, meterProvider.Shutdown)
 	otel.SetMeterProvider(meterProvider)
@@ -101,16 +102,15 @@ func Setup(ctx context.Context) (shutdown func(context.Context) error, err error
 	loggerProvider := log.NewLoggerProvider(log.WithProcessor(log.NewBatchProcessor(logExporter)))
 	if err != nil {
 		handleErr(err)
-		return
+		return nil, fmt.Errorf("failed to create logger provider: %w", err)
 	}
 	shutdownFuncs = append(shutdownFuncs, loggerProvider.Shutdown)
 	global.SetLoggerProvider(loggerProvider)
 
 	err = runtime.Start(runtime.WithMinimumReadMemStatsInterval(time.Second))
 	if err != nil {
-		Logger.ErrorContext(ctx, "otel runtime instrumentation failed:", "error", err)
-		return
+		return nil, fmt.Errorf("runtime instrumentation failed: %w", err)
 	}
 
-	return
+	return shutdown, nil
 }

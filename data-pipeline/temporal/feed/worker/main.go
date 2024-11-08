@@ -14,7 +14,6 @@ import (
 	cfg "github.com/ericbutera/amalgam/pkg/config"
 	otel "github.com/ericbutera/amalgam/pkg/otel"
 	"github.com/samber/lo"
-
 	"go.temporal.io/sdk/worker"
 )
 
