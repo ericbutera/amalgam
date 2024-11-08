@@ -2,6 +2,7 @@ package metrics
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -16,7 +17,8 @@ func NewServer(registry *prometheus.Registry, address string) *http.Server {
 		},
 	))
 	return &http.Server{
-		Addr:    address,
-		Handler: m,
+		Addr:              address,
+		Handler:           m,
+		ReadHeaderTimeout: 10 * time.Second,
 	}
 }

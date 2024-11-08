@@ -41,7 +41,6 @@ linters:
     - err113
     - lll
     - promlinter
-    - gosec
     - gocritic
     - exhaustive
 

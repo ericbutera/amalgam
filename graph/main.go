@@ -3,7 +3,6 @@ package main
 // github.com/99designs/gqlgen-contrib/prometheus
 import (
 	"context"
-	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -13,6 +12,7 @@ import (
 	gql_prom "github.com/ericbutera/amalgam/graph/extensions/prometheus"
 	"github.com/ericbutera/amalgam/graph/graph"
 	"github.com/ericbutera/amalgam/graph/internal/config"
+	"github.com/ericbutera/amalgam/internal/http/server"
 	"github.com/ericbutera/amalgam/internal/logger"
 	"github.com/ericbutera/amalgam/pkg/config/env"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
@@ -52,7 +52,11 @@ func main() {
 	router.Handle("/", playground.Handler("GraphQL playground", "/query"))
 
 	slog.Info("running graphql playground", "port", config.Port)
-	if err := http.ListenAndServe(":"+config.Port, router); err != nil {
+	server := lo.Must(server.New(
+		server.WithAddr(":"+config.Port),
+		server.WithHandler(router),
+	))
+	if err := server.ListenAndServe(); err != nil {
 		slog.Error("failed to start server", "error", err)
 		os.Exit(1)
 		return
