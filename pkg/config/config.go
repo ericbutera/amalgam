@@ -13,7 +13,7 @@ func NewFromEnv[T any]() (*T, error) {
 
 	var value T
 
-	if err := viper.Unmarshal(value); err != nil {
+	if err := viper.Unmarshal(&value); err != nil {
 		return nil, fmt.Errorf("unable to unmarshal config: %w", err)
 	}
 	return &value, nil
