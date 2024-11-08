@@ -8,13 +8,13 @@ import (
 	"github.com/Khan/genqlient/graphql"
 	"github.com/ericbutera/amalgam/data-pipeline/temporal/feed_tasks"
 	"github.com/ericbutera/amalgam/data-pipeline/temporal/internal/client"
-	"github.com/ericbutera/amalgam/pkg/config"
+	"github.com/ericbutera/amalgam/pkg/config/env"
 	"github.com/samber/lo"
 	"go.temporal.io/sdk/worker"
 )
 
 func main() {
-	config := lo.Must(config.NewFromEnv[feed_tasks.Config]())
+	config := lo.Must(env.New[feed_tasks.Config]())
 	graphClient := graphql.NewClient(config.GraphHost, &http.Client{})
 	activities := feed_tasks.NewActivities(graphClient)
 

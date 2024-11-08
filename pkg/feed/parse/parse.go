@@ -46,12 +46,12 @@ func Parse(reader io.Reader) (articles Articles, err error) {
 	}
 
 	for _, item := range parsed.Items {
-		articles = append(articles, newArticleFromItem(item))
+		articles = append(articles, NewArticleFromItem(item))
 	}
 	return
 }
 
-func newArticleFromItem(item *parser.Item) *Article {
+func NewArticleFromItem(item *parser.Item) *Article {
 	return &Article{
 		Title:         item.Title,
 		Url:           item.Link,

@@ -6,7 +6,7 @@ import (
 	"github.com/ericbutera/amalgam/internal/copygen"
 	"github.com/ericbutera/amalgam/internal/db/models"
 	"github.com/ericbutera/amalgam/internal/test/fixtures"
-	"github.com/ericbutera/amalgam/pkg/config"
+	"github.com/ericbutera/amalgam/pkg/config/env"
 	slog_gorm "github.com/orandin/slog-gorm"
 	"github.com/spf13/viper"
 	"gorm.io/driver/mysql"
@@ -41,20 +41,20 @@ func init() {
 
 // Convenience function to create a connection using Config.
 func NewFromEnv() (*gorm.DB, error) {
-	cfg, err := config.NewFromEnv[Config]()
+	config, err := env.New[Config]()
 	if err != nil {
 		return nil, err
 	}
-	return NewFromConfig(cfg)
+	return NewFromConfig(config)
 }
 
-func NewFromConfig(cfg *Config) (*gorm.DB, error) {
-	switch cfg.DbAdapter {
+func NewFromConfig(config *Config) (*gorm.DB, error) {
+	switch config.DbAdapter {
 	case MysqlAdapter:
-		return NewMysql(cfg.DbMysqlDsn, WithMiddleware(), WithTraceAll())
+		return NewMysql(config.DbMysqlDsn, WithMiddleware(), WithTraceAll())
 	case SqliteAdapter:
 		return NewSqlite(
-			cfg.DbSqliteName,
+			config.DbSqliteName,
 			WithAutoMigrate(),
 			WithSeedData(),
 			WithMiddleware(),

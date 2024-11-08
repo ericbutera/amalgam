@@ -5,7 +5,7 @@ import (
 
 	"github.com/ericbutera/amalgam/data-pipeline/temporal/feed/internal/config"
 	"github.com/ericbutera/amalgam/data-pipeline/temporal/internal/feeds"
-	cfg "github.com/ericbutera/amalgam/pkg/config"
+	"github.com/ericbutera/amalgam/pkg/config/env"
 	"github.com/samber/lo"
 	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/workflow"
@@ -47,7 +47,7 @@ func FetchFeedsWorkflow(ctx workflow.Context) error {
 	})
 
 	// TODO: fetch feeds into an activity, save historical feed list to bucket
-	config := lo.Must(cfg.NewFromEnv[config.Config]())
+	config := lo.Must(env.New[config.Config]())
 	feeds := lo.Must(feeds.NewFeeds(config.RpcHost, config.RpcInsecure))
 	defer feeds.Close()
 	urls := lo.Must(feeds.GetFeeds())

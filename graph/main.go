@@ -14,7 +14,7 @@ import (
 	"github.com/ericbutera/amalgam/graph/graph"
 	"github.com/ericbutera/amalgam/graph/internal/config"
 	"github.com/ericbutera/amalgam/internal/logger"
-	cfg "github.com/ericbutera/amalgam/pkg/config"
+	"github.com/ericbutera/amalgam/pkg/config/env"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
 	"github.com/ericbutera/amalgam/pkg/otel"
 	rpc "github.com/ericbutera/amalgam/rpc/pkg/client"
@@ -31,28 +31,28 @@ func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
-	cfg := lo.Must(cfg.NewFromEnv[config.Config]())
+	config := lo.Must(env.New[config.Config]())
 
 	shutdown := lo.Must(otel.Setup(ctx))
 	defer lo.Must0(shutdown(ctx))
 
 	gql_prom.Register()
 
-	c := lo.Must(rpc.NewClient(cfg.RpcHost, cfg.RpcInsecure))
+	c := lo.Must(rpc.NewClient(config.RpcHost, config.RpcInsecure))
 	defer c.Conn.Close()
 
-	srv := newServer(cfg, c.Client)
+	srv := newServer(config, c.Client)
 	srv.Use(otelgqlgen.Middleware())
 	srv.Use(gql_prom.Tracer{})
 	// TODO: complexity limit srv.Use(extension.ComplexityLimit{})
 
-	router := newRouter(cfg.CorsAllowOrigins)
+	router := newRouter(config.CorsAllowOrigins)
 	router.Handle("/metrics", promhttp.Handler())
 	router.Handle("/query", srv)
 	router.Handle("/", playground.Handler("GraphQL playground", "/query"))
 
-	slog.Info("running graphql playground", "port", cfg.Port)
-	if err := http.ListenAndServe(":"+cfg.Port, router); err != nil {
+	slog.Info("running graphql playground", "port", config.Port)
+	if err := http.ListenAndServe(":"+config.Port, router); err != nil {
 		slog.Error("failed to start server", "error", err)
 		os.Exit(1)
 		return

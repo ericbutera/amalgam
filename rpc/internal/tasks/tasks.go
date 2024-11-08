@@ -5,7 +5,7 @@ import (
 	"errors"
 
 	"github.com/ericbutera/amalgam/data-pipeline/temporal/feed_tasks"
-	"github.com/ericbutera/amalgam/pkg/config"
+	"github.com/ericbutera/amalgam/pkg/config/env"
 	"github.com/samber/lo"
 	sdk "go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/temporal"
@@ -30,7 +30,7 @@ func New(ctx context.Context, task TaskType) (*TaskResult, error) {
 
 	// TODO: Dependency injection
 	// TODO: handle connection (defer & reconnect)
-	config := lo.Must(config.NewFromEnv[feed_tasks.Config]())
+	config := lo.Must(env.New[feed_tasks.Config]())
 	client := lo.Must(sdk.Dial(sdk.Options{
 		HostPort: config.TemporalHost,
 	}))

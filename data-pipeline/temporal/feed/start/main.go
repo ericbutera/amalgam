@@ -12,7 +12,7 @@ import (
 	app "github.com/ericbutera/amalgam/data-pipeline/temporal/feed"
 	"github.com/ericbutera/amalgam/data-pipeline/temporal/feed/internal/config"
 	"github.com/ericbutera/amalgam/data-pipeline/temporal/internal/client"
-	cfg "github.com/ericbutera/amalgam/pkg/config"
+	"github.com/ericbutera/amalgam/pkg/config/env"
 	"github.com/samber/lo"
 	sdk "go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/temporal"
@@ -31,9 +31,7 @@ func main() {
 
 func runWorker() error {
 	ctx := context.Background()
-
-	config := lo.Must(cfg.NewFromEnv[config.Config]())
-
+	config := lo.Must(env.New[config.Config]())
 	client := lo.Must(client.NewTemporalClient(config.TemporalHost))
 	defer client.Close()
 

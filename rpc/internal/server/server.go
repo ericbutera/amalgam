@@ -10,6 +10,7 @@ import (
 
 	"github.com/ericbutera/amalgam/internal/db"
 	"github.com/ericbutera/amalgam/internal/service"
+	"github.com/ericbutera/amalgam/pkg/config/env"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
 	"github.com/ericbutera/amalgam/pkg/otel"
 	config "github.com/ericbutera/amalgam/rpc/internal/config"
@@ -99,9 +100,9 @@ func WithService(service service.Service) Option {
 	}
 }
 
-func WithConfig(cfg *config.Config) Option {
+func WithConfig(data *config.Config) Option {
 	return func(s *Server) error {
-		s.config = cfg
+		s.config = data
 		return nil
 	}
 }
@@ -142,6 +143,13 @@ func New(opts ...Option) (*Server, error) {
 		}
 	}
 
+	if server.config == nil {
+		config, err := env.New[config.Config]()
+		if err != nil {
+			return nil, err
+		}
+		server.config = config
+	}
 	if server.service == nil {
 		db, err := db.NewFromEnv()
 		if err != nil {

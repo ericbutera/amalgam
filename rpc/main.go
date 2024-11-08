@@ -5,7 +5,7 @@ import (
 	"log/slog"
 	"os"
 
-	cfg "github.com/ericbutera/amalgam/pkg/config"
+	"github.com/ericbutera/amalgam/pkg/config/env"
 	"github.com/ericbutera/amalgam/rpc/internal/config"
 	"github.com/ericbutera/amalgam/rpc/internal/server"
 	"github.com/samber/lo"
@@ -13,10 +13,10 @@ import (
 
 func main() {
 	ctx := context.Background()
-	cfg := lo.Must(cfg.NewFromEnv[config.Config]())
+	config := lo.Must(env.New[config.Config]())
 
 	srv, err := server.New(
-		server.WithConfig(cfg),
+		server.WithConfig(config),
 		server.WithOtel(ctx),
 		server.WithDbFromEnv(),
 	)
