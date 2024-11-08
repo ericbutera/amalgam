@@ -82,7 +82,7 @@ func (s *ServiceSuite) TestFeeds_IsActive() {
 	feeds, err := s.svc.Feeds(context.Background())
 	require.NoError(t, err)
 
-	assert.Len(t, feeds, 0)
+	assert.Empty(t, feeds)
 }
 
 func (s *ServiceSuite) TestCreateFeed() {
@@ -96,7 +96,7 @@ func (s *ServiceSuite) TestCreateFeed() {
 	res := s.db.First(actual, "url=?", expected.Url)
 	require.NoError(t, res.Error)
 
-	assert.Len(t, result.ValidationErrors, 0)
+	assert.Empty(t, result.ValidationErrors)
 	assert.Equal(t, expected.Url, actual.Url)
 	helpers.Diff(t, *expected, *actual, "ID")
 }
@@ -192,7 +192,7 @@ func (s *ServiceSuite) TestSaveArticle() {
 	res := s.db.First(actual, "url=?", expected.Url)
 	require.NoError(t, res.Error)
 
-	assert.Len(t, result.ValidationErrors, 0)
+	assert.Empty(t, result.ValidationErrors)
 	assert.Equal(t, expected.Url, actual.Url)
 	helpers.Diff(t, *expected, *actual, "ID")
 }

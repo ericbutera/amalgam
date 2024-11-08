@@ -1,10 +1,11 @@
-package feed_tasks
+package feed_tasks_test
 
 import (
 	"context"
 	"testing"
 
 	"github.com/Khan/genqlient/graphql"
+	"github.com/ericbutera/amalgam/data-pipeline/temporal/feed_tasks"
 	graph_client "github.com/ericbutera/amalgam/pkg/clients/graphql"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
 	"github.com/stretchr/testify/assert"
@@ -54,7 +55,7 @@ func TestGenerateFeedsActivity(t *testing.T) {
 		Return(nil).
 		Times(count)
 
-	activities := NewActivities(graphMock)
+	activities := feed_tasks.NewActivities(graphMock)
 	err := activities.GenerateFeeds(context.Background(), host, count)
 
 	assert.NoError(t, err)
