@@ -70,16 +70,16 @@ func RegisterOn(registerer prometheusclient.Registerer) {
 	)
 
 	timeToResolveField = prometheusclient.NewHistogramVec(prometheusclient.HistogramOpts{
-		Name:    "graphql_resolver_duration_ms",
+		Name:    "graphql_resolver_duration_seconds",
 		Help:    "The time taken to resolve a field by graphql server.",
 		Buckets: prometheusclient.ExponentialBuckets(1, 2, 11),
-	}, []string{"exitStatus", "object", "field"})
+	}, []string{"exit_status", "object", "field"})
 
 	timeToHandleRequest = prometheusclient.NewHistogramVec(prometheusclient.HistogramOpts{
-		Name:    "graphql_request_duration_ms",
+		Name:    "graphql_request_duration_seconds",
 		Help:    "The time taken to handle a request by graphql server.",
 		Buckets: prometheusclient.ExponentialBuckets(1, 2, 11),
-	}, []string{"exitStatus"})
+	}, []string{"exit_status"})
 
 	registerer.MustRegister(
 		requestStartedCounter,
@@ -128,10 +128,11 @@ func (a Tracer) InterceptResponse(ctx context.Context, next graphql.ResponseHand
 	}
 
 	oc := graphql.GetOperationContext(ctx)
-	observerStart := oc.Stats.OperationStart
+	start := oc.Stats.OperationStart
 
-	timeToHandleRequest.With(prometheusclient.Labels{"exitStatus": exitStatus}).
-		Observe(float64(time.Since(observerStart).Nanoseconds() / int64(time.Millisecond)))
+	duration := time.Since(start).Seconds()
+	timeToHandleRequest.With(prometheusclient.Labels{"exit_status": exitStatus}).
+		Observe(duration)
 
 	requestCompletedCounter.Inc()
 
@@ -143,7 +144,7 @@ func (a Tracer) InterceptField(ctx context.Context, next graphql.Resolver) (inte
 
 	resolverStartedCounter.WithLabelValues(fc.Object, fc.Field.Name).Inc()
 
-	observerStart := time.Now()
+	start := time.Now()
 
 	res, err := next(ctx)
 
@@ -154,8 +155,8 @@ func (a Tracer) InterceptField(ctx context.Context, next graphql.Resolver) (inte
 		exitStatus = exitStatusSuccess
 	}
 
-	timeToResolveField.WithLabelValues(exitStatus, fc.Object, fc.Field.Name).
-		Observe(float64(time.Since(observerStart).Nanoseconds() / int64(time.Millisecond)))
+	duration := time.Since(start).Seconds()
+	timeToResolveField.WithLabelValues(exitStatus, fc.Object, fc.Field.Name).Observe(duration)
 
 	resolverCompletedCounter.WithLabelValues(fc.Object, fc.Field.Name).Inc()
 
