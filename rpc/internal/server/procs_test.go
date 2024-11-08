@@ -54,7 +54,7 @@ func TestCreateFeed(t *testing.T) {
 			Url:  "https://example.com",
 		},
 	})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotEmpty(t, resp.GetId())
 }
 
@@ -85,7 +85,7 @@ func TestSaveArticleFeed(t *testing.T) {
 			Url:    "https://example.com",
 		},
 	})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	assert.NotEmpty(t, resp.GetId())
 }
 

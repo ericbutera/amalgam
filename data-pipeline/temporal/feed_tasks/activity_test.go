@@ -8,8 +8,8 @@ import (
 	"github.com/ericbutera/amalgam/data-pipeline/temporal/feed_tasks"
 	graph_client "github.com/ericbutera/amalgam/pkg/clients/graphql"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
 )
 
@@ -58,6 +58,6 @@ func TestGenerateFeedsActivity(t *testing.T) {
 	activities := feed_tasks.NewActivities(graphMock)
 	err := activities.GenerateFeeds(context.Background(), host, count)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	graphMock.AssertExpectations(t)
 }

@@ -1,9 +1,11 @@
-package sanitize
+package sanitize_test
 
 import (
 	"testing"
 
+	"github.com/ericbutera/amalgam/internal/sanitize"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 type TestStruct struct {
@@ -18,8 +20,8 @@ func TestHappyPath(t *testing.T) {
 		Content: "<p>Content</p>",
 		Title:   "Title",
 	}
-	actual, err := Struct(expected)
-	assert.NoError(t, err)
+	actual, err := sanitize.Struct(expected)
+	require.NoError(t, err)
 	assert.Equal(t, expected, actual)
 }
 
@@ -55,8 +57,8 @@ func TestUrl(t *testing.T) {
 			data := TestStruct{
 				Url: tc.url,
 			}
-			actual, err := Struct(data)
-			assert.NoError(t, err)
+			actual, err := sanitize.Struct(data)
+			require.NoError(t, err)
 			assert.Equal(t, tc.expected, actual.Url)
 		})
 	}
@@ -84,8 +86,8 @@ func TestHtml(t *testing.T) {
 			data := TestStruct{
 				Content: tc.content,
 			}
-			actual, err := Struct(data)
-			assert.NoError(t, err)
+			actual, err := sanitize.Struct(data)
+			require.NoError(t, err)
 			assert.Equal(t, tc.expected, actual.Content)
 		})
 	}

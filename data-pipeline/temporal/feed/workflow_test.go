@@ -4,7 +4,9 @@ import (
 	"testing"
 
 	app "github.com/ericbutera/amalgam/data-pipeline/temporal/feed"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 	"go.temporal.io/sdk/testsuite"
 	"go.temporal.io/sdk/worker"
@@ -32,13 +34,12 @@ func (s *UnitTestSuite) Test_FeedWorkflow() {
 	env.OnActivity(a.DownloadActivity, mock.Anything, feed_id, feed_url).Return("rss_file", nil)
 	env.OnActivity(a.ParseActivity, mock.Anything, feed_id, "rss_file").Return("articles_file", nil)
 	env.OnActivity(a.SaveActivity, mock.Anything, feed_id, "articles_file").Return(nil)
-
 	env.RegisterActivity(a)
-
 	env.ExecuteWorkflow(app.FeedWorkflow, feed_id, feed_url)
 
-	s.True(env.IsWorkflowCompleted())
-	s.NoError(env.GetWorkflowError())
+	t := s.T()
+	require.NoError(t, env.GetWorkflowError())
+	assert.True(t, env.IsWorkflowCompleted())
 
-	env.AssertExpectations(s.T())
+	env.AssertExpectations(t)
 }
