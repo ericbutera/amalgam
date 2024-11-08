@@ -13,8 +13,8 @@ import (
 func ValidationToGraphErr(ctx context.Context, s *status.Status) error {
 	for _, detail := range s.Details() {
 		if v, ok := detail.(*pb.ValidationErrors); ok {
-			for _, err := range v.Errors {
-				graphql.AddError(ctx, errors.New(err.Message))
+			for _, err := range v.GetErrors() {
+				graphql.AddError(ctx, errors.New(err.GetMessage()))
 			}
 			return &gqlerror.Error{Message: "validation error"}
 		}

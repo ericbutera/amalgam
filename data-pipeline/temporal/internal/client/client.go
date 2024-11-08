@@ -5,11 +5,10 @@ import (
 	"time"
 
 	"github.com/ericbutera/amalgam/internal/logger"
-	"go.temporal.io/sdk/client"
-
 	prom "github.com/prometheus/client_golang/prometheus"
 	"github.com/uber-go/tally/v4"
 	"github.com/uber-go/tally/v4/prometheus"
+	"go.temporal.io/sdk/client"
 	sdktally "go.temporal.io/sdk/contrib/tally"
 )
 

@@ -39,78 +39,97 @@ func Setup(ctx context.Context) (shutdown func(context.Context) error, err error
 
 	Logger.Info("setting up OpenTelemetry")
 
-	// shutdown calls cleanup functions registered via shutdownFuncs.
-	// The errors from the calls are joined.
-	// Each registered cleanup will be invoked once.
-	shutdown = func(ctx context.Context) error {
-		var err error
-		for _, fn := range shutdownFuncs {
-			err = errors.Join(err, fn(ctx))
-		}
-		shutdownFuncs = nil
-		return err
-	}
+	shutdown = createShutdownFunc(&shutdownFuncs)
 
 	if os.Getenv("OTEL_ENABLE") != "true" {
 		Logger.Info("OpenTelemetry is disabled")
-		return
+		return nil, nil
 	}
 
-	// handleErr calls shutdown for cleanup and makes sure that all errors are returned.
 	handleErr := func(inErr error) {
 		err = errors.Join(inErr, shutdown(ctx))
 	}
 
+	setupPropagators()
+
+	if err := setupTracing(ctx, &shutdownFuncs); err != nil {
+		handleErr(err)
+		return nil, err
+	}
+
+	if err := setupMetrics(ctx, &shutdownFuncs); err != nil {
+		handleErr(err)
+		return nil, err
+	}
+
+	if err := setupLogging(ctx, &shutdownFuncs); err != nil {
+		handleErr(err)
+		return nil, err
+	}
+
+	if err := setupRuntimeInstrumentation(); err != nil {
+		handleErr(err)
+		return nil, err
+	}
+
+	return shutdown, nil
+}
+
+func createShutdownFunc(shutdownFuncs *[]func(context.Context) error) func(context.Context) error {
+	return func(ctx context.Context) error {
+		var err error
+		for _, fn := range *shutdownFuncs {
+			err = errors.Join(err, fn(ctx))
+		}
+		*shutdownFuncs = nil
+		return err
+	}
+}
+
+func setupPropagators() {
 	prop := propagation.NewCompositeTextMapPropagator(
 		propagation.TraceContext{},
 		propagation.Baggage{},
 	)
 	otel.SetTextMapPropagator(prop)
+}
 
-	traceExporter, err := otlptrace.New(ctx, otlptracehttp.NewClient())
+func setupTracing(ctx context.Context, shutdownFuncs *[]func(context.Context) error) error {
+	exporter, err := otlptrace.New(ctx, otlptracehttp.NewClient())
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	tracerProvider := trace.NewTracerProvider(trace.WithBatcher(traceExporter))
-	if err != nil {
-		handleErr(err)
-		return
-	}
-	shutdownFuncs = append(shutdownFuncs, tracerProvider.Shutdown)
-	otel.SetTracerProvider(tracerProvider)
+	provider := trace.NewTracerProvider(trace.WithBatcher(exporter))
+	*shutdownFuncs = append(*shutdownFuncs, provider.Shutdown)
+	otel.SetTracerProvider(provider)
+	return nil
+}
 
-	metricExporter, err := otlpmetrichttp.New(ctx)
+func setupMetrics(ctx context.Context, shutdownFuncs *[]func(context.Context) error) error {
+	exporter, err := otlpmetrichttp.New(ctx)
 	if err != nil {
-		return nil, err
-	}
-
-	meterProvider := metric.NewMeterProvider(metric.WithReader(metric.NewPeriodicReader(metricExporter)))
-	if err != nil {
-		handleErr(err)
-		return
-	}
-	shutdownFuncs = append(shutdownFuncs, meterProvider.Shutdown)
-	otel.SetMeterProvider(meterProvider)
-
-	logExporter, err := otlploghttp.New(ctx, otlploghttp.WithInsecure())
-	if err != nil {
-		return nil, err
+		return err
 	}
 
-	loggerProvider := log.NewLoggerProvider(log.WithProcessor(log.NewBatchProcessor(logExporter)))
-	if err != nil {
-		handleErr(err)
-		return
-	}
-	shutdownFuncs = append(shutdownFuncs, loggerProvider.Shutdown)
-	global.SetLoggerProvider(loggerProvider)
+	provider := metric.NewMeterProvider(metric.WithReader(metric.NewPeriodicReader(exporter)))
+	*shutdownFuncs = append(*shutdownFuncs, provider.Shutdown)
+	otel.SetMeterProvider(provider)
+	return nil
+}
 
-	err = runtime.Start(runtime.WithMinimumReadMemStatsInterval(time.Second))
+func setupLogging(ctx context.Context, shutdownFuncs *[]func(context.Context) error) error {
+	exporter, err := otlploghttp.New(ctx, otlploghttp.WithInsecure())
 	if err != nil {
-		Logger.ErrorContext(ctx, "otel runtime instrumentation failed:", "error", err)
-		return
+		return err
 	}
 
-	return
+	provider := log.NewLoggerProvider(log.WithProcessor(log.NewBatchProcessor(exporter)))
+	*shutdownFuncs = append(*shutdownFuncs, provider.Shutdown)
+	global.SetLoggerProvider(provider)
+	return nil
+}
+
+func setupRuntimeInstrumentation() error {
+	return runtime.Start(runtime.WithMinimumReadMemStatsInterval(time.Second))
 }

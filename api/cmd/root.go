@@ -6,13 +6,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-	rootCmd = &cobra.Command{
-		Use:   "api",
-		Short: "api",
-		Long:  "api",
-	}
-)
+var rootCmd = &cobra.Command{
+	Use:   "api",
+	Short: "api",
+	Long:  "api",
+}
 
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {

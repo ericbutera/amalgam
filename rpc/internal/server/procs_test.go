@@ -1,4 +1,4 @@
-package server
+package server_test
 
 import (
 	"context"
@@ -7,6 +7,7 @@ import (
 	"github.com/ericbutera/amalgam/internal/db"
 	"github.com/ericbutera/amalgam/internal/service"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
+	"github.com/ericbutera/amalgam/rpc/internal/server"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -14,14 +15,14 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func newServer() *Server {
+func newServer() *server.Server {
 	db := lo.Must(db.NewSqlite("file::memory:", db.WithAutoMigrate()))
-	server := Server{
-		service: service.NewGorm(db),
-	}
+	server := lo.Must(server.New(
+		server.WithService(service.NewGorm(db)),
+	))
 	s := grpc.NewServer()
-	pb.RegisterFeedServiceServer(s, &server)
-	return &server
+	pb.RegisterFeedServiceServer(s, server)
+	return server
 }
 
 func TestCreateFeedValidateError(t *testing.T) {
@@ -37,8 +38,8 @@ func TestCreateFeedValidateError(t *testing.T) {
 	s := status.Convert(err)
 	for _, detail := range s.Details() {
 		if v, ok := detail.(*pb.ValidationErrors); ok {
-			assert.Len(t, v.Errors, 1)
-			assert.Equal(t, "The URL must be valid.", v.Errors[0].Message)
+			assert.Len(t, v.GetErrors(), 1)
+			assert.Equal(t, "The URL must be valid.", v.GetErrors()[0].GetMessage())
 			return
 		}
 	}
@@ -53,8 +54,8 @@ func TestCreateFeed(t *testing.T) {
 			Url:  "https://example.com",
 		},
 	})
-	assert.NoError(t, err)
-	assert.NotEmpty(t, resp.Id)
+	require.NoError(t, err)
+	assert.NotEmpty(t, resp.GetId())
 }
 
 func TestSaveArticleValidateError(t *testing.T) {
@@ -67,9 +68,9 @@ func TestSaveArticleValidateError(t *testing.T) {
 	s := status.Convert(err)
 	for _, detail := range s.Details() {
 		if v, ok := detail.(*pb.ValidationErrors); ok {
-			assert.Len(t, v.Errors, 2)
-			assert.Equal(t, "The FeedID field is required.", v.Errors[0].Message)
-			assert.Equal(t, "The URL is required.", v.Errors[1].Message)
+			assert.Len(t, v.GetErrors(), 2)
+			assert.Equal(t, "The FeedID field is required.", v.GetErrors()[0].GetMessage())
+			assert.Equal(t, "The URL is required.", v.GetErrors()[1].GetMessage())
 			return
 		}
 	}
@@ -84,6 +85,16 @@ func TestSaveArticleFeed(t *testing.T) {
 			Url:    "https://example.com",
 		},
 	})
-	assert.NoError(t, err)
-	assert.NotEmpty(t, resp.Id)
+	require.NoError(t, err)
+	assert.NotEmpty(t, resp.GetId())
 }
+
+// TODO:
+// func TestFeedTask(t *testing.T) {
+// 	ctx := context.Background()
+// 	resp, err := newServer().FeedTask(ctx, &pb.FeedTaskRequest{
+// 		Task: pb.FeedTaskRequest_TASK_GENERATE_FEEDS,
+// 	})
+// 	assert.NoError(t, err)
+// 	assert.Empty(t, resp)
+// }

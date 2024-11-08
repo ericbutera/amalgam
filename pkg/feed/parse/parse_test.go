@@ -1,16 +1,17 @@
-package parse
+package parse_test
 
 import (
 	"testing"
 	"time"
 
+	"github.com/ericbutera/amalgam/pkg/feed/parse"
 	"github.com/ericbutera/amalgam/pkg/test"
 	"github.com/mmcdole/gofeed"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func newMinimal(t *testing.T) Articles {
+func newMinimal(t *testing.T) parse.Articles {
 	return newFile(t, "feeds/minimal.xml")
 }
 
@@ -18,11 +19,11 @@ func newMinimal(t *testing.T) Articles {
 // 	return newFile(t, "feeds/atom.xml")
 // }
 
-func newFile(t *testing.T, path string) Articles {
+func newFile(t *testing.T, path string) parse.Articles {
 	require.NotEmpty(t, path)
 	path, err := test.GetTestDataPath(path)
 	require.NoError(t, err)
-	articles, err := ParseWithPath(path)
+	articles, err := parse.ParseWithPath(path)
 	require.NoError(t, err)
 	return articles
 }
@@ -49,7 +50,7 @@ func Test_ItemToArticle(t *testing.T) {
 		Published:       "Fri, 18 Oct 2024 10:10:10 +0000",
 		PublishedParsed: &expectedDate,
 	}
-	article := newArticleFromItem(item)
+	article := parse.NewArticleFromItem(item)
 	// TODO: add coverage for all supported fields
 	assert.Equal(t, "title", article.Title)
 	assert.Equal(t, "link", article.Url)

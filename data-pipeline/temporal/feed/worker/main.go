@@ -11,15 +11,14 @@ import (
 	"github.com/ericbutera/amalgam/data-pipeline/temporal/internal/client"
 	"github.com/ericbutera/amalgam/data-pipeline/temporal/internal/feeds"
 	helper "github.com/ericbutera/amalgam/data-pipeline/temporal/internal/worker"
-	cfg "github.com/ericbutera/amalgam/pkg/config"
+	"github.com/ericbutera/amalgam/pkg/config/env"
 	otel "github.com/ericbutera/amalgam/pkg/otel"
 	"github.com/samber/lo"
-
 	"go.temporal.io/sdk/worker"
 )
 
 func main() {
-	config := lo.Must(cfg.NewFromEnv[config.Config]())
+	config := lo.Must(env.New[config.Config]())
 	bucketConfig := lo.Must(bucket.NewConfig(config))
 	bucketClient := lo.Must(bucket.NewMinioClient(bucketConfig))
 

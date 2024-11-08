@@ -2,10 +2,10 @@ package main
 
 import (
 	"encoding/xml"
-	"fmt"
 	"log"
 	"net/http"
 
+	"github.com/ericbutera/amalgam/internal/http/server"
 	"github.com/ericbutera/amalgam/internal/test/faker/rss"
 	"github.com/google/uuid"
 	"github.com/samber/lo"
@@ -13,8 +13,8 @@ import (
 
 func main() {
 	http.HandleFunc("/feed/", rssHandler)
-	fmt.Println("Starting server on :8080...")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	server := lo.Must(server.New())
+	log.Fatal(server.ListenAndServe())
 }
 
 func rssHandler(w http.ResponseWriter, r *http.Request) {

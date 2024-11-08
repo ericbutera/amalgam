@@ -5,15 +5,19 @@ import (
 	"encoding/binary"
 	"encoding/xml"
 	"fmt"
+	"math"
+	"math/big"
 	"time"
 
 	"github.com/brianvoe/gofakeit/v6"
 	"github.com/google/uuid"
 )
 
-const Version = "2.0"
-const ItemCount = 25
-const LinkTemplate = "https://faker:8080/feed/%s"
+const (
+	Version      = "2.0"
+	ItemCount    = 25
+	LinkTemplate = "https://faker:8080/feed/%s"
+)
 
 type RSS struct {
 	XMLName xml.Name `xml:"rss"`
@@ -41,7 +45,18 @@ func uuidToSeed(id string) (int64, error) {
 		return 0, err
 	}
 	hash := sha256.Sum256(uuid[:])
-	seed := int64(binary.BigEndian.Uint64(hash[:8]))
+	var seed int64
+
+	// note: this is a test helper so it doesn't matter. in production, this would be a bad idea.
+	attempt := binary.BigEndian.Uint64(hash[:8])
+	if attempt > math.MaxInt64 {
+		bigAttempt := new(big.Int).SetUint64(attempt)
+		bigMaxInt64 := new(big.Int).SetInt64(math.MaxInt64)
+		seed = bigAttempt.Mod(bigAttempt, bigMaxInt64).Int64()
+	} else {
+		seed = int64(attempt)
+	}
+
 	return seed, nil
 }
 

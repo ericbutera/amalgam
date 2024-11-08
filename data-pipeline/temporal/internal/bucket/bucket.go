@@ -2,6 +2,7 @@ package bucket
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"log/slog"
 	"net/http"
@@ -46,9 +47,8 @@ type MinioBucket struct {
 // example: convert a temporal workflow config to a minio config
 func NewConfig(data interface{}) (*Config, error) {
 	config := &Config{}
-	err := mapstructure.Decode(data, config)
-	if err != nil {
-		return nil, err
+	if err := mapstructure.Decode(data, config); err != nil {
+		return nil, fmt.Errorf("failed to decode config: %w", err)
 	}
 	return config, nil
 }
@@ -59,7 +59,7 @@ func NewMinioClient(config *Config) (*MinioBucket, error) {
 	}
 	transport, err := minio.DefaultTransport(config.MinioUseSsl)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to create transport: %w", err)
 	}
 	client, err := minio.New(config.MinioEndpoint, &minio.Options{
 		Creds:     credentials.NewStaticV4(config.MinioAccessKey, config.MinioSecretAccessKey, ""),
@@ -112,7 +112,7 @@ func (bucket *MinioBucket) setBucketExpiry(ctx context.Context, bucketName strin
 func (bucket *MinioBucket) Exists(ctx context.Context, bucketName string, fileName string) (bool, error) {
 	info, err := bucket.client.StatObject(ctx, bucketName, fileName, minio.StatObjectOptions{})
 	if err != nil {
-		return false, err
+		return false, fmt.Errorf("failed to stat object: %w", err)
 	}
 	if info.Key == fileName {
 		return true, nil
@@ -134,7 +134,14 @@ func (bucket *MinioBucket) Expiry(ctx context.Context, bucketName string) error 
 	return bucket.client.SetBucketLifecycle(ctx, bucketName, config)
 }
 
-func (bucket *MinioBucket) WriteStream(ctx context.Context, bucketName string, fileName string, reader io.Reader, contentType string, size int64) (minio.UploadInfo, error) {
+func (bucket *MinioBucket) WriteStream(
+	ctx context.Context,
+	bucketName string,
+	fileName string,
+	reader io.Reader,
+	contentType string,
+	size int64,
+) (minio.UploadInfo, error) {
 	opts := minio.PutObjectOptions{
 		ContentType: contentType,
 		// TODO: adjust retention & storage class to reduce cloud spend
@@ -145,5 +152,9 @@ func (bucket *MinioBucket) WriteStream(ctx context.Context, bucketName string, f
 }
 
 func (bucket *MinioBucket) Read(ctx context.Context, bucketName string, fileName string) (io.ReadCloser, error) {
-	return bucket.client.GetObject(ctx, bucketName, fileName, minio.GetObjectOptions{})
+	obj, err := bucket.client.GetObject(ctx, bucketName, fileName, minio.GetObjectOptions{})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get object: %w", err)
+	}
+	return obj, nil
 }

@@ -19,9 +19,16 @@ buf-lint:
 go-checks: go-lint go-test
 ts-checks: ts-lint ts-test
 
+
+go-lint-changed: install-go-tools
+	@echo Linting recently changed go files
+	go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.61.0
+	golangci-lint run --fix --new-from-rev=HEAD~1 --config .golangci.yaml
+
 go-lint: install-go-tools
-	@echo Linting go
-	pre-commit run golangci-lint-full
+	@echo Linting go files
+	go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.61.0
+	golangci-lint run --fix --config .golangci.yaml
 
 go-test: install-go-tools
 	@echo Running go tests
@@ -111,8 +118,6 @@ go-mod-download:
 	go mod download
 
 install-go-tools: go-mod-download
-	@echo Installing tools from tools.go
-	# cat tools/tools.go | grep _ | awk -F'"' '{print $2}' | xargs -tI % go install %
 
 install-ts-tools:
 	@echo Installing tools from package.json
