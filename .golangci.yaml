@@ -1,3 +1,54 @@
+linters:
+  enable-all: true
+  # enable:
+  #   - gofmt
+  #   - gomodguard
+  #   - govet
+  #   - staticcheck
+  #   - stylecheck
+  #   - wastedassign
+  disable:
+    - execinquery
+    - gomnd
+    - exportloopref
+    - godot
+    - godox
+    - exhaustruct
+    - depguard
+    - gochecknoinits
+    - nlreturn
+    - gomoddirectives
+    - wsl
+    - wrapcheck
+    - nonamedreturns
+    - paralleltest
+    - varnamelen
+    - ireturn
+    - tagliatelle
+    - forbidigo
+    - gochecknoglobals
+    - inamedparam
+    - interfacebloat
+    - perfsprint
+    - nilnil
+    - stylecheck
+    - thelper
+    - forcetypeassert
+    - mnd
+    - intrange
+    - errorlint
+    - err113
+    - lll
+    - gocritic
+    - exhaustive
+    - revive
+
+linters-settings:
+  tagalign:
+    align: true
+    sort: false
+    strict: false
+
 # https://golangci-lint.run/usage/configuration/#issues-configuration
 issues:
   # List of regexps of issue texts to exclude.
@@ -54,3 +105,9 @@ issues:
   # Fix found issues (if it's supported by the linter).
   # Default: false
   fix: true
+
+  exclude-rules:
+    - path: api/
+      linters:
+        - depguard
+        - revive

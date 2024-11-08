@@ -46,12 +46,12 @@ func Parse(reader io.Reader) (articles Articles, err error) {
 	}
 
 	for _, item := range parsed.Items {
-		articles = append(articles, newArticleFromItem(item))
+		articles = append(articles, NewArticleFromItem(item))
 	}
 	return
 }
 
-func newArticleFromItem(item *parser.Item) *Article {
+func NewArticleFromItem(item *parser.Item) *Article {
 	return &Article{
 		Title:         item.Title,
 		Url:           item.Link,
@@ -73,24 +73,28 @@ func getImageUrl(item *parser.Item) (s string) {
 	}
 	return s
 }
+
 func getAuthorName(item *parser.Item) (s string) {
 	if item.Author != nil && item.Author.Name != "" {
 		s = item.Author.Name
 	}
 	return s
 }
+
 func getAuthorEmail(item *parser.Item) (s string) {
 	if item.Author != nil && item.Author.Email != "" {
 		s = item.Author.Email
 	}
 	return s
 }
+
 func getDateUpdated(item *parser.Item) time.Time {
 	if item.UpdatedParsed != nil {
 		return *item.UpdatedParsed
 	}
 	return time.Now().UTC()
 }
+
 func getDatePublished(item *parser.Item) time.Time {
 	if item.PublishedParsed != nil {
 		return *item.PublishedParsed

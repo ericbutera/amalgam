@@ -6,45 +6,31 @@ import (
 	"log/slog"
 	"net"
 	"net/http"
-	"runtime/debug"
 	"syscall"
 
 	"github.com/ericbutera/amalgam/internal/db"
-	"github.com/ericbutera/amalgam/internal/logger"
 	"github.com/ericbutera/amalgam/internal/service"
+	"github.com/ericbutera/amalgam/pkg/config/env"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
 	"github.com/ericbutera/amalgam/pkg/otel"
-	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
-	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/recovery"
-	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/collectors"
-	"github.com/prometheus/client_golang/prometheus/promauto"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"gorm.io/gorm"
-
-	grpcprom "github.com/grpc-ecosystem/go-grpc-middleware/providers/prometheus"
-	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
-	"go.opentelemetry.io/otel/trace"
-
+	config "github.com/ericbutera/amalgam/rpc/internal/config"
+	grpc_server "github.com/ericbutera/amalgam/rpc/internal/server/grpc"
+	metrics_server "github.com/ericbutera/amalgam/rpc/internal/server/metrics"
+	"github.com/ericbutera/amalgam/rpc/internal/server/observability"
 	"github.com/oklog/run"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/reflection"
-	"google.golang.org/grpc/status"
+	"gorm.io/gorm"
 )
 
 // TODO: combine common boilerplate code from rpc client & server
 
 type Server struct {
-	metricAddress string
-	port          string
-	srv           *grpc.Server
-	listener      net.Listener
-	panicsTotal   prometheus.Counter
-	metricSrv     *http.Server
-	db            *gorm.DB
-	service       service.Service
-	shutdowns     []func(context.Context) error
+	config    *config.Config
+	grpcSrv   *grpc.Server
+	metricSrv *http.Server
+	db        *gorm.DB
+	service   service.Service
+	shutdowns []func(context.Context) error
 	pb.UnimplementedFeedServiceServer
 }
 
@@ -52,11 +38,16 @@ func (s *Server) Serve(ctx context.Context) error {
 	g := &run.Group{}
 
 	g.Add(func() error {
-		slog.Info("launching server", "port", s.port)
-		return s.srv.Serve(s.listener)
+		slog.Info("launching server", "port", s.config.Port)
+		listener, err := net.Listen("tcp", fmt.Sprintf(":%s", s.config.Port))
+		if err != nil {
+			return err
+		}
+		defer listener.Close()
+		return s.grpcSrv.Serve(listener)
 	}, func(err error) {
-		s.srv.GracefulStop()
-		s.srv.Stop()
+		s.grpcSrv.GracefulStop()
+		s.grpcSrv.Stop()
 
 		for _, shutdown := range s.shutdowns {
 			if err := shutdown(ctx); err != nil {
@@ -84,24 +75,6 @@ func (s *Server) Serve(ctx context.Context) error {
 
 type Option func(*Server) error
 
-func WithPort(port string) Option {
-	return func(s *Server) error {
-		s.port = port
-		return nil
-	}
-}
-func WithMetricAddress(addr string) Option {
-	return func(s *Server) error {
-		s.metricAddress = addr
-		return nil
-	}
-}
-func WithListener(lis net.Listener) Option {
-	return func(s *Server) error {
-		s.listener = lis
-		return nil
-	}
-}
 func WithDb(db *gorm.DB) Option {
 	return func(s *Server) error {
 		s.service = service.NewGorm(db)
@@ -109,6 +82,7 @@ func WithDb(db *gorm.DB) Option {
 		return nil
 	}
 }
+
 func WithDbFromEnv() Option {
 	return func(s *Server) error {
 		db, err := db.NewFromEnv()
@@ -118,12 +92,21 @@ func WithDbFromEnv() Option {
 		return WithDb(db)(s)
 	}
 }
+
 func WithService(service service.Service) Option {
 	return func(s *Server) error {
 		s.service = service
 		return nil
 	}
 }
+
+func WithConfig(data *config.Config) Option {
+	return func(s *Server) error {
+		s.config = data
+		return nil
+	}
+}
+
 func WithOtel(ctx context.Context) Option {
 	return func(s *Server) error {
 		shutdown, err := otel.Setup(ctx)
@@ -135,30 +118,24 @@ func WithOtel(ctx context.Context) Option {
 	}
 }
 
+func WithMetricServer(srv *http.Server) Option {
+	return func(s *Server) error {
+		s.metricSrv = srv
+		return nil
+	}
+}
+
+func WithGrpcServer(srv *grpc.Server) Option {
+	return func(s *Server) error {
+		s.grpcSrv = srv
+		return nil
+	}
+}
+
 func New(opts ...Option) (*Server, error) {
 	server := Server{}
 
-	registry := prometheus.NewRegistry()
-	srvMetrics := newServerMetrics()
-	registry.MustRegister(srvMetrics)
-	registry.MustRegister(collectors.NewGoCollector(collectors.WithGoCollectorRuntimeMetrics()))
-	server.newPromMetrics(registry)
-	logger, logOpts := newLogger()
-
-	server.srv = grpc.NewServer(
-		grpc.StatsHandler(otelgrpc.NewServerHandler()),
-		grpc.ChainUnaryInterceptor(
-			// Order matters e.g. tracing interceptor have to create span first for the later exemplars to work.
-			srvMetrics.UnaryServerInterceptor(grpcprom.WithExemplarFromContext(exemplarFromContext)),
-			logging.UnaryServerInterceptor(logger, logOpts...),
-			recovery.UnaryServerInterceptor(recovery.WithRecoveryHandler(server.grpcPanicRecoveryHandler)),
-		),
-		grpc.ChainStreamInterceptor(
-			srvMetrics.StreamServerInterceptor(grpcprom.WithExemplarFromContext(exemplarFromContext)),
-			logging.StreamServerInterceptor(logger, logOpts...),
-			recovery.StreamServerInterceptor(recovery.WithRecoveryHandler(server.grpcPanicRecoveryHandler)),
-		),
-	)
+	o := observability.New()
 
 	for _, opt := range opts {
 		if err := opt(&server); err != nil {
@@ -166,15 +143,12 @@ func New(opts ...Option) (*Server, error) {
 		}
 	}
 
-	if server.port == "" {
-		return nil, fmt.Errorf("port is required")
-	}
-	if server.listener == nil {
-		listener, err := net.Listen("tcp", fmt.Sprintf(":%s", server.port))
+	if server.config == nil {
+		config, err := env.New[config.Config]()
 		if err != nil {
 			return nil, err
 		}
-		server.listener = listener
+		server.config = config
 	}
 	if server.service == nil {
 		db, err := db.NewFromEnv()
@@ -183,77 +157,14 @@ func New(opts ...Option) (*Server, error) {
 		}
 		server.service = service.NewGorm(db)
 	}
+	if server.metricSrv == nil {
+		server.metricSrv = metrics_server.NewServer(o.Registry, server.config.MetricAddress)
+	}
+	if server.grpcSrv == nil {
+		server.grpcSrv = grpc_server.NewServer(o.ServerMetrics)
+	}
 
-	server.metricSrv = newMetricsServer(registry, server.metricAddress)
-	pb.RegisterFeedServiceServer(server.srv, &server)
-	reflection.Register(server.srv)
-	srvMetrics.InitializeMetrics(server.srv)
+	pb.RegisterFeedServiceServer(server.grpcSrv, &server)
 
 	return &server, nil
-}
-
-func newLogger() (logging.Logger, []logging.Option) {
-	logTraceID := func(ctx context.Context) logging.Fields {
-		if span := trace.SpanContextFromContext(ctx); span.IsSampled() {
-			return logging.Fields{"traceID", span.TraceID().String()}
-		}
-		return nil
-	}
-
-	opts := []logging.Option{
-		logging.WithLogOnEvents(logging.StartCall, logging.FinishCall),
-		logging.WithFieldsFromContext(logTraceID),
-	}
-	return interceptorLogger(logger.New()), opts
-}
-
-func newServerMetrics() *grpcprom.ServerMetrics {
-	return grpcprom.NewServerMetrics(
-		grpcprom.WithServerHandlingTimeHistogram(
-			grpcprom.WithHistogramBuckets([]float64{0.001, 0.01, 0.1, 0.3, 0.6, 1, 3, 6, 9, 20, 30, 60, 90, 120}),
-		),
-	)
-}
-
-func newMetricsServer(registry *prometheus.Registry, address string) *http.Server {
-	m := http.NewServeMux()
-	m.Handle("/metrics", promhttp.HandlerFor(
-		registry,
-		promhttp.HandlerOpts{
-
-			EnableOpenMetrics: true, // Opt into OpenMetrics e.g. to support exemplars.
-		},
-	))
-	return &http.Server{
-		Addr:    address,
-		Handler: m,
-	}
-}
-
-func (s *Server) newPromMetrics(reg prometheus.Registerer) {
-	s.panicsTotal = promauto.With(reg).NewCounter(prometheus.CounterOpts{
-		Name: "grpc_req_panics_recovered_total",
-		Help: "Total number of gRPC requests recovered from internal panic.",
-	})
-}
-
-func exemplarFromContext(ctx context.Context) prometheus.Labels {
-	if span := trace.SpanContextFromContext(ctx); span.IsSampled() {
-		return prometheus.Labels{"traceID": span.TraceID().String()}
-	}
-	return nil
-}
-
-func (s *Server) grpcPanicRecoveryHandler(p any) (err error) {
-	s.panicsTotal.Inc()
-	slog.Error("recovered from panic", "panic", p, "stack", debug.Stack())
-	return status.Errorf(codes.Internal, "%s", p)
-}
-
-// InterceptorLogger adapts slog logger to interceptor logger.
-// This code is simple enough to be copied and not imported.
-func interceptorLogger(l *slog.Logger) logging.Logger {
-	return logging.LoggerFunc(func(ctx context.Context, lvl logging.Level, msg string, fields ...any) {
-		l.Log(ctx, slog.Level(lvl), msg, fields...)
-	})
 }

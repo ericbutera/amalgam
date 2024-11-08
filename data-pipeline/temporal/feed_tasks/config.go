@@ -8,7 +8,7 @@ type Config struct {
 	TaskQueue     string `mapstructure:"feed_tasks_task_queue"`
 	GraphHost     string `mapstructure:"graph_host"`
 	FakeHost      string `mapstructure:"fake_host"`
-	RpcHost       string `mapstructure:"rpc_host" `
+	RpcHost       string `mapstructure:"rpc_host"`
 	RpcInsecure   bool   `mapstructure:"rpc_insecure"`
 	TemporalHost  string `mapstructure:"temporal_host"`
 }

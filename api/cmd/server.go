@@ -10,14 +10,13 @@ import (
 	"syscall"
 
 	"github.com/Khan/genqlient/graphql"
-	"github.com/spf13/cobra"
-
 	"github.com/ericbutera/amalgam/api/internal/config"
 	"github.com/ericbutera/amalgam/api/internal/server"
 	"github.com/ericbutera/amalgam/internal/http/transport"
 	"github.com/ericbutera/amalgam/internal/logger"
-	cfg "github.com/ericbutera/amalgam/pkg/config"
+	"github.com/ericbutera/amalgam/pkg/config/env"
 	"github.com/ericbutera/amalgam/pkg/otel"
+	"github.com/spf13/cobra"
 )
 
 func NewServerCmd() *cobra.Command {
@@ -49,17 +48,17 @@ func runServer(cmd *cobra.Command, args []string) {
 		err = errors.Join(err, shutdown(context.Background()))
 	}()
 
-	cfg, err := cfg.NewFromEnv[config.Config]()
+	config, err := env.New[config.Config]()
 	if err != nil {
 		quit(ctx, err)
 	}
-	graphClient, err := newGraphClient(cfg.GraphHost, slog)
+	graphClient, err := newGraphClient(config.GraphHost, slog)
 	if err != nil {
 		quit(ctx, err)
 	}
 
 	srv, err := server.New(
-		server.WithConfig(cfg),
+		server.WithConfig(config),
 		server.WithGraphClient(graphClient),
 	)
 	if err != nil {

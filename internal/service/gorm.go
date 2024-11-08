@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/ericbutera/amalgam/internal/copygen"
 	db_model "github.com/ericbutera/amalgam/internal/db/models"
@@ -83,7 +84,7 @@ func (s *GormService) CreateFeed(ctx context.Context, data *svc_model.Feed) (Cre
 
 	feed, err := sanitize.Struct(lo.FromPtr(data))
 	if err != nil {
-		return res, err
+		return res, fmt.Errorf("unable to create feed: %w", err)
 	}
 	res.ValidationErrors = validate.Struct(feed, validateFeedCreate).Errors
 	if len(res.ValidationErrors) > 0 {
@@ -178,6 +179,7 @@ func (s *GormService) SaveArticle(ctx context.Context, data *svc_model.Article) 
 		return res, err
 	}
 	res.ValidationErrors = validate.Struct(article, validateArticleSave).Errors
+
 	if len(res.ValidationErrors) > 0 {
 		return res, ErrValidation
 	}

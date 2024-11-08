@@ -5,8 +5,8 @@ import (
 )
 
 type Config struct {
-	Port          string `mapstructure:"port"`
-	MetricAddress string `mapstructure:"metric_address"`
+	Port          string `mapstructure:"port"`           // grpc server port
+	MetricAddress string `mapstructure:"metric_address"` // metric server address
 }
 
 func init() {
