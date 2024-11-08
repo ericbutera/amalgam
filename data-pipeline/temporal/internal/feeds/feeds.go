@@ -2,15 +2,10 @@ package feeds
 
 import (
 	"context"
-	"fmt"
-	"log/slog"
-	"os"
 
 	rss "github.com/ericbutera/amalgam/pkg/feed/parse"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
 	rpc "github.com/ericbutera/amalgam/rpc/pkg/client"
-	"github.com/google/uuid"
-	"github.com/samber/lo"
 	"google.golang.org/grpc"
 )
 
@@ -49,37 +44,15 @@ func (h *FeedHelper) Close() error {
 }
 
 func (h *FeedHelper) GetFeeds() ([]Feed, error) {
-	// TODO: use rpc ListFeeds
-	// resp, err := h.client.ListFeeds(context.Background(), &pb.ListFeedsRequest{})
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// feeds := []Feed{}
-	// for _, feed := range resp.Feeds {
-	// 	feeds = append(feeds, Feed{
-	// 		ID:  feed.Id,
-	// 		Url: feed.Url,
-	// 	})
-	// }
-	// return feeds, nil
-	// TODO: toggle between real & faker
-	slog.Warn("using fake feeds, this should be replaced with generate feeds!")
-	base := "http://%s/feed/%s"
-	host := lo.CoalesceOrEmpty(os.Getenv("FAKE_HOST"), "faker:8080") // TODO: config value
+	resp, err := h.client.ListFeeds(context.Background(), &pb.ListFeedsRequest{})
+	if err != nil {
+		return nil, err
+	}
 	feeds := []Feed{}
-	for x := 0; x < 25; x++ {
-		url := fmt.Sprintf(base, host, uuid.New().String())
-		resp, err := h.client.CreateFeed(context.Background(), &pb.CreateFeedRequest{
-			Feed: &pb.CreateFeedRequest_Feed{
-				Url: url,
-			},
-		})
-		if err != nil {
-			return nil, err
-		}
+	for _, feed := range resp.Feeds {
 		feeds = append(feeds, Feed{
-			ID:  resp.Id,
-			Url: url,
+			ID:  feed.Id,
+			Url: feed.Url,
 		})
 	}
 	return feeds, nil

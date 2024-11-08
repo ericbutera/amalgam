@@ -87,3 +87,13 @@ func TestSaveArticleFeed(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotEmpty(t, resp.Id)
 }
+
+// TODO:
+// func TestFeedTask(t *testing.T) {
+// 	ctx := context.Background()
+// 	resp, err := newServer().FeedTask(ctx, &pb.FeedTaskRequest{
+// 		Task: pb.FeedTaskRequest_TASK_GENERATE_FEEDS,
+// 	})
+// 	assert.NoError(t, err)
+// 	assert.Empty(t, resp)
+// }
