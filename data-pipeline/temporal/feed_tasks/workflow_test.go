@@ -1,4 +1,4 @@
-package generate
+package feed_tasks
 
 import (
 	"testing"

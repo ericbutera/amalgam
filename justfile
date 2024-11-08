@@ -21,9 +21,7 @@ ts-checks: ts-lint ts-test
 
 go-lint: install-go-tools
 	@echo Linting go
-	pre-commit run golangci-lint || true
-	pre-commit run go-vet || true
-	pre-commit run go-staticcheck-mod || true
+	pre-commit run golangci-lint-full
 
 go-test: install-go-tools
 	@echo Running go tests

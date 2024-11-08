@@ -1,5 +1,7 @@
 package client
 
+// TODO move to pkg/clients/rpc
+
 import (
 	"context"
 	"log/slog"
