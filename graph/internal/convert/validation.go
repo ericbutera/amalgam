@@ -2,6 +2,7 @@ package convert
 
 import (
 	"context"
+	"errors"
 
 	"github.com/99designs/gqlgen/graphql"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
@@ -13,9 +14,9 @@ func ValidationToGraphErr(ctx context.Context, s *status.Status) error {
 	for _, detail := range s.Details() {
 		if v, ok := detail.(*pb.ValidationErrors); ok {
 			for _, err := range v.Errors {
-				graphql.AddError(ctx, gqlerror.Errorf(err.Message))
+				graphql.AddError(ctx, errors.New(err.Message))
 			}
-			return gqlerror.Errorf("validation error")
+			return &gqlerror.Error{Message: "validation error"}
 		}
 	}
 	return nil

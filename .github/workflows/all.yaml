@@ -23,6 +23,6 @@ jobs:
     secrets: inherit
 
   tilt-ci:
-    needs: [golang-checks, ts-checks]
+    needs: [golang-checks, ts-checks, buf-lint]
     uses: ./.github/workflows/tilt-ci.yaml
     secrets: inherit
