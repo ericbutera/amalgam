@@ -18,7 +18,6 @@ linters:
     - gochecknoinits
     - nlreturn
     - gomoddirectives
-    - revive
     - wsl
     - wrapcheck
     - nonamedreturns

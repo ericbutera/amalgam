@@ -108,7 +108,7 @@ func (a Tracer) ExtensionName() string {
 	return "Prometheus"
 }
 
-func (a Tracer) Validate(schema graphql.ExecutableSchema) error {
+func (a Tracer) Validate(_ graphql.ExecutableSchema) error {
 	return nil
 }
 

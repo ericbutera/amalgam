@@ -19,12 +19,14 @@ buf-lint:
 go-checks: go-lint go-test
 ts-checks: ts-lint ts-test
 
-go-lint-fast:
+
+go-lint-changed: install-go-tools
+	@echo Linting recently changed go files
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.61.0
-	golangci-lint run --fast --fix --config .golangci.yaml
+	golangci-lint run --fix --new-from-rev=HEAD~1 --config .golangci.yaml
 
 go-lint: install-go-tools
-	@echo Linting go
+	@echo Linting go files
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.61.0
 	golangci-lint run --fix --config .golangci.yaml
 
