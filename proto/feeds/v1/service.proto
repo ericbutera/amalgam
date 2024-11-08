@@ -12,6 +12,7 @@ service FeedService {
   rpc ListArticles (ListArticlesRequest) returns (ListArticlesResponse);
   rpc GetArticle (GetArticleRequest) returns (GetArticleResponse);
   rpc SaveArticle (SaveArticleRequest) returns (SaveArticleResponse);
+  rpc FeedTask (FeedTaskRequest) returns (FeedTaskResponse);
 }
 
 message Feed {
@@ -104,4 +105,17 @@ message ValidationError {
   string tag = 2;
   string raw_message = 3;
   string message = 4;
+}
+
+message FeedTaskRequest {
+  enum Task {
+    TASK_UNSPECIFIED = 0;
+    TASK_GENERATE_FEEDS = 1;
+  }
+  Task task = 1;
+}
+
+message FeedTaskResponse {
+  string id = 1;
+  string message = 2;
 }
