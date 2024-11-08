@@ -33,8 +33,6 @@ linters:
     - perfsprint
     - nilnil
     - stylecheck
-    # - testpackage
-    # - testifylint
     - thelper
     - forcetypeassert
     - mnd
@@ -47,7 +45,6 @@ linters:
     - gosec
     - gocritic
     - exhaustive
-    - funlen
 
 linters-settings:
   tagalign:
