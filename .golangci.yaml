@@ -41,6 +41,7 @@ linters:
     - lll
     - gocritic
     - exhaustive
+    - revive
 
 linters-settings:
   tagalign:

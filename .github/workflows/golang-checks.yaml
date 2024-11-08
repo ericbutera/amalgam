@@ -13,10 +13,5 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: stable
-
-      - uses: golangci/golangci-lint-action@v6
-        with:
-          version: v1.60
-
       - uses: extractions/setup-just@v2
       - run: just go-checks
