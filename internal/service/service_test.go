@@ -7,7 +7,6 @@ import (
 	"github.com/ericbutera/amalgam/internal/db"
 	dbModel "github.com/ericbutera/amalgam/internal/db/models"
 	"github.com/ericbutera/amalgam/internal/service"
-	"github.com/ericbutera/amalgam/internal/service/models"
 	svcModel "github.com/ericbutera/amalgam/internal/service/models"
 	"github.com/ericbutera/amalgam/internal/test/fixtures"
 	helpers "github.com/ericbutera/amalgam/pkg/test"
@@ -93,7 +92,7 @@ func (s *ServiceSuite) TestCreateFeed() {
 	result, err := s.svc.CreateFeed(context.Background(), expected)
 	require.NoError(t, err)
 
-	actual := &models.Feed{}
+	actual := &svcModel.Feed{}
 	res := s.db.First(actual, "url=?", expected.URL)
 	require.NoError(t, res.Error)
 
@@ -108,14 +107,14 @@ func (s *ServiceSuite) TestUpdateFeed() {
 	feed := fixtures.NewFeed()
 	mustCreate(t, s.db, &feed)
 
-	expected := &models.Feed{
+	expected := &svcModel.Feed{
 		Name: feed.Name,
 		URL:  feed.URL,
 	}
 	err := s.svc.UpdateFeed(context.Background(), feed.ID, expected)
 	require.NoError(t, err)
 
-	var actual models.Feed
+	var actual svcModel.Feed
 	require.NoError(t, s.db.First(&actual, "id=?", feed.ID).Error)
 
 	assert.Equal(t, expected.URL, actual.URL)
@@ -189,7 +188,7 @@ func (s *ServiceSuite) TestSaveArticle() {
 	result, err := s.svc.SaveArticle(context.Background(), expected)
 	require.NoError(t, err)
 
-	actual := &models.Article{}
+	actual := &svcModel.Article{}
 	res := s.db.First(actual, "url=?", expected.URL)
 	require.NoError(t, res.Error)
 

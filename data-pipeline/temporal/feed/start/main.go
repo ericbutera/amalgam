@@ -37,9 +37,8 @@ func runWorker() error {
 
 	if config.UseSchedule {
 		return runSchedule(ctx, config, client)
-	} else {
-		return runExecute(ctx, config, client)
 	}
+	return runExecute(ctx, config, client)
 }
 
 func runSchedule(ctx context.Context, config *config.Config, client sdk.Client) error {

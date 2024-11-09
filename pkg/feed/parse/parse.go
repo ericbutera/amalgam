@@ -29,7 +29,7 @@ type Article struct {
 }
 
 // Parse an RSS feed from a file path
-func ParseWithPath(path string) (Articles, error) {
+func Path(path string) (Articles, error) {
 	reader, err := os.Open(path)
 	if err != nil {
 		return nil, err
