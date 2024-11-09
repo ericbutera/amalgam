@@ -5,3 +5,5 @@
 --pull=false
 -P ubuntu-latest=catthehacker/ubuntu:act-latest
 -W .github/workflows/all.yaml
+# https://github.com/nektos/act/issues/329#issuecomment-1187246629
+--artifact-server-path /tmp/artifacts
