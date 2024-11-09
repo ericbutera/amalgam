@@ -23,6 +23,11 @@ go-generate-mocks:
 	go install github.com/vektra/mockery/v2@v2.46.3
 	mockery
 
+go-coverage-report:
+	go test -coverprofile=reports/coverage.out ./...
+	go tool cover -func reports/coverage.out -o reports/coverage.txt
+	go tool cover -html reports/coverage.out -o reports/cover.html
+
 go-lint-changed: install-go-tools
 	@echo Linting recently changed go files
 	golangci-lint run --fix --new-from-rev=HEAD~1 --config .golangci.yaml
