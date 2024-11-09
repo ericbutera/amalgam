@@ -45,7 +45,7 @@ type MinioBucket struct {
 
 // use mapstructure to convert any existing struct to a Config
 // example: convert a temporal workflow config to a minio config
-func NewConfig(data interface{}) (*Config, error) {
+func NewConfig(data any) (*Config, error) {
 	config := &Config{}
 	if err := mapstructure.Decode(data, config); err != nil {
 		return nil, fmt.Errorf("failed to decode config: %w", err)
@@ -76,41 +76,32 @@ func NewMinioClient(config *Config) (*MinioBucket, error) {
 	return bucket, nil
 }
 
-func (bucket *MinioBucket) Create(ctx context.Context, bucketName string, expire bool) error {
+func (b *MinioBucket) Create(ctx context.Context, bucketName string) error {
 	opts := minio.MakeBucketOptions{
-		Region: bucket.Region,
+		Region: b.Region,
 	}
-
-	if err := bucket.client.MakeBucket(ctx, bucketName, opts); err != nil {
-		if err := bucket.handleBucketExists(ctx, bucketName, err); err != nil {
+	if err := b.client.MakeBucket(ctx, bucketName, opts); err != nil {
+		if err := b.handleBucketExists(ctx, bucketName, err); err != nil {
 			return err
 		}
 	}
-
-	if expire {
-		return bucket.setBucketExpiry(ctx, bucketName)
-	}
-
 	return nil
 }
 
-func (bucket *MinioBucket) handleBucketExists(ctx context.Context, bucketName string, err error) error {
-	exists, errBucketExists := bucket.client.BucketExists(ctx, bucketName)
+func (b *MinioBucket) handleBucketExists(ctx context.Context, bucketName string, err error) error {
+	exists, errBucketExists := b.client.BucketExists(ctx, bucketName)
 	if errBucketExists == nil && exists {
 		return nil
 	}
 	return err
 }
 
-func (bucket *MinioBucket) setBucketExpiry(ctx context.Context, bucketName string) error {
-	if err := bucket.Expiry(ctx, bucketName); err != nil {
-		return err
-	}
-	return nil
+func (b *MinioBucket) SetBucketExpiry(ctx context.Context, bucketName string) error {
+	return b.Expiry(ctx, bucketName)
 }
 
-func (bucket *MinioBucket) Exists(ctx context.Context, bucketName string, fileName string) (bool, error) {
-	info, err := bucket.client.StatObject(ctx, bucketName, fileName, minio.StatObjectOptions{})
+func (b *MinioBucket) Exists(ctx context.Context, bucketName string, fileName string) (bool, error) {
+	info, err := b.client.StatObject(ctx, bucketName, fileName, minio.StatObjectOptions{})
 	if err != nil {
 		return false, fmt.Errorf("failed to stat object: %w", err)
 	}
@@ -120,7 +111,7 @@ func (bucket *MinioBucket) Exists(ctx context.Context, bucketName string, fileNa
 	return false, nil
 }
 
-func (bucket *MinioBucket) Expiry(ctx context.Context, bucketName string) error {
+func (b *MinioBucket) Expiry(ctx context.Context, bucketName string) error {
 	config := lifecycle.NewConfiguration()
 	config.Rules = []lifecycle.Rule{
 		{
@@ -131,10 +122,10 @@ func (bucket *MinioBucket) Expiry(ctx context.Context, bucketName string) error 
 			},
 		},
 	}
-	return bucket.client.SetBucketLifecycle(ctx, bucketName, config)
+	return b.client.SetBucketLifecycle(ctx, bucketName, config)
 }
 
-func (bucket *MinioBucket) WriteStream(
+func (b *MinioBucket) WriteStream(
 	ctx context.Context,
 	bucketName string,
 	fileName string,
@@ -148,11 +139,11 @@ func (bucket *MinioBucket) WriteStream(
 		// Less frequently accessed objects should go in cheaper storage classes (e.g. Glacier/archive)
 		// Mode, RetainUntilDate, Expires, StorageClass
 	}
-	return bucket.client.PutObject(ctx, bucketName, fileName, reader, size, opts)
+	return b.client.PutObject(ctx, bucketName, fileName, reader, size, opts)
 }
 
-func (bucket *MinioBucket) Read(ctx context.Context, bucketName string, fileName string) (io.ReadCloser, error) {
-	obj, err := bucket.client.GetObject(ctx, bucketName, fileName, minio.GetObjectOptions{})
+func (b *MinioBucket) Read(ctx context.Context, bucketName string, fileName string) (io.ReadCloser, error) {
+	obj, err := b.client.GetObject(ctx, bucketName, fileName, minio.GetObjectOptions{})
 	if err != nil {
 		return nil, fmt.Errorf("failed to get object: %w", err)
 	}

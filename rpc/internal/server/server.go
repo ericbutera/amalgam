@@ -13,7 +13,7 @@ import (
 	"github.com/ericbutera/amalgam/pkg/config/env"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
 	"github.com/ericbutera/amalgam/pkg/otel"
-	config "github.com/ericbutera/amalgam/rpc/internal/config"
+	"github.com/ericbutera/amalgam/rpc/internal/config"
 	grpc_server "github.com/ericbutera/amalgam/rpc/internal/server/grpc"
 	metrics_server "github.com/ericbutera/amalgam/rpc/internal/server/metrics"
 	"github.com/ericbutera/amalgam/rpc/internal/server/observability"
@@ -46,6 +46,7 @@ func (s *Server) Serve(ctx context.Context) error {
 		defer listener.Close()
 		return s.grpcSrv.Serve(listener)
 	}, func(err error) {
+		slog.Error("shutting down server", "err", err)
 		s.grpcSrv.GracefulStop()
 		s.grpcSrv.Stop()
 
@@ -67,10 +68,7 @@ func (s *Server) Serve(ctx context.Context) error {
 
 	g.Add(run.SignalHandler(ctx, syscall.SIGINT, syscall.SIGTERM))
 
-	if err := g.Run(); err != nil {
-		return err
-	}
-	return nil
+	return g.Run()
 }
 
 type Option func(*Server) error

@@ -12,15 +12,15 @@ import (
 
 const FetchTimeout = 10 * time.Second // TODO: WithTimeout opt
 
-type FetchCallbackParams struct {
+type CallbackParams struct {
 	Reader      io.Reader
 	Size        int64
 	ContentType string
 }
 
-type FetchCallback = func(params FetchCallbackParams) error
+type Callback = func(params CallbackParams) error
 
-func FetchUrl(ctx context.Context, url string, fetchCb FetchCallback) error {
+func Url(ctx context.Context, url string, fetchCb Callback) error {
 	// note: do not retry; workflow will handle retries
 	// TODO: otel
 	client := &http.Client{
@@ -39,7 +39,7 @@ func FetchUrl(ctx context.Context, url string, fetchCb FetchCallback) error {
 		return err
 	}
 	defer resp.Body.Close()
-	return fetchCb(FetchCallbackParams{
+	return fetchCb(CallbackParams{
 		ContentType: resp.Header.Get("Content-Type"),
 		Reader:      resp.Body,
 		Size:        resp.ContentLength,

@@ -23,7 +23,7 @@ func newFile(t *testing.T, path string) parse.Articles {
 	require.NotEmpty(t, path)
 	path, err := test.GetTestDataPath(path)
 	require.NoError(t, err)
-	articles, err := parse.ParseWithPath(path)
+	articles, err := parse.Path(path)
 	require.NoError(t, err)
 	return articles
 }

@@ -13,7 +13,7 @@ import (
 	"github.com/ericbutera/amalgam/data-pipeline/temporal/internal/bucket"
 	"github.com/ericbutera/amalgam/data-pipeline/temporal/internal/feeds"
 	"github.com/ericbutera/amalgam/internal/http/fetch"
-	parse "github.com/ericbutera/amalgam/pkg/feed/parse"
+	"github.com/ericbutera/amalgam/pkg/feed/parse"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -47,7 +47,7 @@ func (a *Activities) DownloadActivity(ctx context.Context, feedId string, url st
 		"url", url,
 	)
 	entry.Info("download: start")
-	err := fetch.FetchUrl(ctx, url, func(params fetch.FetchCallbackParams) error {
+	err := fetch.Url(ctx, url, func(params fetch.CallbackParams) error {
 		upload, err := a.bucket.WriteStream(ctx, BucketName, rssFile, params.Reader, params.ContentType, params.Size)
 		if err != nil {
 			entry.Error("download error", "error", err)
@@ -73,14 +73,14 @@ func (a *Activities) ParseActivity(ctx context.Context, feedId string, rssFile s
 	rssReader, err := a.bucket.Read(ctx, BucketName, rssFile)
 	if err != nil {
 		entry.Error("bucket read error", "error", err)
-		return "", err
+		return articlesFile, err
 	}
 	defer rssReader.Close()
 
 	articles, err := parse.Parse(rssReader)
 	if err != nil {
 		entry.Error("parse: parse error", "error", err)
-		return "", err
+		return articlesFile, err
 	}
 
 	// TODO: actually support a streaming write
@@ -98,7 +98,7 @@ func (a *Activities) ParseActivity(ctx context.Context, feedId string, rssFile s
 	size := int64(reader.Len())
 	upload, err := a.bucket.WriteStream(ctx, BucketName, articlesFile, &reader, "application/json", size)
 	if err != nil {
-		return "", err
+		return articlesFile, err
 	}
 	entry.Info("parse: upload info", "key", upload.Key, "bucket", upload.Bucket)
 	return articlesFile, nil

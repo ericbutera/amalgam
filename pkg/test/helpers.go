@@ -20,7 +20,7 @@ func GetTestDataPath(datafile string) (string, error) {
 }
 
 // diff compares two structs and prints the differences
-func Diff(t *testing.T, expected interface{}, actual interface{}, ignoredFields ...string) {
+func Diff(t *testing.T, expected any, actual any, ignoredFields ...string) {
 	// https://github.com/google/go-cmp/blob/391980c4b2e1cc2c30d2bfae6039815350490495/cmp/cmpopts/example_test.go#L32-L34
 	// TODO: research creating a testify assertion
 	ignored := cmpopts.IgnoreFields(expected, ignoredFields...)

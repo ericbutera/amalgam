@@ -8,7 +8,7 @@ import (
 )
 
 // Returns a sanitized copy of the original data.
-func Struct[T interface{}](data T) (T, error) {
+func Struct[T any](data T) (T, error) {
 	s, err := sanitizer.New(
 		sanitizer.OptionSanitizerFunc{
 			Name:      "url",
@@ -26,7 +26,7 @@ func Struct[T interface{}](data T) (T, error) {
 	return data, err
 }
 
-func sanitizeUrl(s sanitizer.Sanitizer, structValue reflect.Value, idx int) error {
+func sanitizeUrl(_ sanitizer.Sanitizer, structValue reflect.Value, idx int) error {
 	fieldValue := structValue.Field(idx)
 	url, err := Url(fieldValue.String())
 	if err != nil {
@@ -36,7 +36,7 @@ func sanitizeUrl(s sanitizer.Sanitizer, structValue reflect.Value, idx int) erro
 	return nil
 }
 
-func sanitizeHtml(s sanitizer.Sanitizer, structValue reflect.Value, idx int) error {
+func sanitizeHtml(_ sanitizer.Sanitizer, structValue reflect.Value, idx int) error {
 	fieldValue := structValue.Field(idx)
 	html := Html(fieldValue.String())
 	fieldValue.SetString(html)
