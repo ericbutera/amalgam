@@ -7,7 +7,7 @@ import (
 	"github.com/ericbutera/amalgam/internal/db/models"
 	"github.com/ericbutera/amalgam/internal/test/fixtures"
 	"github.com/ericbutera/amalgam/pkg/config/env"
-	slog_gorm "github.com/orandin/slog-gorm"
+	slog "github.com/orandin/slog-gorm"
 	"github.com/spf13/viper"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/sqlite"
@@ -106,7 +106,7 @@ func WithTraceAll() DbOptions {
 	return func(db *gorm.DB) error {
 		// Note: this should really be a two part setting of set logger and then logger opt of trace all
 		// for now it is combined as one convenience function
-		db.Logger = slog_gorm.New(slog_gorm.WithTraceAll())
+		db.Logger = slog.New(slog.WithTraceAll())
 		return nil
 	}
 }

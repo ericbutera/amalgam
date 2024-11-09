@@ -6,9 +6,9 @@ package copygen
 import (
 	// TODO: add API models
 	gql_model "github.com/ericbutera/amalgam/graph/graph/model"
-	gql_client "github.com/ericbutera/amalgam/pkg/clients/graphql"
 	db_model "github.com/ericbutera/amalgam/internal/db/models"
 	svc_model "github.com/ericbutera/amalgam/internal/service/models"
+	gql_client "github.com/ericbutera/amalgam/pkg/clients/graphql"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
 )
 
@@ -17,15 +17,17 @@ func DbToServiceFeed(tF *svc_model.Feed, fF *db_model.Feed) {
 	// *svc_model.Feed fields
 	tF.ID = fF.Base.ID
 	tF.Name = fF.Name
-	tF.Url = fF.Url
+	tF.URL = fF.URL
+	tF.IsActive = fF.IsActive
 }
 
 // ServiceToDbFeed copies a *svc_model.Feed to a *db_model.Feed.
 func ServiceToDbFeed(tF *db_model.Feed, fF *svc_model.Feed) {
 	// *db_model.Feed fields
 	tF.Base.ID = fF.ID
-	tF.Url = fF.Url
+	tF.URL = fF.URL
 	tF.Name = fF.Name
+	tF.IsActive = fF.IsActive
 }
 
 // DbToServiceArticle copies a *db_model.Article to a *svc_model.Article.
@@ -33,12 +35,12 @@ func DbToServiceArticle(tA *svc_model.Article, fA *db_model.Article) {
 	// *svc_model.Article fields
 	tA.ID = fA.Base.ID
 	tA.FeedID = fA.FeedID
-	tA.Url = fA.Feed.Url
+	tA.URL = fA.Feed.URL
 	tA.Title = fA.Title
-	tA.ImageUrl = fA.ImageUrl
+	tA.ImageURL = fA.ImageURL
 	tA.Preview = fA.Preview
 	tA.Content = fA.Content
-	tA.Guid = fA.Guid
+	tA.GUID = fA.GUID
 	tA.AuthorName = fA.AuthorName
 	tA.AuthorEmail = fA.AuthorEmail
 }
@@ -49,13 +51,13 @@ func ServiceToDbArticle(tA *db_model.Article, fA *svc_model.Article) {
 	tA.Base.ID = fA.ID
 	tA.FeedID = fA.FeedID
 	tA.Feed.Base.ID = fA.ID
-	tA.Feed.Url = fA.Url
-	tA.Url = fA.Url
+	tA.Feed.URL = fA.URL
+	tA.URL = fA.URL
 	tA.Title = fA.Title
-	tA.ImageUrl = fA.ImageUrl
+	tA.ImageURL = fA.ImageURL
 	tA.Preview = fA.Preview
 	tA.Content = fA.Content
-	tA.Guid = fA.Guid
+	tA.GUID = fA.GUID
 	tA.AuthorName = fA.AuthorName
 	tA.AuthorEmail = fA.AuthorEmail
 }
@@ -65,12 +67,14 @@ func GraphToServiceFeed(tF *svc_model.Feed, fF *gql_model.Feed) {
 	// *svc_model.Feed fields
 	tF.ID = fF.ID
 	tF.Name = fF.Name
+	tF.URL = fF.URL
 }
 
 // ServiceToGraphFeed copies a *svc_model.Feed to a *gql_model.Feed.
 func ServiceToGraphFeed(tF *gql_model.Feed, fF *svc_model.Feed) {
 	// *gql_model.Feed fields
 	tF.ID = fF.ID
+	tF.URL = fF.URL
 	tF.Name = fF.Name
 }
 
@@ -79,9 +83,12 @@ func GraphToServiceArticle(tA *svc_model.Article, fA *gql_model.Article) {
 	// *svc_model.Article fields
 	tA.ID = fA.ID
 	tA.FeedID = fA.FeedID
+	tA.URL = fA.URL
 	tA.Title = fA.Title
+	tA.ImageURL = *fA.ImageURL
 	tA.Preview = fA.Preview
 	tA.Content = fA.Content
+	tA.GUID = *fA.GUID
 	tA.AuthorName = *fA.AuthorName
 	tA.AuthorEmail = *fA.AuthorEmail
 }
@@ -91,9 +98,12 @@ func ServiceToGraphArticle(tA *gql_model.Article, fA *svc_model.Article) {
 	// *gql_model.Article fields
 	tA.ID = fA.ID
 	tA.FeedID = fA.FeedID
+	tA.URL = fA.URL
 	tA.Title = fA.Title
+	tA.ImageURL = &fA.ImageURL
 	tA.Content = fA.Content
 	tA.Preview = fA.Preview
+	tA.GUID = &fA.GUID
 	tA.AuthorName = &fA.AuthorName
 	tA.AuthorEmail = &fA.AuthorEmail
 }
@@ -103,7 +113,7 @@ func GraphClientToApiFeedGet(tF *svc_model.Feed, fG *gql_client.GetFeedFeed) {
 	// *svc_model.Feed fields
 	tF.ID = fG.Id
 	tF.Name = fG.Name
-	tF.Url = fG.Url
+	tF.URL = fG.Url
 }
 
 // GraphClientToApiArticle copies a *gql_client.GetArticleArticle to a *svc_model.Article.
@@ -111,12 +121,12 @@ func GraphClientToApiArticle(tA *svc_model.Article, fG *gql_client.GetArticleArt
 	// *svc_model.Article fields
 	tA.ID = fG.Id
 	tA.FeedID = fG.FeedId
-	tA.Url = fG.Url
+	tA.URL = fG.Url
 	tA.Title = fG.Title
-	tA.ImageUrl = fG.ImageUrl
+	tA.ImageURL = fG.ImageUrl
 	tA.Preview = fG.Preview
 	tA.Content = fG.Content
-	tA.Guid = fG.Guid
+	tA.GUID = fG.Guid
 	tA.AuthorName = fG.AuthorName
 	tA.AuthorEmail = fG.AuthorEmail
 }
@@ -125,9 +135,9 @@ func GraphClientToApiArticle(tA *svc_model.Article, fG *gql_client.GetArticleArt
 func GraphClientToApiArticleList(tA *svc_model.Article, fL *gql_client.ListArticlesArticlesArticle) {
 	// *svc_model.Article fields
 	tA.ID = fL.Id
-	tA.Url = fL.Url
+	tA.URL = fL.Url
 	tA.Title = fL.Title
-	tA.ImageUrl = fL.ImageUrl
+	tA.ImageURL = fL.ImageUrl
 	tA.Preview = fL.Preview
 	tA.AuthorName = fL.AuthorName
 	tA.AuthorEmail = fL.AuthorEmail
@@ -137,7 +147,7 @@ func GraphClientToApiArticleList(tA *svc_model.Article, fL *gql_client.ListArtic
 func ProtoCreateFeedToService(tF *svc_model.Feed, fC *pb.CreateFeedRequest_Feed) {
 	// *svc_model.Feed fields
 	tF.Name = fC.Name
-	tF.Url = fC.Url
+	tF.URL = fC.Url
 }
 
 // ProtoUpdateFeedToService copies a *pb.UpdateFeedRequest_Feed to a *svc_model.Feed.
@@ -145,14 +155,14 @@ func ProtoUpdateFeedToService(tF *svc_model.Feed, fU *pb.UpdateFeedRequest_Feed)
 	// *svc_model.Feed fields
 	tF.ID = fU.Id
 	tF.Name = fU.Name
-	tF.Url = fU.Url
+	tF.URL = fU.Url
 }
 
 // ServiceToProtoFeed copies a *svc_model.Feed to a *pb.Feed.
 func ServiceToProtoFeed(tF *pb.Feed, fF *svc_model.Feed) {
 	// *pb.Feed fields
 	tF.Id = fF.ID
-	tF.Url = fF.Url
+	tF.Url = fF.URL
 	tF.Name = fF.Name
 }
 
@@ -160,14 +170,11 @@ func ServiceToProtoFeed(tF *pb.Feed, fF *svc_model.Feed) {
 func ProtoToServiceArticle(tA *svc_model.Article, fA *pb.Article) {
 	// *svc_model.Article fields
 	tA.ID = fA.Id
-	tA.Url = fA.Url
+	tA.URL = fA.Url
 	tA.Title = fA.Title
-	tA.ImageUrl = fA.ImageUrl
 	tA.Preview = fA.Preview
 	tA.Content = fA.Content
-	tA.Guid = fA.Guid
-	tA.AuthorName = fA.AuthorName
-	tA.AuthorEmail = fA.AuthorEmail
+	tA.GUID = fA.Guid
 }
 
 // ServiceToProtoArticle copies a *svc_model.Article to a *pb.Article.
@@ -176,10 +183,7 @@ func ServiceToProtoArticle(tA *pb.Article, fA *svc_model.Article) {
 	tA.Id = fA.ID
 	tA.Title = fA.Title
 	tA.Content = fA.Content
-	tA.Url = fA.Url
-	tA.ImageUrl = fA.ImageUrl
+	tA.Url = fA.URL
 	tA.Preview = fA.Preview
-	tA.Guid = fA.Guid
-	tA.AuthorName = fA.AuthorName
-	tA.AuthorEmail = fA.AuthorEmail
+	tA.Guid = fA.GUID
 }

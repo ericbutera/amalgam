@@ -12,7 +12,7 @@ import (
 	"github.com/ericbutera/amalgam/data-pipeline/temporal/internal/feeds"
 	helper "github.com/ericbutera/amalgam/data-pipeline/temporal/internal/worker"
 	"github.com/ericbutera/amalgam/pkg/config/env"
-	otel "github.com/ericbutera/amalgam/pkg/otel"
+	"github.com/ericbutera/amalgam/pkg/otel"
 	"github.com/samber/lo"
 	"go.temporal.io/sdk/worker"
 )

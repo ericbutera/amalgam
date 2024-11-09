@@ -39,16 +39,17 @@ func ParseWithPath(path string) (Articles, error) {
 }
 
 // Convert an RSS feed into articles
-func Parse(reader io.Reader) (articles Articles, err error) {
+func Parse(reader io.Reader) (Articles, error) {
 	parsed, err := parser.NewParser().Parse(reader)
 	if err != nil {
-		return
+		return nil, err
 	}
 
+	articles := make(Articles, 0, len(parsed.Items))
 	for _, item := range parsed.Items {
 		articles = append(articles, NewArticleFromItem(item))
 	}
-	return
+	return articles, nil
 }
 
 func NewArticleFromItem(item *parser.Item) *Article {

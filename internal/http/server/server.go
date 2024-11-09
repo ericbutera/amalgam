@@ -5,15 +5,22 @@ import (
 	"time"
 )
 
+const (
+	Address      = ":8080"
+	ReadTimeout  = 10 * time.Second
+	WriteTimeout = 10 * time.Second
+	IdleTimeout  = 15 * time.Second
+)
+
 type Option func(*http.Server) error
 
 func New(opts ...Option) (*http.Server, error) {
 	server := &http.Server{
-		Addr:         ":8080",
+		Addr:         Address,
 		Handler:      nil,
-		ReadTimeout:  10 * time.Second,
-		WriteTimeout: 10 * time.Second,
-		IdleTimeout:  15 * time.Second,
+		ReadTimeout:  ReadTimeout,
+		WriteTimeout: WriteTimeout,
+		IdleTimeout:  IdleTimeout,
 	}
 
 	for _, opt := range opts {

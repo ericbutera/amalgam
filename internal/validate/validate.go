@@ -20,7 +20,7 @@ type ValidationResult struct {
 	Ok     bool
 }
 
-func Struct(data interface{}, customMessages CustomMessages) ValidationResult {
+func Struct(data any, customMessages CustomMessages) ValidationResult {
 	result := ValidationResult{
 		Ok: true,
 	}

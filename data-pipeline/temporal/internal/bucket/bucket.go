@@ -45,7 +45,7 @@ type MinioBucket struct {
 
 // use mapstructure to convert any existing struct to a Config
 // example: convert a temporal workflow config to a minio config
-func NewConfig(data interface{}) (*Config, error) {
+func NewConfig(data any) (*Config, error) {
 	config := &Config{}
 	if err := mapstructure.Decode(data, config); err != nil {
 		return nil, fmt.Errorf("failed to decode config: %w", err)
@@ -103,10 +103,7 @@ func (bucket *MinioBucket) handleBucketExists(ctx context.Context, bucketName st
 }
 
 func (bucket *MinioBucket) setBucketExpiry(ctx context.Context, bucketName string) error {
-	if err := bucket.Expiry(ctx, bucketName); err != nil {
-		return err
-	}
-	return nil
+	return bucket.Expiry(ctx, bucketName)
 }
 
 func (bucket *MinioBucket) Exists(ctx context.Context, bucketName string, fileName string) (bool, error) {

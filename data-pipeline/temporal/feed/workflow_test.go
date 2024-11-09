@@ -28,14 +28,14 @@ func (s *UnitTestSuite) Test_FeedWorkflow() {
 	})
 	var a *app.Activities
 
-	feed_id := "213ddff2-e7cc-40cc-87eb-461118d57a58"
-	feed_url := "http://faker:8080/feed/e568f1fa-a0e9-4545-bc5b-a167725a75bd"
+	feedID := "213ddff2-e7cc-40cc-87eb-461118d57a58"
+	feedURL := "http://faker:8080/feed/e568f1fa-a0e9-4545-bc5b-a167725a75bd"
 
-	env.OnActivity(a.DownloadActivity, mock.Anything, feed_id, feed_url).Return("rss_file", nil)
-	env.OnActivity(a.ParseActivity, mock.Anything, feed_id, "rss_file").Return("articles_file", nil)
-	env.OnActivity(a.SaveActivity, mock.Anything, feed_id, "articles_file").Return(nil)
+	env.OnActivity(a.DownloadActivity, mock.Anything, feedID, feedURL).Return("rss_file", nil)
+	env.OnActivity(a.ParseActivity, mock.Anything, feedID, "rss_file").Return("articles_file", nil)
+	env.OnActivity(a.SaveActivity, mock.Anything, feedID, "articles_file").Return(nil)
 	env.RegisterActivity(a)
-	env.ExecuteWorkflow(app.FeedWorkflow, feed_id, feed_url)
+	env.ExecuteWorkflow(app.FeedWorkflow, feedID, feedURL)
 
 	t := s.T()
 	require.NoError(t, env.GetWorkflowError())

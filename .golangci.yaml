@@ -41,13 +41,31 @@ linters:
     - lll
     - gocritic
     - exhaustive
-    - revive
 
 linters-settings:
   tagalign:
     align: true
     sort: false
     strict: false
+  revive:
+    enable-all-rules: true
+    rules:
+      - name: add-constant
+        disabled: true
+      - name: import-shadowing
+        disabled: true
+      - name: import-alias-naming
+        disabled: true
+      - name: line-length-limit
+        disabled: true
+      - name: var-naming
+        severity: warning
+        disabled: false
+        exclude: [""]
+        arguments:
+          - ["ID", "RPC", "URL", "GUID", "HTML"] # AllowList
+          - ["VM"] # DenyList
+          - - upperCaseConst: true # Extra parameter (upperCaseConst|skipPackageNameChecks)
 
 # https://golangci-lint.run/usage/configuration/#issues-configuration
 issues:

@@ -43,19 +43,19 @@ func (s *GormService) Feeds(ctx context.Context) ([]svc_model.Feed, error) {
 
 var (
 	validateFeedCreate = validate.CustomMessages{
-		"Url.required": "The URL is required.",
-		"Url.url":      "The URL must be valid.",
+		"URL.required": "The URL is required.",
+		"URL.url":      "The URL must be valid.",
 	}
 	validateArticleSave = validate.CustomMessages{
 		"ID.required":       "The ID field is required.",
 		"ID.uuid4":          "The ID must be a valid UUID.",
 		"FeedID.required":   "The FeedID field is required.",
 		"FeedID.uuid4":      "The FeedID must be a valid UUID.",
-		"Url.required":      "The URL is required.",
-		"Url.url":           "The URL must be valid.",
+		"URL.required":      "The URL is required.",
+		"URL.url":           "The URL must be valid.",
 		"Title.required":    "The title is required.",
 		"Title.min":         "The title must be at least 3 characters long.",
-		"ImageUrl.url":      "The Image URL must be a valid URL if provided.",
+		"ImageURL.url":      "The Image URL must be a valid URL if provided.",
 		"Preview.required":  "The preview is required.",
 		"Preview.min":       "The preview must be at least 5 characters long.",
 		"Content.required":  "The content is required.",
@@ -97,7 +97,7 @@ func (s *GormService) CreateFeed(ctx context.Context, data *svc_model.Feed) (Cre
 	dbFeed.IsActive = true
 
 	err = s.query(ctx).Transaction(func(tx *gorm.DB) error {
-		if err := feedUrlExists(tx, feed.Url); err != nil {
+		if err := feedUrlExists(tx, feed.URL); err != nil {
 			return err
 		}
 		if err := tx.Create(&dbFeed).Error; err != nil {
@@ -117,7 +117,7 @@ func (s *GormService) UpdateFeed(ctx context.Context, id string, feed *svc_model
 	result := s.query(ctx).
 		Model(&dbFeed).
 		Where("id=?", id).
-		Updates(map[string]interface{}{
+		Updates(map[string]any{
 			"name": feed.Name,
 		})
 
