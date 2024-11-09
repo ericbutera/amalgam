@@ -5,3 +5,4 @@
 --pull=false
 -P ubuntu-latest=catthehacker/ubuntu:act-latest
 -W .github/workflows/all.yaml
+--artifact-server-path /tmp/artifacts
