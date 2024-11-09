@@ -41,7 +41,7 @@ func main() {
 	c := lo.Must(rpc.NewClient(config.RpcHost, config.RpcInsecure))
 	defer c.Conn.Close()
 
-	srv := newServer(config, c.Client)
+	srv := newServer(c.Client)
 	srv.Use(otelgqlgen.Middleware())
 	srv.Use(gql_prom.Tracer{})
 	// TODO: complexity limit srv.Use(extension.ComplexityLimit{})
@@ -63,10 +63,10 @@ func main() {
 	}
 }
 
-func newServer(config *config.Config, rpcClient pb.FeedServiceClient) *handler.Server {
+func newServer(rpcClient pb.FeedServiceClient) *handler.Server {
 	return handler.NewDefaultServer(
 		graph.NewExecutableSchema(graph.Config{
-			Resolvers: graph.NewResolver(config, rpcClient),
+			Resolvers: graph.NewResolver(rpcClient),
 		}),
 	)
 }
