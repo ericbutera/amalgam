@@ -19,11 +19,25 @@ jobs:
   # these locally with act, but it is a bit slow. this should also be reflected in
   # pre-commit. it's very jarring when something behaves differently locally vs in CI.
 
+  golangci-lint:
+    uses: ./.github/workflows/golangci-lint.yaml
+    secrets: inherit
+    permissions:
+      contents: read
+
+  go-coverage:
+    uses: ./.github/workflows/go-coverage.yaml
+    secrets: inherit
+    permissions:
+      contents: read
+      actions: read
+      pull-requests: write
+
   ts-checks:
     uses: ./.github/workflows/ts-checks.yaml
     secrets: inherit
 
   tilt-ci:
-    needs: [ts-checks, buf-lint]
+    needs: [golangci-lint, ts-checks, buf-lint]
     uses: ./.github/workflows/tilt-ci.yaml
     secrets: inherit

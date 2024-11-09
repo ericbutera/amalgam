@@ -1,23 +1,7 @@
 # https://github.com/fgrosse/go-coverage-report/tree/8c1d1a09864211d258937b1b1a5b849f7e4f2682
-name: go-coverage
-
-# This setup assumes that you run the unit tests with code coverage in the same
-# workflow that will also print the coverage report as comment to the pull request.
-# Therefore, you need to trigger this workflow when a pull request is (re)opened or
-# when new code is pushed to the branch of the pull request. In addition, you also
-# need to trigger this workflow when new code is pushed to the main branch because
-# we need to upload the code coverage results as artifact for the main branch as
-# well since it will be the baseline code coverage.
-#
-# We do not want to trigger the workflow for pushes to *any* branch because this
-# would trigger our jobs twice on pull requests (once from "push" event and once
-# from "pull_request->synchronize")
+name: golang-coverage
 on:
-  pull_request:
-    types: [opened, reopened, synchronize]
-  push:
-    branches:
-      - "main"
+  workflow_call: # reusable
 
 jobs:
   unit_tests:
