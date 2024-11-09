@@ -1,0 +1,15 @@
+with-expecter: true
+inpackage: True
+packages:
+  github.com/ericbutera/amalgam/pkg/feeds/v1:
+    config:
+      inpackage: True
+      filename: "mock_{{.InterfaceName}}.go"
+      dir: "{{.InterfaceDir}}"
+      mockname: "Mock{{.InterfaceName}}"
+      outpkg: "{{.PackageName}}"
+    interfaces:
+      # select the interfaces you want mocked
+      FeedServiceClient:
+        # Modify package-level config for this specific interface (if applicable)
+        config:

@@ -2,11 +2,16 @@ package fixtures
 
 import (
 	"github.com/ericbutera/amalgam/internal/service/models"
+	"github.com/google/uuid"
 )
 
 // TODO: figure out how to auto-generate these. for now copilot makes this easy enough
 // inspired from https://hackandsla.sh/posts/2020-11-23-golang-test-fixtures/
 // TODO: go faker
+
+func NewID() string {
+	return uuid.New().String()
+}
 
 func NewFeed(opts ...FeedOption) *models.Feed {
 	f := &models.Feed{

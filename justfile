@@ -19,6 +19,9 @@ buf-lint:
 go-checks: go-lint go-test
 ts-checks: ts-lint ts-test
 
+go-generate-mocks:
+	go install github.com/vektra/mockery/v2@v2.46.3
+	mockery
 
 go-lint-changed: install-go-tools
 	@echo Linting recently changed go files
@@ -107,8 +110,8 @@ generate-proto:
 # Generate copygen type converters
 generate-converters: install-go-tools
 	@echo Generating converters
-	@go get github.com/switchupcb/copygen
-	@go install github.com/switchupcb/copygen
+	go get github.com/switchupcb/copygen
+	go install github.com/switchupcb/copygen
 	copygen -yml internal/copygen/setup.yml
 
 go-mod-download:
@@ -116,8 +119,8 @@ go-mod-download:
 	go mod download
 
 install-go-tools: go-mod-download
-	# go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.61.0
-	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.61.0
+	go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.61.0
+	# curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.61.0
 
 install-ts-tools:
 	@echo Installing tools from package.json
@@ -145,8 +148,6 @@ generate-graph-schema:
 generate-graph-golang-client: generate-graph-schema
 	# TODO: use artifact created from `generate-graph-schema` not ://service/query
 	@echo Generating golang graphql client
-	# cd graph/generate/client && go run github.com/Khan/genqlient genqlient.yaml
-	# cd tools/graphql-golang-client && go run github.com/Khan/genqlient genqlient.yaml
 	go run github.com/Khan/genqlient tools/graphql-golang-client/genqlient.yaml
 
 
