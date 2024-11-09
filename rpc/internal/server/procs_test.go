@@ -38,8 +38,9 @@ func TestCreateFeedValidateError(t *testing.T) {
 	s := status.Convert(err)
 	for _, detail := range s.Details() {
 		if v, ok := detail.(*pb.ValidationErrors); ok {
-			assert.Len(t, v.GetErrors(), 1)
-			assert.Equal(t, "The URL must be valid.", v.GetErrors()[0].GetMessage())
+			errors := v.GetErrors()
+			assert.Len(t, errors, 1)
+			assert.Equal(t, "The URL must be valid.", errors[0].GetMessage())
 			return
 		}
 	}

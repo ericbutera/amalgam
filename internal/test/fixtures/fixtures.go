@@ -1,17 +1,17 @@
 package fixtures
 
 import (
-	svc_model "github.com/ericbutera/amalgam/internal/service/models"
+	"github.com/ericbutera/amalgam/internal/service/models"
 )
 
 // TODO: figure out how to auto-generate these. for now copilot makes this easy enough
 // inspired from https://hackandsla.sh/posts/2020-11-23-golang-test-fixtures/
 // TODO: go faker
 
-func NewFeed(opts ...FeedOption) *svc_model.Feed {
-	f := &svc_model.Feed{
+func NewFeed(opts ...FeedOption) *models.Feed {
+	f := &models.Feed{
 		Name:     "test feed name",
-		Url:      "https://example.com/test-feed",
+		URL:      "https://example.com/test-feed",
 		IsActive: true,
 	}
 	for _, opt := range opts {
@@ -20,42 +20,42 @@ func NewFeed(opts ...FeedOption) *svc_model.Feed {
 	return f
 }
 
-type FeedOption func(*svc_model.Feed)
+type FeedOption func(*models.Feed)
 
 func WithFeedID(id string) FeedOption {
-	return func(f *svc_model.Feed) {
+	return func(f *models.Feed) {
 		f.ID = id
 	}
 }
 
 func WithFeedName(name string) FeedOption {
-	return func(f *svc_model.Feed) {
+	return func(f *models.Feed) {
 		f.Name = name
 	}
 }
 
-func WithFeedUrl(url string) FeedOption {
-	return func(f *svc_model.Feed) {
-		f.Url = url
+func WithFeedURL(url string) FeedOption {
+	return func(f *models.Feed) {
+		f.URL = url
 	}
 }
 
 func WithFeedIsActive(isActive bool) FeedOption {
-	return func(f *svc_model.Feed) {
+	return func(f *models.Feed) {
 		f.IsActive = isActive
 	}
 }
 
-func NewArticle(opts ...ArticleOption) *svc_model.Article {
-	a := &svc_model.Article{
+func NewArticle(opts ...ArticleOption) *models.Article {
+	a := &models.Article{
 		ID:       "articlea-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
 		FeedID:   "feedidaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
-		Url:      "https://example.com/test-article",
+		URL:      "https://example.com/test-article",
 		Title:    "test article title",
-		ImageUrl: "https://example.com/test-article-image.jpg",
+		ImageURL: "https://example.com/test-article-image.jpg",
 		Preview:  "test article preview",
 		Content:  "test article content",
-		Guid:     "guidaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+		GUID:     "guidaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
 	}
 	for _, opt := range opts {
 		opt(a)
@@ -63,46 +63,46 @@ func NewArticle(opts ...ArticleOption) *svc_model.Article {
 	return a
 }
 
-type ArticleOption func(*svc_model.Article)
+type ArticleOption func(*models.Article)
 
 func WithArticleID(id string) ArticleOption {
-	return func(a *svc_model.Article) {
+	return func(a *models.Article) {
 		a.ID = id
 	}
 }
 
 func WithArticleFeedID(feedID string) ArticleOption {
-	return func(a *svc_model.Article) {
+	return func(a *models.Article) {
 		a.FeedID = feedID
 	}
 }
 
-func WithArticleUrl(url string) ArticleOption {
-	return func(a *svc_model.Article) {
-		a.Url = url
+func WithArticleURL(url string) ArticleOption {
+	return func(a *models.Article) {
+		a.URL = url
 	}
 }
 
 func WithArticleTitle(title string) ArticleOption {
-	return func(a *svc_model.Article) {
+	return func(a *models.Article) {
 		a.Title = title
 	}
 }
 
 func WithArticlePreview(preview string) ArticleOption {
-	return func(a *svc_model.Article) {
+	return func(a *models.Article) {
 		a.Preview = preview
 	}
 }
 
 func WithArticleContent(content string) ArticleOption {
-	return func(a *svc_model.Article) {
+	return func(a *models.Article) {
 		a.Content = content
 	}
 }
 
-func WithArticleGuid(guid string) ArticleOption {
-	return func(a *svc_model.Article) {
-		a.Guid = guid
+func WithArticleGUID(guid string) ArticleOption {
+	return func(a *models.Article) {
+		a.GUID = guid
 	}
 }

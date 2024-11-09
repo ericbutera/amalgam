@@ -50,7 +50,7 @@ func New(ctx context.Context, task TaskType) (*TaskResult, error) {
 	return &TaskResult{ID: we.GetID()}, nil
 }
 
-func taskTypeToWorkflow(taskType TaskType) (interface{}, error) {
+func taskTypeToWorkflow(taskType TaskType) (any, error) {
 	switch taskType {
 	case TaskGenerateFeeds:
 		return feed_tasks.GenerateFeedsWorkflow, nil

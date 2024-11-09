@@ -7,7 +7,7 @@ import (
 	"github.com/ericbutera/amalgam/internal/db/models"
 	"github.com/ericbutera/amalgam/internal/test/fixtures"
 	"github.com/ericbutera/amalgam/pkg/config/env"
-	slog_gorm "github.com/orandin/slog-gorm"
+	slog "github.com/orandin/slog-gorm"
 	"github.com/spf13/viper"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/sqlite"
@@ -64,7 +64,7 @@ func NewFromConfig(config *Config) (*gorm.DB, error) {
 	return nil, errors.New("db adapter not supported")
 }
 
-func setOpts(db *gorm.DB, opts ...DbOptions) error {
+func setOpts(db *gorm.DB, opts ...Options) error {
 	for _, opt := range opts {
 		if err := opt(db); err != nil {
 			return err
@@ -73,7 +73,7 @@ func setOpts(db *gorm.DB, opts ...DbOptions) error {
 	return nil
 }
 
-func newDb(d gorm.Dialector, opts ...DbOptions) (*gorm.DB, error) {
+func newDb(d gorm.Dialector, opts ...Options) (*gorm.DB, error) {
 	db, err := gorm.Open(d)
 	if err != nil {
 		return nil, err
@@ -84,7 +84,7 @@ func newDb(d gorm.Dialector, opts ...DbOptions) (*gorm.DB, error) {
 	return db, nil
 }
 
-func NewMysql(dsn string, opts ...DbOptions) (*gorm.DB, error) {
+func NewMysql(dsn string, opts ...Options) (*gorm.DB, error) {
 	if dsn == "" {
 		return nil, ErrDsnNotSet
 	}
@@ -93,25 +93,25 @@ func NewMysql(dsn string, opts ...DbOptions) (*gorm.DB, error) {
 
 // Create a new sqlite database connection
 // Runs migrations (sqlite is for local dev only)
-func NewSqlite(name string, opts ...DbOptions) (*gorm.DB, error) {
+func NewSqlite(name string, opts ...Options) (*gorm.DB, error) {
 	if name == "" {
 		return nil, ErrNameNotSet
 	}
 	return newDb(sqlite.Open(name), opts...)
 }
 
-type DbOptions func(*gorm.DB) error
+type Options func(*gorm.DB) error
 
-func WithTraceAll() DbOptions {
+func WithTraceAll() Options {
 	return func(db *gorm.DB) error {
 		// Note: this should really be a two part setting of set logger and then logger opt of trace all
 		// for now it is combined as one convenience function
-		db.Logger = slog_gorm.New(slog_gorm.WithTraceAll())
+		db.Logger = slog.New(slog.WithTraceAll())
 		return nil
 	}
 }
 
-func WithAutoMigrate() DbOptions {
+func WithAutoMigrate() Options {
 	return func(db *gorm.DB) error {
 		return db.AutoMigrate(&models.Feed{}, &models.Article{}, &models.User{})
 	}
@@ -119,7 +119,7 @@ func WithAutoMigrate() DbOptions {
 
 // create starter data
 // note: this is intended to be used with sqlite in memory as there isn't any cleanup
-func WithSeedData() DbOptions {
+func WithSeedData() Options {
 	return func(db *gorm.DB) error {
 		return db.Transaction(func(tx *gorm.DB) error {
 			feed := models.Feed{}
@@ -130,15 +130,12 @@ func WithSeedData() DbOptions {
 			if err := tx.Create(&feed).Error; err != nil {
 				return err
 			}
-			if err := tx.Create(&article).Error; err != nil {
-				return err
-			}
-			return nil
+			return tx.Create(&article).Error
 		})
 	}
 }
 
-func WithMiddleware() DbOptions {
+func WithMiddleware() Options {
 	return func(db *gorm.DB) error {
 		return middleware(db)
 	}

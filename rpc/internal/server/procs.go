@@ -6,7 +6,7 @@ import (
 
 	"github.com/ericbutera/amalgam/internal/copygen"
 	"github.com/ericbutera/amalgam/internal/service"
-	models "github.com/ericbutera/amalgam/internal/service/models"
+	"github.com/ericbutera/amalgam/internal/service/models"
 	"github.com/ericbutera/amalgam/internal/validate"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
 	"github.com/ericbutera/amalgam/rpc/internal/tasks"
@@ -14,7 +14,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func (s *Server) ListFeeds(ctx context.Context, in *pb.ListFeedsRequest) (*pb.ListFeedsResponse, error) {
+func (s *Server) ListFeeds(ctx context.Context, _ *pb.ListFeedsRequest) (*pb.ListFeedsResponse, error) {
 	feeds, err := s.service.Feeds(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to fetch feeds: %v", err)
@@ -141,19 +141,19 @@ func validationErrToPb(errs []validate.ValidationError) []*pb.ValidationError {
 }
 
 func pbTaskToTaskType(task pb.FeedTaskRequest_Task) (tasks.TaskType, error) {
-	switch task {
-	case pb.FeedTaskRequest_TASK_GENERATE_FEEDS:
+	if task == pb.FeedTaskRequest_TASK_GENERATE_FEEDS {
 		return tasks.TaskGenerateFeeds, nil
 	}
 	return tasks.TaskUnspecified, errors.New("invalid task type")
 }
 
-func (s *Server) FeedTask(ctx context.Context, in *pb.FeedTaskRequest) (*pb.FeedTaskResponse, error) {
+func (*Server) FeedTask(ctx context.Context, in *pb.FeedTaskRequest) (*pb.FeedTaskResponse, error) {
 	taskType, err := pbTaskToTaskType(in.GetTask())
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid task type")
 	}
-	task, err := tasks.New(ctx, taskType)
+
+	task, err := tasks.New(ctx, taskType) // TODO: dependency injection
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to start feed task: %s", err)
 	}

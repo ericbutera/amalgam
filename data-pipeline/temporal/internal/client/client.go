@@ -13,13 +13,18 @@ import (
 )
 
 func NewTemporalClient(host string) (client.Client, error) {
+	scope, err := newPrometheusScope(prometheus.Configuration{
+		ListenAddress: "0.0.0.0:9090",
+		TimerType:     "histogram",
+	})
+	if err != nil {
+		return nil, err
+	}
+
 	opts := client.Options{
-		Logger:   logger.New(),
-		HostPort: host,
-		MetricsHandler: sdktally.NewMetricsHandler(newPrometheusScope(prometheus.Configuration{
-			ListenAddress: "0.0.0.0:9090",
-			TimerType:     "histogram",
-		})),
+		Logger:         logger.New(),
+		HostPort:       host,
+		MetricsHandler: sdktally.NewMetricsHandler(scope),
 	}
 	c, err := client.Dial(opts)
 	if err != nil {
@@ -28,7 +33,7 @@ func NewTemporalClient(host string) (client.Client, error) {
 	return c, nil
 }
 
-func newPrometheusScope(c prometheus.Configuration) tally.Scope {
+func newPrometheusScope(c prometheus.Configuration) (tally.Scope, error) {
 	// source: https://github.com/temporalio/samples-go/blob/main/metrics/worker/main.go
 	reporter, err := c.NewReporter(
 		prometheus.ConfigurationOptions{
@@ -39,7 +44,7 @@ func newPrometheusScope(c prometheus.Configuration) tally.Scope {
 		},
 	)
 	if err != nil {
-		log.Fatalln("error creating prometheus reporter", err)
+		return nil, err
 	}
 	scopeOpts := tally.ScopeOptions{
 		CachedReporter:  reporter,
@@ -50,5 +55,5 @@ func newPrometheusScope(c prometheus.Configuration) tally.Scope {
 	scope, _ := tally.NewRootScope(scopeOpts, time.Second)
 	scope = sdktally.NewPrometheusNamingScope(scope)
 
-	return scope
+	return scope, nil
 }

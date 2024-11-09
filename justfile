@@ -22,13 +22,11 @@ ts-checks: ts-lint ts-test
 
 go-lint-changed: install-go-tools
 	@echo Linting recently changed go files
-	go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.61.0
 	golangci-lint run --fix --new-from-rev=HEAD~1 --config .golangci.yaml
 
 go-lint: install-go-tools
 	@echo Linting go files
-	go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.61.0
-	golangci-lint run --fix --config .golangci.yaml
+	golangci-lint run --fix --config .golangci.yaml --timeout 5m --concurrency 4
 
 go-test: install-go-tools
 	@echo Running go tests
@@ -118,6 +116,8 @@ go-mod-download:
 	go mod download
 
 install-go-tools: go-mod-download
+	# go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.61.0
+	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.61.0
 
 install-ts-tools:
 	@echo Installing tools from package.json

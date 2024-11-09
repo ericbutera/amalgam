@@ -14,9 +14,15 @@ import (
 )
 
 const (
-	Version      = "2.0"
-	ItemCount    = 25
-	LinkTemplate = "https://faker:8080/feed/%s"
+	Seed           = 0
+	Version        = "2.0"
+	ItemCount      = 25
+	LinkTemplate   = "https://faker:8080/feed/%s"
+	TitleWordCount = 5
+	ParagraphCount = 2
+	SentenceCount  = 3
+	WordCount      = 5
+	Separator      = " "
 )
 
 type RSS struct {
@@ -40,12 +46,13 @@ type Item struct {
 }
 
 func uuidToSeed(id string) (int64, error) {
+	var seed int64
+
 	uuid, err := uuid.Parse(id)
 	if err != nil {
-		return 0, err
+		return seed, err
 	}
 	hash := sha256.Sum256(uuid[:])
-	var seed int64
 
 	// note: this is a test helper so it doesn't matter. in production, this would be a bad idea.
 	attempt := binary.BigEndian.Uint64(hash[:8])
@@ -65,20 +72,20 @@ func generateChannel(seed int64, id string) Channel {
 	channel := Channel{
 		Title:       gofakeit.BuzzWord(),
 		Link:        fmt.Sprintf(LinkTemplate, id),
-		Description: gofakeit.Sentence(10),
+		Description: gofakeit.Sentence(SentenceCount),
 		Items:       generateItems(),
 	}
 	return channel
 }
 
 func generateItems() []Item {
-	gofakeit.Seed(0)
+	gofakeit.Seed(Seed)
 	items := make([]Item, ItemCount)
 	for i := range items {
 		items[i] = Item{
-			Title:       gofakeit.Sentence(5),
+			Title:       gofakeit.Sentence(TitleWordCount),
 			Link:        gofakeit.URL(),
-			Description: gofakeit.Paragraph(1, 2, 5, " "),
+			Description: gofakeit.Paragraph(ParagraphCount, SentenceCount, WordCount, Separator),
 			PubDate:     time.Now().Add(time.Duration(-i) * time.Hour).Format(time.RFC1123),
 		}
 	}

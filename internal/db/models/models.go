@@ -9,7 +9,7 @@ import (
 
 type Feed struct {
 	Base
-	Url      string `json:"url"      gorm:"uniqueIndex" binding:"required,url" example:"https://example.com/"`
+	URL      string `json:"url"      gorm:"uniqueIndex" binding:"required,url" example:"https://example.com/"`
 	Name     string `json:"name"     example:"Example"`
 	IsActive bool   `json:"isActive" example:"true"`
 }
@@ -18,12 +18,12 @@ type Article struct {
 	Base
 	FeedID      string `json:"feedId"            binding:"required"                                example:"1"`
 	Feed        Feed   `gorm:"foreignKey:FeedID"`
-	Url         string `json:"url"               binding:"required"                                example:"https://example.com/"`
+	URL         string `json:"url"               binding:"required"                                example:"https://example.com/"`
 	Title       string `json:"title"             example:"Example Article"`
-	ImageUrl    string `json:"imageUrl"          example:"https://example.com/image.jpg"`
+	ImageURL    string `json:"imageUrl"          example:"https://example.com/image.jpg"`
 	Preview     string `json:"preview"           example:"Article preview text. May contain HTML."`
 	Content     string `json:"content"           example:"Article content text. May contain HTML."`
-	Guid        string `json:"guid"              example:"aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"`
+	GUID        string `json:"guid"              example:"aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"`
 	AuthorName  string `json:"authorName"        example:"Eric Butera"`
 	AuthorEmail string `json:"authorEmail"       example:"example@example.com"`
 }

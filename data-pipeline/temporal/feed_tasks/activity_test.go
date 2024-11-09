@@ -20,7 +20,11 @@ type MockFeedServiceClient struct {
 
 func (m *MockFeedServiceClient) CreateFeed(ctx context.Context, req *pb.CreateFeedRequest, opts ...grpc.CallOption) (*pb.CreateFeedResponse, error) {
 	args := m.Called(ctx, req, opts)
-	return args.Get(0).(*pb.CreateFeedResponse), args.Error(1)
+	response, ok := args.Get(0).(*pb.CreateFeedResponse)
+	if !ok {
+		return nil, args.Error(1)
+	}
+	return response, args.Error(1)
 }
 
 type MockGraphClient struct {
@@ -47,7 +51,8 @@ func TestGenerateFeedsActivity(t *testing.T) {
 	graphMock := new(MockGraphClient)
 	graphMock.On("MakeRequest", mock.Anything, mock.AnythingOfType("*graphql.Request"), mock.AnythingOfType("*graphql.Response")).
 		Run(func(args mock.Arguments) {
-			resp := args.Get(2).(*graphql.Response)
+			resp, ok := args.Get(2).(*graphql.Response)
+			require.True(t, ok, "expected *graphql.Response")
 			if responseData, ok := resp.Data.(*graph_client.AddFeedResponse); ok {
 				responseData.AddFeed.Id = expectedResponse.AddFeed.Id
 			}
