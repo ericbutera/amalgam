@@ -25,12 +25,14 @@ const (
 )
 
 type Activities struct {
-	bucket *bucket.MinioBucket
-	feeds  *feeds.FeedHelper
+	fetch  fetch.Fetch
+	bucket bucket.Bucket
+	feeds  feeds.Feeds
 }
 
-func NewActivities(bucket *bucket.MinioBucket, feeds *feeds.FeedHelper) *Activities {
+func NewActivities(fetch fetch.Fetch, bucket bucket.Bucket, feeds feeds.Feeds) *Activities {
 	return &Activities{
+		fetch:  fetch,
 		bucket: bucket,
 		feeds:  feeds,
 	}
@@ -46,14 +48,12 @@ func (a *Activities) DownloadActivity(ctx context.Context, feedId string, url st
 		"rss_file", rssFile,
 		"url", url,
 	)
-	entry.Info("download: start")
-	err := fetch.Url(ctx, url, func(params fetch.CallbackParams) error {
+	err := a.fetch.Url(ctx, url, func(params fetch.CallbackParams) error {
 		upload, err := a.bucket.WriteStream(ctx, BucketName, rssFile, params.Reader, params.ContentType, params.Size)
 		if err != nil {
-			entry.Error("download error", "error", err)
 			return err
 		}
-		entry.Info("downloaded", "key", upload.Key, "bucket", upload.Bucket)
+		entry.Debug("downloaded activity", "key", upload.Key, "bucket", upload.Bucket)
 		return nil
 	})
 	if err != nil {
@@ -72,14 +72,12 @@ func (a *Activities) ParseActivity(ctx context.Context, feedId string, rssFile s
 
 	rssReader, err := a.bucket.Read(ctx, BucketName, rssFile)
 	if err != nil {
-		entry.Error("bucket read error", "error", err)
 		return articlesFile, err
 	}
 	defer rssReader.Close()
 
 	articles, err := parse.Parse(rssReader)
 	if err != nil {
-		entry.Error("parse: parse error", "error", err)
 		return articlesFile, err
 	}
 
@@ -90,7 +88,6 @@ func (a *Activities) ParseActivity(ctx context.Context, feedId string, rssFile s
 	for _, article := range articles {
 		article.FeedId = feedId
 		if err := encoder.Encode(article); err != nil {
-			entry.Error("parse: error writing jsonlines", "error", err)
 			continue // next article
 		}
 	}
@@ -100,7 +97,7 @@ func (a *Activities) ParseActivity(ctx context.Context, feedId string, rssFile s
 	if err != nil {
 		return articlesFile, err
 	}
-	entry.Info("parse: upload info", "key", upload.Key, "bucket", upload.Bucket)
+	entry.Debug("parse activity: upload info", "key", upload.Key, "bucket", upload.Bucket)
 	return articlesFile, nil
 }
 

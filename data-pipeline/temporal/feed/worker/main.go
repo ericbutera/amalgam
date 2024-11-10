@@ -11,6 +11,7 @@ import (
 	"github.com/ericbutera/amalgam/data-pipeline/temporal/internal/client"
 	"github.com/ericbutera/amalgam/data-pipeline/temporal/internal/feeds"
 	helper "github.com/ericbutera/amalgam/data-pipeline/temporal/internal/worker"
+	"github.com/ericbutera/amalgam/internal/http/fetch"
 	"github.com/ericbutera/amalgam/pkg/config/env"
 	"github.com/ericbutera/amalgam/pkg/otel"
 	"github.com/samber/lo"
@@ -19,12 +20,16 @@ import (
 
 func main() {
 	config := lo.Must(env.New[config.Config]())
+
+	fetcher := lo.Must(fetch.New())
+
 	bucketConfig := lo.Must(bucket.NewConfig(config))
-	bucketClient := lo.Must(bucket.NewMinioClient(bucketConfig))
+	bucketClient := lo.Must(bucket.NewMinio(bucketConfig))
 
 	feeds := lo.Must(feeds.NewFeeds(config.RpcHost, config.RpcInsecure))
 	defer feeds.Close()
-	a := app.NewActivities(bucketClient, feeds)
+
+	a := app.NewActivities(fetcher, bucketClient, feeds)
 
 	ctx := context.Background()
 	shutdown := lo.Must(otel.Setup(ctx))
