@@ -7,6 +7,9 @@ mockname: "Mock{{.InterfaceName}}"
 outpkg: "{{.PackageName}}"
 
 packages:
+  github.com/ericbutera/amalgam/data-pipeline/temporal/feed/internal/transforms:
+    interfaces:
+      Transforms:
   github.com/ericbutera/amalgam/data-pipeline/temporal/internal/bucket:
     interfaces:
       Bucket:

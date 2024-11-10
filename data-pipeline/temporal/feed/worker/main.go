@@ -7,6 +7,7 @@ import (
 
 	app "github.com/ericbutera/amalgam/data-pipeline/temporal/feed"
 	"github.com/ericbutera/amalgam/data-pipeline/temporal/feed/internal/config"
+	"github.com/ericbutera/amalgam/data-pipeline/temporal/feed/internal/transforms"
 	"github.com/ericbutera/amalgam/data-pipeline/temporal/internal/bucket"
 	"github.com/ericbutera/amalgam/data-pipeline/temporal/internal/client"
 	"github.com/ericbutera/amalgam/data-pipeline/temporal/internal/feeds"
@@ -21,6 +22,8 @@ import (
 func main() {
 	config := lo.Must(env.New[config.Config]())
 
+	transforms := transforms.New()
+
 	fetcher := lo.Must(fetch.New())
 
 	bucketConfig := lo.Must(bucket.NewConfig(config))
@@ -29,7 +32,7 @@ func main() {
 	feeds := lo.Must(feeds.NewFeeds(config.RpcHost, config.RpcInsecure))
 	defer feeds.Close()
 
-	a := app.NewActivities(fetcher, bucketClient, feeds)
+	a := app.NewActivities(transforms, fetcher, bucketClient, feeds)
 
 	ctx := context.Background()
 	shutdown := lo.Must(otel.Setup(ctx))
