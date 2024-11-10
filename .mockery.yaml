@@ -1,15 +1,22 @@
 with-expecter: true
 inpackage: True
+
+filename: "mock_{{.InterfaceName | lower }}.go"
+dir: "{{.InterfaceDir}}"
+mockname: "Mock{{.InterfaceName}}"
+outpkg: "{{.PackageName}}"
+
 packages:
+  github.com/ericbutera/amalgam/data-pipeline/temporal/internal/bucket:
+    interfaces:
+      Bucket:
+  github.com/ericbutera/amalgam/data-pipeline/temporal/internal/feeds:
+    interfaces:
+      Feeds:
+  github.com/ericbutera/amalgam/internal/http/fetch:
+    interfaces:
+      Fetch:
   github.com/ericbutera/amalgam/pkg/feeds/v1:
     config:
-      inpackage: True
-      filename: "mock_{{.InterfaceName}}.go"
-      dir: "{{.InterfaceDir}}"
-      mockname: "Mock{{.InterfaceName}}"
-      outpkg: "{{.PackageName}}"
     interfaces:
-      # select the interfaces you want mocked
       FeedServiceClient:
-        # Modify package-level config for this specific interface (if applicable)
-        config:
