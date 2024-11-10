@@ -23,6 +23,15 @@ type Config struct {
 	MinioTrace           bool   `mapstructure:"minio_trace"`
 }
 
+// helper for object storage
+type Bucket interface {
+	Create(ctx context.Context, bucketName string) error
+	SetBucketExpiry(ctx context.Context, bucketName string) error
+	Exists(ctx context.Context, bucketName string, fileName string) (bool, error)
+	WriteStream(ctx context.Context, bucketName string, fileName string, reader io.Reader, contentType string, size int64) (*UploadInfo, error)
+	Read(ctx context.Context, bucketName string, fileName string) (io.ReadCloser, error)
+}
+
 type customRoundTripper struct {
 	Transport http.RoundTripper
 }
@@ -38,7 +47,7 @@ func (c *customRoundTripper) RoundTrip(req *http.Request) (*http.Response, error
 }
 
 // TODO: this struct doesn't make sense (copied from old code)
-type MinioBucket struct {
+type Minio struct {
 	Region string
 	client *minio.Client
 }
@@ -53,8 +62,8 @@ func NewConfig(data any) (*Config, error) {
 	return config, nil
 }
 
-func NewMinioClient(config *Config) (*MinioBucket, error) {
-	bucket := &MinioBucket{
+func NewMinio(config *Config) (Bucket, error) {
+	bucket := &Minio{
 		Region: config.MinioRegion,
 	}
 	transport, err := minio.DefaultTransport(config.MinioUseSsl)
@@ -76,7 +85,7 @@ func NewMinioClient(config *Config) (*MinioBucket, error) {
 	return bucket, nil
 }
 
-func (b *MinioBucket) Create(ctx context.Context, bucketName string) error {
+func (b *Minio) Create(ctx context.Context, bucketName string) error {
 	opts := minio.MakeBucketOptions{
 		Region: b.Region,
 	}
@@ -88,7 +97,7 @@ func (b *MinioBucket) Create(ctx context.Context, bucketName string) error {
 	return nil
 }
 
-func (b *MinioBucket) handleBucketExists(ctx context.Context, bucketName string, err error) error {
+func (b *Minio) handleBucketExists(ctx context.Context, bucketName string, err error) error {
 	exists, errBucketExists := b.client.BucketExists(ctx, bucketName)
 	if errBucketExists == nil && exists {
 		return nil
@@ -96,11 +105,11 @@ func (b *MinioBucket) handleBucketExists(ctx context.Context, bucketName string,
 	return err
 }
 
-func (b *MinioBucket) SetBucketExpiry(ctx context.Context, bucketName string) error {
+func (b *Minio) SetBucketExpiry(ctx context.Context, bucketName string) error {
 	return b.Expiry(ctx, bucketName)
 }
 
-func (b *MinioBucket) Exists(ctx context.Context, bucketName string, fileName string) (bool, error) {
+func (b *Minio) Exists(ctx context.Context, bucketName string, fileName string) (bool, error) {
 	info, err := b.client.StatObject(ctx, bucketName, fileName, minio.StatObjectOptions{})
 	if err != nil {
 		return false, fmt.Errorf("failed to stat object: %w", err)
@@ -111,7 +120,7 @@ func (b *MinioBucket) Exists(ctx context.Context, bucketName string, fileName st
 	return false, nil
 }
 
-func (b *MinioBucket) Expiry(ctx context.Context, bucketName string) error {
+func (b *Minio) Expiry(ctx context.Context, bucketName string) error {
 	config := lifecycle.NewConfiguration()
 	config.Rules = []lifecycle.Rule{
 		{
@@ -125,24 +134,30 @@ func (b *MinioBucket) Expiry(ctx context.Context, bucketName string) error {
 	return b.client.SetBucketLifecycle(ctx, bucketName, config)
 }
 
-func (b *MinioBucket) WriteStream(
+type UploadInfo = minio.UploadInfo
+
+func (b *Minio) WriteStream(
 	ctx context.Context,
 	bucketName string,
 	fileName string,
 	reader io.Reader,
 	contentType string,
 	size int64,
-) (minio.UploadInfo, error) {
+) (*UploadInfo, error) {
 	opts := minio.PutObjectOptions{
 		ContentType: contentType,
 		// TODO: adjust retention & storage class to reduce cloud spend
 		// Less frequently accessed objects should go in cheaper storage classes (e.g. Glacier/archive)
 		// Mode, RetainUntilDate, Expires, StorageClass
 	}
-	return b.client.PutObject(ctx, bucketName, fileName, reader, size, opts)
+	upload, err := b.client.PutObject(ctx, bucketName, fileName, reader, size, opts)
+	if err != nil {
+		return nil, fmt.Errorf("failed to put object: %w", err)
+	}
+	return &upload, nil
 }
 
-func (b *MinioBucket) Read(ctx context.Context, bucketName string, fileName string) (io.ReadCloser, error) {
+func (b *Minio) Read(ctx context.Context, bucketName string, fileName string) (io.ReadCloser, error) {
 	obj, err := b.client.GetObject(ctx, bucketName, fileName, minio.GetObjectOptions{})
 	if err != nil {
 		return nil, fmt.Errorf("failed to get object: %w", err)

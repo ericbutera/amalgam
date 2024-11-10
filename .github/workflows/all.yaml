@@ -14,15 +14,30 @@ jobs:
     uses: ./.github/workflows/buf-lint.yaml
     secrets: inherit
 
-  golang-checks:
-    uses: ./.github/workflows/golang-checks.yaml
+  # note: golang-checks have been moved to go-coverage and golangci-lint.yaml (much nicer)
+  # i still prefer to have the ability to run these fast & locally. it's possible to run
+  # these locally with act, but it is a bit slow. this should also be reflected in
+  # pre-commit. it's very jarring when something behaves differently locally vs in CI.
+
+  golangci-lint:
+    uses: ./.github/workflows/golangci-lint.yaml
     secrets: inherit
+    permissions:
+      contents: read
+
+  go-coverage:
+    uses: ./.github/workflows/go-coverage.yaml
+    secrets: inherit
+    permissions:
+      contents: read
+      actions: read
+      pull-requests: write
 
   ts-checks:
     uses: ./.github/workflows/ts-checks.yaml
     secrets: inherit
 
   tilt-ci:
-    needs: [golang-checks, ts-checks, buf-lint]
+    needs: [golangci-lint, ts-checks, buf-lint]
     uses: ./.github/workflows/tilt-ci.yaml
     secrets: inherit

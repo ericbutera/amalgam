@@ -9,6 +9,13 @@ import (
 	"google.golang.org/grpc"
 )
 
+// helper to interact with feed rpc service
+type Feeds interface {
+	Close() error
+	GetFeeds() ([]Feed, error)
+	SaveArticle(ctx context.Context, article rss.Article) (string, error)
+}
+
 type Feed struct {
 	Url string
 	ID  string
@@ -20,7 +27,7 @@ type FeedHelper struct {
 	closers []func() error
 }
 
-func NewFeeds(host string, insecure bool) (*FeedHelper, error) {
+func NewFeeds(host string, insecure bool) (Feeds, error) {
 	rpc, err := rpc.NewClient(host, insecure)
 	if err != nil {
 		return nil, err

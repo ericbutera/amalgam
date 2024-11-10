@@ -55,14 +55,10 @@ func uuidToSeed(id string) (int64, error) {
 	hash := sha256.Sum256(uuid[:])
 
 	// note: this is a test helper so it doesn't matter. in production, this would be a bad idea.
-	attempt := binary.BigEndian.Uint64(hash[:8])
-	if attempt > math.MaxInt64 {
-		bigAttempt := new(big.Int).SetUint64(attempt)
-		bigMaxInt64 := new(big.Int).SetInt64(math.MaxInt64)
-		seed = bigAttempt.Mod(bigAttempt, bigMaxInt64).Int64()
-	} else {
-		seed = int64(attempt)
-	}
+	attempt := binary.BigEndian.Uint64(hash[:8]) % math.MaxInt64
+	bigAttempt := new(big.Int).SetUint64(attempt)
+	bigMaxInt64 := new(big.Int).SetInt64(math.MaxInt64)
+	seed = bigAttempt.Mod(bigAttempt, bigMaxInt64).Int64()
 
 	return seed, nil
 }
