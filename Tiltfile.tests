@@ -14,9 +14,11 @@ test_go('go-unit-tests', '.', '.',
   ]
 )
 
+# env comes from dotenv
 local_resource(
   "go integration tests",
   "./scripts/go-integration-tests.sh",
+  deps=["rpc", "minio"],
   trigger_mode=TRIGGER_MODE_MANUAL,
   auto_init=config.tilt_subcommand == "ci",
   labels=["test"],

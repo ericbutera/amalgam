@@ -38,10 +38,10 @@ func main() {
 
 	gql_prom.Register()
 
-	c := lo.Must(rpc.NewClient(config.RpcHost, config.RpcInsecure))
-	defer c.Conn.Close()
+	c, closer := lo.Must2(rpc.New(config.RpcHost, config.RpcInsecure))
+	defer lo.Must0(closer())
 
-	srv := newServer(c.Client)
+	srv := newServer(c)
 	srv.Use(otelgqlgen.Middleware())
 	srv.Use(gql_prom.Tracer{})
 	// TODO: complexity limit srv.Use(extension.ComplexityLimit{})

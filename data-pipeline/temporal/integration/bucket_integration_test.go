@@ -15,35 +15,40 @@ import (
 const TestBucketName = "test-bucket-name"
 
 func TestMinioCreate(t *testing.T) {
-	// https://mickey.dev/posts/go-build-tags-testing/
 	t.Parallel()
-	ctx := context.Background()
 
+	config := newConfig(t)
+
+	b, err := bucket.NewMinio(config)
+	require.NoError(t, err)
+
+	ctx := context.Background()
+	err = b.Create(ctx, TestBucketName)
+	require.NoError(t, err)
+
+	ok, err := newMinioClient(t, config).BucketExists(ctx, TestBucketName)
+	require.NoError(t, err)
+	require.True(t, ok)
+}
+
+func newConfig(t *testing.T) *bucket.Config {
 	config := &bucket.Config{
 		MinioEndpoint:        os.Getenv("MINIO_ENDPOINT"),
 		MinioAccessKey:       os.Getenv("MINIO_ACCESS_KEY"),
 		MinioSecretAccessKey: os.Getenv("MINIO_SECRET_ACCESS_KEY"),
 		MinioUseSsl:          lo.Ternary(os.Getenv("MINIO_USE_SSL") == "false", false, true),
 	}
-
 	if config.MinioEndpoint == "" {
-		t.Skip("skipping test; no Minio endpoint")
+		t.Skip("MINIO_ENDPOINT not set")
 	}
+	return config
+}
 
-	b, err := bucket.NewMinio(config)
-	require.NoError(t, err)
-
-	err = b.Create(ctx, TestBucketName)
-	require.NoError(t, err)
-	// TODO: test bucket exists
-
-	client, err := minio.New(config.MinioEndpoint, &minio.Options{
+func newMinioClient(t *testing.T, config *bucket.Config) *minio.Client {
+	c, err := minio.New(config.MinioEndpoint, &minio.Options{
 		Creds:  credentials.NewStaticV4(config.MinioAccessKey, config.MinioSecretAccessKey, ""),
 		Secure: config.MinioUseSsl,
 	})
 	require.NoError(t, err)
-
-	ok, err := client.BucketExists(ctx, TestBucketName)
-	require.NoError(t, err)
-	require.True(t, ok)
+	return c
 }
