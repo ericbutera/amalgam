@@ -68,12 +68,12 @@ func TestDownloadActivity(t *testing.T) {
 		Return(nil)
 
 	s.bucket.EXPECT().
-		WriteStream(mock.Anything, app.BucketName, rssFile, reader, contentType, size).
+		WriteStream(mock.Anything, app.BucketName, rssFile, reader, contentType).
 		Return(&bucket.UploadInfo{Key: rssFile, Bucket: app.BucketName}, nil)
 
 	out, err := s.activities.DownloadActivity(context.Background(), feedId, url)
 	require.NoError(t, err)
-	assert.Equal(t, "/feeds/feed-id-123/raw.xml", out)
+	assert.Equal(t, "feeds/feed-id-123/raw.xml", out)
 }
 
 func dataToArticles(t *testing.T, data io.Reader) parse.Articles {
@@ -106,13 +106,13 @@ func TestParseActivity(t *testing.T) {
 	feedId := "feed-id-123"
 	rssFile := fmt.Sprintf(app.RssPathFormat, feedId)
 	articlesFile := fmt.Sprintf(app.ArticlePathFormat, feedId)
-	contentType := "application/json"
-	size := int64(1)
 
 	s := setupActivities(t)
 
 	matcher := mock.MatchedBy(func(data any) bool {
-		expected, err := parse.Parse(getRssData(t))
+		reader := getRssData(t)
+		defer reader.Close()
+		expected, err := parse.Parse(reader)
 		require.NoError(t, err)
 
 		actual := dataToArticles(t, data.(io.Reader))
@@ -125,11 +125,11 @@ func TestParseActivity(t *testing.T) {
 		Return(getRssData(t), nil)
 
 	s.bucket.EXPECT().
-		WriteStream(mock.Anything, app.BucketName, articlesFile, mock.AnythingOfType("*bytes.Buffer"), contentType, size).
+		WriteStream(mock.Anything, app.BucketName, articlesFile, mock.AnythingOfType("*bytes.Buffer"), app.ArticleContentType).
 		Return(&bucket.UploadInfo{Key: articlesFile, Bucket: app.BucketName}, nil)
 
 	out, err := s.activities.ParseActivity(context.Background(), feedId, rssFile)
 	require.NoError(t, err)
 	assert.Equal(t, articlesFile, out)
-	s.bucket.AssertCalled(t, "WriteStream", mock.Anything, app.BucketName, articlesFile, matcher, contentType, size)
+	s.bucket.AssertCalled(t, "WriteStream", mock.Anything, app.BucketName, articlesFile, matcher, app.ArticleContentType)
 }

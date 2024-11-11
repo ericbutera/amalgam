@@ -19,9 +19,10 @@ import (
 )
 
 const (
-	BucketName        = "feeds"
-	RssPathFormat     = "/feeds/%s/raw.xml"
-	ArticlePathFormat = "/feeds/%s/articles.jsonl"
+	BucketName         = "feeds"
+	RssPathFormat      = "feeds/%s/raw.xml"
+	ArticlePathFormat  = "feeds/%s/articles.jsonl"
+	ArticleContentType = "application/json"
 )
 
 type Activities struct {
@@ -51,11 +52,11 @@ func (a *Activities) DownloadActivity(ctx context.Context, feedId string, url st
 		"url", url,
 	)
 	err := a.fetch.Url(ctx, url, func(params fetch.CallbackParams) error {
-		upload, err := a.bucket.WriteStream(ctx, BucketName, rssFile, params.Reader, params.ContentType, params.Size)
+		upload, err := a.bucket.WriteStream(ctx, BucketName, rssFile, params.Reader, params.ContentType)
 		if err != nil {
 			return err
 		}
-		entry.Debug("downloaded activity", "key", upload.Key, "bucket", upload.Bucket)
+		entry.Debug("downloaded activity", "key", upload.Key, "bucket", upload.Bucket, "size", upload.Size)
 		return nil
 	})
 	if err != nil {
@@ -79,12 +80,12 @@ func (a *Activities) ParseActivity(ctx context.Context, feedId string, rssFile s
 	}
 	defer rssReader.Close()
 
-	articles, err := a.transforms.RssToArticles(rssReader) // articles, err := parse.Parse(rssReader)
+	articles, err := a.transforms.RssToArticles(rssReader)
 	if err != nil {
 		return articlesFile, err
 	}
 
-	jsonl, errs := a.transforms.ArticleToJsonl(feedId, articles) // encoder.ArticleToJsonl(feedId, articles)
+	jsonl, errs := a.transforms.ArticleToJsonl(feedId, articles)
 	if len(errs) > 0 {
 		entry.Error("parse activity: encode errors", "errors", len(errs))
 		for err := range errs {
@@ -92,12 +93,12 @@ func (a *Activities) ParseActivity(ctx context.Context, feedId string, rssFile s
 		}
 	}
 
-	size := int64(1)
-	upload, err := a.bucket.WriteStream(ctx, BucketName, articlesFile, jsonl, "application/json", size)
+	upload, err := a.bucket.WriteStream(ctx, BucketName, articlesFile, &jsonl, ArticleContentType)
 	if err != nil {
+		entry.Error("parse activity: write error", "error", err)
 		return articlesFile, err
 	}
-	entry.Debug("parse activity: upload info", "key", upload.Key, "bucket", upload.Bucket)
+	entry.Debug("parse activity: upload info", "key", upload.Key, "bucket", upload.Bucket, "size", upload.Size)
 	return articlesFile, nil
 }
 
@@ -164,6 +165,6 @@ func (a *Activities) SaveActivity(ctx context.Context, feedId string, articlesPa
 		entry.Debug("saved article", "article_url", article.Url, "article_id", id)
 	}
 
-	entry.Info("save results", "succeeded", results.Succeeded, "failed", results.Failed)
+	entry.Debug("save results", "succeeded", results.Succeeded, "failed", results.Failed)
 	return nil
 }

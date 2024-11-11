@@ -10,7 +10,7 @@ import (
 
 type Transforms interface {
 	RssToArticles(rss io.ReadCloser) (parse.Articles, error)
-	ArticleToJsonl(feedId string, articles parse.Articles) (io.Reader, []error)
+	ArticleToJsonl(feedId string, articles parse.Articles) (bytes.Buffer, []error)
 }
 
 type transforms struct{}
@@ -23,7 +23,8 @@ func (*transforms) RssToArticles(rss io.ReadCloser) (parse.Articles, error) {
 	return parse.Parse(rss)
 }
 
-func (*transforms) ArticleToJsonl(feedId string, articles parse.Articles) (io.Reader, []error) {
+func (*transforms) ArticleToJsonl(feedId string, articles parse.Articles) (bytes.Buffer, []error) {
+	// TODO: research returning a reader instead of a buffer. io.Pipe?
 	var buf bytes.Buffer
 	encoder := json.NewEncoder(&buf)
 
@@ -37,7 +38,5 @@ func (*transforms) ArticleToJsonl(feedId string, articles parse.Articles) (io.Re
 		}
 	}
 
-	// reader := bytes.NewReader(&buf)
-	var reader io.Reader = &buf
-	return reader, errs
+	return buf, errs
 }
