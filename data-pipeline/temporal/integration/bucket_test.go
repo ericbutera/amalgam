@@ -1,3 +1,6 @@
+//go:build integration
+// +build integration
+
 package bucket_test
 
 import (
@@ -32,6 +35,9 @@ func TestMinioCreate(t *testing.T) {
 }
 
 func newConfig(t *testing.T) *bucket.Config {
+	// if testing.Short() {
+	// 	t.Skip("skipping test in short mode.")
+	// }
 	config := &bucket.Config{
 		MinioEndpoint:        os.Getenv("MINIO_ENDPOINT"),
 		MinioAccessKey:       os.Getenv("MINIO_ACCESS_KEY"),

@@ -1,3 +1,6 @@
+//go:build integration
+// +build integration
+
 package integration_test
 
 import (
@@ -23,6 +26,9 @@ type Config struct {
 }
 
 func newConfig(t *testing.T) *Config {
+	// if testing.Short() {
+	// 	t.Skip("skipping test in short mode.")
+	// }
 	c := &Config{
 		target:      os.Getenv("RPC_HOST"),
 		useInsecure: lo.Ternary(os.Getenv("RPC_INSECURE") == "true", true, false),
