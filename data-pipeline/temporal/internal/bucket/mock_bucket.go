@@ -234,9 +234,9 @@ func (_c *MockBucket_SetBucketExpiry_Call) RunAndReturn(run func(context.Context
 	return _c
 }
 
-// WriteStream provides a mock function with given fields: ctx, bucketName, fileName, reader, contentType, size
-func (_m *MockBucket) WriteStream(ctx context.Context, bucketName string, fileName string, reader io.Reader, contentType string, size int64) (*UploadInfo, error) {
-	ret := _m.Called(ctx, bucketName, fileName, reader, contentType, size)
+// WriteStream provides a mock function with given fields: ctx, bucketName, fileName, reader, contentType
+func (_m *MockBucket) WriteStream(ctx context.Context, bucketName string, fileName string, reader io.Reader, contentType string) (*UploadInfo, error) {
+	ret := _m.Called(ctx, bucketName, fileName, reader, contentType)
 
 	if len(ret) == 0 {
 		panic("no return value specified for WriteStream")
@@ -244,19 +244,19 @@ func (_m *MockBucket) WriteStream(ctx context.Context, bucketName string, fileNa
 
 	var r0 *UploadInfo
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, string, string, io.Reader, string, int64) (*UploadInfo, error)); ok {
-		return rf(ctx, bucketName, fileName, reader, contentType, size)
+	if rf, ok := ret.Get(0).(func(context.Context, string, string, io.Reader, string) (*UploadInfo, error)); ok {
+		return rf(ctx, bucketName, fileName, reader, contentType)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, string, string, io.Reader, string, int64) *UploadInfo); ok {
-		r0 = rf(ctx, bucketName, fileName, reader, contentType, size)
+	if rf, ok := ret.Get(0).(func(context.Context, string, string, io.Reader, string) *UploadInfo); ok {
+		r0 = rf(ctx, bucketName, fileName, reader, contentType)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*UploadInfo)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, string, string, io.Reader, string, int64) error); ok {
-		r1 = rf(ctx, bucketName, fileName, reader, contentType, size)
+	if rf, ok := ret.Get(1).(func(context.Context, string, string, io.Reader, string) error); ok {
+		r1 = rf(ctx, bucketName, fileName, reader, contentType)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -275,14 +275,13 @@ type MockBucket_WriteStream_Call struct {
 //   - fileName string
 //   - reader io.Reader
 //   - contentType string
-//   - size int64
-func (_e *MockBucket_Expecter) WriteStream(ctx interface{}, bucketName interface{}, fileName interface{}, reader interface{}, contentType interface{}, size interface{}) *MockBucket_WriteStream_Call {
-	return &MockBucket_WriteStream_Call{Call: _e.mock.On("WriteStream", ctx, bucketName, fileName, reader, contentType, size)}
+func (_e *MockBucket_Expecter) WriteStream(ctx interface{}, bucketName interface{}, fileName interface{}, reader interface{}, contentType interface{}) *MockBucket_WriteStream_Call {
+	return &MockBucket_WriteStream_Call{Call: _e.mock.On("WriteStream", ctx, bucketName, fileName, reader, contentType)}
 }
 
-func (_c *MockBucket_WriteStream_Call) Run(run func(ctx context.Context, bucketName string, fileName string, reader io.Reader, contentType string, size int64)) *MockBucket_WriteStream_Call {
+func (_c *MockBucket_WriteStream_Call) Run(run func(ctx context.Context, bucketName string, fileName string, reader io.Reader, contentType string)) *MockBucket_WriteStream_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(string), args[2].(string), args[3].(io.Reader), args[4].(string), args[5].(int64))
+		run(args[0].(context.Context), args[1].(string), args[2].(string), args[3].(io.Reader), args[4].(string))
 	})
 	return _c
 }
@@ -292,7 +291,7 @@ func (_c *MockBucket_WriteStream_Call) Return(_a0 *UploadInfo, _a1 error) *MockB
 	return _c
 }
 
-func (_c *MockBucket_WriteStream_Call) RunAndReturn(run func(context.Context, string, string, io.Reader, string, int64) (*UploadInfo, error)) *MockBucket_WriteStream_Call {
+func (_c *MockBucket_WriteStream_Call) RunAndReturn(run func(context.Context, string, string, io.Reader, string) (*UploadInfo, error)) *MockBucket_WriteStream_Call {
 	_c.Call.Return(run)
 	return _c
 }

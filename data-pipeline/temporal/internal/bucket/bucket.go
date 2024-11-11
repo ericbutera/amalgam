@@ -23,12 +23,14 @@ type Config struct {
 	MinioTrace           bool   `mapstructure:"minio_trace"`
 }
 
+const DefaultWriteSize int64 = -1
+
 // helper for object storage
 type Bucket interface {
 	Create(ctx context.Context, bucketName string) error
 	SetBucketExpiry(ctx context.Context, bucketName string) error
 	Exists(ctx context.Context, bucketName string, fileName string) (bool, error)
-	WriteStream(ctx context.Context, bucketName string, fileName string, reader io.Reader, contentType string, size int64) (*UploadInfo, error)
+	WriteStream(ctx context.Context, bucketName string, fileName string, reader io.Reader, contentType string) (*UploadInfo, error)
 	Read(ctx context.Context, bucketName string, fileName string) (io.ReadCloser, error)
 }
 
@@ -41,6 +43,9 @@ func (c *customRoundTripper) RoundTrip(req *http.Request) (*http.Response, error
 	slog.Debug("round-trip request", "url", req.URL, "start", start)
 
 	resp, err := c.Transport.RoundTrip(req)
+	if err != nil {
+		return nil, err
+	}
 
 	slog.Debug("round-trip response", "status", resp.Status, "duration", time.Since(start), "url", req.URL)
 	return resp, err
@@ -142,7 +147,6 @@ func (b *Minio) WriteStream(
 	fileName string,
 	reader io.Reader,
 	contentType string,
-	size int64,
 ) (*UploadInfo, error) {
 	opts := minio.PutObjectOptions{
 		ContentType: contentType,
@@ -150,7 +154,7 @@ func (b *Minio) WriteStream(
 		// Less frequently accessed objects should go in cheaper storage classes (e.g. Glacier/archive)
 		// Mode, RetainUntilDate, Expires, StorageClass
 	}
-	upload, err := b.client.PutObject(ctx, bucketName, fileName, reader, size, opts)
+	upload, err := b.client.PutObject(ctx, bucketName, fileName, reader, DefaultWriteSize, opts)
 	if err != nil {
 		return nil, fmt.Errorf("failed to put object: %w", err)
 	}

@@ -2,6 +2,8 @@ package test
 
 import (
 	"errors"
+	"io"
+	"os"
 	"path"
 	"runtime"
 	"testing"
@@ -17,6 +19,14 @@ func GetTestDataPath(datafile string) (string, error) {
 		return "", errors.New("unable to discover path")
 	}
 	return path.Join(path.Dir(filename), "..", "..", "testdata", datafile), nil
+}
+
+func FileToReadCloser(file string) (io.ReadCloser, error) {
+	path, err := GetTestDataPath(file)
+	if err != nil {
+		return nil, err
+	}
+	return os.Open(path)
 }
 
 // diff compares two structs and prints the differences

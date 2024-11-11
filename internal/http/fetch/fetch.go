@@ -18,7 +18,7 @@ type Fetch interface {
 }
 
 type CallbackParams struct {
-	Reader      io.Reader
+	Reader      io.ReadCloser
 	Size        int64
 	ContentType string
 }

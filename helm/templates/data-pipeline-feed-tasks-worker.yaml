@@ -32,6 +32,8 @@ spec:
           ports:
             - containerPort: 9090
           env:
+            - name: FAKE_HOST
+              value: "http://faker:8080"
             - name: TEMPORAL_HOST
               value: "temporal:7233"
             - name: GRAPH_HOST
@@ -48,7 +50,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: data-pipeline-auth
-                  key: MINIO_SECRET_ACCESS_KEY
+                  key: MINIO_ACCESS_KEY
             - name: MINIO_SECRET_ACCESS_KEY
               valueFrom:
                 secretKeyRef:
