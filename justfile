@@ -36,9 +36,6 @@ go-lint: install-go-tools
 	@echo Linting go files
 	golangci-lint run --fix --config .golangci.yaml --timeout 5m --concurrency 4
 
-go-integration-test:
-	go test -tags=integration ./...
-
 go-test: install-go-tools
 	@echo Running go tests
 	go test -timeout 30s ./...
@@ -136,6 +133,7 @@ install-ts-tools:
 
 setup:
 	pre-commit install --install-hook
+	pre-commit install --hook-type commit-msg
 
 # Generate graph
 generate-graph-server:
