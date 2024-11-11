@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"fmt"
 	"io"
 	"testing"
 
@@ -30,7 +29,7 @@ type activitySetup struct {
 	transforms transforms.Transforms
 	fetcher    *fetch.MockFetch
 	bucket     *bucket.MockBucket
-	feedHelper *feeds.MockFeeds
+	feeds      *feeds.MockFeeds
 	activities *app.Activities
 }
 
@@ -39,21 +38,21 @@ func setupActivities(t *testing.T) *activitySetup {
 	transforms := transforms.New()
 	fetcher := fetch.NewMockFetch(t)
 	bucketClient := bucket.NewMockBucket(t)
-	feedHelper := feeds.NewMockFeeds(t)
+	feeds := feeds.NewMockFeeds(t)
 
 	return &activitySetup{
 		transforms: transforms,
 		fetcher:    fetcher,
 		bucket:     bucketClient,
-		feedHelper: feedHelper,
-		activities: app.NewActivities(transforms, fetcher, bucketClient, feedHelper),
+		feeds:      feeds,
+		activities: app.NewActivities(transforms, fetcher, bucketClient, feeds),
 	}
 }
 
 func TestDownloadActivity(t *testing.T) {
 	feedId := "feed-id-123"
 	url := "http://localhost/feed.xml"
-	rssFile := fmt.Sprintf(app.RssPathFormat, feedId)
+	rssFile := app.RssPath(feedId)
 	reader := newReader("test data")
 	contentType := "application/xml"
 	size := int64(9)
@@ -104,8 +103,8 @@ func getRssData(t *testing.T) io.ReadCloser {
 
 func TestParseActivity(t *testing.T) {
 	feedId := "feed-id-123"
-	rssFile := fmt.Sprintf(app.RssPathFormat, feedId)
-	articlesFile := fmt.Sprintf(app.ArticlePathFormat, feedId)
+	rssFile := app.RssPath(feedId)
+	articlesFile := app.ArticlePath(feedId)
 
 	s := setupActivities(t)
 
@@ -132,4 +131,28 @@ func TestParseActivity(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, articlesFile, out)
 	s.bucket.AssertCalled(t, "WriteStream", mock.Anything, app.BucketName, articlesFile, matcher, app.ArticleContentType)
+}
+
+func TestSaveActivity(t *testing.T) {
+	s := setupActivities(t)
+
+	article := parse.Article{
+		FeedId: "feed-id-123",
+		Title:  "Test Article",
+		Url:    "http://example.com/test",
+	}
+
+	s.bucket.EXPECT().
+		Read(mock.Anything, app.BucketName, app.ArticlePath("feed-id-123")).
+		Return(newReader(`{"feed_id":"feed-id-123","title":"Test Article","url":"http://example.com/test"}`), nil)
+
+	s.feeds.EXPECT().
+		SaveArticle(mock.Anything, article).
+		Return("id", nil)
+
+	articlesFile := app.ArticlePath("feed-id-123")
+
+	results, err := s.activities.SaveActivity(context.Background(), "feed-id-123", articlesFile)
+	require.NoError(t, err)
+	assert.Equal(t, app.SaveResults{Succeeded: 1, Failed: 0}, results)
 }
