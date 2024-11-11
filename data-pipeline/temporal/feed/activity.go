@@ -3,13 +3,13 @@ package app
 // TODO: https://docs.temporal.io/develop/go/testing-suite
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"log/slog"
 
+	"github.com/ericbutera/amalgam/data-pipeline/temporal/feed/internal/transforms"
 	"github.com/ericbutera/amalgam/data-pipeline/temporal/internal/bucket"
 	"github.com/ericbutera/amalgam/data-pipeline/temporal/internal/feeds"
 	"github.com/ericbutera/amalgam/internal/http/fetch"
@@ -19,22 +19,25 @@ import (
 )
 
 const (
-	BucketName        = "feeds"
-	RssPathFormat     = "/feeds/%s/raw.xml"
-	ArticlePathFormat = "/feeds/%s/articles.jsonlines"
+	BucketName         = "feeds"
+	RssPathFormat      = "feeds/%s/raw.xml"
+	ArticlePathFormat  = "feeds/%s/articles.jsonl"
+	ArticleContentType = "application/json"
 )
 
 type Activities struct {
-	fetch  fetch.Fetch
-	bucket bucket.Bucket
-	feeds  feeds.Feeds
+	transforms transforms.Transforms
+	fetch      fetch.Fetch
+	bucket     bucket.Bucket
+	feeds      feeds.Feeds
 }
 
-func NewActivities(fetch fetch.Fetch, bucket bucket.Bucket, feeds feeds.Feeds) *Activities {
+func NewActivities(transforms transforms.Transforms, fetch fetch.Fetch, bucket bucket.Bucket, feeds feeds.Feeds) *Activities {
 	return &Activities{
-		fetch:  fetch,
-		bucket: bucket,
-		feeds:  feeds,
+		transforms: transforms,
+		fetch:      fetch,
+		bucket:     bucket,
+		feeds:      feeds,
 	}
 }
 
@@ -49,11 +52,11 @@ func (a *Activities) DownloadActivity(ctx context.Context, feedId string, url st
 		"url", url,
 	)
 	err := a.fetch.Url(ctx, url, func(params fetch.CallbackParams) error {
-		upload, err := a.bucket.WriteStream(ctx, BucketName, rssFile, params.Reader, params.ContentType, params.Size)
+		upload, err := a.bucket.WriteStream(ctx, BucketName, rssFile, params.Reader, params.ContentType)
 		if err != nil {
 			return err
 		}
-		entry.Debug("downloaded activity", "key", upload.Key, "bucket", upload.Bucket)
+		entry.Debug("downloaded activity", "key", upload.Key, "bucket", upload.Bucket, "size", upload.Size)
 		return nil
 	})
 	if err != nil {
@@ -63,6 +66,7 @@ func (a *Activities) DownloadActivity(ctx context.Context, feedId string, url st
 }
 
 // Transform raw rss file into structured articles.
+// TODO: actually support a streaming bucket read -> rss to articles -> bucket write
 func (a *Activities) ParseActivity(ctx context.Context, feedId string, rssFile string) (string, error) { // TODO: ParseActivity -> ArticleActivity
 	articlesFile := fmt.Sprintf(ArticlePathFormat, feedId)
 	entry := slog.Default().With(
@@ -76,28 +80,25 @@ func (a *Activities) ParseActivity(ctx context.Context, feedId string, rssFile s
 	}
 	defer rssReader.Close()
 
-	articles, err := parse.Parse(rssReader)
+	articles, err := a.transforms.RssToArticles(rssReader)
 	if err != nil {
 		return articlesFile, err
 	}
 
-	// TODO: actually support a streaming write
-	var reader bytes.Buffer
-	encoder := json.NewEncoder(&reader)
-
-	for _, article := range articles {
-		article.FeedId = feedId
-		if err := encoder.Encode(article); err != nil {
-			continue // next article
+	jsonl, errs := a.transforms.ArticleToJsonl(feedId, articles)
+	if len(errs) > 0 {
+		entry.Error("parse activity: encode errors", "errors", len(errs))
+		for err := range errs {
+			entry.Debug("article to jsonlines", "error", err)
 		}
 	}
 
-	size := int64(reader.Len())
-	upload, err := a.bucket.WriteStream(ctx, BucketName, articlesFile, &reader, "application/json", size)
+	upload, err := a.bucket.WriteStream(ctx, BucketName, articlesFile, &jsonl, ArticleContentType)
 	if err != nil {
+		entry.Error("parse activity: write error", "error", err)
 		return articlesFile, err
 	}
-	entry.Debug("parse activity: upload info", "key", upload.Key, "bucket", upload.Bucket)
+	entry.Debug("parse activity: upload info", "key", upload.Key, "bucket", upload.Bucket, "size", upload.Size)
 	return articlesFile, nil
 }
 
@@ -164,6 +165,6 @@ func (a *Activities) SaveActivity(ctx context.Context, feedId string, articlesPa
 		entry.Debug("saved article", "article_url", article.Url, "article_id", id)
 	}
 
-	entry.Info("save results", "succeeded", results.Succeeded, "failed", results.Failed)
+	entry.Debug("save results", "succeeded", results.Succeeded, "failed", results.Failed)
 	return nil
 }

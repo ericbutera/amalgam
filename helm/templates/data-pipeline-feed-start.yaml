@@ -27,7 +27,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: data-pipeline-auth
-                  key: MINIO_SECRET_ACCESS_KEY
+                  key: MINIO_ACCESS_KEY
             - name: MINIO_SECRET_ACCESS_KEY
               valueFrom:
                 secretKeyRef:

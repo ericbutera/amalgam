@@ -78,20 +78,20 @@ k8s_resource("faker", port_forwards=[port_forward(8084, 8080, "http")], labels=[
 load('ext://uibutton', 'cmd_button')
 cmd_button('fetch feeds',
   argv=['sh', '-c', 'cd data-pipeline/temporal/feed && go run start/main.go'],
-  resource='feed-worker',
+  resource='temporal',
   icon_name='add_to_queue',
   text='fetch feeds',
 )
 cmd_button('generate feeds',
   argv=['sh', '-c', 'cd data-pipeline/temporal/feed_tasks && go run start/main.go'],
-  resource='feed-tasks-worker',
+  resource='temporal',
   icon_name='add_to_queue',
   text='generate fake feeds',
 )
 
 k8s_yaml(secret_from_dict("data-pipeline-auth", inputs={
   "MINIO_ACCESS_KEY": "minio",
-  "MINIO_SECRET_ACCESS_KEY": "password",
+  "MINIO_SECRET_ACCESS_KEY": "minio-password",
 }))
 
 go_compile('feed-start-compile', './data-pipeline/temporal/feed/start', ['./data-pipeline/temporal'])
