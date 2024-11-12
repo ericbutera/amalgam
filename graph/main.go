@@ -3,7 +3,6 @@ package main
 // github.com/99designs/gqlgen-contrib/prometheus
 import (
 	"context"
-	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
@@ -77,9 +76,8 @@ func newHealthzHandler() http.HandlerFunc {
 
 func newReadyzHandler(client pb.FeedServiceClient) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Printf("client %v", client)
-		resp, err := client.ListFeeds(r.Context(), &pb.ListFeedsRequest{})
-		fmt.Printf("resp %v", resp)
+		// TODO: add a low cost readiness endpoint (listfeeds could be expensive)
+		_, err := client.ListFeeds(r.Context(), &pb.ListFeedsRequest{})
 		if err != nil {
 			w.WriteHeader(http.StatusServiceUnavailable)
 			return

@@ -21,7 +21,7 @@ test_go('go-unit-tests', '.', '.',
 local_resource(
   "go integration tests",
   "just go-integration-test",
-  resource_deps=["minio", "rpc"],
+  resource_deps=["minio", "rpc","graph"],
   trigger_mode=TRIGGER_MODE_MANUAL,
   auto_init=config.tilt_subcommand == "ci",
   labels=["test"],
