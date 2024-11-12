@@ -19,6 +19,8 @@ import (
 	"github.com/ericbutera/amalgam/rpc/internal/server/observability"
 	"github.com/oklog/run"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/health"
+	healthpb "google.golang.org/grpc/health/grpc_health_v1"
 	"gorm.io/gorm"
 )
 
@@ -163,6 +165,11 @@ func New(opts ...Option) (*Server, error) {
 	}
 
 	pb.RegisterFeedServiceServer(server.grpcSrv, &server)
+
+	// TODO: extract package
+	healthService := health.NewServer()
+	healthpb.RegisterHealthServer(server.grpcSrv, healthService)
+	healthService.SetServingStatus("rpc", healthpb.HealthCheckResponse_SERVING)
 
 	return &server, nil
 }

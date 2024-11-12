@@ -3,7 +3,8 @@ load('ext://dotenv', 'dotenv')
 load('ext://secret', 'secret_create_generic', 'secret_from_dict')
 secret_settings(disable_scrub=True)
 
-dotenv('.env')
+# this will define environment variables that use "localhost" instead of service names like "grpc"
+dotenv('.env.local')
 
 k8s_yaml(helm('./helm'))
 
@@ -116,7 +117,7 @@ k8s_resource("feed-tasks-worker", resource_deps=["temporal","rpc"], labels=["dat
 
 # https://k6.io/
 docker_build("k6-image", "k6")
-k8s_resource("k6", trigger_mode=TRIGGER_MODE_MANUAL, resource_deps=["api"], labels=["test"])
+k8s_resource("k6", trigger_mode=TRIGGER_MODE_MANUAL, resource_deps=["api","rpc"], labels=["test"])
 
 load('./containers/tilt/extensions/mysql/Tiltfile', 'deploy_mysql')
 deploy_mysql(root_pw="password", user_pw="amalgam-password", migration_pw="password")
@@ -135,7 +136,6 @@ deploy_minio(
   secret_name="feed-minio-auth",
   root_user="minio",
   root_password="minio-password",
-  auto_init=(not IS_CI)
 )
 
 include('Tiltfile.tests')

@@ -48,12 +48,13 @@ spec:
           ports:
             - containerPort: 3306
           resources: {}
-          livenessProbe:
-            exec:
-              command: ["mysqladmin", "ping"]
-            initialDelaySeconds: 30
-            periodSeconds: 10
-            timeoutSeconds: 5
+          # TODO: research best way to handle this with slow test runners
+          # livenessProbe:
+          #   exec:
+          #     command: ["mysqladmin", "ping"]
+          #   initialDelaySeconds: 30
+          #   periodSeconds: 10
+          #   timeoutSeconds: 5
       initContainers:
         - name: init-mysql-setup
           image: alpine:latest

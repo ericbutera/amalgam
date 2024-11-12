@@ -36,9 +36,13 @@ go-lint: install-go-tools
 	@echo Linting go files
 	golangci-lint run --fix --config .golangci.yaml --timeout 5m --concurrency 4
 
+go-integration-test: install-go-tools
+	# these are only meant to be ran within tilt-ci. they require external services like mysql & minio
+	go test -v -tags integration ./...
+
 go-test: install-go-tools
 	@echo Running go tests
-	go test -timeout 30s ./...
+	go test -short -timeout 30s ./...
 
 ts-lint: install-ts-tools
 	@echo Linting typescript
@@ -133,6 +137,7 @@ install-ts-tools:
 
 setup:
 	pre-commit install --install-hook
+	pre-commit install --hook-type commit-msg
 
 # Generate graph
 generate-graph-server:

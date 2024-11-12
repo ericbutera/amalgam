@@ -17,18 +17,44 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-// TODO: combine common boilerplate code from rpc client & server
+func New(target string, useInsecure bool) (pb.FeedServiceClient, Closer, error) {
+	// TODO: Option pattern
 
-type Rpc struct {
-	Client pb.FeedServiceClient
-	Conn   *grpc.ClientConn
+	conn, err := NewConnection(target, useInsecure)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return pb.NewFeedServiceClient(conn), newCloser(conn), nil
 }
 
-// TODO: find a cleaner way to handle Client and Conn. this return value is confusing
-func NewClient(target string, useInsecure bool) (*Rpc, error) {
-	logger, logOpts := newLogger()
+func NewConnection(target string, useInsecure bool) (*grpc.ClientConn, error) {
+	dialOpts := defaultDialOpts()
 
-	dialOpts := []grpc.DialOption{
+	if useInsecure {
+		dialOpts = append(dialOpts, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	}
+
+	return grpc.NewClient(
+		target,
+		dialOpts...,
+	)
+}
+
+func NewClient(conn *grpc.ClientConn) pb.FeedServiceClient {
+	return pb.NewFeedServiceClient(conn)
+}
+
+// use with defer to close the connection
+type Closer func() error
+
+func newCloser(conn *grpc.ClientConn) Closer {
+	return func() error { return conn.Close() }
+}
+
+func defaultDialOpts() []grpc.DialOption {
+	logger, logOpts := newLogger()
+	return []grpc.DialOption{
 		grpc.WithStatsHandler(otelgrpc.NewClientHandler()),
 		grpc.WithChainUnaryInterceptor(
 			timeout.UnaryClientInterceptor(10*time.Second),
@@ -38,23 +64,6 @@ func NewClient(target string, useInsecure bool) (*Rpc, error) {
 			logging.StreamClientInterceptor(logger, logOpts...),
 		),
 	}
-
-	if useInsecure {
-		dialOpts = append(dialOpts, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	}
-
-	conn, err := grpc.NewClient(
-		target,
-		dialOpts...,
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	return &Rpc{
-		Client: pb.NewFeedServiceClient(conn),
-		Conn:   conn,
-	}, nil
 }
 
 func newLogger() (logging.Logger, []logging.Option) {
