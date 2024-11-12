@@ -70,3 +70,4 @@ spec:
             grpc:
               port: 50051
             initialDelaySeconds: 10
+            periodSeconds: 60
