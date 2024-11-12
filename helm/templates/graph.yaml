@@ -56,3 +56,15 @@ spec:
               value: "Content-Type,Authorization,Origin"
             - name: CORS_EXPOSE_HEADERS
               value: "Content-Length"
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+              initialDelaySeconds: 10
+              periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 8080
+              initialDelaySeconds: 10
+              periodSeconds: 5

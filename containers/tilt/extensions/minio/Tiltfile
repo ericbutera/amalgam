@@ -46,8 +46,14 @@ def deploy_minio(
         )
     )
 
-    helm_repo(helm_repo_name, helm_repo_url)
+    # TODO: revisit- i was getting an error saying repo doesn't exist:
+    # Running cmd: helm repo add bitnami https://charts.bitnami.com/bitnami --force-update
+    # Release "minio" does not exist. Installing it now.
+    # Error: repo bitnami not found
+    local('helm repo add bitnami https://charts.bitnami.com/bitnami --force-update')
+    local('helm repo update')
 
+    helm_repo(helm_repo_name, helm_repo_url)
     helm_resource(
         name="minio",
         chart=chart_name,

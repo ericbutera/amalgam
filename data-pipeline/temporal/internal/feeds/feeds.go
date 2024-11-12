@@ -6,7 +6,6 @@ import (
 	rss "github.com/ericbutera/amalgam/pkg/feed/parse"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
 	rpc "github.com/ericbutera/amalgam/rpc/pkg/client"
-	"google.golang.org/grpc"
 )
 
 // helper to interact with feed rpc service
@@ -23,20 +22,18 @@ type Feed struct {
 
 type FeedHelper struct {
 	client  pb.FeedServiceClient
-	conn    *grpc.ClientConn
 	closers []func() error
 }
 
 func NewFeeds(host string, insecure bool) (Feeds, error) {
-	rpc, err := rpc.NewClient(host, insecure)
+	c, closer, err := rpc.New(host, insecure)
 	if err != nil {
 		return nil, err
 	}
 	return &FeedHelper{
-		client: rpc.Client,
-		conn:   rpc.Conn,
+		client: c,
 		closers: []func() error{
-			rpc.Conn.Close,
+			closer,
 		},
 	}, nil
 }

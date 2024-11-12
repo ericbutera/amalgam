@@ -106,6 +106,24 @@ One of the major goals of this project is to show how to quickly build integrati
 - [TypeScript client](./ui/app/lib/client/) from OpenAPI spec
 - [k6 tests](./k6/README.md) from OpenAPI spec
 
+## Code Quality
+
+Be sure to install the pre-commit hooks which run various linters, formatters, and tests.
+
+```sh
+just setup
+```
+
+Linters:
+
+- [golangci-lint](https://golangci-lint.run/)
+- [eslint](https://eslint.org/)
+- [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/)
+
+## CI/CD
+
+Github Actions can be found in the [.github/workflows](./.github/workflows) directory. You can run them locally using [act](https://github.com/nektos/act).
+
 ## TODO
 
 - helm chart

@@ -4,22 +4,25 @@
 load('ext://tests/golang', 'test_go')
 
 # these unit tests are fast/well cached, so it's easy to run them all whenever a file changes and get fast feedback
-# (The `skipintegration` tag prevents this test resource from running our very slow integration test suite)
+# (The `integration` tag prevents this test resource from running our very slow integration test suite)
 test_go('go-unit-tests', '.', '.',
+  # extra_args=['-short'],
   recursive=True,
-  tags=['skipintegration'],
   labels=['test'],
   ignore=[
     '**/bin/app',
   ]
 )
 
-# TODO: integration tests
-# the integration tests are slow and clunky, so make them available from the sidebar
-# and let the developer run them manually whenever it's necessary
-# test_go('integration-tests', './integration', '.',
-#         extra_args=["-v"],
-#         trigger_mode=TRIGGER_MODE_MANUAL,
-#         # run this test automatically in CI mode; otherwise, only on manual trigger
-#         auto_init=config.tilt_subcommand == 'ci',
-#         labels=['test'])
+# note: local_resource runs on host. during `tilt ci` the infra is deployed and
+# services can accessed by their forwarded ports on localhost.
+#
+# environment variables are set with dotenv (main tiltfile)
+local_resource(
+  "go integration tests",
+  "just go-integration-test",
+  resource_deps=["minio", "rpc","graph"],
+  trigger_mode=TRIGGER_MODE_MANUAL,
+  auto_init=config.tilt_subcommand == "ci",
+  labels=["test"],
+)

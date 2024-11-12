@@ -3,6 +3,8 @@ package main
 // github.com/99designs/gqlgen-contrib/prometheus
 import (
 	"context"
+	"log/slog"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -19,6 +21,7 @@ import (
 	"github.com/ericbutera/amalgam/pkg/otel"
 	rpc "github.com/ericbutera/amalgam/rpc/pkg/client"
 	"github.com/go-chi/chi"
+	"github.com/go-chi/httplog/v2"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/ravilushqa/otelgqlgen"
 	"github.com/rs/cors"
@@ -38,10 +41,10 @@ func main() {
 
 	gql_prom.Register()
 
-	c := lo.Must(rpc.NewClient(config.RpcHost, config.RpcInsecure))
-	defer c.Conn.Close()
+	client, closer := lo.Must2(rpc.New(config.RpcHost, config.RpcInsecure))
+	defer func() { lo.Must0(closer()) }()
 
-	srv := newServer(c.Client)
+	srv := newServer(client)
 	srv.Use(otelgqlgen.Middleware())
 	srv.Use(gql_prom.Tracer{})
 	// TODO: complexity limit srv.Use(extension.ComplexityLimit{})
@@ -49,6 +52,8 @@ func main() {
 	router := newRouter(config.CorsAllowOrigins)
 	router.Handle("/metrics", promhttp.Handler())
 	router.Handle("/query", srv)
+	router.Handle("/healthz", newHealthzHandler())
+	router.Handle("/readyz", newReadyzHandler(client))
 	router.Handle("/", playground.Handler("GraphQL playground", "/query"))
 
 	slog.Info("running graphql playground", "port", config.Port)
@@ -60,6 +65,24 @@ func main() {
 		slog.Error("failed to start server", "error", err)
 		os.Exit(1)
 		return
+	}
+}
+
+func newHealthzHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}
+}
+
+func newReadyzHandler(client pb.FeedServiceClient) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// TODO: add a low cost readiness endpoint (listfeeds could be expensive)
+		_, err := client.ListFeeds(r.Context(), &pb.ListFeedsRequest{})
+		if err != nil {
+			w.WriteHeader(http.StatusServiceUnavailable)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
 	}
 }
 
@@ -79,8 +102,13 @@ func newRouter(allowOrigins []string) *chi.Mux {
 	router.Use(cors.New(cors.Options{
 		AllowedOrigins:   allowOrigins,
 		AllowCredentials: true,
-		Debug:            true,
+		Debug:            false,
 	}).Handler)
+
+	logger := httplog.NewLogger("graph", httplog.Options{
+		LogLevel: slog.LevelDebug, // TODO: configurable
+	})
+	router.Use(httplog.RequestLogger(logger, []string{"/ping"}))
 
 	return router
 }

@@ -10,6 +10,7 @@ require (
 	github.com/gin-contrib/cors v1.7.2
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-chi/chi v1.5.5
+	github.com/go-chi/httplog/v2 v2.1.1
 	github.com/go-playground/validator/v10 v10.22.1
 	github.com/go-sanitize/sanitize v1.1.0
 	github.com/google/go-cmp v0.6.0
@@ -86,6 +87,7 @@ require (
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.5 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
+	github.com/go-chi/chi/v5 v5.0.10 // indirect
 	github.com/go-ini/ini v1.67.0 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
