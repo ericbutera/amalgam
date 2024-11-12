@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: k6-load-test-graph
+spec:
+  template:
+    spec:
+      containers:
+        - name: k6-load-test-graph
+          image: k6-load-test-graph-image
+          env:
+            - name: K6_OUT
+              value: json
+            - name: GRAPH_HOST
+              value: http://graph:8080/query
+            - name: FAKE_HOST
+              value: faker:8080
+      restartPolicy: Never
+  backoffLimit: 4
