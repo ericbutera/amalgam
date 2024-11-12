@@ -37,6 +37,7 @@ go-lint: install-go-tools
 	golangci-lint run --fix --config .golangci.yaml --timeout 5m --concurrency 4
 
 go-integration-test: install-go-tools
+	# these are only meant to be ran within tilt-ci. they require external services like mysql & minio
 	go test -v -tags integration ./...
 
 go-test: install-go-tools
