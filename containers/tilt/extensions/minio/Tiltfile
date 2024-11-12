@@ -56,7 +56,7 @@ def deploy_minio(
     helm_repo(helm_repo_name, helm_repo_url)
     helm_resource(
         name="minio",
-        chart="bitnami/minio",
+        chart=chart_name,
         flags=chart_flags,
         port_forwards=port_mappings,
         auto_init=auto_init,

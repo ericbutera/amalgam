@@ -48,6 +48,7 @@ spec:
           ports:
             - containerPort: 3306
           resources: {}
+          # TODO: research best way to handle this with slow test runners
           # livenessProbe:
           #   exec:
           #     command: ["mysqladmin", "ping"]

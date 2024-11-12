@@ -3,6 +3,7 @@ load('ext://dotenv', 'dotenv')
 load('ext://secret', 'secret_create_generic', 'secret_from_dict')
 secret_settings(disable_scrub=True)
 
+# this will define environment variables that use "localhost" instead of service names like "grpc"
 dotenv('.env.local')
 
 k8s_yaml(helm('./helm'))

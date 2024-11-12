@@ -3,6 +3,10 @@
 
 package integration_test
 
+// TODO: revisit test location
+// TODO: create a database cleanup function (truncate feed/article tables)
+// TODO: convert to test suite
+
 import (
 	"context"
 	"os"
@@ -13,6 +17,17 @@ import (
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/require"
 )
+
+func TestRpcListFeeds(t *testing.T) {
+	// TODO: seed data, assert specific result exists
+	client, closer, err := getClient(t)
+	defer func() { require.NoError(t, closer()) }()
+	require.NoError(t, err)
+
+	resp, err := client.ListFeeds(context.Background(), &pb.ListFeedsRequest{})
+	require.NoError(t, err)
+	require.NotNil(t, resp)
+}
 
 func getClient(t *testing.T) (pb.FeedServiceClient, client.Closer, error) {
 	config := newConfig(t)
@@ -37,14 +52,4 @@ func newConfig(t *testing.T) *Config {
 		t.Skip("RPC_ENDPOINT not set")
 	}
 	return c
-}
-
-func TestRpc(t *testing.T) {
-	client, closer, err := getClient(t)
-	defer func() { require.NoError(t, closer()) }()
-	require.NoError(t, err)
-
-	resp, err := client.ListFeeds(context.Background(), &pb.ListFeedsRequest{})
-	require.NoError(t, err)
-	require.NotNil(t, resp)
 }

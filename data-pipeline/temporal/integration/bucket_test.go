@@ -3,6 +3,9 @@
 
 package bucket_test
 
+// TODO: revisit test location
+// TODO: convert to test suite
+
 import (
 	"context"
 	"os"
@@ -18,8 +21,6 @@ import (
 const TestBucketName = "test-bucket-name"
 
 func TestMinioCreate(t *testing.T) {
-	t.Parallel()
-
 	config := newConfig(t)
 
 	b, err := bucket.NewMinio(config)
