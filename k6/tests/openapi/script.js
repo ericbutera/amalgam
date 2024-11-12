@@ -14,7 +14,10 @@
 import http from "k6/http";
 import { group, check, sleep } from "k6";
 
-const BASE_URL = "http://api:8080/v1";
+const BASE_URL = __ENV.API_HOST || "http://api:8080/v1";
+
+console.log(`BASE_URL ${BASE_URL}`);
+
 // Sleep duration between successive requests.
 // You might want to edit the value of this variable or remove calls to the sleep function on the script.
 const SLEEP_DURATION = 0.1;

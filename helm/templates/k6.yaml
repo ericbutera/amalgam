@@ -9,7 +9,11 @@ spec:
         - name: k6
           image: k6-image
           env:
-            - name: BASE_URL
-              value: "http://api:8080"
+            - name: K6_OUT
+              value: json
+            - name: API_HOST
+              value: http://api:8080
+            - name: GRAPH_HOST
+              value: http://graph:8080/query
       restartPolicy: Never
   backoffLimit: 4

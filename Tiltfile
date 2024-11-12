@@ -116,7 +116,7 @@ k8s_resource("feed-tasks-worker", resource_deps=["temporal","rpc"], labels=["dat
 )
 
 # https://k6.io/
-docker_build("k6-image", "k6")
+docker_build("k6-image", "k6/tests")
 k8s_resource("k6", trigger_mode=TRIGGER_MODE_MANUAL, resource_deps=["api","rpc"], labels=["test"])
 
 load('./containers/tilt/extensions/mysql/Tiltfile', 'deploy_mysql')
