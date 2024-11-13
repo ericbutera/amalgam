@@ -108,7 +108,7 @@ func newRouter(allowOrigins []string) *chi.Mux {
 	logger := httplog.NewLogger("graph", httplog.Options{
 		LogLevel: slog.LevelDebug, // TODO: configurable
 	})
-	router.Use(httplog.RequestLogger(logger, []string{"/ping"}))
+	router.Use(httplog.RequestLogger(logger, []string{"/healthz", "/readyz", "/metrics"}))
 
 	return router
 }

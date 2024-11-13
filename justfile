@@ -79,9 +79,10 @@ generate-api-clients: generate-openapi generate-go-api-client generate-typescrip
 # Generate tests from OpenAPI spec
 generate-k6:
 	@echo Generating K6 tests
+	@echo You will have to modify the generated script.js to work with your API
 	docker run --rm \
 		-v "./api/docs/swagger.json:/local/swagger.json" \
-		-v "./k6/tests:/out" \
+		-v "./k6/tests/openapi:/out" \
 		openapitools/openapi-generator-cli generate \
 		-i "/local/swagger.json" \
 		-g k6 \
