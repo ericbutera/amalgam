@@ -1,6 +1,7 @@
 # -*- mode: Python -*-
 load('ext://dotenv', 'dotenv')
 load('ext://secret', 'secret_create_generic', 'secret_from_dict')
+load('ext://uibutton', 'cmd_button')
 secret_settings(disable_scrub=True)
 
 # this will define environment variables that use "localhost" instead of service names like "grpc"
@@ -75,26 +76,18 @@ k8s_resource("ui", port_forwards=[port_forward(3000, 3000, "ui")], labels=["app"
 go_compile('faker-compile', './services/faker', ['./services/faker'])
 go_image('faker', './services/faker')
 k8s_resource("faker", port_forwards=[port_forward(8084, 8080, "http")], labels=["services"])
+cmd_button('random feed',
+  argv=['sh', '-c', 'curl "http://localhost:8084/feed/$(uuidgen)" 2>/dev/null'],
+  resource='faker',
+  icon_name='add_to_queue',
+  text='fake',
+)
 
-load('ext://uibutton', 'cmd_button')
-cmd_button('fetch feeds',
-  argv=['sh', '-c', 'cd data-pipeline/temporal/feed && go run start/main.go'],
-  resource='temporal',
-  icon_name='add_to_queue',
-  text='fetch feeds',
-)
-cmd_button('generate feeds',
-  argv=['sh', '-c', 'cd data-pipeline/temporal/feed_tasks && go run start/main.go'],
-  resource='temporal',
-  icon_name='add_to_queue',
-  text='generate fake feeds',
-)
 
 k8s_yaml(secret_from_dict("data-pipeline-auth", inputs={
   "MINIO_ACCESS_KEY": "minio",
   "MINIO_SECRET_ACCESS_KEY": "minio-password",
 }))
-
 go_compile('feed-start-compile', './data-pipeline/temporal/feed/start', ['./data-pipeline/temporal'])
 go_image('feed-start', './data-pipeline/temporal/feed/start')
 k8s_resource("feed-start", resource_deps=["temporal","rpc"], labels=["data-pipeline"], auto_init=False, trigger_mode=TRIGGER_MODE_MANUAL)
@@ -115,15 +108,45 @@ k8s_resource("feed-tasks-worker", resource_deps=["temporal","rpc"], labels=["dat
   auto_init=False,
 )
 
-# https://k6.io/
-docker_build("k6-image", "k6")
-k8s_resource("k6", trigger_mode=TRIGGER_MODE_MANUAL, resource_deps=["api","rpc"], labels=["test"])
-
-load('./containers/tilt/extensions/mysql/Tiltfile', 'deploy_mysql')
-deploy_mysql(root_pw="password", user_pw="amalgam-password", migration_pw="password")
+cmd_button('fetch feeds',
+  argv=['sh', '-c', 'cd data-pipeline/temporal/feed && go run start/main.go'],
+  resource='temporal',
+  icon_name='add_to_queue',
+  text='fetch feeds',
+)
+cmd_button('generate feeds',
+  argv=['sh', '-c', 'cd data-pipeline/temporal/feed_tasks && go run start/main.go'],
+  resource='temporal',
+  icon_name='add_to_queue',
+  text='generate fake feeds',
+  env=["FAKE_HOST=faker:8080"],
+)
 
 load('./containers/tilt/extensions/temporal/Tiltfile', 'deploy_temporal')
 deploy_temporal(auto_init=(not IS_CI))
+
+docker_build("k6-image", "k6/tests")
+k8s_resource("k6",
+  new_name="k6 - api test",
+  trigger_mode=TRIGGER_MODE_MANUAL,
+  auto_init=False,
+  resource_deps=["api","rpc"],
+  links=[link("https://k6.io", "grafana k6")],
+  labels=["test"]
+)
+
+docker_build("k6-load-test-graph-image", "k6/load-test-graph")
+k8s_resource("k6-load-test-graph",
+  new_name="k6 - load test graph",
+  trigger_mode=TRIGGER_MODE_MANUAL,
+  auto_init=False,
+  resource_deps=["graph", "faker"],
+  links=[link("https://k6.io", "grafana k6")],
+  labels=["test"]
+)
+
+load('./containers/tilt/extensions/mysql/Tiltfile', 'deploy_mysql')
+deploy_mysql(root_pw="password", user_pw="amalgam-password", migration_pw="password")
 
 load('./containers/tilt/extensions/lgtm/Tiltfile', 'deploy_lgtm')
 deploy_lgtm(

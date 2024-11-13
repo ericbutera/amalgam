@@ -1,0 +1,9 @@
+test:  ## Run tests
+	docker run --rm \
+		-v "./:/tests" \
+		grafana/k6 \
+		run \
+		"/tests/openapi/script.js"
+
+test-debug:
+	k6 run tests/openapi/script.js --http-debug
