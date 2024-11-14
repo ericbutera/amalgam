@@ -6,6 +6,7 @@ import (
 	"runtime/debug"
 
 	"github.com/ericbutera/amalgam/internal/logger"
+	"github.com/ericbutera/amalgam/rpc/internal/server/grpc/interceptors"
 	"github.com/ericbutera/amalgam/rpc/internal/server/observability"
 	grpcprom "github.com/grpc-ecosystem/go-grpc-middleware/providers/prometheus"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
@@ -30,13 +31,13 @@ func NewServer(srvMetrics *grpcprom.ServerMetrics, feedMetrics *observability.Fe
 			srvMetrics.UnaryServerInterceptor(grpcprom.WithExemplarFromContext(exemplarFromContext)),
 			logging.UnaryServerInterceptor(logger, logOpts...),
 			recovery.UnaryServerInterceptor(recovery.WithRecoveryHandler(recoveryHandler)),
-			unaryInterceptorMetricMiddlewareHandler(feedMetrics),
+			interceptors.UnaryMetricMiddlewareHandler(feedMetrics),
 		),
 		grpc.ChainStreamInterceptor(
 			srvMetrics.StreamServerInterceptor(grpcprom.WithExemplarFromContext(exemplarFromContext)),
 			logging.StreamServerInterceptor(logger, logOpts...),
 			recovery.StreamServerInterceptor(recovery.WithRecoveryHandler(recoveryHandler)),
-			streamInterceptorMetricMiddlewareHandler(feedMetrics),
+			interceptors.StreamMetricMiddlewareHandler(feedMetrics),
 		),
 	)
 
@@ -44,39 +45,6 @@ func NewServer(srvMetrics *grpcprom.ServerMetrics, feedMetrics *observability.Fe
 	reflection.Register(srv)
 
 	return srv
-}
-
-func unaryInterceptorMetricMiddlewareHandler(feedMetrics *observability.FeedMetrics) grpc.UnaryServerInterceptor {
-	return func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp any, err error) {
-		resp, err = handler(ctx, req)
-		if err != nil {
-			return nil, err
-		}
-
-		processMetrics(info.FullMethod, feedMetrics)
-		return resp, err
-	}
-}
-
-func streamInterceptorMetricMiddlewareHandler(feedMetrics *observability.FeedMetrics) grpc.StreamServerInterceptor {
-	return func(srv any, stream grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) (err error) {
-		err = handler(srv, stream)
-		if err != nil {
-			return err
-		}
-
-		processMetrics(info.FullMethod, feedMetrics)
-		return err
-	}
-}
-
-func processMetrics(fullMethod string, metrics *observability.FeedMetrics) {
-	switch fullMethod {
-	case "/feeds.v1.FeedService/CreateFeed":
-		metrics.FeedsCreated.Inc()
-	case "/feeds.v1.FeedService/CreateArticle":
-		metrics.ArticlesCreated.Inc()
-	}
 }
 
 func newLogger() (logging.Logger, []logging.Option) {

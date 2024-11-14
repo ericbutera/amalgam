@@ -141,7 +141,7 @@ func New(opts ...Option) (*Server, error) {
 		}
 	}
 
-	o := observability.New() // TODO: with Options
+	o := observability.New()
 
 	if server.config == nil {
 		config, err := env.New[config.Config]()
