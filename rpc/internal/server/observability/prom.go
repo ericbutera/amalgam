@@ -14,7 +14,6 @@ type Observability struct {
 
 func New() *Observability {
 	registry := prometheus.NewRegistry()
-
 	registry.MustRegister(collectors.NewGoCollector(collectors.WithGoCollectorRuntimeMetrics()))
 
 	o := &Observability{
