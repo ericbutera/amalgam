@@ -1448,9 +1448,9 @@
         "list": [
             {
                 "current": {
-                    "selected": false,
-                    "text": "api",
-                    "value": "api"
+                    "selected": true,
+                    "text": "rpc",
+                    "value": "rpc"
                 },
                 "datasource": {
                     "type": "prometheus",
@@ -1595,9 +1595,9 @@
             },
             {
                 "current": {
-                    "selected": false,
-                    "text": "All",
-                    "value": "$__all"
+                    "selected": true,
+                    "text": "feeds.v1.FeedService",
+                    "value": "feeds.v1.FeedService"
                 },
                 "datasource": {
                     "type": "prometheus",
@@ -1651,7 +1651,7 @@
         ]
     },
     "timezone": "",
-    "title": "rpc service",
+    "title": "grpc services",
     "uid": "rpc-service-dashboard",
     "version": 1,
     "weekStart": ""
