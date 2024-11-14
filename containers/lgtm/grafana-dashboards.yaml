@@ -24,7 +24,7 @@ providers:
   - name: "api database (gorm)"
     type: file
     options:
-      path: /otel-lgtm/api-db-dashboard.json
+      path: /otel-lgtm/gorm-dashboard.json
       foldersFromFilesStructure: false
   - name: "rpc service"
     type: file
@@ -48,7 +48,6 @@ providers:
     options:
       path: /otel-lgtm/temporal-sdk-dashboard.json
       foldersFromFilesStructure: false
-
 
   # TODO: all services overview
   # - name: "Amalgam Dashboard"

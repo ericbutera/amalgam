@@ -1,4 +1,7 @@
 
 docker:
     docker build -t k6-load-test-graph .
-    docker run -e GRAPH_HOST="http://localhost:8082/query" -it --rm k6-load-test-graph
+    docker run \
+        -e GRAPH_HOST="http://localhost:8082/query" \
+        -e FAKER_HOST="localhost:8084" \
+        -it --rm k6-load-test-graph

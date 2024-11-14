@@ -6,6 +6,8 @@ import (
 	"runtime/debug"
 
 	"github.com/ericbutera/amalgam/internal/logger"
+	"github.com/ericbutera/amalgam/rpc/internal/server/grpc/interceptors"
+	"github.com/ericbutera/amalgam/rpc/internal/server/observability"
 	grpcprom "github.com/grpc-ecosystem/go-grpc-middleware/providers/prometheus"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/recovery"
@@ -18,20 +20,24 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func NewServer(srvMetrics *grpcprom.ServerMetrics) *grpc.Server {
+func NewServer(srvMetrics *grpcprom.ServerMetrics, feedMetrics *observability.FeedMetrics) *grpc.Server {
 	logger, logOpts := newLogger()
+	recoveryHandler := grpcPanicRecoveryHandler(feedMetrics)
+
 	srv := grpc.NewServer(
 		grpc.StatsHandler(otelgrpc.NewServerHandler()),
 		grpc.ChainUnaryInterceptor(
 			// Order matters e.g. tracing interceptor have to create span first for the later exemplars to work.
 			srvMetrics.UnaryServerInterceptor(grpcprom.WithExemplarFromContext(exemplarFromContext)),
 			logging.UnaryServerInterceptor(logger, logOpts...),
-			recovery.UnaryServerInterceptor(recovery.WithRecoveryHandler(grpcPanicRecoveryHandler)),
+			recovery.UnaryServerInterceptor(recovery.WithRecoveryHandler(recoveryHandler)),
+			interceptors.UnaryMetricMiddlewareHandler(feedMetrics),
 		),
 		grpc.ChainStreamInterceptor(
 			srvMetrics.StreamServerInterceptor(grpcprom.WithExemplarFromContext(exemplarFromContext)),
 			logging.StreamServerInterceptor(logger, logOpts...),
-			recovery.StreamServerInterceptor(recovery.WithRecoveryHandler(grpcPanicRecoveryHandler)),
+			recovery.StreamServerInterceptor(recovery.WithRecoveryHandler(recoveryHandler)),
+			interceptors.StreamMetricMiddlewareHandler(feedMetrics),
 		),
 	)
 
@@ -71,8 +77,17 @@ func exemplarFromContext(ctx context.Context) prometheus.Labels {
 	return nil
 }
 
-func grpcPanicRecoveryHandler(p any) (err error) {
-	// TODO: s.panicsTotal.Inc()
-	slog.Error("recovered from panic", "panic", p, "stack", debug.Stack())
-	return status.Errorf(codes.Internal, "%s", p)
+func grpcPanicRecoveryHandler(feedMetrics *observability.FeedMetrics) recovery.RecoveryHandlerFunc {
+	var panicsTotal prometheus.Counter
+	if feedMetrics != nil && feedMetrics.PanicsTotal != nil {
+		panicsTotal = feedMetrics.PanicsTotal
+	}
+
+	return func(p any) (err error) {
+		if panicsTotal != nil {
+			panicsTotal.Inc()
+		}
+		slog.Error("recovered from panic", "panic", p, "stack", debug.Stack())
+		return status.Errorf(codes.Internal, "%s", p)
+	}
 }

@@ -65,6 +65,10 @@ k8s_resource("graph",
   labels=["app"]
 )
 
+go_compile('echo-compile', './services/echo', ['./services/echo'])
+go_image('echo', './services/echo')
+k8s_resource("echo", port_forwards=[port_forward(8083, 8080, "http")], labels=["services"])
+
 docker_build(
   "ui-image",
   context="./ui",
