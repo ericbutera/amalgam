@@ -13,14 +13,14 @@ export let options = {
   ],
 };
 
-const BASE_HOST = __ENV.GRAPH_HOST;
-const FAKE_HOST = __ENV.FAKER_HOST;
+const GRAPH_HOST = __ENV.GRAPH_HOST;
+const FAKER_HOST = __ENV.FAKER_HOST;
 
-if (!BASE_HOST) {
+if (!GRAPH_HOST) {
   throw new Error('GRAPH_HOST is not defined')
 }
-if (!FAKE_HOST) {
-  throw new Error('FAKE_HOST is not defined')
+if (!FAKER_HOST) {
+  throw new Error('FAKER_HOST is not defined')
 }
 
 const DefaultHeaders = {
@@ -52,7 +52,7 @@ export default function () {
 
 function post(body, headers) {
   headers = headers || DefaultHeaders;
-  return http.post(BASE_HOST, JSON.stringify(body), headers);
+  return http.post(GRAPH_HOST, JSON.stringify(body), headers);
 }
 
 function listFeeds() {
@@ -66,7 +66,7 @@ function getFeed(feedId) {
 function addFeed() {
   const feedId = uuidv4();
   const variables = {
-    url: `http://${FAKE_HOST}/feed/${feedId}`,
+    url: `http://${FAKER_HOST}/feed/${feedId}`,
     name: randomString(10, 'abcdefghijklmnopqrstuvwxyz '),
   };
   return { query: MutationAddFeed, variables };
