@@ -49,8 +49,8 @@ spec:
           env:
             # - name: ENABLE_LOGS_ALL
             #   value: "true"
-            - name: ENABLE_LOGS_GRAFANA
-              value: "true"
+            # - name: ENABLE_LOGS_GRAFANA
+            #   value: "true"
           ports:
             - containerPort: 3000
             - containerPort: 3100
