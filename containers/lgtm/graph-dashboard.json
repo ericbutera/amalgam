@@ -410,7 +410,7 @@
                         "uid": "prometheus"
                     },
                     "editorMode": "code",
-                    "expr": "graphql_resolver_duration_ms_bucket",
+                    "expr": "graphql_resolver_duration_seconds_bucket",
                     "legendFormat": "{{exitStatus}} - {{object}} - {{field}}",
                     "range": true,
                     "refId": "A"
@@ -492,7 +492,7 @@
                         "uid": "prometheus"
                     },
                     "editorMode": "code",
-                    "expr": "graphql_request_duration_ms_bucket",
+                    "expr": "graphql_request_duration_seconds_bucket",
                     "legendFormat": "{{exitStatus}}",
                     "range": true,
                     "refId": "A"

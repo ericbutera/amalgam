@@ -1055,8 +1055,8 @@
     },
     "timepicker": {},
     "timezone": "browser",
-    "title": "api - database",
-    "uid": "api-db-dashboard",
+    "title": "gorm - database",
+    "uid": "gorm-dashboard",
     "version": 1,
     "weekStart": ""
 }

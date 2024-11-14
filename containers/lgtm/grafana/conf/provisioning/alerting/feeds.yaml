@@ -1,0 +1,67 @@
+apiVersion: 1
+groups:
+  - orgId: 1
+    name: feed workflows
+    folder: feed workflows
+    interval: 30s
+    rules:
+      - uid: feed-workflow-failed-alert
+        title: feed workflow failed
+        condition: A
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 21600
+              to: 0
+            datasourceUid: prometheus
+            model:
+              disableTextWrap: false
+              editorMode: builder
+              expr: feed__temporal_workflow_failed_total
+              fullMetaSearch: false
+              includeNullMetadata: true
+              instant: true
+              intervalMs: 1000
+              legendFormat: __auto
+              maxDataPoints: 43200
+              range: false
+              refId: A
+              useBackend: false
+        noDataState: NoData
+        executionErrorState: Alerting
+        for: 60s
+        labels:
+          team: sre
+        execErrState: Error
+        annotations:
+          summary: Workflow failures detected
+        isPaused: false
+        notification_settings:
+          receiver: echo-webhook
+
+type: webhook
+settings:
+  name: echo-webhook
+  url: http://echo:8080/webhook
+  httpMethod: POST
+  # <string>
+  username: abc
+  # <string>
+  password: abc123
+  # <string>
+  authorization_scheme: Bearer
+  # <string>
+  authorization_credentials: abc123
+  # <string>
+  maxAlerts: "10"
+
+contactPoints:
+  - orgId: 1
+    name: echo-webhook
+    receivers:
+      - uid: echo-webhook
+        type: webhook
+        settings:
+          httpMethod: POST
+          url: http://echo:8080/webhook
+        disableResolveMessage: false
