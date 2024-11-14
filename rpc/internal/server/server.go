@@ -135,13 +135,13 @@ func WithGrpcServer(srv *grpc.Server) Option {
 func New(opts ...Option) (*Server, error) {
 	server := Server{}
 
-	o := observability.New()
-
 	for _, opt := range opts {
 		if err := opt(&server); err != nil {
 			return nil, err
 		}
 	}
+
+	o := observability.New() // TODO: with Options
 
 	if server.config == nil {
 		config, err := env.New[config.Config]()
@@ -161,7 +161,7 @@ func New(opts ...Option) (*Server, error) {
 		server.metricSrv = metrics_server.NewServer(o.Registry, server.config.MetricAddress)
 	}
 	if server.grpcSrv == nil {
-		server.grpcSrv = grpc_server.NewServer(o.ServerMetrics)
+		server.grpcSrv = grpc_server.NewServer(o.ServerMetrics, o.FeedMetrics)
 	}
 
 	pb.RegisterFeedServiceServer(server.grpcSrv, &server)
