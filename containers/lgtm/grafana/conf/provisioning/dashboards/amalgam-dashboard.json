@@ -124,5 +124,6 @@
     "title": "amalgam",
     "uid": "amalgam-dashboard",
     "version": 1,
-    "weekStart": ""
+    "weekStart": "",
+    "preload": true
 }

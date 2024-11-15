@@ -1654,5 +1654,6 @@
     "title": "grpc services",
     "uid": "rpc-service-dashboard",
     "version": 1,
-    "weekStart": ""
+    "weekStart": "",
+    "preload": true
 }
