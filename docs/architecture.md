@@ -159,6 +159,83 @@ flowchart LR
   DomainLayer --> DB
 ```
 
+## [v1.4.0](https://github.com/ericbutera/amalgam/releases/tag/v1.4.0) GraphQL Gateway powered by Data Pipelines
+
+As of v1.4.0, the system has stabilized around GraphQL as our API Gateway. It is possible to make sweeping changes to the internal system without having to change our external contract. For instance, we can now delete the API service. We can also split up any internal service to support horizontal scaling.
+
+Note: in prod there would be an ingress controller in front of the GraphQL service. This would handle things like rate limiting, authentication, and other concerns.
+
+### Components
+
+- [UI](https://github.com/ericbutera/amalgam/tree/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/ui)
+- Services
+  - [GraphQL](https://github.com/ericbutera/amalgam/tree/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/graph)
+  - [gRPC](https://github.com/ericbutera/amalgam/tree/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/rpc)
+- Data Pipelines
+  - Temporal
+    - [FetchFeeds](https://github.com/ericbutera/amalgam/tree/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/data-pipeline/temporal/feed)
+    - [FeedTasks](https://github.com/ericbutera/amalgam/tree/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/data-pipeline/temporal/feed_tasks)
+
+## Ancillary Services
+
+- K6
+  - [load test graph service](https://github.com/ericbutera/amalgam/tree/main/k6/load-test-graph)
+  - [traffic generator](https://github.com/ericbutera/amalgam/tree/main/k6/simulate-traffic)
+- [Faker](https://github.com/ericbutera/amalgam/tree/main/services/faker) (data generator)
+- [Observability](https://github.com/ericbutera/amalgam/tree/main/containers/tilt/extensions/lgtm)
+  - [dashboards](https://github.com/ericbutera/amalgam/tree/main/containers/lgtm/grafana/conf/provisioning/dashboards)
+  - [alerts](https://github.com/ericbutera/amalgam/tree/main/containers/lgtm/grafana/conf/provisioning/alerting)
+- [Minio](https://github.com/ericbutera/amalgam/blob/main/containers/tilt/extensions/minio/Tiltfile)
+- [MySQL](https://github.com/ericbutera/amalgam/blob/main/containers/tilt/extensions/mysql/Tiltfile)
+
+```mermaid
+---
+title: System Overview
+---
+flowchart LR
+  subgraph Clients
+    Browser
+    CLI
+  end
+
+  Browser --> UI
+  Browser --> GraphQL
+  CLI --> GraphQL
+  GraphQL --> RPC
+  RPC --> DB
+
+  subgraph ExternalCDN
+    UI
+  end
+
+  subgraph Services
+    GraphQL
+    RPC
+  end
+
+  subgraph ExternalServices
+    DB
+  end
+
+  subgraph DataPipelines
+    direction RL
+    Tasks
+    FetchFeeds
+    FetchFeeds --> RPC
+    RPC <--> Tasks
+  end
+```
+
+In this revision I have added Temporal as the workflow orchestrator. The FetchFeeds workflow is a simple [ETL](https://en.wikipedia.org/wiki/Extract,_transform,_load). It fetches rss, stores, transforms into articles, and loads into the database (via domain layer, not directly).
+
+Feed Tasks are ad-hoc, created from RPC. At time of writing this was used to show how to generate fake data.
+
+Fetch Feeds:
+
+- runs on a continuous schedule
+- mimics a simple Extract Transform Load (ETL) pipeline
+- uses Object Storage locations as input and output
+
 ## Next Steps
 
 Next the goal will be to start splitting the gRPC backend into separate services to allow for horizontal scaling.
