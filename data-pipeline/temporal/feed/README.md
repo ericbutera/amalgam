@@ -17,27 +17,35 @@ When inspecting the code, the pipeline actually has object storage between the m
 This pipeline utilizes Minio as object storage. This pattern can be easily implemented in GCP with Cloud Storage or AWS with S3.
 
 ```mermaid
+---
+title: Fetch Feed Workflow
+---
 flowchart LR
-  subgraph DownloadActivity
-    A
-    B
+  direction LR
+  Scheduler --> FetchFeeds
+  FetchFeeds -->|feed-url| FetchFeed
+  FetchFeed --> |rss.xml| ParseFeed
+  ParseFeed --> |articles.jsonl| SaveArticles
+
+  subgraph FetchFeed
+    direction TB
+    HttpClient --> FF1[RssFile]
+    FF1[RssFile] -->|raw.xml| FF2[Minio]
   end
 
-  subgraph ParseActivity
-    C
-    D
-    E
+  subgraph ParseFeed
+    direction TB
+    PF1[Minio] -->|raw.xml| PF2[RssFile]
+    PF2[RssFile] --> PF3[Articles]
+    PF3[Articles] --> PF4[ArticlesJsonl]
+    PF4[ArticlesJsonl] -->|articles.jsonl| PF5[Minio]
   end
 
-  subgraph SaveActivity
-    F
-    G
+  subgraph SaveArticles
+    direction TB
+    SA1[Minio] -->|articles.jsonl| SA2[ArticlesJsonl]
+    SA2[ArticlesJsonl] --> SA3[Articles]
+    SA3[Articles] -->SA4[SaveArticles]
+    SA4[SaveArticles] --> |feeds.v1.FeedService/CreateArticle| SA5[RPC]
   end
-
-  A[FetchRss] --> B[SaveRssToStorage]
-  B -->|rss_filename| C[LoadRssFromStorage]
-  C --> D[ParseRssArticles]
-  D --> E[SaveArticleJsonLinesToStorage]
-  E -->|articles_filename| F[LoadArticleJsonLinesFromStorage]
-  F --> G[SaveArticleToRpcService]
 ```
