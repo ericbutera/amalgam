@@ -2939,5 +2939,6 @@
     "variables": {
         "list": []
     },
-    "version": 2
+    "version": 2,
+    "preload": true
 }

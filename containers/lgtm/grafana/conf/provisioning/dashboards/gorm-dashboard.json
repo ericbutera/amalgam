@@ -1058,5 +1058,6 @@
     "title": "gorm - database",
     "uid": "gorm-dashboard",
     "version": 1,
-    "weekStart": ""
+    "weekStart": "",
+    "preload": true
 }

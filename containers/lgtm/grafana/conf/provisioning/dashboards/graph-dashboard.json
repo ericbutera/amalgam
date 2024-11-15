@@ -517,5 +517,6 @@
     "title": "graph service",
     "uid": "graph-dashboard",
     "version": 1,
-    "weekStart": ""
+    "weekStart": "",
+    "preload": true
 }

@@ -6,8 +6,8 @@ FROM grafana/otel-lgtm:latest
 COPY prometheus.yaml /otel-lgtm/prometheus.yaml
 
 # inject amalgam dashboards:
-COPY grafana-dashboards.yaml /otel-lgtm/grafana/conf/provisioning/dashboards/grafana-dashboards.yaml
-COPY *-dashboard.json /otel-lgtm/
+COPY grafana/conf/provisioning/dashboards/*.yaml /otel-lgtm/grafana/conf/provisioning/dashboards
+COPY grafana/conf/provisioning/dashboards/*.json /otel-lgtm/grafana/conf/provisioning/dashboards
 
 # copy alerting rules
-COPY grafana/conf/provisioning/alerting/*.yaml /otel-lgtm/grafana/conf/provisioning/alerting/*.yaml
+COPY grafana/conf/provisioning/alerting/*.yaml /otel-lgtm/grafana/conf/provisioning/alerting

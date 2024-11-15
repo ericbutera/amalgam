@@ -3,6 +3,7 @@ package interceptors
 import (
 	"context"
 
+	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
 	"github.com/ericbutera/amalgam/rpc/internal/server/observability"
 	"google.golang.org/grpc"
 )
@@ -33,9 +34,9 @@ func StreamMetricMiddlewareHandler(feedMetrics *observability.FeedMetrics) grpc.
 
 func ProcessMetrics(fullMethod string, metrics *observability.FeedMetrics) {
 	switch fullMethod {
-	case "/feeds.v1.FeedService/CreateFeed":
+	case pb.FeedService_CreateFeed_FullMethodName:
 		metrics.FeedsCreated.Inc()
-	case "/feeds.v1.FeedService/CreateArticle":
+	case pb.FeedService_SaveArticle_FullMethodName:
 		metrics.ArticlesCreated.Inc()
 	}
 }

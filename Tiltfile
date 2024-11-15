@@ -149,6 +149,16 @@ k8s_resource("k6-load-test-graph",
   labels=["test"]
 )
 
+docker_build("k6-simulate-traffic-image", "k6/simulate-traffic")
+k8s_resource("k6-simulate-traffic",
+  new_name="k6 - simulate traffic",
+  trigger_mode=TRIGGER_MODE_MANUAL,
+  auto_init=False,
+  resource_deps=["graph"],
+  labels=["test"]
+)
+
+
 load('./containers/tilt/extensions/mysql/Tiltfile', 'deploy_mysql')
 deploy_mysql(root_pw="password", user_pw="amalgam-password", migration_pw="password")
 

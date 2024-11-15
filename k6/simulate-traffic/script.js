@@ -1,14 +1,19 @@
-// https://k6.io/blog/compare-rest-and-graphql-using-k6-for-performance-testing/
+// Simulate a small amount of traffic, much like a user would interact with the application.
+// This is useful for testing out the observability stack.
 
 import http from 'k6/http';
 import { check, sleep } from 'k6';
+//import { sample } from 'k6/vendor/ramda';
+// import * as lodash from 'lodash';
 
 export let options = {
-  stages: [
-    { duration: '10s', target: 1 },
-    { duration: '10s', target: 5 },
-    { duration: '10s', target: 0 },
-  ],
+  scenarios: {
+    constant_load: {
+      executor: 'constant-vus', // keeps a constant number of virtual users
+      vus: 1,                   // adjust the number of VUs (virtual users) as needed
+      duration: '87600h',       // run for 10 years (essentially infinite)
+    },
+  },
 };
 
 const GRAPH_HOST = __ENV.GRAPH_HOST;
@@ -26,22 +31,19 @@ export default function () {
   check(feedsRes, { 'List Feeds status is 200': (r) => r.status === 200 });
 
   let feeds = feedsRes.json('data.feeds.#.id') || [];
-  for (let i = 0; i < feeds.length; i++) {
-    const feedId = feeds[i];
-    if (!feedId)
-      return
-
+  for (let feedId of feeds) {
     check(post(getFeed(feedId)), { 'Get Feed status is 200': (r) => r.status === 200 });
 
     const articlesRes = post(listArticles(feedId));
     check(articlesRes, { 'List Articles status is 200': (r) => r.status === 200 });
 
-    const articleId = articlesRes ? articlesRes.json('data.articles[0].id') : null; // TODO: randomize
-    if (!articleId)
-      return
-
-    check(post(getArticle(articleId)), { 'Get Article status is 200': (r) => r.status === 200 });
+    const articles = articlesRes.json('data.articles.#.id') || [];
+    // let ids = articles.slice(0, 5)
+    for (let articleId of articles) {
+      check(post(getArticle(articleId)), { 'Get Article status is 200': (r) => r.status === 200 });
+    }
   }
+  sleep(1)
 }
 
 function post(body, headers) {

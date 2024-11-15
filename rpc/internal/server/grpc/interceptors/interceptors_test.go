@@ -20,7 +20,7 @@ func TestUnaryMetricMiddlewareHandler(t *testing.T) {
 	ctx := context.Background()
 	req := &pb.CreateFeedRequest{}
 	info := &grpc.UnaryServerInfo{
-		FullMethod: "/feeds.v1.FeedService/CreateFeed",
+		FullMethod: pb.FeedService_CreateFeed_FullMethodName,
 	}
 	_, err := handler(ctx, req, info, func(_ context.Context, _ any) (any, error) {
 		return nil, nil
@@ -39,7 +39,7 @@ func TestStreamMetricMiddlewareHandler(t *testing.T) {
 
 	stream := &mockServerStream{}
 	info := &grpc.StreamServerInfo{
-		FullMethod: "/feeds.v1.FeedService/CreateArticle",
+		FullMethod: pb.FeedService_SaveArticle_FullMethodName,
 	}
 	err := handler(nil, stream, info, func(_ any, _ grpc.ServerStream) error {
 		return nil
