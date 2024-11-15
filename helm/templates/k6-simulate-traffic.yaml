@@ -1,0 +1,15 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: k6-simulate-traffic
+spec:
+  template:
+    spec:
+      containers:
+        - name: k6-simulate-traffic
+          image: k6-simulate-traffic-image
+          env:
+            - name: GRAPH_HOST
+              value: http://graph:8080/query
+      restartPolicy: Never
+  backoffLimit: 4
