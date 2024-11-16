@@ -20,7 +20,6 @@ go-checks: go-lint go-test
 ts-checks: ts-lint ts-test
 
 go-generate-mocks:
-	go install github.com/vektra/mockery/v2@v2.46.3
 	mockery
 
 go-coverage-report:
@@ -106,8 +105,6 @@ generate-typescript-client: install-ts-tools
 
 generate-proto:
 	@echo Generating protobuf
-	go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
-	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 	buf generate
 
 # Generate copygen type converters
@@ -122,8 +119,6 @@ go-mod-download:
 	go mod download
 
 install-go-tools: go-mod-download
-	go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.61.0
-	# curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.61.0
 
 install-ts-tools:
 	@echo Installing tools from package.json
@@ -140,22 +135,20 @@ generate-graph-server:
 	cd graph && gqlgen generate
 
 generate-graph-schema:
-	# TODO: run service, generate schema, produce artifact
 	@echo This requires the graph service running in tilt to generate the schema
 	go get github.com/alexflint/go-arg
 	go get github.com/suessflorian/gqlfetch
 	cd tools/graphql-schema && go run main.go
 
-generate-graph-clients: generate-graph-golang-client generate-graph-ts-client
-	echo Generated graph clients
+generate-graph-clients: generate-graph-schema generate-graph-golang-client generate-graph-ts-client
+	echo Generating graphql clients
+	echo This will fail if the graph service is not running in tilt
 
 generate-graph-golang-client: generate-graph-schema
-	# TODO: use artifact created from `generate-graph-schema` not ://service/query
 	@echo Generating golang graphql client
 	go run github.com/Khan/genqlient tools/graphql-golang-client/genqlient.yaml
 
 generate-graph-ts-client: generate-graph-schema
-	# TODO: use artifact created from `generate-graph-schema` not ://service/query
 	@echo Generating typescript graphql client
 	@echo This requires the graph service running in tilt to generate the schema
 	cd ui && npm run graphql-codegen

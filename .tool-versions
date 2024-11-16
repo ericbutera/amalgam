@@ -12,4 +12,5 @@ protoc-gen-go-grpc 1.5.1
 mockery 2.47.0
 k6 0.55.0
 swag 1.16.4
-tilt tilt 0.33.21
+tilt 0.33.21
+helm 3.16.3
