@@ -1,7 +1,6 @@
 package main
 
 // TODO: convert to CLI
-// TODO: move to tools
 
 import (
 	"log/slog"
@@ -10,6 +9,6 @@ import (
 )
 
 func main() {
-	slog.Info("generating")
+	slog.Info("generating golang graphql client")
 	generate.Main()
 }

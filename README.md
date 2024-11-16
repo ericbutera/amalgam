@@ -4,19 +4,19 @@ Tech demo of a modern web application stack.
 
 ## Goals
 
-- Developer Experience
-- Run everything locally (no surprises in production)
-- o11y during development (not tacked on later)
+- Developer Experience: Spin up the entire stack with a single command.
+- Local-First Development: Everything runs locally for true production parity—no surprises.
+- Integrated Observability: Built-in o11y from the start, not an afterthought.
 
 ## Technologies
 
-- Kubernetes
-- GraphQL
-- Golang
-- Temporal
-- Grafana LGTM Observability
-- Next.js + TypeScript
-- MySQL
+- Kubernetes: The backbone for modern orchestration.
+- GraphQL: A powerful API layer for flexible, efficient data fetching.
+- Golang: Performance and simplicity at scale.
+- Temporal: Resilient workflows made easy.
+- Grafana LGTM Stack: Observe, debug, and improve with confidence.
+- Next.js + TypeScript: A delightful developer experience for building blazing-fast, modern UIs.
+- MySQL: The trusted relational database powering countless applications.
 
 ## Prerequisites
 
@@ -44,17 +44,7 @@ One of the major goals of this project is to show how to quickly build integrati
 
 ## Code Quality
 
-Be sure to install the pre-commit hooks which run various linters, formatters, and tests.
-
-```sh
-just setup
-```
-
-Linters:
-
-- [golangci-lint](https://golangci-lint.run/)
-- [eslint](https://eslint.org/)
-- [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/)
+[Code Quality](./docs/code-quality.md) contains an overview of how to ensure the codebase is of high quality.
 
 ## CI/CD
 
