@@ -1,4 +1,7 @@
+# Golang code coverage. This will add a comment to the PR with the code coverage report.
 # https://github.com/fgrosse/go-coverage-report/tree/8c1d1a09864211d258937b1b1a5b849f7e4f2682
+#
+# Note: On first run this will throw an error saying coverage artifact doesn't exist.
 name: golang-coverage
 on:
   workflow_call: # reusable

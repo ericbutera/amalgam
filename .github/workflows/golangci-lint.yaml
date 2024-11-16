@@ -1,3 +1,5 @@
+# Golang linters. I still want to enable more linters. It would be even nicer to only lint on
+# changed files.
 name: golangci-lint
 on:
   workflow_call: # reusable
