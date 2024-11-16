@@ -31,6 +31,10 @@ One of the major goals of this project is to show how to quickly build integrati
   - [TypeScript client](./ui/app/lib/client/) from OpenAPI spec
   - [k6 tests](./k6/README.md) from OpenAPI spec
 
+## Testing
+
+[Testing](./docs/testing.md) contains an overview of how to test the various components of the application.
+
 ## Code Quality
 
 Be sure to install the pre-commit hooks which run various linters, formatters, and tests.
