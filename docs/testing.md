@@ -8,6 +8,8 @@ Pre-commit hooks run [unit tests](https://github.com/ericbutera/amalgam/blob/ad3
 
 Unit tests can be ran on your dev machine using `just test` ([src](https://github.com/ericbutera/amalgam/blob/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/justfile#L14)).
 
+There is a `just go-coverage-report` ([src](https://github.com/ericbutera/amalgam/blob/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/justfile#L26-L29)) command to generate a coverage report. This is useful for seeing what parts of the codebase are not covered by tests.
+
 ## Integration Tests (And End-to-End)
 
 Golang integration tests run within Tilt ([go integration tests](http://localhost:10350/r/go%20integration%20tests/overview)). The reason for this is to prevent using things like testcontainers. Tilt is a much better orchestrator for ensuring dependencies are up and running before running tests.
