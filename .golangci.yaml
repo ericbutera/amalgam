@@ -93,5 +93,6 @@ issues:
   exclude-files:
     - ".*\\.pb\\.go$"
     - pkg/feeds/v1/service_grpc.pb.go
+    - internal/copygen/generated.go
   whole-files: true
   fix: true
