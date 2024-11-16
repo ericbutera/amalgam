@@ -33,9 +33,9 @@ func (s *Server) CreateFeed(ctx context.Context, in *pb.CreateFeedRequest) (*pb.
 	copygen.ProtoCreateFeedToService(feed, in.GetFeed())
 	res, err := s.service.CreateFeed(ctx, feed)
 	if err != nil {
-		if err == service.ErrDuplicate {
+		if errors.Is(err, service.ErrDuplicate) {
 			return nil, status.Errorf(codes.AlreadyExists, "feed already exists")
-		} else if err == service.ErrValidation {
+		} else if errors.Is(err, service.ErrValidation) {
 			return nil, validationErr(res.ValidationErrors)
 		}
 		return nil, status.Errorf(codes.Internal, "failed to create feed: %v", err)
@@ -117,7 +117,7 @@ func (s *Server) SaveArticle(ctx context.Context, in *pb.SaveArticleRequest) (*p
 
 	res, err := s.service.SaveArticle(ctx, article)
 	if err != nil {
-		if err == service.ErrValidation {
+		if errors.Is(err, service.ErrValidation) {
 			return nil, validationErr(res.ValidationErrors)
 		}
 		return nil, status.Errorf(codes.Internal, "failed to save article: %v", err)

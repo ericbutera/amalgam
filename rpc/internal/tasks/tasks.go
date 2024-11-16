@@ -51,10 +51,8 @@ func New(ctx context.Context, task TaskType) (*TaskResult, error) {
 }
 
 func taskTypeToWorkflow(taskType TaskType) (any, error) {
-	switch taskType {
-	case TaskGenerateFeeds:
+	if taskType == TaskGenerateFeeds {
 		return feed_tasks.GenerateFeedsWorkflow, nil
-	default:
-		return nil, errors.New("unknown task type")
 	}
+	return nil, errors.New("unknown task type")
 }

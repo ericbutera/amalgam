@@ -28,11 +28,9 @@ linters:
     - forcetypeassert
     - mnd
     - intrange
-    - errorlint
     - err113
     - lll
     - gocritic
-    - exhaustive
 
 linters-settings:
   tagalign:
