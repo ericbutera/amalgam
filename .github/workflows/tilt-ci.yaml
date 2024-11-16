@@ -10,17 +10,16 @@ jobs:
   tilt-ci:
     runs-on: ubuntu-latest
     steps:
+      - uses: asdf-vm/actions/install@v3
+        with:
+          tool_versions: |
+            ctlptl 0.8.36
+            tilt 0.33.21
+            helm 3.16.3
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
           go-version: stable
       - uses: docker/setup-buildx-action@v2
-      - run: curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-      - run: curl -fsSL https://raw.githubusercontent.com/tilt-dev/tilt/master/scripts/install.sh | bash
-      - run: |
-          curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
-          chmod +x ./kubectl
-          sudo mv ./kubectl /usr/local/bin/kubectl
-      - run: curl -fsSL https://github.com/tilt-dev/ctlptl/releases/download/v0.8.35/ctlptl.0.8.35.linux.x86_64.tar.gz | sudo tar -xzv -C /usr/local/bin ctlptl
       - uses: extractions/setup-just@v2
       - run: just ci

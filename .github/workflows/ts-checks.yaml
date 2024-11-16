@@ -1,3 +1,4 @@
+# Typescript checks; used in the UI project.
 name: typescript-checks
 on:
   workflow_call: # reusable

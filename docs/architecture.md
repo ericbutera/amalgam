@@ -2,6 +2,15 @@
 
 This document outlines how to grow a project from a monolithic REST API to a microservices architecture.
 
+- [Architecture Journey](#architecture-journey)
+  - [Beginnings](#beginnings)
+  - [v0.1.0 Monolithic REST API](#v010-monolithic-rest-api)
+  - [v1.0.0 Introduce Domain Layer](#v100-introduce-domain-layer)
+  - [v1.1.1 Add GraphQL and gRPC](#v111-add-graphql-and-grpc)
+  - [v1.3.2 Refactor REST to use GraphQL backend](#v132-refactor-rest-to-use-graphql-backend)
+  - [v1.4.0 GraphQL Gateway powered by Data Pipelines](#v140-graphql-gateway-powered-by-data-pipelines)
+  - [Next Steps](#next-steps)
+
 ## Beginnings
 
 This is the typical web application starting point. A single codebase that handles all the web traffic, business logic, and data access.
@@ -165,9 +174,11 @@ As of v1.4.0, the system has stabilized around GraphQL as our API Gateway. It is
 
 Note: in prod there would be an ingress controller in front of the GraphQL service. This would handle things like rate limiting, authentication, and other concerns.
 
-### Components
+Components:
 
-- [UI](https://github.com/ericbutera/amalgam/tree/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/ui)
+- Public
+  - [UI](https://github.com/ericbutera/amalgam/tree/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/ui)
+  - [CLI](https://github.com/ericbutera/amalgam/tree/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/cli)
 - Services
   - [GraphQL](https://github.com/ericbutera/amalgam/tree/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/graph)
   - [gRPC](https://github.com/ericbutera/amalgam/tree/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/rpc)
@@ -176,7 +187,7 @@ Note: in prod there would be an ingress controller in front of the GraphQL servi
     - [FetchFeeds](https://github.com/ericbutera/amalgam/tree/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/data-pipeline/temporal/feed)
     - [FeedTasks](https://github.com/ericbutera/amalgam/tree/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/data-pipeline/temporal/feed_tasks)
 
-## Ancillary Services
+Ancillary Services:
 
 - K6
   - [load test graph service](https://github.com/ericbutera/amalgam/tree/main/k6/load-test-graph)
@@ -235,6 +246,8 @@ Fetch Feeds:
 - runs on a continuous schedule
 - mimics a simple Extract Transform Load (ETL) pipeline
 - uses Object Storage locations as input and output
+
+---
 
 ## Next Steps
 

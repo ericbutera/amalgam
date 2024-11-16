@@ -1,7 +1,6 @@
 package main
 
 // TODO: convert to CLI
-// TODO: move to tools
 
 import (
 	"context"
@@ -12,7 +11,7 @@ import (
 )
 
 const (
-	serviceURL  = "http://localhost:8082/query"
+	serviceURL  = "http://localhost:8082/query" // TODO: config via env/cli param
 	destination = "schema.graphql"
 	fileMode    = 0o600
 )
@@ -20,7 +19,7 @@ const (
 // Downloads the GraphQL schema from the locally running server.
 // more info: https://github.com/Khan/genqlient/blob/main/docs/schema.md#fetching-your-schema
 func main() {
-	slog.Info("starting")
+	slog.Info("generating golang graphql schema", "serviceURL", serviceURL)
 
 	schema, err := gqlfetch.BuildClientSchema(context.Background(), serviceURL, false)
 	if err != nil {

@@ -1,3 +1,4 @@
+# Buf lint ensures protobuf files are formatted correctly.
 name: buf-lint
 on:
   workflow_call: # reusable
