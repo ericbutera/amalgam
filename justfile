@@ -164,7 +164,6 @@ generate-graph-golang-client: generate-graph-schema
 	@echo Generating golang graphql client
 	go run github.com/Khan/genqlient tools/graphql-golang-client/genqlient.yaml
 
-
 generate-graph-ts-client: generate-graph-schema
 	# TODO: use artifact created from `generate-graph-schema` not ://service/query
 	@echo Generating typescript graphql client
