@@ -8,9 +8,19 @@ By automating the generation of code for copying fields between structs with sim
 
 You can find the [copygen transforms here](https://github.com/ericbutera/amalgam/blob/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/internal/copygen/setup.go#L12-L41).
 
-## GraphQL Clients (post [v1.4.0](https://github.com/ericbutera/amalgam/releases/tag/v1.4.0))
+## GraphQL
 
-GraphQL clients can be automatically generated from graph's [GraphQL schema](https://github.com/ericbutera/amalgam/tree/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/tools/graphql-schema). These generated clients provide strongly typed interfaces, enhancing developer experience with code completion and preventing runtime errors.
+### Server
+
+The GraphQL server can be generated using `just generate-graph-server` ([source](https://github.com/ericbutera/amalgam/blob/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/justfile#L144-L148)).
+
+### Schema
+
+The GraphQL [schema](https://github.com/ericbutera/amalgam/tree/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/tools/graphql-schema) is generated using `just generate-graph-schema` ([source](https://github.com/ericbutera/amalgam/blob/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/justfile#L151-L156)).
+
+### Clients (post [v1.4.0](https://github.com/ericbutera/amalgam/releases/tag/v1.4.0))
+
+These generated clients provide strongly typed interfaces, enhancing developer experience with code completion and preventing runtime errors.
 
 - [TypeScript](https://github.com/ericbutera/amalgam/blob/9528beb51c6b2affa3b6bd1622ca666983148fc4/ui/app/generated/graphql.ts#L204-L225) via [`generate-graph-ts-client`](https://github.com/ericbutera/amalgam/blob/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/justfile#L165-L169)
 - [Go](https://github.com/ericbutera/amalgam/blob/9528beb51c6b2affa3b6bd1622ca666983148fc4/pkg/clients/graphql/graphql.gen.go) via [`generate-graph-golang-client`](https://github.com/ericbutera/amalgam/blob/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/justfile#L159-L162)
