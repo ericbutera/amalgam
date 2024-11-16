@@ -10,6 +10,9 @@ build app:
     @echo "Building binary for {{app}}"
     cd {{app}} && CGO_ENABLED=0 GOOS=linux go build -o bin/app
 
+install-amalgam-cli:
+	go install ./amalgam-cli/cmd
+
 lint: go-lint ts-lint buf-lint
 test: go-test ts-test
 

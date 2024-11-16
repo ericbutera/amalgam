@@ -7,9 +7,9 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "cli",
-	Short: "cli",
-	Long:  "cli",
+	Use:   "amalgam-cli",
+	Short: "amalgam-cli",
+	Long:  "amalgam-cli",
 }
 
 func Execute() {
