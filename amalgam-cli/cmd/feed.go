@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -10,6 +11,8 @@ import (
 	client "github.com/ericbutera/amalgam/pkg/clients/graphql"
 	"github.com/spf13/cobra"
 )
+
+var ErrInvalidURL = errors.New("invalid URL specified")
 
 func NewFeedCmd() *cobra.Command {
 	return &cobra.Command{
@@ -57,7 +60,7 @@ func NewFeedAddCmd() *cobra.Command {
 			if err == nil && u.Scheme != "" && u.Host != "" {
 				return nil
 			}
-			return fmt.Errorf("invalid URL specified: %s", args[0])
+			return ErrInvalidURL
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 			slog.Info("feed add!", "url", args[0])

@@ -14,6 +14,8 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+var ErrInvalidTaskType = errors.New("invalid task type")
+
 func (s *Server) ListFeeds(ctx context.Context, _ *pb.ListFeedsRequest) (*pb.ListFeedsResponse, error) {
 	feeds, err := s.service.Feeds(ctx)
 	if err != nil {
@@ -144,7 +146,7 @@ func pbTaskToTaskType(task pb.FeedTaskRequest_Task) (tasks.TaskType, error) {
 	if task == pb.FeedTaskRequest_TASK_GENERATE_FEEDS {
 		return tasks.TaskGenerateFeeds, nil
 	}
-	return tasks.TaskUnspecified, errors.New("invalid task type")
+	return tasks.TaskUnspecified, ErrInvalidTaskType
 }
 
 func (*Server) FeedTask(ctx context.Context, in *pb.FeedTaskRequest) (*pb.FeedTaskResponse, error) {

@@ -15,6 +15,8 @@ import (
 	"gorm.io/gorm/clause"
 )
 
+var ErrQueryFailed = errors.New("query failed")
+
 type GormService struct {
 	db *gorm.DB
 }
@@ -36,7 +38,7 @@ func (s *GormService) Feeds(ctx context.Context) ([]svc_model.Feed, error) {
 		Find(&feeds)
 
 	if result.Error != nil {
-		return nil, errors.New("failed to fetch feeds")
+		return nil, ErrQueryFailed
 	}
 	return feeds, nil
 }

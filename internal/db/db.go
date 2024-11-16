@@ -15,6 +15,8 @@ import (
 	"gorm.io/plugin/opentelemetry/tracing"
 )
 
+var ErrInvalidAdapter = errors.New("invalid adapter")
+
 type Adapters string
 
 const (
@@ -61,7 +63,7 @@ func NewFromConfig(config *Config) (*gorm.DB, error) {
 			WithTraceAll(),
 		)
 	}
-	return nil, errors.New("db adapter not supported")
+	return nil, ErrInvalidAdapter
 }
 
 func setOpts(db *gorm.DB, opts ...Options) error {

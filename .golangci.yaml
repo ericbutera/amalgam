@@ -28,7 +28,6 @@ linters:
     - forcetypeassert
     - mnd
     - intrange
-    - err113
     - lll
     - gocritic
 

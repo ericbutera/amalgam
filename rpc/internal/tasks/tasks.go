@@ -11,6 +11,8 @@ import (
 	"go.temporal.io/sdk/temporal"
 )
 
+var ErrInvalidTaskType = errors.New("invalid task type")
+
 type TaskType string
 
 const (
@@ -54,5 +56,5 @@ func taskTypeToWorkflow(taskType TaskType) (any, error) {
 	if taskType == TaskGenerateFeeds {
 		return feed_tasks.GenerateFeedsWorkflow, nil
 	}
-	return nil, errors.New("unknown task type")
+	return nil, ErrInvalidTaskType
 }
