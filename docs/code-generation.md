@@ -10,6 +10,17 @@ You can find the [copygen transforms here](https://github.com/ericbutera/amalgam
 
 ## GraphQL
 
+General workflow:
+
+- run tilt `tilt up`
+- change server schema `graph/graph/schema.graphqls`
+- generate server `just generate-graph-server`
+- await graph service to hot-reload
+- generate schema `just generate-graph-schema`
+- generate clients `just generate-graph-clients`
+
+This is not an optimal solution. I intend to have it so these steps are automated without a Tilt dependency.
+
 ### Server
 
 The GraphQL server can be generated using `just generate-graph-server` ([source](https://github.com/ericbutera/amalgam/blob/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/justfile#L144-L148)).
@@ -22,8 +33,10 @@ The GraphQL [schema](https://github.com/ericbutera/amalgam/tree/ad3d798390308898
 
 These generated clients provide strongly typed interfaces, enhancing developer experience with code completion and preventing runtime errors.
 
-- [TypeScript](https://github.com/ericbutera/amalgam/blob/9528beb51c6b2affa3b6bd1622ca666983148fc4/ui/app/generated/graphql.ts#L204-L225) via [`generate-graph-ts-client`](https://github.com/ericbutera/amalgam/blob/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/justfile#L165-L169)
-- [Go](https://github.com/ericbutera/amalgam/blob/9528beb51c6b2affa3b6bd1622ca666983148fc4/pkg/clients/graphql/graphql.gen.go) via [`generate-graph-golang-client`](https://github.com/ericbutera/amalgam/blob/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/justfile#L159-L162)
+| Client | Command |
+| --- | --- |
+| [TypeScript](https://github.com/ericbutera/amalgam/blob/9528beb51c6b2affa3b6bd1622ca666983148fc4/ui/app/generated/graphql.ts#L204-L225) | [`generate-graph-ts-client`](https://github.com/ericbutera/amalgam/blob/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/justfile#L165-L169) |
+| [Go](https://github.com/ericbutera/amalgam/blob/9528beb51c6b2affa3b6bd1622ca666983148fc4/pkg/clients/graphql/graphql.gen.go) | [`generate-graph-golang-client`](https://github.com/ericbutera/amalgam/blob/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/justfile#L159-L162) |
 
 ## OpenAPI Clients ([v1.3.1](https://github.com/ericbutera/amalgam/releases/tag/v1.3.1))
 
