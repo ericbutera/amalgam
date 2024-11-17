@@ -26,3 +26,32 @@ local_resource(
   auto_init=config.tilt_subcommand == "ci",
   labels=["test"],
 )
+
+docker_build("k6-image", "k6/tests")
+k8s_resource("k6",
+  new_name="k6 - api test",
+  trigger_mode=TRIGGER_MODE_MANUAL,
+  auto_init=False,
+  resource_deps=["api","rpc"],
+  links=[link("https://k6.io", "grafana k6")],
+  labels=["test"]
+)
+
+docker_build("k6-load-test-graph-image", "k6/load-test-graph")
+k8s_resource("k6-load-test-graph",
+  new_name="k6 - load test graph",
+  trigger_mode=TRIGGER_MODE_MANUAL,
+  auto_init=False,
+  resource_deps=["graph", "faker"],
+  links=[link("https://k6.io", "grafana k6")],
+  labels=["test"]
+)
+
+docker_build("k6-simulate-traffic-image", "k6/simulate-traffic")
+k8s_resource("k6-simulate-traffic",
+  new_name="k6 - simulate traffic",
+  trigger_mode=TRIGGER_MODE_MANUAL,
+  auto_init=False,
+  resource_deps=["graph"],
+  labels=["test"]
+)

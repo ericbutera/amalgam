@@ -87,7 +87,6 @@ cmd_button('random feed',
   text='fake',
 )
 
-
 k8s_yaml(secret_from_dict("data-pipeline-auth", inputs={
   "MINIO_ACCESS_KEY": "minio",
   "MINIO_SECRET_ACCESS_KEY": "minio-password",
@@ -100,16 +99,12 @@ go_compile('feed-worker-compile', './data-pipeline/temporal/feed/worker', ['./da
 go_image('feed-worker', './data-pipeline/temporal/feed/worker')
 k8s_resource("feed-worker", resource_deps=["temporal","rpc"], labels=["data-pipeline"],
   port_forwards=[port_forward(9096, 9090, "metrics")],
-  trigger_mode=TRIGGER_MODE_MANUAL,
-  auto_init=False,
 )
 # TODO: convert to "feed-tasks" <- low quantity random things that share the same worker
 go_compile('feed-tasks-worker-compile', './data-pipeline/temporal/feed_tasks/worker', ['./data-pipeline/temporal'])
 go_image('feed-tasks-worker', './data-pipeline/temporal/feed_tasks/worker')
 k8s_resource("feed-tasks-worker", resource_deps=["temporal","rpc"], labels=["data-pipeline"],
   port_forwards=[port_forward(9097, 9090, "metrics")],
-  trigger_mode=TRIGGER_MODE_MANUAL,
-  auto_init=False,
 )
 
 cmd_button('fetch feeds',
@@ -129,34 +124,6 @@ cmd_button('generate feeds',
 load('./containers/tilt/extensions/temporal/Tiltfile', 'deploy_temporal')
 deploy_temporal(auto_init=(not IS_CI))
 
-docker_build("k6-image", "k6/tests")
-k8s_resource("k6",
-  new_name="k6 - api test",
-  trigger_mode=TRIGGER_MODE_MANUAL,
-  auto_init=False,
-  resource_deps=["api","rpc"],
-  links=[link("https://k6.io", "grafana k6")],
-  labels=["test"]
-)
-
-docker_build("k6-load-test-graph-image", "k6/load-test-graph")
-k8s_resource("k6-load-test-graph",
-  new_name="k6 - load test graph",
-  trigger_mode=TRIGGER_MODE_MANUAL,
-  auto_init=False,
-  resource_deps=["graph", "faker"],
-  links=[link("https://k6.io", "grafana k6")],
-  labels=["test"]
-)
-
-docker_build("k6-simulate-traffic-image", "k6/simulate-traffic")
-k8s_resource("k6-simulate-traffic",
-  new_name="k6 - simulate traffic",
-  trigger_mode=TRIGGER_MODE_MANUAL,
-  auto_init=False,
-  resource_deps=["graph"],
-  labels=["test"]
-)
 
 
 load('./containers/tilt/extensions/mysql/Tiltfile', 'deploy_mysql')
