@@ -8,6 +8,8 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
+const Timeout = 10 * time.Second
+
 func NewServer(registry *prometheus.Registry, address string) *http.Server {
 	m := http.NewServeMux()
 	m.Handle("/metrics", promhttp.HandlerFor(
@@ -19,6 +21,6 @@ func NewServer(registry *prometheus.Registry, address string) *http.Server {
 	return &http.Server{
 		Addr:              address,
 		Handler:           m,
-		ReadHeaderTimeout: 10 * time.Second,
+		ReadHeaderTimeout: Timeout,
 	}
 }

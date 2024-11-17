@@ -11,7 +11,7 @@ linters:
     - gomoddirectives
     - wsl
     - wrapcheck
-    - nonamedreturns
+    - nonamedreturns # i like these sometimes
     - paralleltest
     - varnamelen
     - ireturn
@@ -24,8 +24,7 @@ linters:
     - stylecheck # feedId -> feedID
     - thelper
     - forcetypeassert
-    - mnd
-    - intrange
+    - intrange # for x := 0; x < count; x++ -> for x := range make([]int, count)
     - lll
 
 linters-settings:

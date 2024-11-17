@@ -14,7 +14,7 @@ type Config struct {
 }
 
 func init() { //nolint:gochecknoinits
-	viper.SetDefault("feed_tasks_count", 25)
+	viper.SetDefault("feed_tasks_count", 25) //nolint:mnd
 	viper.SetDefault("feed_tasks_workflow_id", "feed-tasks-feeds")
 	viper.SetDefault("feed_tasks_task_queue", "feed-tasks-feeds-queue")
 	viper.SetDefault("fake_host", "")
