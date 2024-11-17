@@ -13,9 +13,11 @@ jobs:
       - uses: asdf-vm/actions/install@v3
         with:
           tool_versions: |
-            ctlptl 0.8.36
-            tilt 0.33.21
+            kubectl 1.31.2
             helm 3.16.3
+            ctlptl 0.8.36
+            kind 0.25.0
+            tilt 0.33.21
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:

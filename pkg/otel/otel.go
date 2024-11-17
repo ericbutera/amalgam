@@ -11,6 +11,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/ericbutera/amalgam/pkg/otel/samplers"
 	"go.opentelemetry.io/contrib/bridges/otelslog"
 	"go.opentelemetry.io/contrib/instrumentation/runtime"
 	"go.opentelemetry.io/otel"
@@ -25,7 +26,9 @@ import (
 	"go.opentelemetry.io/otel/sdk/trace"
 )
 
-const schemaName = "https://github.com/grafana/docker-otel-lgtm"
+const (
+	schemaName = "https://github.com/grafana/docker-otel-lgtm"
+)
 
 var (
 	Tracer = otel.Tracer(schemaName)
@@ -34,7 +37,7 @@ var (
 
 // bootstrap the OpenTelemetry pipeline
 // If it does not return an error, make sure to call shutdown for proper cleanup.
-func Setup(ctx context.Context) (shutdown func(context.Context) error, err error) {
+func Setup(ctx context.Context, ignoredSpans []string) (shutdown func(context.Context) error, err error) {
 	var shutdownFuncs []func(context.Context) error
 
 	Logger.Info("setting up OpenTelemetry")
@@ -52,7 +55,7 @@ func Setup(ctx context.Context) (shutdown func(context.Context) error, err error
 
 	setupPropagators()
 
-	if err := setupTracing(ctx, &shutdownFuncs); err != nil {
+	if err := setupTracing(ctx, ignoredSpans, &shutdownFuncs); err != nil {
 		handleErr(err)
 		return nil, err
 	}
@@ -94,13 +97,21 @@ func setupPropagators() {
 	otel.SetTextMapPropagator(prop)
 }
 
-func setupTracing(ctx context.Context, shutdownFuncs *[]func(context.Context) error) error {
+func setupTracing(ctx context.Context, ignoredSpans []string, shutdownFuncs *[]func(context.Context) error) error {
 	exporter, err := otlptrace.New(ctx, otlptracehttp.NewClient())
 	if err != nil {
 		return err
 	}
 
-	provider := trace.NewTracerProvider(trace.WithBatcher(exporter))
+	opts := []trace.TracerProviderOption{
+		trace.WithBatcher(exporter),
+	}
+
+	if ignoredSpans != nil {
+		opts = append(opts, trace.WithSampler(samplers.NewSpanName(ignoredSpans)))
+	}
+
+	provider := trace.NewTracerProvider(opts...)
 	*shutdownFuncs = append(*shutdownFuncs, provider.Shutdown)
 	otel.SetTracerProvider(provider)
 	return nil

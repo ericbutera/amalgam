@@ -6,12 +6,13 @@ grpcurl 1.9.1
 buf 1.47.2
 act 0.2.69
 golangci-lint 1.62.0
-ctlptl 0.8.36
 protoc-gen-go 1.35.2
 protoc-gen-go-grpc 1.5.1
 mockery 2.47.0
 k6 0.55.0
 swag 1.16.4
-tilt 0.33.21
-helm 3.16.3
 kubectl 1.31.2
+helm 3.16.3
+ctlptl 0.8.36
+kind 0.25.0
+tilt 0.33.21
