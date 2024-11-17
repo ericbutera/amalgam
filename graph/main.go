@@ -1,6 +1,5 @@
 package main
 
-// github.com/99designs/gqlgen-contrib/prometheus
 import (
 	"context"
 	"log/slog"
@@ -36,8 +35,8 @@ func main() {
 
 	config := lo.Must(env.New[config.Config]())
 
-	shutdown := lo.Must(otel.Setup(ctx))
-	defer lo.Must0(shutdown(ctx))
+	shutdown := lo.Must(otel.Setup(ctx, config.IgnoredSpanNames))
+	defer func() { lo.Must0(shutdown(ctx)) }()
 
 	gql_prom.Register()
 
@@ -47,7 +46,7 @@ func main() {
 	srv := newServer(client)
 	srv.Use(otelgqlgen.Middleware())
 	srv.Use(gql_prom.Tracer{})
-	// TODO: complexity limit srv.Use(extension.ComplexityLimit{})
+	// TODO: complexity limit srv.Use(extension.FixedComplexityLimit(config.ComplexityLimit))
 
 	router := newRouter(config.CorsAllowOrigins)
 	router.Handle("/metrics", promhttp.Handler())

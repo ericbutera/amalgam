@@ -107,9 +107,9 @@ func WithConfig(data *config.Config) Option {
 	}
 }
 
-func WithOtel(ctx context.Context) Option {
+func WithOtel(ctx context.Context, ignored []string) Option {
 	return func(s *Server) error {
-		shutdown, err := otel.Setup(ctx)
+		shutdown, err := otel.Setup(ctx, ignored)
 		if err != nil {
 			return err
 		}

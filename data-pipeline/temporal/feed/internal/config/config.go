@@ -3,22 +3,24 @@ package config
 import "github.com/spf13/viper"
 
 type Config struct {
-	UseSchedule          bool   `mapstructure:"feed_use_schedule"`
-	ScheduleID           string `mapstructure:"feed_schedule_id"`
-	WorkflowID           string `mapstructure:"feed_workflow_id"`
-	TaskQueue            string `mapstructure:"feed_task_queue"`
-	TemporalHost         string `mapstructure:"temporal_host"`
-	RpcHost              string `mapstructure:"rpc_host"`
-	RpcInsecure          bool   `mapstructure:"rpc_insecure"`
-	MinioEndpoint        string `mapstructure:"minio_endpoint"`
-	MinioAccessKey       string `mapstructure:"minio_access_key"`
-	MinioSecretAccessKey string `mapstructure:"minio_secret_access_key"`
-	MinioUseSsl          bool   `mapstructure:"minio_use_ssl"`
-	MinioTrace           bool   `mapstructure:"minio_trace"`
-	MinioRegion          string `mapstructure:"minio_region"`
+	IgnoredSpanNames     []string `mapstructure:"ignored_span_names"`
+	UseSchedule          bool     `mapstructure:"feed_use_schedule"`
+	ScheduleID           string   `mapstructure:"feed_schedule_id"`
+	WorkflowID           string   `mapstructure:"feed_workflow_id"`
+	TaskQueue            string   `mapstructure:"feed_task_queue"`
+	TemporalHost         string   `mapstructure:"temporal_host"`
+	RpcHost              string   `mapstructure:"rpc_host"`
+	RpcInsecure          bool     `mapstructure:"rpc_insecure"`
+	MinioEndpoint        string   `mapstructure:"minio_endpoint"`
+	MinioAccessKey       string   `mapstructure:"minio_access_key"`
+	MinioSecretAccessKey string   `mapstructure:"minio_secret_access_key"`
+	MinioUseSsl          bool     `mapstructure:"minio_use_ssl"`
+	MinioTrace           bool     `mapstructure:"minio_trace"`
+	MinioRegion          string   `mapstructure:"minio_region"`
 }
 
 func init() { //nolint:gochecknoinits
+	viper.SetDefault("ignored_span_names", []string{})
 	viper.SetDefault("feed_use_schedule", false)
 	viper.SetDefault("feed_schedule_id", "feed-schedule-id")
 	viper.SetDefault("feed_workflow_id", "feed-workflow-id")
