@@ -32,10 +32,10 @@ func webhookHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error processing request", http.StatusInternalServerError)
 		return
 	}
-	lo.Must(fmt.Printf("headers: %+v\n", r.Header))
-	lo.Must(fmt.Printf("payload: %s\n", string(data)))
 
 	w.WriteHeader(http.StatusOK)
+	lo.Must(fmt.Fprintf(w, "headers: %+v\n", r.Header))
+	lo.Must(fmt.Fprintf(w, "payload: %s\n", string(data)))
 	if _, err := fmt.Fprintln(w, "Alert received"); err != nil {
 		slog.Error("Failed to write response", "error", err)
 	}

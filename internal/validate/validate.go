@@ -1,6 +1,7 @@
 package validate
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/go-playground/validator/v10"
@@ -29,8 +30,9 @@ func Struct(data any, customMessages CustomMessages) ValidationResult {
 	err := validate.Struct(data)
 	if err != nil {
 		var errs []ValidationError
-		if errors, ok := err.(validator.ValidationErrors); ok {
-			for _, err := range errors {
+		var validationErrors validator.ValidationErrors
+		if errors.As(err, &validationErrors) {
+			for _, err := range validationErrors {
 				fieldTag := fmt.Sprintf("%s.%s", err.StructField(), err.Tag())
 				errs = append(errs, ValidationError{
 					Field:           err.StructField(),

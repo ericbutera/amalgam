@@ -18,6 +18,6 @@ func Execute() {
 	}
 }
 
-func init() {
+func init() { //nolint:gochecknoinits
 	rootCmd.AddCommand(NewServerCmd())
 }

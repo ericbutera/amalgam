@@ -19,6 +19,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var ErrHostNotSet = errors.New("host not set")
+
 func NewServerCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "server",
@@ -82,7 +84,7 @@ func runServer(cmd *cobra.Command, args []string) {
 
 func newGraphClient(host string, logger *slog.Logger) (graphql.Client, error) {
 	if host == "" {
-		return nil, errors.New("graph host not set")
+		return nil, ErrHostNotSet
 	}
 	httpClient := http.Client{
 		Transport: transport.NewLoggingTransport(

@@ -15,6 +15,10 @@ import (
 	"gorm.io/gorm/clause"
 )
 
+const DefaultLimit = 100
+
+var ErrQueryFailed = errors.New("query failed")
+
 type GormService struct {
 	db *gorm.DB
 }
@@ -32,11 +36,11 @@ func (s *GormService) Feeds(ctx context.Context) ([]svc_model.Feed, error) {
 	var feeds []svc_model.Feed
 	result := s.query(ctx).
 		Where("is_active=?", true).
-		Limit(100). // TODO: pagination
+		Limit(DefaultLimit). // TODO: pagination
 		Find(&feeds)
 
 	if result.Error != nil {
-		return nil, errors.New("failed to fetch feeds")
+		return nil, ErrQueryFailed
 	}
 	return feeds, nil
 }
@@ -145,7 +149,7 @@ func (s *GormService) GetFeed(ctx context.Context, id string) (*svc_model.Feed, 
 func (s *GormService) GetArticlesByFeed(ctx context.Context, feedId string) ([]svc_model.Article, error) {
 	var articles []svc_model.Article
 	result := s.query(ctx).
-		Limit(100). // TODO: pagination (cursor)
+		Limit(DefaultLimit). // TODO: pagination (cursor)
 		Find(&articles, "feed_id=?", feedId)
 
 	if result.Error != nil {

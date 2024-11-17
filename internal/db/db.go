@@ -15,6 +15,8 @@ import (
 	"gorm.io/plugin/opentelemetry/tracing"
 )
 
+var ErrInvalidAdapter = errors.New("invalid adapter")
+
 type Adapters string
 
 const (
@@ -33,7 +35,7 @@ type Config struct {
 	DbSqliteName string   `mapstructure:"db_sqlite_name"`
 }
 
-func init() {
+func init() { //nolint:gochecknoinits
 	viper.SetDefault("db_adapter", SqliteAdapter)
 	viper.SetDefault("db_sqlite_name", "file::memory:?cache=shared")
 	viper.SetDefault("db_mysql_dsn", "user:pass@tcp(127.0.0.1:3306)/dbname?charset=utf8mb4&parseTime=True&loc=Local")
@@ -61,7 +63,7 @@ func NewFromConfig(config *Config) (*gorm.DB, error) {
 			WithTraceAll(),
 		)
 	}
-	return nil, errors.New("db adapter not supported")
+	return nil, ErrInvalidAdapter
 }
 
 func setOpts(db *gorm.DB, opts ...Options) error {
@@ -136,9 +138,7 @@ func WithSeedData() Options {
 }
 
 func WithMiddleware() Options {
-	return func(db *gorm.DB) error {
-		return middleware(db)
-	}
+	return middleware
 }
 
 func middleware(db *gorm.DB) error {

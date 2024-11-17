@@ -1,9 +1,11 @@
 
 import type { CodegenConfig } from '@graphql-codegen/cli';
 
+const schemaURL = process.env.GRAPH_HOST || 'http://localhost:8082/query';
+
 const config: CodegenConfig = {
   overwrite: true,
-  schema: "http://localhost:8082/query",
+  schema: schemaURL,
   documents: [
     "app/graphql/queries.graphql",
     "app/graphql/mutations.graphql",

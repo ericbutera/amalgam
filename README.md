@@ -30,6 +30,10 @@ tilt up
 # open tilt ui @ http://localhost:10350
 ```
 
+## Development
+
+[Development](./docs/development.md) contains an overview of how to develop the various components of the application.
+
 ## Architecture
 
 [Architecture](./docs/architecture.md) contains an overview of how to convert a project from a monolith to a microservices architecture.

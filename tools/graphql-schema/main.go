@@ -19,9 +19,13 @@ const (
 // Downloads the GraphQL schema from the locally running server.
 // more info: https://github.com/Khan/genqlient/blob/main/docs/schema.md#fetching-your-schema
 func main() {
-	slog.Info("generating golang graphql schema", "serviceURL", serviceURL)
+	url := os.Getenv("GRAPH_HOST")
+	if url == "" {
+		url = serviceURL
+	}
+	slog.Info("generating golang graphql schema", "serviceURL", url)
 
-	schema, err := gqlfetch.BuildClientSchema(context.Background(), serviceURL, false)
+	schema, err := gqlfetch.BuildClientSchema(context.Background(), url, false)
 	if err != nil {
 		slog.Error("unable to query graph service", "error", err)
 		os.Exit(1)

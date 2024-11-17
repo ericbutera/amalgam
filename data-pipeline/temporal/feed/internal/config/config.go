@@ -18,7 +18,7 @@ type Config struct {
 	MinioRegion          string `mapstructure:"minio_region"`
 }
 
-func init() {
+func init() { //nolint:gochecknoinits
 	viper.SetDefault("feed_use_schedule", false)
 	viper.SetDefault("feed_schedule_id", "feed-schedule-id")
 	viper.SetDefault("feed_workflow_id", "feed-workflow-id")

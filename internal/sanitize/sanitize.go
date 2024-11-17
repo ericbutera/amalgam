@@ -7,6 +7,8 @@ import (
 	sanitizer "github.com/go-sanitize/sanitize"
 )
 
+var ErrInvalidURL = errors.New("invalid URL specified")
+
 // Returns a sanitized copy of the original data.
 func Struct[T any](data T) (T, error) {
 	s, err := sanitizer.New(
@@ -30,7 +32,7 @@ func sanitizeUrl(_ sanitizer.Sanitizer, structValue reflect.Value, idx int) erro
 	fieldValue := structValue.Field(idx)
 	url, err := Url(fieldValue.String())
 	if err != nil {
-		return errors.New("invalid url")
+		return ErrInvalidURL
 	}
 	fieldValue.SetString(url)
 	return nil

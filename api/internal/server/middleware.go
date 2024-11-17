@@ -12,6 +12,8 @@ import (
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 )
 
+const MaxAge = 12 * time.Hour
+
 var ignoredRoutes = []string{
 	"/metrics",
 	"/health",
@@ -42,7 +44,7 @@ func corsMiddleware(cfg *config.Config) gin.HandlerFunc {
 		AllowHeaders:     cfg.CorsAllowHeaders,
 		ExposeHeaders:    cfg.CorsExposeHeaders,
 		AllowCredentials: true,
-		MaxAge:           12 * time.Hour,
+		MaxAge:           MaxAge,
 	})
 }
 

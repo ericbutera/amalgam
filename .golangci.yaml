@@ -2,39 +2,28 @@
 linters:
   enable-all: true
   disable:
-    - execinquery
-    - gomnd
     - exportloopref
-    - godot
-    - godox
+    - godot # adds period at end of comments (no thanks)
+    - godox # bans TODO
     - exhaustruct
     - depguard
-    - gochecknoinits
     - nlreturn
     - gomoddirectives
-    - wsl
+    - wsl # only one cuddle assignment allowed before range statement
     - wrapcheck
-    - nonamedreturns
+    - nonamedreturns # i like these sometimes
     - paralleltest
     - varnamelen
-    - ireturn
-    - tagliatelle
-    - forbidigo
+    - ireturn # not allowed to return interfaces
+    - tagliatelle # json(camel): got 'feed_id' want 'feedId'
     - gochecknoglobals
-    - inamedparam
     - interfacebloat
     - perfsprint
     - nilnil
-    - stylecheck
+    - stylecheck # feedId -> feedID
     - thelper
-    - forcetypeassert
-    - mnd
-    - intrange
-    - errorlint
-    - err113
+    - intrange # for x := 0; x < count; x++ -> for x := range make([]int, count)
     - lll
-    - gocritic
-    - exhaustive
 
 linters-settings:
   tagalign:
@@ -62,6 +51,10 @@ linters-settings:
       - name: unused-receiver
         exclude:
           - graph/extensions/prometheus/prometheus.go
+      - name: max-public-structs
+        disabled: true
+      - name: comment-spacings
+        disabled: true
       # - name: var-naming
       #   severity: warning
       #   disabled: false
@@ -90,8 +83,14 @@ issues:
     - path: cli/
       linters:
         - revive
+    - path: graph/graph/schema.resolvers_test.go
+      linters:
+        - revive
   exclude-files:
     - ".*\\.pb\\.go$"
     - pkg/feeds/v1/service_grpc.pb.go
+    - internal/copygen/generated.go
+    - graph/extensions/prometheus/prometheus.go
+    - internal/copygen/setup.go
   whole-files: true
   fix: true

@@ -9,7 +9,7 @@ type Config struct {
 	MetricAddress string `mapstructure:"metric_address"` // metric server address
 }
 
-func init() {
+func init() { //nolint:gochecknoinits
 	viper.SetDefault("port", "8080")
 	viper.SetDefault("metric_address", ":9090")
 }

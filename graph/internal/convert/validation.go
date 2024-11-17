@@ -1,3 +1,4 @@
+//nolint:err113
 package convert
 
 import (
