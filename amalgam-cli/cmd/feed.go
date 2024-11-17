@@ -42,7 +42,7 @@ func NewFeedListCmd() *cobra.Command {
 			}
 			slog.Debug("feed count", "feeds", len(res.Feeds))
 			for _, feed := range res.Feeds {
-				fmt.Printf("feed id: %s, url: %s\n", feed.Id, feed.Url)
+				fmt.Printf("feed id: %s, url: %s\n", feed.Id, feed.Url) //nolint:forbidigo
 			}
 		},
 	}

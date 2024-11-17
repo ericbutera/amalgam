@@ -17,13 +17,12 @@ linters:
     - varnamelen
     - ireturn
     - tagliatelle
-    - forbidigo
     - gochecknoglobals
     - inamedparam
     - interfacebloat
     - perfsprint
     - nilnil
-    - stylecheck
+    - stylecheck # feedId -> feedID
     - thelper
     - forcetypeassert
     - mnd
