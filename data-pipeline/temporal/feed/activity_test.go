@@ -114,7 +114,9 @@ func TestParseActivity(t *testing.T) {
 		expected, err := parse.Parse(reader)
 		require.NoError(t, err)
 
-		actual := dataToArticles(t, data.(io.Reader))
+		r, ok := data.(io.Reader)
+		require.True(t, ok)
+		actual := dataToArticles(t, r)
 		compareArticles(t, expected, actual)
 		return true
 	})

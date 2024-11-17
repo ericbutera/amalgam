@@ -22,7 +22,6 @@ linters:
     - nilnil
     - stylecheck # feedId -> feedID
     - thelper
-    - forcetypeassert
     - intrange # for x := 0; x < count; x++ -> for x := range make([]int, count)
     - lll
 
