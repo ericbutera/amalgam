@@ -42,7 +42,7 @@ func runServer(cmd *cobra.Command, args []string) {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
-	shutdown, err := otel.Setup(ctx)
+	shutdown, err := otel.Setup(ctx, []string{})
 	if err != nil {
 		quit(ctx, err)
 	}

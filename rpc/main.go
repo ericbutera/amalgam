@@ -17,7 +17,7 @@ func main() {
 
 	srv, err := server.New(
 		server.WithConfig(config),
-		server.WithOtel(ctx),
+		server.WithOtel(ctx, config.IgnoredSpanNames),
 		server.WithDbFromEnv(),
 	)
 	if err != nil {

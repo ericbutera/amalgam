@@ -35,7 +35,7 @@ func main() {
 	a := app.NewActivities(transforms, fetcher, bucketClient, feeds)
 
 	ctx := context.Background()
-	shutdown := lo.Must(otel.Setup(ctx))
+	shutdown := lo.Must(otel.Setup(ctx, config.IgnoredSpanNames))
 	defer helper.HandleShutdown(ctx, shutdown)
 
 	client := lo.Must(client.NewTemporalClient(config.TemporalHost))

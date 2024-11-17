@@ -5,11 +5,13 @@ import (
 )
 
 type Config struct {
-	Port          string `mapstructure:"port"`           // grpc server port
-	MetricAddress string `mapstructure:"metric_address"` // metric server address
+	IgnoredSpanNames []string `mapstructure:"ignored_span_names"`
+	Port             string   `mapstructure:"port"`           // grpc server port
+	MetricAddress    string   `mapstructure:"metric_address"` // metric server address
 }
 
 func init() { //nolint:gochecknoinits
+	viper.SetDefault("ignored_span_names", []string{"grpc.health.v1.Health/Check"})
 	viper.SetDefault("port", "8080")
 	viper.SetDefault("metric_address", ":9090")
 }
