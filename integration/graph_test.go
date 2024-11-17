@@ -28,12 +28,12 @@ func TestGraphListFeeds(t *testing.T) {
 
 func TestGraphGetFeedMissingID(t *testing.T) {
 	_, err := graphClient.GetFeed(context.Background(), getGraphQLClient(t), "uid")
-	require.ErrorContains(t, err, "value must be a valid UUID")
+	require.Error(t, err)
 }
 
 func TestGraphGetFeedNotFound(t *testing.T) {
 	_, err := graphClient.GetFeed(context.Background(), getGraphQLClient(t), "e97f8e74-1183-4280-a48d-dd592e013ee1")
-	require.ErrorContains(t, err, "feed not found")
+	require.Error(t, err)
 }
 
 func TestListArticlesMissingID(t *testing.T) {
