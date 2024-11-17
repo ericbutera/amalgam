@@ -14,6 +14,8 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+var ErrInvalidTaskType = errors.New("invalid task type")
+
 func (s *Server) ListFeeds(ctx context.Context, _ *pb.ListFeedsRequest) (*pb.ListFeedsResponse, error) {
 	feeds, err := s.service.Feeds(ctx)
 	if err != nil {
@@ -33,9 +35,9 @@ func (s *Server) CreateFeed(ctx context.Context, in *pb.CreateFeedRequest) (*pb.
 	copygen.ProtoCreateFeedToService(feed, in.GetFeed())
 	res, err := s.service.CreateFeed(ctx, feed)
 	if err != nil {
-		if err == service.ErrDuplicate {
+		if errors.Is(err, service.ErrDuplicate) {
 			return nil, status.Errorf(codes.AlreadyExists, "feed already exists")
-		} else if err == service.ErrValidation {
+		} else if errors.Is(err, service.ErrValidation) {
 			return nil, validationErr(res.ValidationErrors)
 		}
 		return nil, status.Errorf(codes.Internal, "failed to create feed: %v", err)
@@ -117,7 +119,7 @@ func (s *Server) SaveArticle(ctx context.Context, in *pb.SaveArticleRequest) (*p
 
 	res, err := s.service.SaveArticle(ctx, article)
 	if err != nil {
-		if err == service.ErrValidation {
+		if errors.Is(err, service.ErrValidation) {
 			return nil, validationErr(res.ValidationErrors)
 		}
 		return nil, status.Errorf(codes.Internal, "failed to save article: %v", err)
@@ -144,7 +146,7 @@ func pbTaskToTaskType(task pb.FeedTaskRequest_Task) (tasks.TaskType, error) {
 	if task == pb.FeedTaskRequest_TASK_GENERATE_FEEDS {
 		return tasks.TaskGenerateFeeds, nil
 	}
-	return tasks.TaskUnspecified, errors.New("invalid task type")
+	return tasks.TaskUnspecified, ErrInvalidTaskType
 }
 
 func (*Server) FeedTask(ctx context.Context, in *pb.FeedTaskRequest) (*pb.FeedTaskResponse, error) {

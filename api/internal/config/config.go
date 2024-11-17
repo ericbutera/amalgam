@@ -12,7 +12,7 @@ type Config struct {
 	// log level
 }
 
-func init() {
+func init() { //nolint:gochecknoinits
 	viper.SetDefault("cors_allow_origins", []string{})
 	viper.SetDefault("cors_allow_methods", []string{})
 	viper.SetDefault("cors_allow_headers", []string{})

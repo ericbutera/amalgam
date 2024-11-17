@@ -17,6 +17,8 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
+const Timeout = 10 * time.Second
+
 func New(target string, useInsecure bool) (pb.FeedServiceClient, Closer, error) {
 	// TODO: Option pattern
 
@@ -57,7 +59,7 @@ func defaultDialOpts() []grpc.DialOption {
 	return []grpc.DialOption{
 		grpc.WithStatsHandler(otelgrpc.NewClientHandler()),
 		grpc.WithChainUnaryInterceptor(
-			timeout.UnaryClientInterceptor(10*time.Second),
+			timeout.UnaryClientInterceptor(Timeout),
 			logging.UnaryClientInterceptor(logger, logOpts...),
 		),
 		grpc.WithChainStreamInterceptor(
