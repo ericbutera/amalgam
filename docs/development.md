@@ -3,8 +3,8 @@
 ## Prerequisites
 
 - [docker desktop](https://docs.docker.com/desktop/) + [docker kubernetes](https://docs.docker.com/desktop/features/kubernetes/)
-- [asdf-vm](https://asdf-vm.com/) - easily manage third party tools; this is not a hard requirement, but all of the commands things in [.tool-versions](../.tool-versions) are used throughout local development.
-- [tilt](https://tilt.dev/) - local development orchestrator
+- [asdf-vm](https://asdf-vm.com/) - easily manage third party tools (or manually install things listed in [.tool-versions](../.tool-versions)).
+- [tilt](https://tilt.dev/) - local development orchestrator (installed via asdf).
 
 ## Tilt
 
@@ -12,7 +12,7 @@ Tilt is the local development orchestrator. The [Tiltfile](../Tiltfile) configur
 
 ## Local Debugging
 
-I like to debug locally using by turning off specific services in Tilt and running them locally in VSCode.
+I like to debug locally in VScode. For example, to debug RPC, first turn off theRPC service in Tilt. Next, run the rpc launch profile. The `.env` file defines environment variables that match the port forwards in Tilt.
 
 example `.vscode/launch.json`:
 
