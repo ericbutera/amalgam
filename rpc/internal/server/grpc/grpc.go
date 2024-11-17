@@ -24,6 +24,8 @@ func NewServer(srvMetrics *grpcprom.ServerMetrics, feedMetrics *observability.Fe
 	logger, logOpts := newLogger()
 	recoveryHandler := grpcPanicRecoveryHandler(feedMetrics)
 
+	validator := interceptors.NewValidator() // TODO: panic
+
 	srv := grpc.NewServer(
 		grpc.StatsHandler(otelgrpc.NewServerHandler()),
 		grpc.ChainUnaryInterceptor(
@@ -32,12 +34,14 @@ func NewServer(srvMetrics *grpcprom.ServerMetrics, feedMetrics *observability.Fe
 			logging.UnaryServerInterceptor(logger, logOpts...),
 			recovery.UnaryServerInterceptor(recovery.WithRecoveryHandler(recoveryHandler)),
 			interceptors.UnaryMetricMiddlewareHandler(feedMetrics),
+			validator.Unary,
 		),
 		grpc.ChainStreamInterceptor(
 			srvMetrics.StreamServerInterceptor(grpcprom.WithExemplarFromContext(exemplarFromContext)),
 			logging.StreamServerInterceptor(logger, logOpts...),
 			recovery.StreamServerInterceptor(recovery.WithRecoveryHandler(recoveryHandler)),
 			interceptors.StreamMetricMiddlewareHandler(feedMetrics),
+			validator.Stream,
 		),
 	)
 
