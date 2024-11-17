@@ -2,7 +2,7 @@ version: v2
 modules:
   - path: proto
 deps:
-  - buf.build/googleapis/googleapis
+  - buf.build/bufbuild/protovalidate
 lint:
   except:
     - FIELD_NOT_REQUIRED

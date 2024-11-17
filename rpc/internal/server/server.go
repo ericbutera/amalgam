@@ -161,7 +161,11 @@ func New(opts ...Option) (*Server, error) {
 		server.metricSrv = metrics_server.NewServer(o.Registry, server.config.MetricAddress)
 	}
 	if server.grpcSrv == nil {
-		server.grpcSrv = grpc_server.NewServer(o.ServerMetrics, o.FeedMetrics)
+		grpcSrv, err := grpc_server.NewServer(o.ServerMetrics, o.FeedMetrics)
+		if err != nil {
+			return nil, err
+		}
+		server.grpcSrv = grpcSrv
 	}
 
 	pb.RegisterFeedServiceServer(server.grpcSrv, &server)
