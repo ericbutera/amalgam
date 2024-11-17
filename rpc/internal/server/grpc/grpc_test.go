@@ -5,9 +5,11 @@ import (
 
 	"github.com/ericbutera/amalgam/rpc/internal/server/grpc"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestNewServer(t *testing.T) {
-	srv := grpc.NewServer(nil, nil)
+	srv, err := grpc.NewServer(nil, nil)
+	require.NoError(t, err)
 	assert.NotNil(t, srv)
 }

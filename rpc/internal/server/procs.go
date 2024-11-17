@@ -82,11 +82,7 @@ func (s *Server) GetFeed(ctx context.Context, in *pb.GetFeedRequest) (*pb.GetFee
 func (s *Server) ListArticles(ctx context.Context, in *pb.ListArticlesRequest) (*pb.ListArticlesResponse, error) {
 	// TODO: support filters (sorting, pagination)
 	// TODO: convert ByFeedId to a filter
-	feedId := in.GetFeedId()
-	if feedId == "" {
-		return nil, status.Errorf(codes.InvalidArgument, "feed_id is required")
-	}
-	articles, err := s.service.GetArticlesByFeed(ctx, feedId)
+	articles, err := s.service.GetArticlesByFeed(ctx, in.GetFeedId())
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to fetch articles: %v", err)
 	}

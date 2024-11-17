@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package feeds.v1;
 
+import "buf/validate/validate.proto";
+
 option go_package = "github.com/ericbutera/amalgam/rpc/gen/go/feeds";  // Adjust this path
 
 service FeedService {
@@ -37,7 +39,7 @@ message Article {
 message Empty {}
 
 message GetFeedRequest {
-  string id = 1;
+  string id = 1 [(buf.validate.field).string.uuid = true];
 }
 
 message GetFeedResponse {
@@ -52,7 +54,7 @@ message ListFeedsResponse {
 
 message CreateFeedRequest {
   message Feed {
-    string url = 1;
+    string url = 1 [(buf.validate.field).string.uri = true];
     string name = 2;
   }
   Feed feed = 1;
@@ -64,7 +66,7 @@ message CreateFeedResponse {
 
 message UpdateFeedRequest {
   message Feed {
-    string id = 1;
+    string id = 1 [(buf.validate.field).string.uuid = true];
     string url = 2 [deprecated=true];
     string name = 3;
   }
@@ -74,7 +76,7 @@ message UpdateFeedRequest {
 message UpdateFeedResponse {}
 
 message ListArticlesRequest {
-  string feed_id = 1;
+  string feed_id = 1 [(buf.validate.field).string.uuid = true];
 }
 
 message ListArticlesResponse {
@@ -82,7 +84,7 @@ message ListArticlesResponse {
 }
 
 message GetArticleRequest {
-  string id = 1;
+  string id = 1 [(buf.validate.field).string.uuid = true];
 }
 
 message GetArticleResponse {
@@ -112,7 +114,7 @@ message FeedTaskRequest {
     TASK_UNSPECIFIED = 0;
     TASK_GENERATE_FEEDS = 1;
   }
-  Task task = 1;
+  Task task = 1 [(buf.validate.field).enum.defined_only = true];
 }
 
 message FeedTaskResponse {

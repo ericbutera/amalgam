@@ -5,11 +5,13 @@ import (
 	"log/slog"
 	"runtime/debug"
 
+	"github.com/bufbuild/protovalidate-go"
 	"github.com/ericbutera/amalgam/internal/logger"
 	"github.com/ericbutera/amalgam/rpc/internal/server/grpc/interceptors"
 	"github.com/ericbutera/amalgam/rpc/internal/server/observability"
 	grpcprom "github.com/grpc-ecosystem/go-grpc-middleware/providers/prometheus"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
+	protovalidate_middleware "github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/protovalidate"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/recovery"
 	"github.com/prometheus/client_golang/prometheus"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
@@ -20,9 +22,14 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func NewServer(srvMetrics *grpcprom.ServerMetrics, feedMetrics *observability.FeedMetrics) *grpc.Server {
+func NewServer(srvMetrics *grpcprom.ServerMetrics, feedMetrics *observability.FeedMetrics) (*grpc.Server, error) {
 	logger, logOpts := newLogger()
 	recoveryHandler := grpcPanicRecoveryHandler(feedMetrics)
+
+	validator, err := protovalidate.New()
+	if err != nil {
+		return nil, err
+	}
 
 	srv := grpc.NewServer(
 		grpc.StatsHandler(otelgrpc.NewServerHandler()),
@@ -31,12 +38,14 @@ func NewServer(srvMetrics *grpcprom.ServerMetrics, feedMetrics *observability.Fe
 			srvMetrics.UnaryServerInterceptor(grpcprom.WithExemplarFromContext(exemplarFromContext)),
 			logging.UnaryServerInterceptor(logger, logOpts...),
 			recovery.UnaryServerInterceptor(recovery.WithRecoveryHandler(recoveryHandler)),
+			protovalidate_middleware.UnaryServerInterceptor(validator),
 			interceptors.UnaryMetricMiddlewareHandler(feedMetrics),
 		),
 		grpc.ChainStreamInterceptor(
 			srvMetrics.StreamServerInterceptor(grpcprom.WithExemplarFromContext(exemplarFromContext)),
 			logging.StreamServerInterceptor(logger, logOpts...),
 			recovery.StreamServerInterceptor(recovery.WithRecoveryHandler(recoveryHandler)),
+			protovalidate_middleware.StreamServerInterceptor(validator),
 			interceptors.StreamMetricMiddlewareHandler(feedMetrics),
 		),
 	)
@@ -44,7 +53,7 @@ func NewServer(srvMetrics *grpcprom.ServerMetrics, feedMetrics *observability.Fe
 	srvMetrics.InitializeMetrics(srv)
 	reflection.Register(srv)
 
-	return srv
+	return srv, nil
 }
 
 func newLogger() (logging.Logger, []logging.Option) {
