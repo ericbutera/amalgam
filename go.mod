@@ -3,6 +3,7 @@ module github.com/ericbutera/amalgam
 go 1.23.2
 
 require (
+	buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.31.0-20230802163732-1c33ebd9ecfa.1
 	github.com/99designs/gqlgen v0.17.55
 	github.com/Khan/genqlient v0.7.0
 	github.com/PuerkitoBio/purell v1.1.1
@@ -66,7 +67,6 @@ require (
 )
 
 require (
-	buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.31.0-20230802163732-1c33ebd9ecfa.1 // indirect
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/PuerkitoBio/goquery v1.9.3 // indirect
 	github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578 // indirect
