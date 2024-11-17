@@ -1,9 +1,7 @@
---use-new-action-cache
 # --action-offline-mode
 # --rm
---reuse
---pull=false
--P ubuntu-latest=catthehacker/ubuntu:act-latest
+# --pull=false
+# -P ubuntu-latest=catthehacker/ubuntu:act-latest
 -W .github/workflows/all.yaml
-# https://github.com/nektos/act/issues/329#issuecomment-1187246629
---artifact-server-path /tmp/artifacts
+--use-new-action-cache
+--artifact-server-path /tmp/artifacts # https://github.com/nektos/act/issues/329#issuecomment-1187246629
