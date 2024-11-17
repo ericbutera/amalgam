@@ -19,7 +19,7 @@ func Execute() {
 	os.Exit(0)
 }
 
-func init() {
+func init() { //nolint:gochecknoinits
 	feedCmd := NewFeedCmd()
 	feedCmd.AddCommand(NewFeedListCmd())
 	feedCmd.AddCommand(NewFeedAddCmd())

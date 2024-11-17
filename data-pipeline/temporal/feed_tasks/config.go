@@ -13,7 +13,7 @@ type Config struct {
 	TemporalHost  string `mapstructure:"temporal_host"`
 }
 
-func init() {
+func init() { //nolint:gochecknoinits
 	viper.SetDefault("feed_tasks_count", 25)
 	viper.SetDefault("feed_tasks_workflow_id", "feed-tasks-feeds")
 	viper.SetDefault("feed_tasks_task_queue", "feed-tasks-feeds-queue")

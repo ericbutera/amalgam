@@ -3,11 +3,10 @@ linters:
   enable-all: true
   disable:
     - exportloopref
-    - godot
-    - godox
+    - godot # adds period at end of comments (no thanks)
+    - godox # bans TODO
     - exhaustruct
     - depguard
-    - gochecknoinits
     - nlreturn
     - gomoddirectives
     - wsl

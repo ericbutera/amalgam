@@ -13,7 +13,7 @@ type Config struct {
 	CorsExposeHeaders []string `mapstructure:"cors_expose_headers"`
 }
 
-func init() {
+func init() { //nolint:gochecknoinits
 	viper.SetDefault("graph_port", "8080")
 	viper.SetDefault("rpc_host", "rpc:50051")
 	viper.SetDefault("rpc_insecure", false)

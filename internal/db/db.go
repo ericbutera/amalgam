@@ -35,7 +35,7 @@ type Config struct {
 	DbSqliteName string   `mapstructure:"db_sqlite_name"`
 }
 
-func init() {
+func init() { //nolint:gochecknoinits
 	viper.SetDefault("db_adapter", SqliteAdapter)
 	viper.SetDefault("db_sqlite_name", "file::memory:?cache=shared")
 	viper.SetDefault("db_mysql_dsn", "user:pass@tcp(127.0.0.1:3306)/dbname?charset=utf8mb4&parseTime=True&loc=Local")
