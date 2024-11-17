@@ -46,10 +46,6 @@ One of the major goals of this project is to show how to quickly build integrati
 
 [Testing](./docs/testing.md) contains an overview of how to test the various components of the application.
 
-## Code Quality
-
-[Code Quality](./docs/code-quality.md) contains an overview of how to ensure the codebase is of high quality.
-
 ## CI/CD
 
 Github Actions can be found in the [.github/workflows](./.github/workflows) directory. You can run them locally using [act](https://github.com/nektos/act).

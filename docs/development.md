@@ -10,6 +10,22 @@
 
 Tilt is the local development orchestrator. The [Tiltfile](../Tiltfile) configures services, dependencies and build steps.
 
+## Linters
+
+Be sure to install the pre-commit hooks which run various linters, formatters, and tests.
+
+```sh
+just setup
+```
+
+A few of the linters used:
+
+- [golangci-lint](https://golangci-lint.run/) - golang linters (config in [.golangci.yml](../.golangci.yaml))
+- [eslint](https://eslint.org/) - typescript linters
+- [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) - enforced by pre-commit hooks
+
+Check the [github actions](https://github.com/ericbutera/amalgam/blob/5ab8ab5ed5d12669f7258025cfadcc4f0a968ff6/.github/workflows/all.yaml) and [.pre-commit-config.yaml](https://github.com/ericbutera/amalgam/blob/5ab8ab5ed5d12669f7258025cfadcc4f0a968ff6/.pre-commit-config.yaml) for the full list.
+
 ## Local Debugging
 
 I like to debug locally in VScode. For example, to debug RPC, first turn off theRPC service in Tilt. Next, run the rpc launch profile. The `.env` file defines environment variables that match the port forwards in Tilt.
