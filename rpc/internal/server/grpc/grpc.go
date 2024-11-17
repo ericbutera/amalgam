@@ -31,6 +31,9 @@ func NewServer(srvMetrics *grpcprom.ServerMetrics, feedMetrics *observability.Fe
 		return nil, err
 	}
 
+	// Check grpc ecosystem before creating custom interceptors.
+	// https://github.com/grpc-ecosystem/go-grpc-middleware/tree/main/interceptors
+	// TODO: research effort to reward for consistent validationErr responses in protovalidate middleware
 	srv := grpc.NewServer(
 		grpc.StatsHandler(otelgrpc.NewServerHandler()),
 		grpc.ChainUnaryInterceptor(
