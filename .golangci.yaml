@@ -9,15 +9,14 @@ linters:
     - depguard
     - nlreturn
     - gomoddirectives
-    - wsl
+    - wsl # only one cuddle assignment allowed before range statement
     - wrapcheck
     - nonamedreturns # i like these sometimes
     - paralleltest
     - varnamelen
-    - ireturn
-    - tagliatelle
+    - ireturn # not allowed to return interfaces
+    - tagliatelle # json(camel): got 'feed_id' want 'feedId'
     - gochecknoglobals
-    - inamedparam
     - interfacebloat
     - perfsprint
     - nilnil
@@ -93,5 +92,6 @@ issues:
     - pkg/feeds/v1/service_grpc.pb.go
     - internal/copygen/generated.go
     - graph/extensions/prometheus/prometheus.go
+    - internal/copygen/setup.go
   whole-files: true
   fix: true
