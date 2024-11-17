@@ -63,7 +63,7 @@ func main() {
 	))
 	if err := server.ListenAndServe(); err != nil {
 		slog.Error("failed to start server", "error", err)
-		os.Exit(1)
+		os.Exit(1) //nolint: gocritic
 		return
 	}
 }

@@ -138,9 +138,7 @@ func WithSeedData() Options {
 }
 
 func WithMiddleware() Options {
-	return func(db *gorm.DB) error {
-		return middleware(db)
-	}
+	return middleware
 }
 
 func middleware(db *gorm.DB) error {

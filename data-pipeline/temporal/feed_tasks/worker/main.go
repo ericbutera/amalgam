@@ -28,6 +28,6 @@ func main() {
 	err := w.Run(worker.InterruptCh())
 	if err != nil {
 		slog.Error("unable to start worker", "error", err)
-		os.Exit(1)
+		os.Exit(1) //nolint: gocritic
 	}
 }

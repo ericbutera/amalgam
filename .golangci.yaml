@@ -29,7 +29,6 @@ linters:
     - mnd
     - intrange
     - lll
-    - gocritic
 
 linters-settings:
   tagalign:
@@ -58,6 +57,8 @@ linters-settings:
         exclude:
           - graph/extensions/prometheus/prometheus.go
       - name: max-public-structs
+        disabled: true
+      - name: comment-spacings
         disabled: true
       # - name: var-naming
       #   severity: warning
