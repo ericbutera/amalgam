@@ -74,6 +74,19 @@ example `.vscode/launch.json`:
       "mode": "debug",
       "program": "data-pipeline/temporal/generate/worker/main.go",
       "envFile": "${workspaceFolder}/.env"
+    },
+    {
+      "name": "ui - firefox",
+      "type": "firefox",
+      "request": "launch",
+      "url": "http://localhost:3000",
+      "reAttach": true,
+      "pathMappings": [
+        {
+          "url": "webpack://_n_e/app",
+          "path": "${workspaceFolder}/ui/app"
+        }
+      ]
     }
   ]
 }
