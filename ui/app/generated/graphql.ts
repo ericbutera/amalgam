@@ -131,7 +131,7 @@ export type ListArticlesQueryVariables = Exact<{
 }>;
 
 
-export type ListArticlesQuery = { __typename?: 'Query', articles: Array<{ __typename?: 'Article', id: string, url: string, title: string, imageUrl?: string | null, preview: string, authorName?: string | null, authorEmail?: string | null }> };
+export type ListArticlesQuery = { __typename?: 'Query', articles: Array<{ __typename?: 'Article', id: string, feedId: string, url: string, title: string, imageUrl?: string | null, preview: string, authorName?: string | null, authorEmail?: string | null }> };
 
 
 export const AddFeedDocument = gql`
@@ -186,6 +186,7 @@ export const ListArticlesDocument = gql`
     query ListArticles($feedId: ID!) {
   articles(feedId: $feedId) {
     id
+    feedId
     url
     title
     imageUrl
