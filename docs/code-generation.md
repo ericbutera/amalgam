@@ -1,12 +1,10 @@
 # Code Generation
 
-## Copygen
+## Goverter
 
-[Copygen](https://github.com/switchupcb/copygen) is a powerful tool designed to simplify a common development task: transferring data between structs. This is especially useful when adhering to best practices like separating concerns in layered architectures (e.g., GraphQL, gRPC, and data layers).
+[Goverter](https://goverter.jmattheis.de/) is a powerful tool designed to simplify a common development task: transferring data between structs. This is especially useful when adhering to best practices like separating concerns in layered architectures (e.g., GraphQL, gRPC, and data layers).
 
-By automating the generation of code for copying fields between structs with similar structures, Copygen significantly reduces development time and effort. This allows developers to focus on core business logic, while the tool handles the repetitive and error-prone task of manual data mapping."
-
-You can find the [copygen transforms here](https://github.com/ericbutera/amalgam/blob/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/internal/copygen/setup.go#L12-L41).
+By automating the generation of code for copying fields between structs with similar structures, Goverter significantly reduces development time and effort. This allows developers to focus on core business logic, while the tool handles the repetitive and error-prone task of manual data mapping."
 
 ## GraphQL
 
@@ -27,10 +25,10 @@ This is not an optimal solution. I intend to have it so these steps are automate
 
 These generated clients provide strongly typed interfaces, enhancing developer experience with code completion and preventing runtime errors.
 
-| Client | Command |
-| --- | --- |
-| [TypeScript](https://github.com/ericbutera/amalgam/blob/9528beb51c6b2affa3b6bd1622ca666983148fc4/ui/app/generated/graphql.ts#L204-L225) | [`generate-graph-ts-client`](https://github.com/ericbutera/amalgam/blob/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/justfile#L165-L169) |
-| [Go](https://github.com/ericbutera/amalgam/blob/9528beb51c6b2affa3b6bd1622ca666983148fc4/pkg/clients/graphql/graphql.gen.go) | [`generate-graph-golang-client`](https://github.com/ericbutera/amalgam/blob/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/justfile#L159-L162) |
+| Client                                                                                                                                  | Command                                                                                                                                  |
+| --------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| [TypeScript](https://github.com/ericbutera/amalgam/blob/9528beb51c6b2affa3b6bd1622ca666983148fc4/ui/app/generated/graphql.ts#L204-L225) | [`generate-graph-ts-client`](https://github.com/ericbutera/amalgam/blob/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/justfile#L165-L169)     |
+| [Go](https://github.com/ericbutera/amalgam/blob/9528beb51c6b2affa3b6bd1622ca666983148fc4/pkg/clients/graphql/graphql.gen.go)            | [`generate-graph-golang-client`](https://github.com/ericbutera/amalgam/blob/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/justfile#L159-L162) |
 
 ### (deprecated) OpenAPI Clients ([v1.3.1](https://github.com/ericbutera/amalgam/releases/tag/v1.3.1))
 
