@@ -2,7 +2,7 @@ package server
 
 import (
 	"github.com/Khan/genqlient/graphql"
-	"github.com/ericbutera/amalgam/api/internal/config"
+	"github.com/ericbutera/amalgam/services/api/internal/config"
 	"github.com/gin-gonic/gin"
 )
 
