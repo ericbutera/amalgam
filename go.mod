@@ -175,8 +175,3 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
-
-// copygen needs an update to support go1.22+
-// replace with a fork that has the fix
-// info on replace: https://www.jvt.me/posts/2022/07/07/go-mod-fork/
-replace github.com/switchupcb/copygen => github.com/ArthurQiuys/copygen v0.0.0-20240620054647-fcb5a35a81b7

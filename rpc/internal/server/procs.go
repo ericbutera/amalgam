@@ -4,9 +4,8 @@ import (
 	"context"
 	"errors"
 
-	"github.com/ericbutera/amalgam/internal/copygen"
+	"github.com/ericbutera/amalgam/internal/converters"
 	"github.com/ericbutera/amalgam/internal/service"
-	"github.com/ericbutera/amalgam/internal/service/models"
 	"github.com/ericbutera/amalgam/internal/validate"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
 	"github.com/ericbutera/amalgam/rpc/internal/tasks"
@@ -47,24 +46,16 @@ func (s *Server) ListFeeds(ctx context.Context, _ *pb.ListFeedsRequest) (*pb.Lis
 	}
 	pbFeeds := []*pb.Feed{}
 	for _, feed := range feeds {
-		pbFeed := pb.Feed{}
-		copygen.ServiceToProtoFeed(&pbFeed, &feed)
-		pbFeeds = append(pbFeeds, &pbFeed)
+		pbFeed := converters.New().ServiceToProtoFeed(&feed)
+		pbFeeds = append(pbFeeds, pbFeed)
 	}
 	return &pb.ListFeedsResponse{Feeds: pbFeeds}, nil
 }
 
 func (s *Server) CreateFeed(ctx context.Context, in *pb.CreateFeedRequest) (*pb.CreateFeedResponse, error) {
-	feed := &models.Feed{}
-	copygen.ProtoCreateFeedToService(feed, in.GetFeed())
+	feed := converters.New().ProtoCreateFeedToService(in.GetFeed())
 	res, err := s.service.CreateFeed(ctx, feed)
 	if err != nil {
-		// if errors.Is(err, service.ErrDuplicate) {
-		// 	return nil, status.Errorf(codes.AlreadyExists, "feed already exists")
-		// } else if errors.Is(err, service.ErrValidation) {
-		// 	return nil, validationErr(res.ValidationErrors)
-		// }
-		// return nil, status.Errorf(codes.Internal, "failed to create feed: %v", err)
 		return nil, serviceToProtoErr(err, res.ValidationErrors)
 	}
 	return &pb.CreateFeedResponse{
@@ -73,10 +64,8 @@ func (s *Server) CreateFeed(ctx context.Context, in *pb.CreateFeedRequest) (*pb.
 }
 
 func (s *Server) UpdateFeed(ctx context.Context, in *pb.UpdateFeedRequest) (*pb.UpdateFeedResponse, error) {
-	feed := &models.Feed{}
-	copygen.ProtoUpdateFeedToService(feed, in.GetFeed())
+	feed := converters.New().ProtoUpdateFeedToService(in.GetFeed())
 	if err := s.service.UpdateFeed(ctx, feed.ID, feed); err != nil {
-		// return nil, status.Errorf(codes.Internal, "failed to create feed: %v", err)
 		return nil, serviceToProtoErr(err, nil)
 	}
 	return &pb.UpdateFeedResponse{}, nil
@@ -85,14 +74,10 @@ func (s *Server) UpdateFeed(ctx context.Context, in *pb.UpdateFeedRequest) (*pb.
 func (s *Server) GetFeed(ctx context.Context, in *pb.GetFeedRequest) (*pb.GetFeedResponse, error) {
 	feed, err := s.service.GetFeed(ctx, in.GetId())
 	if err != nil {
-		// if errors.Is(err, service.ErrNotFound) {
-		// 	return nil, status.Error(codes.NotFound, err.Error())
-		// }
-		// return nil, status.Errorf(codes.Internal, "failed to fetch feed: %v", err)
 		return nil, serviceToProtoErr(err, nil)
 	}
-	pbFeed := &pb.Feed{}
-	copygen.ServiceToProtoFeed(pbFeed, feed)
+
+	pbFeed := converters.New().ServiceToProtoFeed(feed)
 	return &pb.GetFeedResponse{
 		Feed: pbFeed,
 	}, nil
@@ -103,14 +88,12 @@ func (s *Server) ListArticles(ctx context.Context, in *pb.ListArticlesRequest) (
 	// TODO: convert ByFeedId to a filter
 	articles, err := s.service.GetArticlesByFeed(ctx, in.GetFeedId())
 	if err != nil {
-		// return nil, status.Errorf(codes.Internal, "failed to fetch articles: %v", err)
 		return nil, serviceToProtoErr(err, nil)
 	}
 	pbArticles := []*pb.Article{}
 	for _, article := range articles {
-		pbArticle := pb.Article{}
-		copygen.ServiceToProtoArticle(&pbArticle, &article)
-		pbArticles = append(pbArticles, &pbArticle)
+		pbArticle := converters.New().ServiceToProtoArticle(&article)
+		pbArticles = append(pbArticles, pbArticle)
 	}
 	return &pb.ListArticlesResponse{Articles: pbArticles}, nil
 }
@@ -118,28 +101,19 @@ func (s *Server) ListArticles(ctx context.Context, in *pb.ListArticlesRequest) (
 func (s *Server) GetArticle(ctx context.Context, in *pb.GetArticleRequest) (*pb.GetArticleResponse, error) {
 	article, err := s.service.GetArticle(ctx, in.GetId())
 	if err != nil {
-		// return nil, status.Errorf(codes.Internal, "failed to fetch article: %v", err)
 		return nil, serviceToProtoErr(err, nil)
 	}
-	pbArticle := pb.Article{}
-	copygen.ServiceToProtoArticle(&pbArticle, article)
+	pbArticle := converters.New().ServiceToProtoArticle(article)
 	return &pb.GetArticleResponse{
-		Article: &pbArticle,
+		Article: pbArticle,
 	}, nil
 }
 
 func (s *Server) SaveArticle(ctx context.Context, in *pb.SaveArticleRequest) (*pb.SaveArticleResponse, error) {
-	article := &models.Article{}
-
-	copygen.ProtoToServiceArticle(article, in.GetArticle())
-	article.FeedID = in.GetArticle().GetFeedId() // TODO: bug with ProtoToServiceArticle
+	article := converters.New().ProtoToServiceArticle(in.GetArticle())
 
 	res, err := s.service.SaveArticle(ctx, article)
 	if err != nil {
-		// if errors.Is(err, service.ErrValidation) {
-		// 	return nil, validationErr(res.ValidationErrors)
-		// }
-		// return nil, status.Errorf(codes.Internal, "failed to save article: %v", err)
 		return nil, serviceToProtoErr(err, res.ValidationErrors)
 	}
 	return &pb.SaveArticleResponse{

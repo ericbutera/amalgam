@@ -4,17 +4,17 @@ package feeds.v1;
 
 import "buf/validate/validate.proto";
 
-option go_package = "github.com/ericbutera/amalgam/rpc/gen/go/feeds";  // Adjust this path
+option go_package = "github.com/ericbutera/amalgam/rpc/gen/go/feeds"; // Adjust this path
 
 service FeedService {
-  rpc GetFeed (GetFeedRequest) returns (GetFeedResponse);
-  rpc ListFeeds (ListFeedsRequest) returns (ListFeedsResponse);
-  rpc CreateFeed (CreateFeedRequest) returns (CreateFeedResponse);
-  rpc UpdateFeed (UpdateFeedRequest) returns (UpdateFeedResponse);
-  rpc ListArticles (ListArticlesRequest) returns (ListArticlesResponse);
-  rpc GetArticle (GetArticleRequest) returns (GetArticleResponse);
-  rpc SaveArticle (SaveArticleRequest) returns (SaveArticleResponse);
-  rpc FeedTask (FeedTaskRequest) returns (FeedTaskResponse);
+  rpc GetFeed(GetFeedRequest) returns (GetFeedResponse);
+  rpc ListFeeds(ListFeedsRequest) returns (ListFeedsResponse);
+  rpc CreateFeed(CreateFeedRequest) returns (CreateFeedResponse);
+  rpc UpdateFeed(UpdateFeedRequest) returns (UpdateFeedResponse);
+  rpc ListArticles(ListArticlesRequest) returns (ListArticlesResponse);
+  rpc GetArticle(GetArticleRequest) returns (GetArticleResponse);
+  rpc SaveArticle(SaveArticleRequest) returns (SaveArticleResponse);
+  rpc FeedTask(FeedTaskRequest) returns (FeedTaskResponse);
 }
 
 message Feed {
@@ -67,7 +67,7 @@ message CreateFeedResponse {
 message UpdateFeedRequest {
   message Feed {
     string id = 1 [(buf.validate.field).string.uuid = true];
-    string url = 2 [deprecated=true];
+    string url = 2;
     string name = 3;
   }
   Feed feed = 1;
