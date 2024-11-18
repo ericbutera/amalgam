@@ -8,7 +8,7 @@ import (
 	"github.com/ericbutera/amalgam/internal/service"
 	"github.com/ericbutera/amalgam/internal/validate"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
-	"github.com/ericbutera/amalgam/rpc/internal/tasks"
+	"github.com/ericbutera/amalgam/services/rpc/internal/tasks"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

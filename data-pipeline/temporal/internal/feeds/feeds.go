@@ -5,7 +5,7 @@ import (
 
 	rss "github.com/ericbutera/amalgam/pkg/feed/parse"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
-	rpc "github.com/ericbutera/amalgam/rpc/pkg/client"
+	rpc "github.com/ericbutera/amalgam/services/rpc/pkg/client"
 )
 
 // helper to interact with feed rpc service

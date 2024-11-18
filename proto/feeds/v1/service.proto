@@ -4,7 +4,7 @@ package feeds.v1;
 
 import "buf/validate/validate.proto";
 
-option go_package = "github.com/ericbutera/amalgam/rpc/gen/go/feeds"; // Adjust this path
+option go_package = "github.com/ericbutera/amalgam/services/rpc/gen/go/feeds"; // Adjust this path
 
 service FeedService {
   rpc GetFeed(GetFeedRequest) returns (GetFeedResponse);
