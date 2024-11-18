@@ -3,7 +3,7 @@ package observability_test
 import (
 	"testing"
 
-	"github.com/ericbutera/amalgam/rpc/internal/server/observability"
+	"github.com/ericbutera/amalgam/services/rpc/internal/server/observability"
 	"github.com/prometheus/client_golang/prometheus/testutil"
 	"github.com/stretchr/testify/assert"
 )

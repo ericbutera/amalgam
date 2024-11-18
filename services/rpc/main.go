@@ -6,8 +6,8 @@ import (
 	"os"
 
 	"github.com/ericbutera/amalgam/pkg/config/env"
-	"github.com/ericbutera/amalgam/rpc/internal/config"
-	"github.com/ericbutera/amalgam/rpc/internal/server"
+	"github.com/ericbutera/amalgam/services/rpc/internal/config"
+	"github.com/ericbutera/amalgam/services/rpc/internal/server"
 	"github.com/samber/lo"
 )
 

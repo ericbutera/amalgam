@@ -7,8 +7,8 @@ import (
 
 	"github.com/bufbuild/protovalidate-go"
 	"github.com/ericbutera/amalgam/internal/logger"
-	"github.com/ericbutera/amalgam/rpc/internal/server/grpc/interceptors"
-	"github.com/ericbutera/amalgam/rpc/internal/server/observability"
+	"github.com/ericbutera/amalgam/services/rpc/internal/server/grpc/interceptors"
+	"github.com/ericbutera/amalgam/services/rpc/internal/server/observability"
 	grpcprom "github.com/grpc-ecosystem/go-grpc-middleware/providers/prometheus"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
 	protovalidate_middleware "github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/protovalidate"

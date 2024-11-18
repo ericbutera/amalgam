@@ -4,7 +4,7 @@ import (
 	"context"
 
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
-	"github.com/ericbutera/amalgam/rpc/internal/server/observability"
+	"github.com/ericbutera/amalgam/services/rpc/internal/server/observability"
 	"google.golang.org/grpc"
 )
 

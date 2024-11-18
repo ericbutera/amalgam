@@ -18,7 +18,7 @@ import (
 	"github.com/ericbutera/amalgam/pkg/config/env"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
 	"github.com/ericbutera/amalgam/pkg/otel"
-	rpc "github.com/ericbutera/amalgam/rpc/pkg/client"
+	rpc "github.com/ericbutera/amalgam/services/rpc/pkg/client"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/httplog/v2"
 	"github.com/prometheus/client_golang/prometheus/promhttp"

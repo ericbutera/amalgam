@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
-	"github.com/ericbutera/amalgam/rpc/internal/server/grpc/interceptors"
-	"github.com/ericbutera/amalgam/rpc/internal/server/observability"
+	"github.com/ericbutera/amalgam/services/rpc/internal/server/grpc/interceptors"
+	"github.com/ericbutera/amalgam/services/rpc/internal/server/observability"
 	"github.com/prometheus/client_golang/prometheus/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
