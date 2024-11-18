@@ -16,8 +16,8 @@ GRAPH_PORT_FORWARD=8082
 RPC_PORT_FORWARD=50055
 
 load('./containers/tilt/extensions/go/Tiltfile', 'go_compile', 'go_image')
-go_compile('api-compile', './api', ['./api'])
-go_image('api', './api')
+go_compile('api-compile', './services/api', ['./services/api'])
+go_image('api', './services/api')
 k8s_resource(
   "api",
   port_forwards=[port_forward(API_PORT_FORWARD, 8080, "api")],

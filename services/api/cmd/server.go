@@ -10,12 +10,12 @@ import (
 	"syscall"
 
 	"github.com/Khan/genqlient/graphql"
-	"github.com/ericbutera/amalgam/api/internal/config"
-	"github.com/ericbutera/amalgam/api/internal/server"
 	"github.com/ericbutera/amalgam/internal/http/transport"
 	"github.com/ericbutera/amalgam/internal/logger"
 	"github.com/ericbutera/amalgam/pkg/config/env"
 	"github.com/ericbutera/amalgam/pkg/otel"
+	"github.com/ericbutera/amalgam/services/api/internal/config"
+	"github.com/ericbutera/amalgam/services/api/internal/server"
 	"github.com/spf13/cobra"
 )
 

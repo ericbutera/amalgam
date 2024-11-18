@@ -4,11 +4,11 @@ import (
 	"net/http"
 
 	"github.com/Khan/genqlient/graphql"
-	_ "github.com/ericbutera/amalgam/api/docs"
-	"github.com/ericbutera/amalgam/api/internal"
 	"github.com/ericbutera/amalgam/internal/converters"
 	"github.com/ericbutera/amalgam/internal/service/models"
 	graph_client "github.com/ericbutera/amalgam/pkg/clients/graphql"
+	_ "github.com/ericbutera/amalgam/services/api/docs"
+	"github.com/ericbutera/amalgam/services/api/internal"
 	"github.com/gin-gonic/gin"
 )
 

@@ -1,6 +1,6 @@
 package main
 
-import "github.com/ericbutera/amalgam/api/cmd"
+import "github.com/ericbutera/amalgam/services/api/cmd"
 
 // TODO: @host should be set to the actual host, not "api:8080 or localhost:8080"
 

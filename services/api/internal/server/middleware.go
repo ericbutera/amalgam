@@ -5,7 +5,7 @@ import (
 	"slices"
 	"time"
 
-	"github.com/ericbutera/amalgam/api/internal/config"
+	"github.com/ericbutera/amalgam/services/api/internal/config"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	sloggin "github.com/samber/slog-gin"
