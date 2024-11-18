@@ -16,10 +16,34 @@ import (
 
 var ErrInvalidTaskType = errors.New("invalid task type")
 
+func serviceToProtoErr(err error, validationErrs []validate.ValidationError) error {
+	switch {
+	case errors.Is(err, service.ErrNotFound):
+		return status.Error(codes.NotFound, "not found")
+	case errors.Is(err, service.ErrDuplicate):
+		return status.Error(codes.AlreadyExists, "already exists")
+	case errors.Is(err, service.ErrValidation):
+		return validationErr(validationErrs)
+	}
+	return status.Errorf(codes.Internal, "failed to perform action: %v", err)
+}
+
+func validationErr(errors []validate.ValidationError) error {
+	st := status.New(codes.InvalidArgument, "validation error")
+	ds, err := st.WithDetails(&pb.ValidationErrors{
+		Errors: validationErrToPb(errors),
+	})
+	if err != nil {
+		return err
+	}
+	return ds.Err()
+}
+
 func (s *Server) ListFeeds(ctx context.Context, _ *pb.ListFeedsRequest) (*pb.ListFeedsResponse, error) {
 	feeds, err := s.service.Feeds(ctx)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to fetch feeds: %v", err)
+		// return nil, status.Errorf(codes.Internal, "failed to fetch feeds: %v", err)
+		return nil, serviceToProtoErr(err, nil)
 	}
 	pbFeeds := []*pb.Feed{}
 	for _, feed := range feeds {
@@ -35,34 +59,25 @@ func (s *Server) CreateFeed(ctx context.Context, in *pb.CreateFeedRequest) (*pb.
 	copygen.ProtoCreateFeedToService(feed, in.GetFeed())
 	res, err := s.service.CreateFeed(ctx, feed)
 	if err != nil {
-		if errors.Is(err, service.ErrDuplicate) {
-			return nil, status.Errorf(codes.AlreadyExists, "feed already exists")
-		} else if errors.Is(err, service.ErrValidation) {
-			return nil, validationErr(res.ValidationErrors)
-		}
-		return nil, status.Errorf(codes.Internal, "failed to create feed: %v", err)
+		// if errors.Is(err, service.ErrDuplicate) {
+		// 	return nil, status.Errorf(codes.AlreadyExists, "feed already exists")
+		// } else if errors.Is(err, service.ErrValidation) {
+		// 	return nil, validationErr(res.ValidationErrors)
+		// }
+		// return nil, status.Errorf(codes.Internal, "failed to create feed: %v", err)
+		return nil, serviceToProtoErr(err, res.ValidationErrors)
 	}
 	return &pb.CreateFeedResponse{
 		Id: res.ID,
 	}, nil
 }
 
-func validationErr(errors []validate.ValidationError) error {
-	st := status.New(codes.InvalidArgument, "validation error")
-	ds, err := st.WithDetails(&pb.ValidationErrors{
-		Errors: validationErrToPb(errors),
-	})
-	if err != nil {
-		return err
-	}
-	return ds.Err()
-}
-
 func (s *Server) UpdateFeed(ctx context.Context, in *pb.UpdateFeedRequest) (*pb.UpdateFeedResponse, error) {
 	feed := &models.Feed{}
 	copygen.ProtoUpdateFeedToService(feed, in.GetFeed())
 	if err := s.service.UpdateFeed(ctx, feed.ID, feed); err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to create feed: %v", err)
+		// return nil, status.Errorf(codes.Internal, "failed to create feed: %v", err)
+		return nil, serviceToProtoErr(err, nil)
 	}
 	return &pb.UpdateFeedResponse{}, nil
 }
@@ -70,7 +85,11 @@ func (s *Server) UpdateFeed(ctx context.Context, in *pb.UpdateFeedRequest) (*pb.
 func (s *Server) GetFeed(ctx context.Context, in *pb.GetFeedRequest) (*pb.GetFeedResponse, error) {
 	feed, err := s.service.GetFeed(ctx, in.GetId())
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to fetch feed: %v", err)
+		// if errors.Is(err, service.ErrNotFound) {
+		// 	return nil, status.Error(codes.NotFound, err.Error())
+		// }
+		// return nil, status.Errorf(codes.Internal, "failed to fetch feed: %v", err)
+		return nil, serviceToProtoErr(err, nil)
 	}
 	pbFeed := &pb.Feed{}
 	copygen.ServiceToProtoFeed(pbFeed, feed)
@@ -84,7 +103,8 @@ func (s *Server) ListArticles(ctx context.Context, in *pb.ListArticlesRequest) (
 	// TODO: convert ByFeedId to a filter
 	articles, err := s.service.GetArticlesByFeed(ctx, in.GetFeedId())
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to fetch articles: %v", err)
+		// return nil, status.Errorf(codes.Internal, "failed to fetch articles: %v", err)
+		return nil, serviceToProtoErr(err, nil)
 	}
 	pbArticles := []*pb.Article{}
 	for _, article := range articles {
@@ -98,7 +118,8 @@ func (s *Server) ListArticles(ctx context.Context, in *pb.ListArticlesRequest) (
 func (s *Server) GetArticle(ctx context.Context, in *pb.GetArticleRequest) (*pb.GetArticleResponse, error) {
 	article, err := s.service.GetArticle(ctx, in.GetId())
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to fetch article: %v", err)
+		// return nil, status.Errorf(codes.Internal, "failed to fetch article: %v", err)
+		return nil, serviceToProtoErr(err, nil)
 	}
 	pbArticle := pb.Article{}
 	copygen.ServiceToProtoArticle(&pbArticle, article)
@@ -115,10 +136,11 @@ func (s *Server) SaveArticle(ctx context.Context, in *pb.SaveArticleRequest) (*p
 
 	res, err := s.service.SaveArticle(ctx, article)
 	if err != nil {
-		if errors.Is(err, service.ErrValidation) {
-			return nil, validationErr(res.ValidationErrors)
-		}
-		return nil, status.Errorf(codes.Internal, "failed to save article: %v", err)
+		// if errors.Is(err, service.ErrValidation) {
+		// 	return nil, validationErr(res.ValidationErrors)
+		// }
+		// return nil, status.Errorf(codes.Internal, "failed to save article: %v", err)
+		return nil, serviceToProtoErr(err, res.ValidationErrors)
 	}
 	return &pb.SaveArticleResponse{
 		Id: res.ID,
