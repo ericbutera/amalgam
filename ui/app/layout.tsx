@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
-import Nav from "./nav";
+import Nav from "./components/nav";
 
 export const metadata: Metadata = {
   title: "amalgam",
@@ -17,9 +17,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <Nav />
-        <div>
-          {children}
-        </div>
+        <div className="flex w-full">{children}</div>
       </body>
     </html>
   );
