@@ -13,7 +13,7 @@ import (
 	"testing"
 
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
-	"github.com/ericbutera/amalgam/rpc/pkg/client"
+	"github.com/ericbutera/amalgam/services/rpc/pkg/client"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/require"
 )
