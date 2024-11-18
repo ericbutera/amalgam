@@ -15,7 +15,7 @@ spec:
         app: ui
     spec:
       containers:
-      - name: ui
-        image: ui-image
-        ports:
-        - containerPort: 3000
+        - name: ui
+          image: ui-image
+          ports:
+            - containerPort: 3000
