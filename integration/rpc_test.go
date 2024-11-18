@@ -20,7 +20,7 @@ import (
 
 func TestRpcListFeeds(t *testing.T) {
 	// TODO: seed data, assert specific result exists
-	client, closer, err := getClient(t)
+	client, closer, err := getRpcClient(t)
 	defer func() { require.NoError(t, closer()) }()
 	require.NoError(t, err)
 
@@ -29,27 +29,16 @@ func TestRpcListFeeds(t *testing.T) {
 	require.NotNil(t, resp)
 }
 
-func getClient(t *testing.T) (pb.FeedServiceClient, client.Closer, error) {
-	config := newConfig(t)
-	c, closer, err := client.New(config.target, config.useInsecure)
+func getRpcClient(t *testing.T) (pb.FeedServiceClient, client.Closer, error) {
+	target := os.Getenv("RPC_HOST")
+	useInsecure := lo.Ternary(os.Getenv("RPC_INSECURE") == "true", true, false)
+	require.NotEmpty(t, target, "RPC_HOST not set")
+
+	c, closer, err := client.New(target, useInsecure)
 	return c, closer, err
 }
 
 type Config struct {
 	target      string
 	useInsecure bool
-}
-
-func newConfig(t *testing.T) *Config {
-	// if testing.Short() {
-	// 	t.Skip("skipping test in short mode.")
-	// }
-	c := &Config{
-		target:      os.Getenv("RPC_HOST"),
-		useInsecure: lo.Ternary(os.Getenv("RPC_INSECURE") == "true", true, false),
-	}
-	if c.target == "" {
-		t.Skip("RPC_ENDPOINT not set")
-	}
-	return c
 }
