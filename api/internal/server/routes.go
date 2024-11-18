@@ -6,7 +6,7 @@ import (
 	"github.com/Khan/genqlient/graphql"
 	_ "github.com/ericbutera/amalgam/api/docs"
 	"github.com/ericbutera/amalgam/api/internal"
-	"github.com/ericbutera/amalgam/internal/copygen"
+	"github.com/ericbutera/amalgam/internal/converters"
 	"github.com/ericbutera/amalgam/internal/service/models"
 	graph_client "github.com/ericbutera/amalgam/pkg/clients/graphql"
 	"github.com/gin-gonic/gin"
@@ -86,8 +86,7 @@ func (h *handlers) feedGet(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: "unable to get feed"})
 		return
 	}
-	feed := &models.Feed{}
-	copygen.GraphClientToApiFeedGet(feed, &resp.Feed)
+	feed := converters.New().GraphClientToApiFeedGet(&resp.Feed)
 	c.JSON(http.StatusOK, FeedResponse{
 		Feed: feed,
 	})
@@ -229,8 +228,7 @@ func (h *handlers) article(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: "unable to fetch article"})
 		return
 	}
-	article := &models.Article{}
-	copygen.GraphClientToApiArticle(article, &resp.Article)
+	article := converters.New().GraphClientToApiArticle(&resp.Article)
 	c.JSON(http.StatusOK, ArticleResponse{
 		Article: article,
 	})
@@ -257,8 +255,7 @@ func (h *handlers) articles(c *gin.Context) {
 	}
 	articles := []models.Article{}
 	for _, g_article := range resp.Articles {
-		m_article := &models.Article{}
-		copygen.GraphClientToApiArticleList(m_article, &g_article)
+		m_article := converters.New().GraphClientToApiArticleList(&g_article)
 		articles = append(articles, *m_article)
 	}
 	c.JSON(http.StatusOK, FeedArticlesResponse{

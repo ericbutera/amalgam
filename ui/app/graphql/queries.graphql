@@ -32,6 +32,7 @@ query GetArticle($id: ID!) {
 query ListArticles($feedId: ID!) {
   articles(feedId: $feedId) {
     id
+    feedId
     url
     title
     imageUrl

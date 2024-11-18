@@ -103,6 +103,7 @@ func (v *GetFeedResponse) GetFeed() GetFeedFeed { return v.Feed }
 // ListArticlesArticlesArticle includes the requested fields of the GraphQL type Article.
 type ListArticlesArticlesArticle struct {
 	Id          string `json:"id"`
+	FeedId      string `json:"feedId"`
 	Url         string `json:"url"`
 	Title       string `json:"title"`
 	ImageUrl    string `json:"imageUrl"`
@@ -113,6 +114,9 @@ type ListArticlesArticlesArticle struct {
 
 // GetId returns ListArticlesArticlesArticle.Id, and is useful for accessing the field via an interface.
 func (v *ListArticlesArticlesArticle) GetId() string { return v.Id }
+
+// GetFeedId returns ListArticlesArticlesArticle.FeedId, and is useful for accessing the field via an interface.
+func (v *ListArticlesArticlesArticle) GetFeedId() string { return v.FeedId }
 
 // GetUrl returns ListArticlesArticlesArticle.Url, and is useful for accessing the field via an interface.
 func (v *ListArticlesArticlesArticle) GetUrl() string { return v.Url }
@@ -355,6 +359,7 @@ const ListArticles_Operation = `
 query ListArticles ($feedId: ID!) {
 	articles(feedId: $feedId) {
 		id
+		feedId
 		url
 		title
 		imageUrl

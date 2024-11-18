@@ -107,12 +107,10 @@ generate-proto:
 	@echo Generating protobuf
 	buf generate
 
-# Generate copygen type converters
 generate-converters: install-go-tools
 	@echo Generating converters
-	go get github.com/switchupcb/copygen
-	go install github.com/switchupcb/copygen
-	copygen -yml internal/copygen/setup.yml
+	go install github.com/jmattheis/goverter/cmd/goverter@v1.5.1
+	goverter gen ./internal/goverter
 
 go-mod-download:
 	@echo Download go.mod dependencies
@@ -124,9 +122,14 @@ install-ts-tools:
 	@echo Installing tools from package.json
 	cd ui && npm install
 
+setup-asdf:
+	cut -d\  -f1 .tool-versions|grep -E '^[^#]'|xargs -L1 asdf plugin add
+	asdf install
+
 setup:
 	pre-commit install --install-hook
 	pre-commit install --hook-type commit-msg
+	@echo Ensure you run "setup-asdf" or install .tool-versions manually
 
 generate-graph-server:
 	@echo Generating graph server

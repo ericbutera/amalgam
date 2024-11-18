@@ -3,7 +3,7 @@ package db
 import (
 	"errors"
 
-	"github.com/ericbutera/amalgam/internal/copygen"
+	"github.com/ericbutera/amalgam/internal/converters"
 	"github.com/ericbutera/amalgam/internal/db/models"
 	"github.com/ericbutera/amalgam/internal/test/fixtures"
 	"github.com/ericbutera/amalgam/pkg/config/env"
@@ -124,11 +124,10 @@ func WithAutoMigrate() Options {
 func WithSeedData() Options {
 	return func(db *gorm.DB) error {
 		return db.Transaction(func(tx *gorm.DB) error {
-			feed := models.Feed{}
-			copygen.ServiceToDbFeed(&feed, fixtures.NewFeed())
+			c := converters.New()
+			feed := c.ServiceToDbFeed(fixtures.NewFeed())
+			article := c.ServiceToDbArticle(fixtures.NewArticle())
 
-			article := models.Article{}
-			copygen.ServiceToDbArticle(&article, fixtures.NewArticle())
 			if err := tx.Create(&feed).Error; err != nil {
 				return err
 			}

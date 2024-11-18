@@ -2,6 +2,8 @@ package feed_tasks
 
 import "github.com/spf13/viper"
 
+const DefaultTasksCount = 25
+
 type Config struct {
 	GenerateCount int    `mapstructure:"feed_tasks_count"`
 	WorkflowID    string `mapstructure:"feed_tasks_workflow_id"`
@@ -14,7 +16,7 @@ type Config struct {
 }
 
 func init() { //nolint:gochecknoinits
-	viper.SetDefault("feed_tasks_count", 25) //nolint:mnd
+	viper.SetDefault("feed_tasks_count", DefaultTasksCount)
 	viper.SetDefault("feed_tasks_workflow_id", "feed-tasks-feeds")
 	viper.SetDefault("feed_tasks_task_queue", "feed-tasks-feeds-queue")
 	viper.SetDefault("fake_host", "")

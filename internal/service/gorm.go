@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/ericbutera/amalgam/internal/copygen"
+	"github.com/ericbutera/amalgam/internal/converters"
 	db_model "github.com/ericbutera/amalgam/internal/db/models"
 	"github.com/ericbutera/amalgam/internal/sanitize"
 	svc_model "github.com/ericbutera/amalgam/internal/service/models"
@@ -95,9 +95,7 @@ func (s *GormService) CreateFeed(ctx context.Context, data *svc_model.Feed) (Cre
 		return res, ErrValidation
 	}
 
-	dbFeed := &db_model.Feed{}
-	copygen.ServiceToDbFeed(dbFeed, &feed)
-
+	dbFeed := converters.New().ServiceToDbFeed(&feed)
 	dbFeed.IsActive = true
 
 	err = s.query(ctx).Transaction(func(tx *gorm.DB) error {
@@ -116,8 +114,8 @@ func (s *GormService) CreateFeed(ctx context.Context, data *svc_model.Feed) (Cre
 
 func (s *GormService) UpdateFeed(ctx context.Context, id string, feed *svc_model.Feed) error {
 	// note: no validation required for update
-	dbFeed := &db_model.Feed{}
-	copygen.ServiceToDbFeed(dbFeed, feed)
+	dbFeed := converters.New().ServiceToDbFeed(feed)
+
 	result := s.query(ctx).
 		Model(&dbFeed).
 		Where("id=?", id).
@@ -188,8 +186,7 @@ func (s *GormService) SaveArticle(ctx context.Context, data *svc_model.Article) 
 		return res, ErrValidation
 	}
 
-	dbArticle := &db_model.Article{}
-	copygen.ServiceToDbArticle(dbArticle, &article)
+	dbArticle := converters.New().ServiceToDbArticle(&article)
 
 	result := s.query(ctx).
 		Model(&db_model.Article{}).

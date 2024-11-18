@@ -6,7 +6,7 @@ import (
 
 	"github.com/ericbutera/amalgam/graph/graph"
 	graphModel "github.com/ericbutera/amalgam/graph/graph/model"
-	"github.com/ericbutera/amalgam/internal/copygen"
+	"github.com/ericbutera/amalgam/internal/converters"
 	svcModel "github.com/ericbutera/amalgam/internal/service/models"
 	"github.com/ericbutera/amalgam/internal/test/fixtures"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
@@ -83,10 +83,9 @@ func Test_Feeds(t *testing.T) {
 	client, resolver := newResolverWithClient()
 
 	svcFeed := newFeed()
-	graphFeed := &graphModel.Feed{}
-	pbFeed := &pb.Feed{}
-	copygen.ServiceToGraphFeed(graphFeed, svcFeed)
-	copygen.ServiceToProtoFeed(pbFeed, svcFeed)
+	c := converters.New()
+	graphFeed := c.ServiceToGraphFeed(svcFeed)
+	pbFeed := c.ServiceToProtoFeed(svcFeed)
 	expected := []*graphModel.Feed{graphFeed}
 	client.EXPECT().
 		ListFeeds(mock.Anything, &pb.ListFeedsRequest{}).
@@ -104,10 +103,9 @@ func Test_Feed(t *testing.T) {
 	client, resolver := newResolverWithClient()
 
 	svcFeed := newFeed()
-	graphFeed := &graphModel.Feed{}
-	pbFeed := &pb.Feed{}
-	copygen.ServiceToGraphFeed(graphFeed, svcFeed)
-	copygen.ServiceToProtoFeed(pbFeed, svcFeed)
+	c := converters.New()
+	graphFeed := c.ServiceToGraphFeed(svcFeed)
+	pbFeed := c.ServiceToProtoFeed(svcFeed)
 	expected := graphFeed
 	client.EXPECT().
 		GetFeed(mock.Anything, &pb.GetFeedRequest{Id: svcFeed.ID}).
@@ -124,12 +122,11 @@ func Test_Articles(t *testing.T) {
 	feed := newFeed()
 	svcArticle := newArticle()
 
-	// TODO: fields not populating- FeedID, ImageURL
-	graphArticle := &graphModel.Article{}
-	copygen.ServiceToGraphArticle(graphArticle, svcArticle)
+	c := converters.New()
+	graphArticle := c.ServiceToGraphArticle(svcArticle)
+	rpcArticle := c.ServiceToProtoArticle(svcArticle)
 	expected := []*graphModel.Article{graphArticle}
-	rpcArticle := &pb.Article{}
-	copygen.ServiceToProtoArticle(rpcArticle, svcArticle)
+
 	client.EXPECT().
 		ListArticles(mock.Anything, &pb.ListArticlesRequest{FeedId: feed.ID}).
 		Return(&pb.ListArticlesResponse{
@@ -145,12 +142,10 @@ func Test_Articles(t *testing.T) {
 func Test_Article(t *testing.T) {
 	client, resolver := newResolverWithClient()
 
-	// TODO: fields not populating- FeedID, ImageURL
+	c := converters.New()
 	svcArticle := newArticle()
-	graphArticle := &graphModel.Article{}
-	rpcArticle := &pb.Article{}
-	copygen.ServiceToGraphArticle(graphArticle, svcArticle)
-	copygen.ServiceToProtoArticle(rpcArticle, svcArticle)
+	graphArticle := c.ServiceToGraphArticle(svcArticle)
+	rpcArticle := c.ServiceToProtoArticle(svcArticle)
 	expected := graphArticle
 
 	client.EXPECT().
