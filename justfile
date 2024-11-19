@@ -37,7 +37,7 @@ go-lint: install-go-tools
 
 go-integration-test: install-go-tools
 	# these are only meant to be ran within tilt-ci. they require external services like mysql & minio
-	go test -v -tags integration ./...
+	go test -tags integration ./...
 
 go-test: install-go-tools
 	@echo Running go tests
