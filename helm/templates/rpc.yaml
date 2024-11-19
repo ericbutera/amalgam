@@ -64,10 +64,10 @@ spec:
           livenessProbe:
             grpc:
               port: 50051
-            initialDelaySeconds: 5
-            periodSeconds: 10
+            initialDelaySeconds: 10
+            periodSeconds: 60
           readinessProbe:
             grpc:
               port: 50051
-            initialDelaySeconds: 5
-            periodSeconds: 5 # todo: configurable via values.yaml
+            initialDelaySeconds: 10
+            periodSeconds: 60 # todo: configurable via values.yaml

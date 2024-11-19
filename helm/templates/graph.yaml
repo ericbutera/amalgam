@@ -60,11 +60,11 @@ spec:
             httpGet:
               path: /healthz
               port: 8080
-              initialDelaySeconds: 5
-              periodSeconds: 30
+              initialDelaySeconds: 10
+              periodSeconds: 60
           readinessProbe:
             httpGet:
               path: /readyz
               port: 8080
-              initialDelaySeconds: 5
-              periodSeconds: 5 # todo: configurable via values.yaml
+              initialDelaySeconds: 10
+              periodSeconds: 60 # todo: configurable via values.yaml

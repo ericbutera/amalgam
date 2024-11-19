@@ -127,7 +127,7 @@ deploy_minio(
   secret_name="feed-minio-auth",
   root_user="minio",
   root_password="minio-password",
-  auto_init=(not IS_CI),
+  # auto_init=(not IS_CI), # TODO: do not run in ci
 )
 
 include('Tiltfile.tests')
