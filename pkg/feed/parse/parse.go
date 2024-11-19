@@ -3,23 +3,29 @@ package parse
 // TODO: rename package to "rss"
 
 import (
+	"errors"
 	"io"
+	"log/slog"
 	"os"
 	"time"
 
+	"github.com/ericbutera/amalgam/internal/sanitize"
 	parser "github.com/mmcdole/gofeed"
+	"github.com/samber/lo"
 )
+
+var ErrSanitizeFailure = errors.New("failed to sanitize article")
 
 type Articles []*Article
 
 type Article struct {
 	FeedId        string    `json:"feed_id"`
-	Title         string    `json:"title"`
-	Url           string    `json:"url"`
-	Preview       string    `json:"preview"`
-	Content       string    `json:"content,omitempty"`
-	Description   string    `json:"description,omitempty"`
-	ImageUrl      string    `json:"image_url,omitempty"`
+	Title         string    `json:"title"                    san:"text"`
+	Url           string    `json:"url"                      san:"trim,url"`
+	Preview       string    `json:"preview"                  san:"html"`
+	Content       string    `json:"content,omitempty"        san:"html"` // full text of the article or post (usually empty, use Description by default)
+	Description   string    `json:"description,omitempty"    san:"html"` // a brief summary or excerpt of the content
+	ImageUrl      string    `json:"image_url,omitempty"      san:"trim,url"`
 	GUID          string    `json:"guid,omitempty"`
 	AuthorName    string    `json:"author_name,omitempty"`
 	AuthorEmail   string    `json:"author_email,omitempty"`
@@ -47,18 +53,25 @@ func Parse(reader io.Reader) (Articles, error) {
 
 	articles := make(Articles, 0, len(parsed.Items))
 	for _, item := range parsed.Items {
-		articles = append(articles, NewArticleFromItem(item))
+		article, err := NewArticleFromItem(item)
+		if err != nil {
+			slog.Error("parse: failed to convert item to article", "error", err)
+			continue
+		}
+		articles = append(articles, article)
 	}
 	return articles, nil
 }
 
-func NewArticleFromItem(item *parser.Item) *Article {
-	return &Article{
+func NewArticleFromItem(item *parser.Item) (*Article, error) {
+	description := lo.CoalesceOrEmpty(item.Description, item.Content)
+	content := lo.CoalesceOrEmpty(item.Content, item.Description)
+	article := Article{
 		Title:         item.Title,
 		Url:           item.Link,
-		Preview:       item.Description,
-		Content:       item.Content,
-		Description:   item.Description,
+		Preview:       Preview(description),
+		Content:       content,
+		Description:   description,
 		ImageUrl:      getImageUrl(item),
 		GUID:          item.GUID,
 		AuthorName:    getAuthorName(item),
@@ -67,6 +80,16 @@ func NewArticleFromItem(item *parser.Item) *Article {
 		DateUpdated:   getDateUpdated(item),
 		DatePublished: getDatePublished(item),
 	}
+
+	// note: this does "duplicate" work from the service layer, but it's important to validate early and often
+	// service should still perform these as it is the final gate before persisting to the database
+	article, err := sanitize.Struct(article)
+	if err != nil {
+		slog.Error("parse: failed to sanitize article", "article_url", article.Url, "error", err)
+		return nil, errors.Join(ErrSanitizeFailure, err)
+	}
+
+	return &article, nil
 }
 
 func getImageUrl(item *parser.Item) (s string) {

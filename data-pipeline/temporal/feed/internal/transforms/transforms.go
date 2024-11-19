@@ -20,6 +20,7 @@ func New() Transforms {
 }
 
 func (*transforms) RssToArticles(rss io.ReadCloser) (parse.Articles, error) {
+	// TODO prom err counter
 	return parse.Parse(rss)
 }
 
