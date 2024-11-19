@@ -1,11 +1,11 @@
 package goverter
 
 import (
-	gql_model "github.com/ericbutera/amalgam/graph/graph/model"
 	db_model "github.com/ericbutera/amalgam/internal/db/models"
 	svc_model "github.com/ericbutera/amalgam/internal/service/models"
 	gql_client "github.com/ericbutera/amalgam/pkg/clients/graphql"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
+	gql_model "github.com/ericbutera/amalgam/services/graph/graph/model"
 )
 
 // goverter:converter
