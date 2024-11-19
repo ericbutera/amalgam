@@ -7,32 +7,12 @@ package graph
 import (
 	"context"
 
+	"github.com/ericbutera/amalgam/internal/converters"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
 	"github.com/ericbutera/amalgam/services/graph/graph/model"
-	"github.com/ericbutera/amalgam/services/graph/internal/convert"
+	errHelper "github.com/ericbutera/amalgam/services/graph/internal/errors"
 	"github.com/samber/lo"
-	"github.com/vektah/gqlparser/v2/gqlerror"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
-
-var (
-	ErrNotFound      = gqlerror.Errorf("record not found")
-	ErrAlreadyExists = gqlerror.Errorf("record already exists")
-)
-
-func handleCommonErrors(ctx context.Context, err error, msg string) error {
-	s := status.Convert(err)
-	switch s.Code() {
-	case codes.NotFound:
-		return ErrNotFound
-	case codes.AlreadyExists:
-		return ErrAlreadyExists
-	case codes.InvalidArgument:
-		return convert.ValidationToGraphErr(ctx, s)
-	}
-	return gqlerror.Errorf(lo.CoalesceOrEmpty(msg, "could not perform action"))
-}
 
 // AddFeed is the resolver for the addFeed field.
 func (r *mutationResolver) AddFeed(ctx context.Context, url string, name string) (*model.AddResponse, error) {
@@ -44,7 +24,7 @@ func (r *mutationResolver) AddFeed(ctx context.Context, url string, name string)
 		},
 	})
 	if err != nil {
-		return nil, handleCommonErrors(ctx, err, "failed to create feed")
+		return nil, errHelper.HandleCommonErrors(ctx, err, "failed to create feed")
 	}
 	return &model.AddResponse{
 		ID: resp.Id,
@@ -61,7 +41,7 @@ func (r *mutationResolver) UpdateFeed(ctx context.Context, id string, url *strin
 		},
 	})
 	if err != nil {
-		return nil, handleCommonErrors(ctx, err, "failed to update feed")
+		return nil, errHelper.HandleCommonErrors(ctx, err, "failed to update feed")
 	}
 	// TODO: converter.ServiceToGraphFeed
 	// TODO: revisit returning id (rpc returns empty)
@@ -75,15 +55,16 @@ func (r *queryResolver) Feeds(ctx context.Context) ([]*model.Feed, error) {
 	var feeds []*model.Feed
 	res, err := r.rpcClient.ListFeeds(ctx, &pb.ListFeedsRequest{})
 	if err != nil {
-		return nil, handleCommonErrors(ctx, err, "failed to list feeds")
+		return nil, errHelper.HandleCommonErrors(ctx, err, "failed to list feeds")
 	}
-	// TODO: converter.ServiceToGraph
+	c := converters.New()
 	for _, feed := range res.Feeds {
-		feeds = append(feeds, &model.Feed{
-			ID:   feed.Id,
-			URL:  feed.Url,
-			Name: feed.Name,
-		})
+		// feeds = append(feeds, &model.Feed{
+		// 	ID:   feed.Id,
+		// 	URL:  feed.Url,
+		// 	Name: feed.Name,
+		// })
+		feeds = append(feeds, c.ProtoToGraphFeed(feed))
 	}
 	return feeds, nil
 }
@@ -92,39 +73,42 @@ func (r *queryResolver) Feeds(ctx context.Context) ([]*model.Feed, error) {
 func (r *queryResolver) Feed(ctx context.Context, id string) (*model.Feed, error) {
 	resp, err := r.rpcClient.GetFeed(ctx, &pb.GetFeedRequest{Id: id})
 	if err != nil {
-		return nil, handleCommonErrors(ctx, err, "failed to get feed")
+		return nil, errHelper.HandleCommonErrors(ctx, err, "failed to get feed")
 	}
 	// TODO: converter.ServiceToGraph
-	return &model.Feed{
-		ID:   resp.Feed.Id,
-		URL:  resp.Feed.Url,
-		Name: resp.Feed.Name,
-	}, nil
+	// return &model.Feed{
+	// 	ID:   resp.Feed.Id,
+	// 	URL:  resp.Feed.Url,
+	// 	Name: resp.Feed.Name,
+	// }, nil
+	return converters.New().ProtoToGraphFeed(resp.Feed), nil
 }
 
 // Articles is the resolver for the articles field.
 func (r *queryResolver) Articles(ctx context.Context, feedID string) ([]*model.Article, error) {
 	resp, err := r.rpcClient.ListArticles(ctx, &pb.ListArticlesRequest{FeedId: feedID})
 	if err != nil {
-		return nil, handleCommonErrors(ctx, err, "failed to list articles")
+		return nil, errHelper.HandleCommonErrors(ctx, err, "failed to list articles")
 	}
 
+	c := converters.New()
 	var articles []*model.Article
 	for _, article := range resp.Articles {
 		// TODO: converter.ServiceToGraph
-		articles = append(articles, &model.Article{
-			// TODO: limit fields on listing (return preview instead of content)
-			ID:          article.Id,
-			Title:       article.Title,
-			Content:     article.Content,
-			FeedID:      article.FeedId,
-			URL:         article.Url,
-			Preview:     article.Preview,
-			GUID:        lo.ToPtr(article.Guid),
-			ImageURL:    lo.ToPtr(article.ImageUrl),
-			AuthorName:  lo.ToPtr(article.AuthorName),
-			AuthorEmail: lo.ToPtr(article.AuthorEmail),
-		})
+		// articles = append(articles, &model.Article{
+		// 	// TODO: limit fields on listing (return preview instead of content)
+		// 	ID:          article.Id,
+		// 	Title:       article.Title,
+		// 	Content:     article.Content,
+		// 	FeedID:      article.FeedId,
+		// 	URL:         article.Url,
+		// 	Preview:     article.Preview,
+		// 	GUID:        lo.ToPtr(article.Guid),
+		// 	ImageURL:    lo.ToPtr(article.ImageUrl),
+		// 	AuthorName:  lo.ToPtr(article.AuthorName),
+		// 	AuthorEmail: lo.ToPtr(article.AuthorEmail),
+		// })
+		articles = append(articles, c.ProtoToGraphArticle(article))
 	}
 	return articles, nil
 }
@@ -133,22 +117,22 @@ func (r *queryResolver) Articles(ctx context.Context, feedID string) ([]*model.A
 func (r *queryResolver) Article(ctx context.Context, id string) (*model.Article, error) {
 	resp, err := r.rpcClient.GetArticle(ctx, &pb.GetArticleRequest{Id: id})
 	if err != nil {
-		return nil, handleCommonErrors(ctx, err, "failed to get article")
+		return nil, errHelper.HandleCommonErrors(ctx, err, "failed to get article")
 	}
 	article := resp.Article
-	// TODO: converter.ServiceToGraph
-	return &model.Article{
-		ID:          article.Id,
-		Title:       article.Title,
-		Content:     article.Content,
-		FeedID:      article.FeedId,
-		URL:         article.Url,
-		Preview:     article.Preview,
-		GUID:        lo.ToPtr(article.Guid),
-		ImageURL:    lo.ToPtr(article.ImageUrl),
-		AuthorName:  lo.ToPtr(article.AuthorName),
-		AuthorEmail: lo.ToPtr(article.AuthorEmail),
-	}, nil
+	// return &model.Article{
+	// 	ID:          article.Id,
+	// 	Title:       article.Title,
+	// 	Content:     article.Content,
+	// 	FeedID:      article.FeedId,
+	// 	URL:         article.Url,
+	// 	Preview:     article.Preview,
+	// 	GUID:        lo.ToPtr(article.Guid),
+	// 	ImageURL:    lo.ToPtr(article.ImageUrl),
+	// 	AuthorName:  lo.ToPtr(article.AuthorName),
+	// 	AuthorEmail: lo.ToPtr(article.AuthorEmail),
+	// }, nil
+	return converters.New().ProtoToGraphArticle(article), nil
 }
 
 // Mutation returns MutationResolver implementation.

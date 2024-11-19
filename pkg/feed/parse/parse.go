@@ -12,13 +12,13 @@ import (
 
 type Articles []*Article
 
-// TODO: possibly use service layer
 type Article struct {
 	FeedId        string    `json:"feed_id"`
 	Title         string    `json:"title"`
 	Url           string    `json:"url"`
 	Preview       string    `json:"preview"`
 	Content       string    `json:"content,omitempty"`
+	Description   string    `json:"description,omitempty"`
 	ImageUrl      string    `json:"image_url,omitempty"`
 	GUID          string    `json:"guid,omitempty"`
 	AuthorName    string    `json:"author_name,omitempty"`
@@ -58,6 +58,7 @@ func NewArticleFromItem(item *parser.Item) *Article {
 		Url:           item.Link,
 		Preview:       item.Description,
 		Content:       item.Content,
+		Description:   item.Description,
 		ImageUrl:      getImageUrl(item),
 		GUID:          item.GUID,
 		AuthorName:    getAuthorName(item),

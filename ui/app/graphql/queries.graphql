@@ -23,6 +23,7 @@ query GetArticle($id: ID!) {
         imageUrl
         content
         preview
+        description
         guid
         authorName
         authorEmail

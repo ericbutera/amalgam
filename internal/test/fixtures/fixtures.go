@@ -53,14 +53,15 @@ func WithFeedIsActive(isActive bool) FeedOption {
 
 func NewArticle(opts ...ArticleOption) *models.Article {
 	a := &models.Article{
-		ID:       "articlea-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
-		FeedID:   "feedidaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
-		URL:      "https://example.com/test-article",
-		Title:    "test article title",
-		ImageURL: "https://example.com/test-article-image.jpg",
-		Preview:  "test article preview",
-		Content:  "test article content",
-		GUID:     "guidaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+		ID:          "articlea-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+		FeedID:      "feedidaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+		URL:         "https://example.com/test-article",
+		Title:       "test article title",
+		ImageURL:    "https://example.com/test-article-image.jpg",
+		Preview:     "test article preview",
+		Content:     "test article content",
+		Description: "test article description",
+		GUID:        "guidaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
 	}
 	for _, opt := range opts {
 		opt(a)
@@ -103,6 +104,12 @@ func WithArticlePreview(preview string) ArticleOption {
 func WithArticleContent(content string) ArticleOption {
 	return func(a *models.Article) {
 		a.Content = content
+	}
+}
+
+func WithArticleDescription(description string) ArticleOption {
+	return func(a *models.Article) {
+		a.Description = description
 	}
 }
 
