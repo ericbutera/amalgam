@@ -4,7 +4,7 @@
 package goverter
 
 import (
-	model "github.com/ericbutera/amalgam/graph/graph/model"
+	model "github.com/ericbutera/amalgam/services/graph/graph/model"
 	models "github.com/ericbutera/amalgam/internal/db/models"
 	models1 "github.com/ericbutera/amalgam/internal/service/models"
 	graphql "github.com/ericbutera/amalgam/pkg/clients/graphql"

@@ -7,8 +7,8 @@ import (
 	"os"
 
 	"github.com/99designs/gqlgen/graphql/handler"
-	"github.com/ericbutera/amalgam/graph/graph"
 	"github.com/ericbutera/amalgam/internal/http/server"
+	"github.com/ericbutera/amalgam/services/graph/graph"
 	"github.com/go-chi/chi"
 	"github.com/samber/lo"
 )

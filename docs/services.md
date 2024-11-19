@@ -1,14 +1,14 @@
 # Services
 
-## [Graph (GraphQL)](./graph/README.md)
+## [Graph (GraphQL)](../services/graph/README.md)
 
 [GraphQL API](http://localhost:8082). The goal is to show how to quickly build out public facing features. GraphQL would be available to public.
 
-### [User Interface (UI)](./ui/README.md)
+### [User Interface (UI)](../ui/README.md)
 
 A Next.JS app [user interface](http://localhost:3000/) for interacting with the project. At first it uses the REST API, but will be updated to use the GraphQL API.
 
-## [RPC (gRPC)](./rpc/README.md)
+## [RPC (gRPC)](../services/rpc/README.md)
 
 A simple gRPC service that can be used to show how to convert a monolith into microservices architecture. This service would only be available on the internal VPC.
 
@@ -20,18 +20,16 @@ A simple gRPC service that can be used to show how to convert a monolith into mi
 
 ### Temporal
 
-The first [pipeline](./data-pipeline/temporal/feed) that I have built is a rudimentary batch process for ingesting RSS feeds.
+The first [pipeline](../data-pipeline/temporal/feed) that I have built is a rudimentary batch process for ingesting RSS feeds.
 
 ## Supporting Services
 
-### [LGTM Observability Stack](./lgtm/README.md)
+### LGTM Observability Stack
 
 Observability is the heart of quality software. This project uses a demonstration LGTM stack to show how various pieces of the system can be monitored.
 
 - [Grafana](http://localhost:3001/)
 - [Prometheus](http://localhost:9090/)
-- [API Dashboard](http://localhost:3001/d/amalgam-gin-dashboard/gin-application-metrics?orgId=1&refresh=5s)
-- [Amalgam Dashboard](http://localhost:3001/d/amalgam-dashboard/amalgam?orgId=1&refresh=5s)
 
 TODO:
 
@@ -52,6 +50,3 @@ K6 tests have been [generated](./k6/tests/README.md) from the OpenAPI spec. They
 A classic "monolith" REST api built with gin-gonic. This service would be available to the public. It will be replaced with GraphQL as the project progresses.
 
 One of the major points of this project is the OpenAPI specification. It is generated from the gin endpoint code and is used to generate API clients in various languages.
-
-- [API](http://localhost:8080)
-- [metrics](http://localhost:8080/metrics)

@@ -46,8 +46,8 @@ k8s_resource(
   labels=["app"],
 )
 
-go_compile('graph-compile', './graph', ['./graph'])
-go_image('graph', './graph')
+go_compile('graph-compile', './services/graph', ['./services/graph'])
+go_image('graph', './services/graph')
 k8s_resource("graph",
   port_forwards=[
     port_forward(GRAPH_PORT_FORWARD, 8080, "playground")
