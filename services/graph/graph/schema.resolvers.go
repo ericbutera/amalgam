@@ -7,9 +7,9 @@ package graph
 import (
 	"context"
 
-	"github.com/ericbutera/amalgam/graph/graph/model"
-	"github.com/ericbutera/amalgam/graph/internal/convert"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
+	"github.com/ericbutera/amalgam/services/graph/graph/model"
+	"github.com/ericbutera/amalgam/services/graph/internal/convert"
 	"github.com/samber/lo"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 	"google.golang.org/grpc/codes"

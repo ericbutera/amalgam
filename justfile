@@ -68,7 +68,7 @@ ci: install-tools
 generate-openapi: install-go-tools
 	@echo Generating OpenAPI
 	go install github.com/swaggo/swag/cmd/swag@latest
-	swag init --parseDependency --parseInternal --dir api --output api/docs
+	swag init --parseDependency --parseInternal --dir api --output services/api/docs
 
 generate-api-clients: generate-openapi generate-go-api-client generate-typescript-client generate-k6
 	@echo Generated API clients
@@ -77,7 +77,7 @@ generate-k6:
 	@echo Generating K6 tests
 	@echo You will have to modify the generated script.js to work with your API
 	docker run --rm \
-		-v "./api/docs/swagger.json:/local/swagger.json" \
+		-v "./services/api/docs/swagger.json:/local/swagger.json" \
 		-v "./k6/tests/openapi:/out" \
 		openapitools/openapi-generator-cli generate \
 		-i "/local/swagger.json" \
@@ -89,7 +89,7 @@ generate-go-api-client:
 	# https://github.com/OpenAPITools/openapi-generator?tab=readme-ov-file#16---docker
 	@echo Generating Go API client
 	docker run \
-		-v "./api/docs/swagger.yaml:/local/swagger.yaml" \
+		-v "./services/api/docs/swagger.yaml:/local/swagger.yaml" \
 		-v "./pkg/clients/api:/out" \
 		openapitools/openapi-generator-cli \
 		generate \
