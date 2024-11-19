@@ -27,6 +27,7 @@ export type Article = {
   authorEmail?: Maybe<Scalars['String']['output']>;
   authorName?: Maybe<Scalars['String']['output']>;
   content: Scalars['String']['output'];
+  description: Scalars['String']['output'];
   feedId: Scalars['ID']['output'];
   guid?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
@@ -124,7 +125,7 @@ export type GetArticleQueryVariables = Exact<{
 }>;
 
 
-export type GetArticleQuery = { __typename?: 'Query', article?: { __typename?: 'Article', id: string, feedId: string, url: string, title: string, imageUrl?: string | null, content: string, preview: string, guid?: string | null, authorName?: string | null, authorEmail?: string | null } | null };
+export type GetArticleQuery = { __typename?: 'Query', article?: { __typename?: 'Article', id: string, feedId: string, url: string, title: string, imageUrl?: string | null, content: string, preview: string, description: string, guid?: string | null, authorName?: string | null, authorEmail?: string | null } | null };
 
 export type ListArticlesQueryVariables = Exact<{
   feedId: Scalars['ID']['input'];
@@ -176,6 +177,7 @@ export const GetArticleDocument = gql`
     imageUrl
     content
     preview
+    description
     guid
     authorName
     authorEmail

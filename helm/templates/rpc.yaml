@@ -70,4 +70,4 @@ spec:
             grpc:
               port: 50051
             initialDelaySeconds: 10
-            periodSeconds: 60
+            periodSeconds: 60 # todo: configurable via values.yaml

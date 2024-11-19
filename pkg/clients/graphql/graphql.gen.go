@@ -33,6 +33,7 @@ type GetArticleArticle struct {
 	ImageUrl    string `json:"imageUrl"`
 	Content     string `json:"content"`
 	Preview     string `json:"preview"`
+	Description string `json:"description"`
 	Guid        string `json:"guid"`
 	AuthorName  string `json:"authorName"`
 	AuthorEmail string `json:"authorEmail"`
@@ -58,6 +59,9 @@ func (v *GetArticleArticle) GetContent() string { return v.Content }
 
 // GetPreview returns GetArticleArticle.Preview, and is useful for accessing the field via an interface.
 func (v *GetArticleArticle) GetPreview() string { return v.Preview }
+
+// GetDescription returns GetArticleArticle.Description, and is useful for accessing the field via an interface.
+func (v *GetArticleArticle) GetDescription() string { return v.Description }
 
 // GetGuid returns GetArticleArticle.Guid, and is useful for accessing the field via an interface.
 func (v *GetArticleArticle) GetGuid() string { return v.Guid }
@@ -284,6 +288,7 @@ query GetArticle ($id: ID!) {
 		imageUrl
 		content
 		preview
+		description
 		guid
 		authorName
 		authorEmail

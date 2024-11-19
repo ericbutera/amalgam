@@ -38,11 +38,19 @@ export default function () {
     check(articlesRes, { 'List Articles status is 200': (r) => r.status === 200 });
 
     const articles = articlesRes.json('data.articles.#.id') || [];
-    // let ids = articles.slice(0, 5)
+    let counter = 0
     for (let articleId of articles) {
       check(post(getArticle(articleId)), { 'Get Article status is 200': (r) => r.status === 200 });
+      counter++;
+      if (counter == 5) {
+        sleep(1)
+        counter = 0
+      }
     }
+
+    sleep(1)
   }
+
   sleep(1)
 }
 
@@ -104,6 +112,7 @@ const QueryGetArticle = `
       imageUrl
       content
       preview
+      description
       guid
       authorName
       authorEmail

@@ -19,9 +19,9 @@ const (
 	ItemCount      = 25
 	LinkTemplate   = "https://faker:8080/feed/%s"
 	TitleWordCount = 5
-	ParagraphCount = 2
-	SentenceCount  = 3
-	WordCount      = 5
+	ParagraphCount = 4
+	SentenceCount  = 6
+	WordCount      = 10
 	Separator      = " "
 )
 

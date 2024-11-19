@@ -67,4 +67,4 @@ spec:
               path: /readyz
               port: 8080
               initialDelaySeconds: 10
-              periodSeconds: 60
+              periodSeconds: 60 # todo: configurable via values.yaml

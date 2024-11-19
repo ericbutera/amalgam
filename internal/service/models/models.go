@@ -15,6 +15,7 @@ type Article struct {
 	ImageURL    string `json:"imageUrl"    validate:"omitempty,url"`
 	Preview     string `json:"preview"     san:"html"`
 	Content     string `json:"content"     san:"html"`
+	Description string `json:"description" san:"html"`
 	GUID        string `json:"guid"`
 	AuthorName  string `json:"authorName"`
 	AuthorEmail string `json:"authorEmail"`

@@ -34,6 +34,7 @@ message Article {
   string guid = 8;
   string author_name = 9;
   string author_email = 10;
+  string description = 11;
 }
 
 message Empty {}

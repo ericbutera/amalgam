@@ -13,6 +13,7 @@ type Article struct {
 	Title       string  `json:"title"`
 	ImageURL    *string `json:"imageUrl,omitempty"`
 	Content     string  `json:"content"`
+	Description string  `json:"description"`
 	Preview     string  `json:"preview"`
 	GUID        *string `json:"guid,omitempty"`
 	AuthorName  *string `json:"authorName,omitempty"`

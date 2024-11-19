@@ -4,11 +4,11 @@
 package goverter
 
 import (
-	model "github.com/ericbutera/amalgam/services/graph/graph/model"
 	models "github.com/ericbutera/amalgam/internal/db/models"
 	models1 "github.com/ericbutera/amalgam/internal/service/models"
 	graphql "github.com/ericbutera/amalgam/pkg/clients/graphql"
 	v1 "github.com/ericbutera/amalgam/pkg/feeds/v1"
+	model "github.com/ericbutera/amalgam/services/graph/graph/model"
 )
 
 type ConverterImpl struct{}
@@ -31,6 +31,7 @@ func (c *ConverterImpl) DbToServiceArticle(source *models.Article) *models1.Arti
 		modelsArticle.ImageURL = (*source).ImageURL
 		modelsArticle.Preview = (*source).Preview
 		modelsArticle.Content = (*source).Content
+		modelsArticle.Description = (*source).Description
 		modelsArticle.GUID = (*source).GUID
 		modelsArticle.AuthorName = (*source).AuthorName
 		modelsArticle.AuthorEmail = (*source).AuthorEmail
@@ -61,6 +62,7 @@ func (c *ConverterImpl) GraphClientToApiArticle(source *graphql.GetArticleArticl
 		modelsArticle.ImageURL = (*source).ImageUrl
 		modelsArticle.Preview = (*source).Preview
 		modelsArticle.Content = (*source).Content
+		modelsArticle.Description = (*source).Description
 		modelsArticle.GUID = (*source).Guid
 		modelsArticle.AuthorName = (*source).AuthorName
 		modelsArticle.AuthorEmail = (*source).AuthorEmail
@@ -108,6 +110,7 @@ func (c *ConverterImpl) GraphToServiceArticle(source *model.Article) *models1.Ar
 		}
 		modelsArticle.Preview = (*source).Preview
 		modelsArticle.Content = (*source).Content
+		modelsArticle.Description = (*source).Description
 		if (*source).GUID != nil {
 			modelsArticle.GUID = *(*source).GUID
 		}
@@ -142,6 +145,40 @@ func (c *ConverterImpl) ProtoCreateFeedToService(source *v1.CreateFeedRequest_Fe
 	}
 	return pModelsFeed
 }
+func (c *ConverterImpl) ProtoToGraphArticle(source *v1.Article) *model.Article {
+	var pModelArticle *model.Article
+	if source != nil {
+		var modelArticle model.Article
+		modelArticle.ID = (*source).Id
+		modelArticle.FeedID = (*source).FeedId
+		modelArticle.URL = (*source).Url
+		modelArticle.Title = (*source).Title
+		pString := (*source).ImageUrl
+		modelArticle.ImageURL = &pString
+		modelArticle.Content = (*source).Content
+		modelArticle.Description = (*source).Description
+		modelArticle.Preview = (*source).Preview
+		pString2 := (*source).Guid
+		modelArticle.GUID = &pString2
+		pString3 := (*source).AuthorName
+		modelArticle.AuthorName = &pString3
+		pString4 := (*source).AuthorEmail
+		modelArticle.AuthorEmail = &pString4
+		pModelArticle = &modelArticle
+	}
+	return pModelArticle
+}
+func (c *ConverterImpl) ProtoToGraphFeed(source *v1.Feed) *model.Feed {
+	var pModelFeed *model.Feed
+	if source != nil {
+		var modelFeed model.Feed
+		modelFeed.ID = (*source).Id
+		modelFeed.URL = (*source).Url
+		modelFeed.Name = (*source).Name
+		pModelFeed = &modelFeed
+	}
+	return pModelFeed
+}
 func (c *ConverterImpl) ProtoToServiceArticle(source *v1.Article) *models1.Article {
 	var pModelsArticle *models1.Article
 	if source != nil {
@@ -153,6 +190,7 @@ func (c *ConverterImpl) ProtoToServiceArticle(source *v1.Article) *models1.Artic
 		modelsArticle.ImageURL = (*source).ImageUrl
 		modelsArticle.Preview = (*source).Preview
 		modelsArticle.Content = (*source).Content
+		modelsArticle.Description = (*source).Description
 		modelsArticle.GUID = (*source).Guid
 		modelsArticle.AuthorName = (*source).AuthorName
 		modelsArticle.AuthorEmail = (*source).AuthorEmail
@@ -181,6 +219,7 @@ func (c *ConverterImpl) ServiceToDbArticle(source *models1.Article) *models.Arti
 		modelsArticle.ImageURL = (*source).ImageURL
 		modelsArticle.Preview = (*source).Preview
 		modelsArticle.Content = (*source).Content
+		modelsArticle.Description = (*source).Description
 		modelsArticle.GUID = (*source).GUID
 		modelsArticle.AuthorName = (*source).AuthorName
 		modelsArticle.AuthorEmail = (*source).AuthorEmail
@@ -210,6 +249,7 @@ func (c *ConverterImpl) ServiceToGraphArticle(source *models1.Article) *model.Ar
 		pString := (*source).ImageURL
 		modelArticle.ImageURL = &pString
 		modelArticle.Content = (*source).Content
+		modelArticle.Description = (*source).Description
 		modelArticle.Preview = (*source).Preview
 		pString2 := (*source).GUID
 		modelArticle.GUID = &pString2
@@ -246,6 +286,7 @@ func (c *ConverterImpl) ServiceToProtoArticle(source *models1.Article) *v1.Artic
 		feedsArticle.Guid = (*source).GUID
 		feedsArticle.AuthorName = (*source).AuthorName
 		feedsArticle.AuthorEmail = (*source).AuthorEmail
+		feedsArticle.Description = (*source).Description
 		pFeedsArticle = &feedsArticle
 	}
 	return pFeedsArticle
