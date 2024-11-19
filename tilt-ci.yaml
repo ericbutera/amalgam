@@ -1,0 +1,2 @@
+# override values.yaml during `tilt ci`
+otel: "false"

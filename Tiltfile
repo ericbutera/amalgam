@@ -4,12 +4,17 @@ load('ext://secret', 'secret_create_generic', 'secret_from_dict')
 load('ext://uibutton', 'cmd_button')
 secret_settings(disable_scrub=True)
 
-# this will define environment variables that use "localhost" instead of service names like "grpc"
+IS_CI = config.tilt_subcommand == 'ci'
+
 dotenv('.env.local')
 
-k8s_yaml(helm('./helm'))
+if IS_CI:
+  values = ['tilt-ci.yaml']
+else:
+  values = []
 
-IS_CI = config.tilt_subcommand == 'ci'
+k8s_yaml(helm('./helm', values=values))
+
 GRAFANA_PORT_FORWARD=3001
 API_PORT_FORWARD=8080
 GRAPH_PORT_FORWARD=8082
@@ -127,7 +132,7 @@ deploy_minio(
   secret_name="feed-minio-auth",
   root_user="minio",
   root_password="minio-password",
-  # auto_init=(not IS_CI), # TODO: do not run in ci
+  # auto_init=(not IS_CI),
 )
 
 include('Tiltfile.tests')

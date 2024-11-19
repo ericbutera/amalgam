@@ -39,7 +39,7 @@ spec:
             - name: RPC_INSECURE
               value: "true"
             - name: OTEL_ENABLE
-              value: "true"
+              value: {{ .Values.otel | quote }}
             - name: OTEL_SERVICE_NAME
               value: "graph"
             - name: OTEL_EXPORTER_OTLP_INSECURE
@@ -68,3 +68,9 @@ spec:
               port: 8080
               initialDelaySeconds: 10
               periodSeconds: 60 # todo: configurable via values.yaml
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            failureThreshold: 60
+            periodSeconds: 10

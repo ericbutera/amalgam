@@ -56,14 +56,11 @@ spec:
           #   periodSeconds: 10
           #   timeoutSeconds: 5
       initContainers:
+        # prod would use service accounts created by Infra As Code, this is a dev workaround only
         - name: init-mysql-setup
-          image: alpine:latest
+          image: bhgedigital/envsubst
           command:
-            [
-              "sh",
-              "-c",
-              "apk add --no-cache gettext && envsubst < /template/setup.sql > /config/setup.sql",
-            ]
+            ["sh", "-c", "envsubst < /template/setup.sql > /config/setup.sql"]
           env:
             - name: AMALGAM_MIGRATION_PASSWORD
               valueFrom:

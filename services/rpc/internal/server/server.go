@@ -59,14 +59,16 @@ func (s *Server) Serve(ctx context.Context) error {
 		}
 	})
 
-	g.Add(func() error {
-		slog.Info("serving metrics", "addr", s.metricSrv.Addr)
-		return s.metricSrv.ListenAndServe()
-	}, func(error) {
-		if err := s.metricSrv.Close(); err != nil {
-			slog.Error("failed to stop web server", "err", err)
-		}
-	})
+	if s.config.OtelEnable {
+		g.Add(func() error {
+			slog.Info("serving metrics", "addr", s.metricSrv.Addr)
+			return s.metricSrv.ListenAndServe()
+		}, func(error) {
+			if err := s.metricSrv.Close(); err != nil {
+				slog.Error("failed to stop web server", "err", err)
+			}
+		})
+	}
 
 	g.Add(run.SignalHandler(ctx, syscall.SIGINT, syscall.SIGTERM))
 

@@ -15,11 +15,16 @@ func main() {
 	ctx := context.Background()
 	config := lo.Must(env.New[config.Config]())
 
-	srv, err := server.New(
+	opts := []server.Option{
 		server.WithConfig(config),
-		server.WithOtel(ctx, config.IgnoredSpanNames),
 		server.WithDbFromEnv(),
-	)
+	}
+
+	if config.OtelEnable {
+		opts = append(opts, server.WithOtel(ctx, config.IgnoredSpanNames))
+	}
+
+	srv, err := server.New(opts...)
 	if err != nil {
 		slog.Error("server error", "error", err)
 		os.Exit(1)
