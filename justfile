@@ -135,7 +135,7 @@ generate-graph-server:
 	@echo Generating graph server
 	go get github.com/99designs/gqlgen@v0.17.55
 	go install github.com/99designs/gqlgen
-	cd graph && gqlgen generate
+	cd services/graph && gqlgen generate
 
 generate-graph-schema:
 	@echo This requires the graph service running in tilt to generate the schema

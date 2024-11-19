@@ -71,6 +71,7 @@ func (h *FeedHelper) SaveArticle(ctx context.Context, article rss.Article) (stri
 			Url:         article.Url,
 			Preview:     article.Preview,
 			Content:     article.Content,
+			Description: article.Description,
 			ImageUrl:    article.ImageUrl,
 			Guid:        article.GUID,
 			AuthorName:  article.AuthorName,

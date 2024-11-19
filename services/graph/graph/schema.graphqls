@@ -11,6 +11,7 @@ type Article {
   title: String!
   imageUrl: String
   content: String!
+  description: String!
   preview: String!
   guid: String
   authorName: String

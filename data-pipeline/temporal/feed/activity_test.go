@@ -34,7 +34,6 @@ type activitySetup struct {
 }
 
 func setupActivities(t *testing.T) *activitySetup {
-	// transforms := transforms.NewMockTransforms(t)
 	transforms := transforms.New()
 	fetcher := fetch.NewMockFetch(t)
 	bucketClient := bucket.NewMockBucket(t)

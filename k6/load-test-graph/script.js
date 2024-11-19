@@ -101,7 +101,7 @@ const QueryGetArticle = `
       title
       imageUrl
       content
-      preview
+      description
       guid
       authorName
       authorEmail

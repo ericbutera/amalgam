@@ -55,6 +55,7 @@ type ComplexityRoot struct {
 		AuthorEmail func(childComplexity int) int
 		AuthorName  func(childComplexity int) int
 		Content     func(childComplexity int) int
+		Description func(childComplexity int) int
 		FeedID      func(childComplexity int) int
 		GUID        func(childComplexity int) int
 		ID          func(childComplexity int) int
@@ -144,6 +145,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Article.Content(childComplexity), true
+
+	case "Article.description":
+		if e.complexity.Article.Description == nil {
+			break
+		}
+
+		return e.complexity.Article.Description(childComplexity), true
 
 	case "Article.feedId":
 		if e.complexity.Article.FeedID == nil {
@@ -963,6 +971,50 @@ func (ec *executionContext) fieldContext_Article_content(_ context.Context, fiel
 	return fc, nil
 }
 
+func (ec *executionContext) _Article_description(ctx context.Context, field graphql.CollectedField, obj *model.Article) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Article_description(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Description, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Article_description(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Article",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Article_preview(ctx context.Context, field graphql.CollectedField, obj *model.Article) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Article_preview(ctx, field)
 	if err != nil {
@@ -1290,7 +1342,7 @@ func (ec *executionContext) _Mutation_addFeed(ctx context.Context, field graphql
 	}
 	res := resTmp.(*model.AddResponse)
 	fc.Result = res
-	return ec.marshalNAddResponse2ᚖgithubᚗcomᚋericbuteraᚋamalgamᚋgraphᚋgraphᚋmodelᚐAddResponse(ctx, field.Selections, res)
+	return ec.marshalNAddResponse2ᚖgithubᚗcomᚋericbuteraᚋamalgamᚋservicesᚋgraphᚋgraphᚋmodelᚐAddResponse(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_addFeed(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1349,7 +1401,7 @@ func (ec *executionContext) _Mutation_updateFeed(ctx context.Context, field grap
 	}
 	res := resTmp.(*model.UpdateResponse)
 	fc.Result = res
-	return ec.marshalNUpdateResponse2ᚖgithubᚗcomᚋericbuteraᚋamalgamᚋgraphᚋgraphᚋmodelᚐUpdateResponse(ctx, field.Selections, res)
+	return ec.marshalNUpdateResponse2ᚖgithubᚗcomᚋericbuteraᚋamalgamᚋservicesᚋgraphᚋgraphᚋmodelᚐUpdateResponse(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_updateFeed(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1408,7 +1460,7 @@ func (ec *executionContext) _Query_feeds(ctx context.Context, field graphql.Coll
 	}
 	res := resTmp.([]*model.Feed)
 	fc.Result = res
-	return ec.marshalNFeed2ᚕᚖgithubᚗcomᚋericbuteraᚋamalgamᚋgraphᚋgraphᚋmodelᚐFeedᚄ(ctx, field.Selections, res)
+	return ec.marshalNFeed2ᚕᚖgithubᚗcomᚋericbuteraᚋamalgamᚋservicesᚋgraphᚋgraphᚋmodelᚐFeedᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_feeds(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1457,7 +1509,7 @@ func (ec *executionContext) _Query_feed(ctx context.Context, field graphql.Colle
 	}
 	res := resTmp.(*model.Feed)
 	fc.Result = res
-	return ec.marshalOFeed2ᚖgithubᚗcomᚋericbuteraᚋamalgamᚋgraphᚋgraphᚋmodelᚐFeed(ctx, field.Selections, res)
+	return ec.marshalOFeed2ᚖgithubᚗcomᚋericbuteraᚋamalgamᚋservicesᚋgraphᚋgraphᚋmodelᚐFeed(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_feed(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1520,7 +1572,7 @@ func (ec *executionContext) _Query_articles(ctx context.Context, field graphql.C
 	}
 	res := resTmp.([]*model.Article)
 	fc.Result = res
-	return ec.marshalNArticle2ᚕᚖgithubᚗcomᚋericbuteraᚋamalgamᚋgraphᚋgraphᚋmodelᚐArticleᚄ(ctx, field.Selections, res)
+	return ec.marshalNArticle2ᚕᚖgithubᚗcomᚋericbuteraᚋamalgamᚋservicesᚋgraphᚋgraphᚋmodelᚐArticleᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_articles(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1543,6 +1595,8 @@ func (ec *executionContext) fieldContext_Query_articles(ctx context.Context, fie
 				return ec.fieldContext_Article_imageUrl(ctx, field)
 			case "content":
 				return ec.fieldContext_Article_content(ctx, field)
+			case "description":
+				return ec.fieldContext_Article_description(ctx, field)
 			case "preview":
 				return ec.fieldContext_Article_preview(ctx, field)
 			case "guid":
@@ -1594,7 +1648,7 @@ func (ec *executionContext) _Query_article(ctx context.Context, field graphql.Co
 	}
 	res := resTmp.(*model.Article)
 	fc.Result = res
-	return ec.marshalOArticle2ᚖgithubᚗcomᚋericbuteraᚋamalgamᚋgraphᚋgraphᚋmodelᚐArticle(ctx, field.Selections, res)
+	return ec.marshalOArticle2ᚖgithubᚗcomᚋericbuteraᚋamalgamᚋservicesᚋgraphᚋgraphᚋmodelᚐArticle(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_article(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1617,6 +1671,8 @@ func (ec *executionContext) fieldContext_Query_article(ctx context.Context, fiel
 				return ec.fieldContext_Article_imageUrl(ctx, field)
 			case "content":
 				return ec.fieldContext_Article_content(ctx, field)
+			case "description":
+				return ec.fieldContext_Article_description(ctx, field)
 			case "preview":
 				return ec.fieldContext_Article_preview(ctx, field)
 			case "guid":
@@ -3674,6 +3730,11 @@ func (ec *executionContext) _Article(ctx context.Context, sel ast.SelectionSet, 
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "description":
+			out.Values[i] = ec._Article_description(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		case "preview":
 			out.Values[i] = ec._Article_preview(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -4310,11 +4371,11 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 
 // region    ***************************** type.gotpl *****************************
 
-func (ec *executionContext) marshalNAddResponse2githubᚗcomᚋericbuteraᚋamalgamᚋgraphᚋgraphᚋmodelᚐAddResponse(ctx context.Context, sel ast.SelectionSet, v model.AddResponse) graphql.Marshaler {
+func (ec *executionContext) marshalNAddResponse2githubᚗcomᚋericbuteraᚋamalgamᚋservicesᚋgraphᚋgraphᚋmodelᚐAddResponse(ctx context.Context, sel ast.SelectionSet, v model.AddResponse) graphql.Marshaler {
 	return ec._AddResponse(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNAddResponse2ᚖgithubᚗcomᚋericbuteraᚋamalgamᚋgraphᚋgraphᚋmodelᚐAddResponse(ctx context.Context, sel ast.SelectionSet, v *model.AddResponse) graphql.Marshaler {
+func (ec *executionContext) marshalNAddResponse2ᚖgithubᚗcomᚋericbuteraᚋamalgamᚋservicesᚋgraphᚋgraphᚋmodelᚐAddResponse(ctx context.Context, sel ast.SelectionSet, v *model.AddResponse) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -4324,7 +4385,7 @@ func (ec *executionContext) marshalNAddResponse2ᚖgithubᚗcomᚋericbuteraᚋa
 	return ec._AddResponse(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNArticle2ᚕᚖgithubᚗcomᚋericbuteraᚋamalgamᚋgraphᚋgraphᚋmodelᚐArticleᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Article) graphql.Marshaler {
+func (ec *executionContext) marshalNArticle2ᚕᚖgithubᚗcomᚋericbuteraᚋamalgamᚋservicesᚋgraphᚋgraphᚋmodelᚐArticleᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Article) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -4348,7 +4409,7 @@ func (ec *executionContext) marshalNArticle2ᚕᚖgithubᚗcomᚋericbuteraᚋam
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNArticle2ᚖgithubᚗcomᚋericbuteraᚋamalgamᚋgraphᚋgraphᚋmodelᚐArticle(ctx, sel, v[i])
+			ret[i] = ec.marshalNArticle2ᚖgithubᚗcomᚋericbuteraᚋamalgamᚋservicesᚋgraphᚋgraphᚋmodelᚐArticle(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -4368,7 +4429,7 @@ func (ec *executionContext) marshalNArticle2ᚕᚖgithubᚗcomᚋericbuteraᚋam
 	return ret
 }
 
-func (ec *executionContext) marshalNArticle2ᚖgithubᚗcomᚋericbuteraᚋamalgamᚋgraphᚋgraphᚋmodelᚐArticle(ctx context.Context, sel ast.SelectionSet, v *model.Article) graphql.Marshaler {
+func (ec *executionContext) marshalNArticle2ᚖgithubᚗcomᚋericbuteraᚋamalgamᚋservicesᚋgraphᚋgraphᚋmodelᚐArticle(ctx context.Context, sel ast.SelectionSet, v *model.Article) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -4393,7 +4454,7 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) marshalNFeed2ᚕᚖgithubᚗcomᚋericbuteraᚋamalgamᚋgraphᚋgraphᚋmodelᚐFeedᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Feed) graphql.Marshaler {
+func (ec *executionContext) marshalNFeed2ᚕᚖgithubᚗcomᚋericbuteraᚋamalgamᚋservicesᚋgraphᚋgraphᚋmodelᚐFeedᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Feed) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -4417,7 +4478,7 @@ func (ec *executionContext) marshalNFeed2ᚕᚖgithubᚗcomᚋericbuteraᚋamalg
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNFeed2ᚖgithubᚗcomᚋericbuteraᚋamalgamᚋgraphᚋgraphᚋmodelᚐFeed(ctx, sel, v[i])
+			ret[i] = ec.marshalNFeed2ᚖgithubᚗcomᚋericbuteraᚋamalgamᚋservicesᚋgraphᚋgraphᚋmodelᚐFeed(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -4437,7 +4498,7 @@ func (ec *executionContext) marshalNFeed2ᚕᚖgithubᚗcomᚋericbuteraᚋamalg
 	return ret
 }
 
-func (ec *executionContext) marshalNFeed2ᚖgithubᚗcomᚋericbuteraᚋamalgamᚋgraphᚋgraphᚋmodelᚐFeed(ctx context.Context, sel ast.SelectionSet, v *model.Feed) graphql.Marshaler {
+func (ec *executionContext) marshalNFeed2ᚖgithubᚗcomᚋericbuteraᚋamalgamᚋservicesᚋgraphᚋgraphᚋmodelᚐFeed(ctx context.Context, sel ast.SelectionSet, v *model.Feed) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -4477,11 +4538,11 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 	return res
 }
 
-func (ec *executionContext) marshalNUpdateResponse2githubᚗcomᚋericbuteraᚋamalgamᚋgraphᚋgraphᚋmodelᚐUpdateResponse(ctx context.Context, sel ast.SelectionSet, v model.UpdateResponse) graphql.Marshaler {
+func (ec *executionContext) marshalNUpdateResponse2githubᚗcomᚋericbuteraᚋamalgamᚋservicesᚋgraphᚋgraphᚋmodelᚐUpdateResponse(ctx context.Context, sel ast.SelectionSet, v model.UpdateResponse) graphql.Marshaler {
 	return ec._UpdateResponse(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNUpdateResponse2ᚖgithubᚗcomᚋericbuteraᚋamalgamᚋgraphᚋgraphᚋmodelᚐUpdateResponse(ctx context.Context, sel ast.SelectionSet, v *model.UpdateResponse) graphql.Marshaler {
+func (ec *executionContext) marshalNUpdateResponse2ᚖgithubᚗcomᚋericbuteraᚋamalgamᚋservicesᚋgraphᚋgraphᚋmodelᚐUpdateResponse(ctx context.Context, sel ast.SelectionSet, v *model.UpdateResponse) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -4744,7 +4805,7 @@ func (ec *executionContext) marshalN__TypeKind2string(ctx context.Context, sel a
 	return res
 }
 
-func (ec *executionContext) marshalOArticle2ᚖgithubᚗcomᚋericbuteraᚋamalgamᚋgraphᚋgraphᚋmodelᚐArticle(ctx context.Context, sel ast.SelectionSet, v *model.Article) graphql.Marshaler {
+func (ec *executionContext) marshalOArticle2ᚖgithubᚗcomᚋericbuteraᚋamalgamᚋservicesᚋgraphᚋgraphᚋmodelᚐArticle(ctx context.Context, sel ast.SelectionSet, v *model.Article) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -4777,7 +4838,7 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	return res
 }
 
-func (ec *executionContext) marshalOFeed2ᚖgithubᚗcomᚋericbuteraᚋamalgamᚋgraphᚋgraphᚋmodelᚐFeed(ctx context.Context, sel ast.SelectionSet, v *model.Feed) graphql.Marshaler {
+func (ec *executionContext) marshalOFeed2ᚖgithubᚗcomᚋericbuteraᚋamalgamᚋservicesᚋgraphᚋgraphᚋmodelᚐFeed(ctx context.Context, sel ast.SelectionSet, v *model.Feed) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}

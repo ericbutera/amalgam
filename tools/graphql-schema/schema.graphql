@@ -35,6 +35,7 @@ type Article {
 	title: String!
 	imageUrl: String
 	content: String!
+	description: String!
 	preview: String!
 	guid: String
 	authorName: String
@@ -90,3 +91,4 @@ scalar String
 type UpdateResponse {
 	id: ID!
 }
+

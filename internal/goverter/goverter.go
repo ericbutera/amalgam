@@ -21,6 +21,7 @@ type Converter interface {
 	ConvertBase(struct{ ID string }) *db_model.Base
 	// goverter:map Base.ID ID
 	DbToServiceArticle(*db_model.Article) *svc_model.Article
+	// goverter:matchIgnoreCase
 	// goverter:ignore Base Feed
 	ServiceToDbArticle(*svc_model.Article) *db_model.Article
 	// goverter:matchIgnoreCase
@@ -52,4 +53,10 @@ type Converter interface {
 	// goverter:matchIgnoreCase
 	// goverter:ignore state sizeCache unknownFields
 	ServiceToProtoArticle(*svc_model.Article) *pb.Article
+	// goverter:matchIgnoreCase
+	// goverter:ignoreMissing
+	ProtoToGraphFeed(*pb.Feed) *gql_model.Feed
+	// goverter:matchIgnoreCase
+	// goverter:ignoreMissing
+	ProtoToGraphArticle(*pb.Article) *gql_model.Article
 }
