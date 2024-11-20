@@ -25,6 +25,7 @@ func newFile(t *testing.T, path string) parse.Articles {
 }
 
 func Test_Parse_ReturnsArticles(t *testing.T) {
+	t.Parallel()
 	articles := newMinimal(t)
 	assert.Len(t, articles, 2)
 }

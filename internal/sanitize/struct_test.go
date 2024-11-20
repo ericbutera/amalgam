@@ -15,6 +15,7 @@ type TestStruct struct {
 }
 
 func TestHappyPath(t *testing.T) {
+	t.Parallel()
 	expected := TestStruct{
 		Url:     "https://example.com",
 		Content: "<p>Content</p>",
@@ -67,6 +68,7 @@ func TestUrl(t *testing.T) {
 }
 
 func TestHtml(t *testing.T) {
+	t.Parallel()
 	tt := []struct {
 		name     string
 		content  string
@@ -85,6 +87,7 @@ func TestHtml(t *testing.T) {
 	}
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
 			data := TestStruct{
 				Content: tc.content,
 			}
