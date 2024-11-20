@@ -5,19 +5,35 @@ import (
 	"log/slog"
 	"os"
 
+	"github.com/ericbutera/amalgam/internal/db"
+	"github.com/ericbutera/amalgam/internal/service"
 	"github.com/ericbutera/amalgam/pkg/config/env"
 	"github.com/ericbutera/amalgam/services/rpc/internal/config"
 	"github.com/ericbutera/amalgam/services/rpc/internal/server"
+	"github.com/ericbutera/amalgam/services/rpc/internal/tasks"
 	"github.com/samber/lo"
 )
 
 func main() {
+	if err := run(); err != nil {
+		slog.Error("run error", "error", err)
+		os.Exit(1)
+	}
+}
+
+func run() error {
 	ctx := context.Background()
 	config := lo.Must(env.New[config.Config]())
 
+	tasks := lo.Must(tasks.NewTemporalWithDefaults())
+	defer tasks.Close()
+
+	db := lo.Must(db.NewFromEnv())
 	opts := []server.Option{
 		server.WithConfig(config),
 		server.WithDbFromEnv(),
+		server.WithService(service.NewGorm(db)),
+		server.WithTasks(tasks),
 	}
 
 	if config.OtelEnable {
@@ -26,11 +42,7 @@ func main() {
 
 	srv, err := server.New(opts...)
 	if err != nil {
-		slog.Error("server error", "error", err)
-		os.Exit(1)
+		return err
 	}
-	if err := srv.Serve(ctx); err != nil {
-		slog.Error("serve error", "error", err)
-		os.Exit(1)
-	}
+	return srv.Serve(ctx)
 }
