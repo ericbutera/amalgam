@@ -1,8 +1,16 @@
 package server
 
-import "github.com/penglongli/gin-metrics/ginmetrics"
+import (
+	"log/slog"
+
+	"github.com/penglongli/gin-metrics/ginmetrics"
+)
 
 func (s *server) metrics() {
+	if !s.config.OtelEnable {
+		slog.Info("otel not enabled, skipping metrics")
+		return
+	}
 	// https://github.com/penglongli/gin-metrics
 	m := ginmetrics.GetMonitor()
 	m.SetMetricPath("/metrics")

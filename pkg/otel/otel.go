@@ -44,6 +44,7 @@ func Setup(ctx context.Context, ignoredSpans []string) (shutdown func(context.Co
 
 	shutdown = createShutdownFunc(&shutdownFuncs)
 
+	// TODO: remove, if setup is called it's enabled
 	if os.Getenv("OTEL_ENABLE") != "true" {
 		Logger.Info("OpenTelemetry is disabled")
 		return nil, nil

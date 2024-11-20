@@ -35,31 +35,48 @@ func main() {
 
 	config := lo.Must(env.New[config.Config]())
 
-	shutdown := lo.Must(otel.Setup(ctx, config.IgnoredSpanNames))
-	defer func() { lo.Must0(shutdown(ctx)) }()
-
-	gql_prom.Register()
-
 	client, closer := lo.Must2(rpc.New(config.RpcHost, config.RpcInsecure))
 	defer func() { lo.Must0(closer()) }()
 
 	srv := newServer(client)
-	srv.Use(otelgqlgen.Middleware())
-	srv.Use(gql_prom.Tracer{})
+
 	// TODO: complexity limit srv.Use(extension.FixedComplexityLimit(config.ComplexityLimit))
 
 	router := newRouter(config.CorsAllowOrigins)
-	router.Handle("/metrics", promhttp.Handler())
 	router.Handle("/query", srv)
 	router.Handle("/healthz", newHealthzHandler())
 	router.Handle("/readyz", newReadyzHandler(client))
 	router.Handle("/", playground.Handler("GraphQL playground", "/query"))
+
+	if config.OtelEnable {
+		gql_prom.Register()
+
+		shutdown := lo.Must(otel.Setup(ctx, config.IgnoredSpanNames))
+		defer func() { lo.Must0(shutdown(ctx)) }()
+
+		srv.Use(otelgqlgen.Middleware())
+		srv.Use(gql_prom.Tracer{})
+
+		router.Handle("/metrics", promhttp.Handler())
+	}
 
 	slog.Info("running graphql playground", "port", config.Port)
 	server := lo.Must(server.New(
 		server.WithAddr(":"+config.Port),
 		server.WithHandler(router),
 	))
+
+	// TODO: cancel context server.BaseContext
+
+	go func() {
+		<-ctx.Done()
+		slog.Info("shutting down server")
+
+		if err := server.Shutdown(ctx); err != nil {
+			slog.Error("server shutdown failed", "error", err)
+		}
+	}()
+
 	if err := server.ListenAndServe(); err != nil {
 		slog.Error("failed to start server", "error", err)
 		os.Exit(1) //nolint: gocritic
