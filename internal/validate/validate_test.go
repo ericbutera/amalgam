@@ -26,6 +26,7 @@ type TestStruct struct {
 }
 
 func TestFeedValidateErrors(t *testing.T) {
+	t.Parallel()
 	expected := validate.ValidationResult{
 		Errors: []validate.ValidationError{
 			{
@@ -64,6 +65,7 @@ func TestFeedValidateErrors(t *testing.T) {
 }
 
 func TestValidateNoErrors(t *testing.T) {
+	t.Parallel()
 	s := TestStruct{
 		ID:     "e5b3b3d7-4f2c-4d4d-8f0a-2d7c8b3d6f6d",
 		FeedID: "e5b3b3d7-4f2c-4d4d-8f0a-2d7c8b3d6f6d",

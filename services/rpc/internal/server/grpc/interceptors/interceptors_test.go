@@ -14,6 +14,7 @@ import (
 )
 
 func TestUnaryMetricMiddlewareHandler(t *testing.T) {
+	t.Parallel()
 	o := observability.New()
 	handler := interceptors.UnaryMetricMiddlewareHandler(o.FeedMetrics)
 
@@ -34,6 +35,7 @@ type mockServerStream struct {
 }
 
 func TestStreamMetricMiddlewareHandler(t *testing.T) {
+	t.Parallel()
 	o := observability.New()
 	handler := interceptors.StreamMetricMiddlewareHandler(o.FeedMetrics)
 

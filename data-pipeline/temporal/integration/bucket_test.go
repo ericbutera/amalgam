@@ -21,6 +21,7 @@ import (
 const TestBucketName = "test-bucket-name"
 
 func TestMinioCreate(t *testing.T) {
+	t.Parallel()
 	config := newConfig(t)
 
 	b, err := bucket.NewMinio(config)
@@ -36,9 +37,6 @@ func TestMinioCreate(t *testing.T) {
 }
 
 func newConfig(t *testing.T) *bucket.Config {
-	// if testing.Short() {
-	// 	t.Skip("skipping test in short mode.")
-	// }
 	config := &bucket.Config{
 		MinioEndpoint:        os.Getenv("MINIO_ENDPOINT"),
 		MinioAccessKey:       os.Getenv("MINIO_ACCESS_KEY"),

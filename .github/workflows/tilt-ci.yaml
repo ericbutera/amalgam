@@ -9,6 +9,7 @@ on:
 jobs:
   tilt-ci:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: asdf-vm/actions/install@v3
         with:

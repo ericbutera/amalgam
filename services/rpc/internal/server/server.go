@@ -17,6 +17,7 @@ import (
 	grpc_server "github.com/ericbutera/amalgam/services/rpc/internal/server/grpc"
 	metrics_server "github.com/ericbutera/amalgam/services/rpc/internal/server/metrics"
 	"github.com/ericbutera/amalgam/services/rpc/internal/server/observability"
+	"github.com/ericbutera/amalgam/services/rpc/internal/tasks"
 	"github.com/oklog/run"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
@@ -24,14 +25,13 @@ import (
 	"gorm.io/gorm"
 )
 
-// TODO: combine common boilerplate code from rpc client & server
-
 type Server struct {
 	config    *config.Config
 	grpcSrv   *grpc.Server
 	metricSrv *http.Server
 	db        *gorm.DB
 	service   service.Service
+	tasks     tasks.Tasks
 	shutdowns []func(context.Context) error
 	pb.UnimplementedFeedServiceServer
 }
@@ -134,6 +134,14 @@ func WithGrpcServer(srv *grpc.Server) Option {
 	}
 }
 
+func WithTasks(tasks tasks.Tasks) Option {
+	return func(s *Server) error {
+		s.tasks = tasks
+		return nil
+	}
+}
+
+// TODO: its time to split up New into separate types
 func New(opts ...Option) (*Server, error) {
 	server := Server{}
 
@@ -142,8 +150,6 @@ func New(opts ...Option) (*Server, error) {
 			return nil, err
 		}
 	}
-
-	o := observability.New()
 
 	if server.config == nil {
 		config, err := env.New[config.Config]()
@@ -159,6 +165,8 @@ func New(opts ...Option) (*Server, error) {
 		}
 		server.service = service.NewGorm(db)
 	}
+
+	o := observability.New()
 	if server.metricSrv == nil {
 		server.metricSrv = metrics_server.NewServer(o.Registry, server.config.MetricAddress)
 	}
@@ -171,11 +179,13 @@ func New(opts ...Option) (*Server, error) {
 	}
 
 	pb.RegisterFeedServiceServer(server.grpcSrv, &server)
-
-	// TODO: extract package
-	healthService := health.NewServer()
-	healthpb.RegisterHealthServer(server.grpcSrv, healthService)
-	healthService.SetServingStatus("rpc", healthpb.HealthCheckResponse_SERVING)
+	registerHealth(server.grpcSrv)
 
 	return &server, nil
+}
+
+func registerHealth(srv *grpc.Server) {
+	healthService := health.NewServer()
+	healthpb.RegisterHealthServer(srv, healthService)
+	healthService.SetServingStatus("rpc", healthpb.HealthCheckResponse_SERVING)
 }

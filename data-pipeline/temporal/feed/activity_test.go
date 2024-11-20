@@ -49,6 +49,7 @@ func setupActivities(t *testing.T) *activitySetup {
 }
 
 func TestDownloadActivity(t *testing.T) {
+	t.Parallel()
 	feedId := "feed-id-123"
 	url := "http://localhost/feed.xml"
 	rssFile := app.RssPath(feedId)
@@ -101,6 +102,7 @@ func getRssData(t *testing.T) io.ReadCloser {
 }
 
 func TestParseActivity(t *testing.T) {
+	t.Parallel()
 	feedId := "feed-id-123"
 	rssFile := app.RssPath(feedId)
 	articlesFile := app.ArticlePath(feedId)
@@ -135,6 +137,7 @@ func TestParseActivity(t *testing.T) {
 }
 
 func TestSaveActivity(t *testing.T) {
+	t.Parallel()
 	s := setupActivities(t)
 
 	article := parse.Article{
