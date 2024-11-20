@@ -44,7 +44,7 @@ k8s_resource(
     port_forward(RPC_PORT_FORWARD, 50051, 'grpc'),
     port_forward(9091, 9090, 'metrics'),
   ],
-  resource_deps=["mysql-migrate"],
+  resource_deps=["mysql-migrate","temporal"],
   links=[
     link("https://learning.postman.com/docs/sending-requests/grpc/grpc-client-overview/", "postman"),
   ],
@@ -116,7 +116,7 @@ cmd_button('generate feeds', argv=['sh', '-c', 'cd data-pipeline/temporal/feed_t
 )
 
 load('./containers/tilt/extensions/temporal/Tiltfile', 'deploy_temporal')
-deploy_temporal(auto_init=(not IS_CI))
+deploy_temporal()
 
 load('./containers/tilt/extensions/mysql/Tiltfile', 'deploy_mysql')
 deploy_mysql(root_pw="password", user_pw="amalgam-password", migration_pw="password")

@@ -38,6 +38,7 @@ func (m *MockGraphClient) MakeRequest(ctx context.Context, req *graphql.Request,
 }
 
 func TestGenerateFeedsActivity(t *testing.T) {
+	t.Parallel()
 	host := "faker:8080"
 	count := 2
 

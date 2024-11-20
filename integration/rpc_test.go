@@ -19,6 +19,7 @@ import (
 )
 
 func TestRpcListFeeds(t *testing.T) {
+	t.Parallel()
 	// TODO: seed data, assert specific result exists
 	client, closer, err := getRpcClient(t)
 	defer func() { require.NoError(t, closer()) }()

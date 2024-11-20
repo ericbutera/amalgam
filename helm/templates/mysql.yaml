@@ -48,13 +48,16 @@ spec:
           ports:
             - containerPort: 3306
           resources: {}
-          # TODO: research best way to handle this with slow test runners
-          # livenessProbe:
-          #   exec:
-          #     command: ["mysqladmin", "ping"]
-          #   initialDelaySeconds: 30
-          #   periodSeconds: 10
-          #   timeoutSeconds: 5
+          startupProbe:
+            exec:
+              command:
+                - mysqladmin
+                - ping
+                - -h
+                - 127.0.0.1
+                - --silent
+            failureThreshold: 30   # Adjust based on how long MySQL might take to start
+            periodSeconds: 2       # Check every 2 seconds
       initContainers:
         # prod would use service accounts created by Infra As Code, this is a dev workaround only
         - name: init-mysql-setup

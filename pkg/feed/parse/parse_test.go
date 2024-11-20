@@ -25,11 +25,13 @@ func newFile(t *testing.T, path string) parse.Articles {
 }
 
 func Test_Parse_ReturnsArticles(t *testing.T) {
+	t.Parallel()
 	articles := newMinimal(t)
 	assert.Len(t, articles, 2)
 }
 
 func Test_Parse_Article(t *testing.T) {
+	t.Parallel()
 	articles := newMinimal(t)
 	article := articles[0]
 	assert.Equal(t, "example article", article.Title)

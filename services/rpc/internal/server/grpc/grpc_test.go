@@ -9,6 +9,7 @@ import (
 )
 
 func TestNewServer(t *testing.T) {
+	t.Parallel()
 	srv, err := grpc.NewServer(nil, nil)
 	require.NoError(t, err)
 	assert.NotNil(t, srv)

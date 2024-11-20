@@ -141,13 +141,14 @@ func pbTaskToTaskType(task pb.FeedTaskRequest_Task) (tasks.TaskType, error) {
 	return tasks.TaskUnspecified, ErrInvalidTaskType
 }
 
-func (*Server) FeedTask(ctx context.Context, in *pb.FeedTaskRequest) (*pb.FeedTaskResponse, error) {
+func (s *Server) FeedTask(ctx context.Context, in *pb.FeedTaskRequest) (*pb.FeedTaskResponse, error) {
 	taskType, err := pbTaskToTaskType(in.GetTask())
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid task type")
 	}
 
-	task, err := tasks.New(ctx, taskType) // TODO: dependency injection
+	// TODO: tasks call will create a runtime error if not initialized
+	task, err := s.tasks.Workflow(ctx, taskType)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to start feed task: %s", err)
 	}

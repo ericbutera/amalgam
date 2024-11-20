@@ -21,27 +21,32 @@ import (
 // TODO: truncate between tests
 
 func TestGraphListFeeds(t *testing.T) {
+	t.Parallel()
 	res, err := graphClient.ListFeeds(context.Background(), getGraphQLClient(t))
 	require.NoError(t, err)
 	assert.Empty(t, res.Feeds)
 }
 
 func TestGraphGetFeedMissingID(t *testing.T) {
+	t.Parallel()
 	_, err := graphClient.GetFeed(context.Background(), getGraphQLClient(t), "uid")
 	require.Error(t, err)
 }
 
 func TestGraphGetFeedNotFound(t *testing.T) {
+	t.Parallel()
 	_, err := graphClient.GetFeed(context.Background(), getGraphQLClient(t), "e97f8e74-1183-4280-a48d-dd592e013ee1")
 	require.Error(t, err)
 }
 
 func TestListArticlesMissingID(t *testing.T) {
+	t.Parallel()
 	_, err := graphClient.ListArticles(context.Background(), getGraphQLClient(t), "uid")
 	require.Error(t, err)
 }
 
 func TestGraphGetArticleMissingID(t *testing.T) {
+	t.Parallel()
 	_, err := graphClient.GetArticle(context.Background(), getGraphQLClient(t), "")
 	require.Error(t, err)
 }

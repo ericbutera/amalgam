@@ -60,7 +60,7 @@ spec:
             - name: GRAPHQL_HOST
               value: "graphql:8080"
             - name: FAKE_HOST
-              value: "fake:8080"
+              value: "faker:8080"
           livenessProbe:
             grpc:
               port: 50051
@@ -75,4 +75,4 @@ spec:
             grpc:
               port: 50051
             failureThreshold: 60
-            periodSeconds: 10
+            periodSeconds: 2
