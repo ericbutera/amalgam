@@ -10,6 +10,7 @@ def go_compile(name, dir, deps):
     ignore=['**/bin'],
     deps=GO_DEPS + deps,
     labels=['compile'],
+    allow_parallel=True,
   )
 
 def go_image(name, dir):
