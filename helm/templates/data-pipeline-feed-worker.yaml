@@ -53,7 +53,7 @@ spec:
                   name: data-pipeline-auth
                   key: MINIO_SECRET_ACCESS_KEY
             - name: OTEL_ENABLE
-              value: "true"
+              value: {{ .Values.otel | quote }}
             - name: OTEL_SERVICE_NAME
               value: "feed-worker"
             - name: OTEL_EXPORTER_OTLP_INSECURE

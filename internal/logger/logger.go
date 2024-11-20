@@ -6,20 +6,12 @@ import (
 )
 
 func New() *slog.Logger {
-	// TODO: add traceID to logs (this is from grpc ecosystem)
-	// logTraceID := func(ctx context.Context) logging.Fields {
-	// 	if span := trace.SpanContextFromContext(ctx); span.IsSampled() {
-	// 		return logging.Fields{"traceID", span.TraceID().String()}
-	// 	}
-	// 	return nil
-	// }
-	// opts := []logging.Option{
-	// 	logging.WithLogOnEvents(logging.StartCall, logging.FinishCall),
-	// 	logging.WithFieldsFromContext(logTraceID),
-	// }
+	return NewWithLevel(slog.LevelInfo)
+}
 
+func NewWithLevel(level slog.Leveler) *slog.Logger {
 	handler := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
-		Level: slog.LevelDebug,
+		Level: level,
 	})
 	logger := slog.New(handler)
 	slog.SetDefault(logger)

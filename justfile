@@ -37,7 +37,7 @@ go-lint: install-go-tools
 
 go-integration-test: install-go-tools
 	# these are only meant to be ran within tilt-ci. they require external services like mysql & minio
-	go test -v -tags integration ./...
+	go test -tags integration ./...
 
 go-test: install-go-tools
 	@echo Running go tests
@@ -57,7 +57,7 @@ ts-build: install-ts-tools
 
 install-tools: install-go-tools install-ts-tools
 
-# Run CI pipeline
+# Run CI pipeline. This should be preferred to tilt ci as it creates and destroys the test cluster.
 ci: install-tools
 	ctlptl create cluster kind --registry=ctlptl-registry \
 	&& \

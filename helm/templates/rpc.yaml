@@ -40,7 +40,7 @@ spec:
             - name: PORT
               value: "50051"
             - name: OTEL_ENABLE
-              value: "true"
+              value: {{ .Values.otel | quote }}
             - name: OTEL_SERVICE_NAME
               value: "rpc"
             - name: OTEL_EXPORTER_OTLP_INSECURE
@@ -69,5 +69,10 @@ spec:
           readinessProbe:
             grpc:
               port: 50051
-            initialDelaySeconds: 10
-            periodSeconds: 60 # todo: configurable via values.yaml
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          startupProbe:
+            grpc:
+              port: 50051
+            failureThreshold: 60
+            periodSeconds: 10

@@ -5,6 +5,7 @@ import "github.com/spf13/viper"
 const DefaultComplexityLimit = 5
 
 type Config struct {
+	OtelEnable        bool     `mapstructure:"otel_enable"`
 	IgnoredSpanNames  []string `mapstructure:"ignored_span_names"`
 	Port              string   `mapstructure:"graph_port"`
 	ComplexityLimit   int      `mapstructure:"graph_complexity_limit"`
@@ -17,6 +18,7 @@ type Config struct {
 }
 
 func init() { //nolint:gochecknoinits
+	viper.SetDefault("otel_enable", false)
 	viper.SetDefault("ignored_span_names", []string{})
 	viper.SetDefault("graph_port", "8080")
 	viper.SetDefault("graph_complexity_limit", DefaultComplexityLimit)
