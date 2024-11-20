@@ -2,12 +2,15 @@ package tasks
 
 import (
 	"context"
+	"errors"
 
 	"github.com/ericbutera/amalgam/data-pipeline/temporal/feed_tasks"
 	"github.com/ericbutera/amalgam/pkg/config/env"
 	sdk "go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/temporal"
 )
+
+var ErrHostRequired = errors.New("temporal host is required")
 
 type Temporal struct {
 	config feed_tasks.Config
@@ -25,10 +28,13 @@ func (t *Temporal) Close() {
 	t.client.Close()
 }
 
-func NewTemporalWithDefaults() (*Temporal, error) {
+func NewTemporalFromEnv() (*Temporal, error) {
 	config, err := env.New[feed_tasks.Config]()
 	if err != nil {
 		return nil, err
+	}
+	if config.TemporalHost == "" {
+		return nil, ErrHostRequired
 	}
 	client, err := sdk.Dial(sdk.Options{
 		HostPort: config.TemporalHost,

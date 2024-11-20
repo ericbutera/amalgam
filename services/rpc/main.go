@@ -25,10 +25,14 @@ func run() error {
 	ctx := context.Background()
 	config := lo.Must(env.New[config.Config]())
 
-	tasks := lo.Must(tasks.NewTemporalWithDefaults())
+	db := lo.Must(db.NewFromEnv())
+
+	tasks, err := tasks.NewTemporalFromEnv()
+	if err != nil {
+		return err
+	}
 	defer tasks.Close()
 
-	db := lo.Must(db.NewFromEnv())
 	opts := []server.Option{
 		server.WithConfig(config),
 		server.WithDbFromEnv(),
