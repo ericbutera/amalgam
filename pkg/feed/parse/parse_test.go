@@ -30,6 +30,7 @@ func Test_Parse_ReturnsArticles(t *testing.T) {
 }
 
 func Test_Parse_Article(t *testing.T) {
+	t.Parallel()
 	articles := newMinimal(t)
 	article := articles[0]
 	assert.Equal(t, "example article", article.Title)

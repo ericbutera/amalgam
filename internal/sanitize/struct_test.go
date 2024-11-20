@@ -26,6 +26,7 @@ func TestHappyPath(t *testing.T) {
 }
 
 func TestUrl(t *testing.T) {
+	t.Parallel()
 	tt := []struct {
 		name     string
 		url      string
@@ -54,6 +55,7 @@ func TestUrl(t *testing.T) {
 	}
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
 			data := TestStruct{
 				Url: tc.url,
 			}

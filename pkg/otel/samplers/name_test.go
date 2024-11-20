@@ -9,6 +9,7 @@ import (
 )
 
 func TestSpanNameSampler(t *testing.T) {
+	t.Parallel()
 	ignoredNames := []string{"ignored-span-1", "ignored-span-2"}
 	sampler := samplers.NewSpanName(ignoredNames)
 
@@ -23,6 +24,7 @@ func TestSpanNameSampler(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.spanName, func(t *testing.T) {
+			t.Parallel()
 			params := trace.SamplingParameters{
 				Name: tt.spanName,
 			}

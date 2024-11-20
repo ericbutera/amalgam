@@ -38,6 +38,7 @@ func newArticle() *svcModel.Article {
 }
 
 func Test_AddFeed(t *testing.T) {
+	t.Parallel()
 	client, resolver := newResolverWithClient()
 
 	svcFeed := newFeed()
@@ -59,6 +60,7 @@ func Test_AddFeed(t *testing.T) {
 }
 
 func Test_UpdateFeed(t *testing.T) {
+	t.Parallel()
 	client, resolver := newResolverWithClient()
 
 	svcFeed := newFeed()
@@ -80,6 +82,7 @@ func Test_UpdateFeed(t *testing.T) {
 }
 
 func Test_Feeds(t *testing.T) {
+	t.Parallel()
 	client, resolver := newResolverWithClient()
 
 	svcFeed := newFeed()
@@ -100,6 +103,7 @@ func Test_Feeds(t *testing.T) {
 }
 
 func Test_Feed(t *testing.T) {
+	t.Parallel()
 	client, resolver := newResolverWithClient()
 
 	svcFeed := newFeed()
@@ -117,6 +121,7 @@ func Test_Feed(t *testing.T) {
 }
 
 func Test_Articles(t *testing.T) {
+	t.Parallel()
 	client, resolver := newResolverWithClient()
 
 	feed := newFeed()
@@ -140,6 +145,7 @@ func Test_Articles(t *testing.T) {
 }
 
 func Test_Article(t *testing.T) {
+	t.Parallel()
 	client, resolver := newResolverWithClient()
 
 	c := converters.New()
