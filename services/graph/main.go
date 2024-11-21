@@ -12,6 +12,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/ericbutera/amalgam/internal/http/server"
 	"github.com/ericbutera/amalgam/internal/logger"
+	"github.com/ericbutera/amalgam/internal/tasks"
 	"github.com/ericbutera/amalgam/pkg/config/env"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
 	"github.com/ericbutera/amalgam/pkg/otel"
@@ -38,7 +39,10 @@ func main() {
 	client, closer := lo.Must2(rpc.New(config.RpcHost, config.RpcInsecure))
 	defer func() { lo.Must0(closer()) }()
 
-	srv := newServer(client)
+	tasks := lo.Must(tasks.NewTemporalFromEnv())
+	defer tasks.Close()
+
+	srv := newServer(client, tasks)
 
 	// TODO: complexity limit srv.Use(extension.FixedComplexityLimit(config.ComplexityLimit))
 
@@ -49,11 +53,10 @@ func main() {
 	router.Handle("/", playground.Handler("GraphQL playground", "/query"))
 
 	if config.OtelEnable {
-		gql_prom.Register()
-
 		shutdown := lo.Must(otel.Setup(ctx, config.IgnoredSpanNames))
 		defer func() { lo.Must0(shutdown(ctx)) }()
 
+		gql_prom.Register()
 		srv.Use(otelgqlgen.Middleware())
 		srv.Use(gql_prom.Tracer{})
 
@@ -102,10 +105,10 @@ func newReadyzHandler(client pb.FeedServiceClient) http.HandlerFunc {
 	}
 }
 
-func newServer(rpcClient pb.FeedServiceClient) *handler.Server {
+func newServer(rpcClient pb.FeedServiceClient, tasks tasks.Tasks) *handler.Server {
 	return handler.NewDefaultServer(
 		graph.NewExecutableSchema(graph.Config{
-			Resolvers: graph.NewResolver(rpcClient),
+			Resolvers: graph.NewResolver(rpcClient, tasks),
 		}),
 	)
 }

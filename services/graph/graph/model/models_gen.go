@@ -26,6 +26,14 @@ type Feed struct {
 	Name string `json:"name"`
 }
 
+type FetchFeedsResponse struct {
+	ID string `json:"id"`
+}
+
+type GenerateFeedsResponse struct {
+	ID string `json:"id"`
+}
+
 type Mutation struct {
 }
 

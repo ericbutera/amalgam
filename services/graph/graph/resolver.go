@@ -1,6 +1,7 @@
 package graph
 
 import (
+	"github.com/ericbutera/amalgam/internal/tasks"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
 )
 
@@ -10,10 +11,12 @@ import (
 
 type Resolver struct {
 	rpcClient pb.FeedServiceClient
+	tasks     tasks.Tasks
 }
 
-func NewResolver(rpcClient pb.FeedServiceClient) *Resolver {
+func NewResolver(rpcClient pb.FeedServiceClient, tasks tasks.Tasks) *Resolver {
 	return &Resolver{
 		rpcClient: rpcClient,
+		tasks:     tasks,
 	}
 }

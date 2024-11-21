@@ -38,6 +38,8 @@ spec:
               value: "rpc:50051"
             - name: RPC_INSECURE
               value: "true"
+            - name: TEMPORAL_HOST
+              value: "temporal:7233"
             - name: OTEL_ENABLE
               value: {{ .Values.otel | quote }}
             - name: OTEL_SERVICE_NAME

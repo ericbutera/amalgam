@@ -8,7 +8,6 @@ import (
 	"github.com/ericbutera/amalgam/internal/service"
 	"github.com/ericbutera/amalgam/internal/validate"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
-	"github.com/ericbutera/amalgam/services/rpc/internal/tasks"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -134,25 +133,6 @@ func validationErrToPb(errs []validate.ValidationError) []*pb.ValidationError {
 	return protoErrs
 }
 
-func pbTaskToTaskType(task pb.FeedTaskRequest_Task) (tasks.TaskType, error) {
-	if task == pb.FeedTaskRequest_TASK_GENERATE_FEEDS {
-		return tasks.TaskGenerateFeeds, nil
-	}
-	return tasks.TaskUnspecified, ErrInvalidTaskType
-}
-
-func (s *Server) FeedTask(ctx context.Context, in *pb.FeedTaskRequest) (*pb.FeedTaskResponse, error) {
-	taskType, err := pbTaskToTaskType(in.GetTask())
-	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid task type")
-	}
-
-	// TODO: tasks call will create a runtime error if not initialized
-	task, err := s.tasks.Workflow(ctx, taskType)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to start feed task: %s", err)
-	}
-	return &pb.FeedTaskResponse{
-		Id: task.ID,
-	}, nil
+func (*Server) FeedTask(_ context.Context, _ *pb.FeedTaskRequest) (*pb.FeedTaskResponse, error) { //nolint
+	return nil, status.Error(codes.Unimplemented, "feed task has been moved to graphql")
 }

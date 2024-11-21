@@ -23,6 +23,6 @@ packages:
     config:
     interfaces:
       FeedServiceClient:
-  github.com/ericbutera/amalgam/services/rpc/internal/tasks:
+  github.com/ericbutera/amalgam/internal/tasks:
     interfaces:
       Tasks:

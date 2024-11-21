@@ -10,7 +10,6 @@ import (
 	"github.com/ericbutera/amalgam/pkg/config/env"
 	"github.com/ericbutera/amalgam/services/rpc/internal/config"
 	"github.com/ericbutera/amalgam/services/rpc/internal/server"
-	"github.com/ericbutera/amalgam/services/rpc/internal/tasks"
 	"github.com/samber/lo"
 )
 
@@ -27,17 +26,10 @@ func run() error {
 
 	db := lo.Must(db.NewFromEnv())
 
-	tasks, err := tasks.NewTemporalFromEnv()
-	if err != nil {
-		return err
-	}
-	defer tasks.Close()
-
 	opts := []server.Option{
 		server.WithConfig(config),
 		server.WithDbFromEnv(),
 		server.WithService(service.NewGorm(db)),
-		server.WithTasks(tasks),
 	}
 
 	if config.OtelEnable {
