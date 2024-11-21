@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 
+	feeds "github.com/ericbutera/amalgam/data-pipeline/temporal/feed"
 	"github.com/ericbutera/amalgam/data-pipeline/temporal/feed_tasks"
 )
 
@@ -14,6 +15,7 @@ type TaskType string
 const (
 	TaskUnspecified   TaskType = ""
 	TaskGenerateFeeds TaskType = "generate_feeds"
+	TaskFetchFeeds    TaskType = "fetch_feeds"
 )
 
 type Tasks interface {
@@ -25,8 +27,11 @@ type TaskResult struct {
 }
 
 func taskTypeToWorkflow(taskType TaskType) (any, error) {
-	if taskType == TaskGenerateFeeds {
+	switch taskType { //nolint:exhaustive
+	case TaskGenerateFeeds:
 		return feed_tasks.GenerateFeedsWorkflow, nil
+	case TaskFetchFeeds:
+		return feeds.FetchFeedsWorkflow, nil
 	}
 	return nil, ErrInvalidTaskType
 }

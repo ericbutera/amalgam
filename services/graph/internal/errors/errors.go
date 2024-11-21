@@ -15,7 +15,7 @@ var (
 	ErrAlreadyExists = gqlerror.Errorf("record already exists")
 )
 
-func HandleCommonErrors(ctx context.Context, err error, msg string) error {
+func HandleGrpcErrors(ctx context.Context, err error, msg string) error {
 	s := status.Convert(err)
 	switch s.Code() { //nolint:exhaustive
 	case codes.NotFound:

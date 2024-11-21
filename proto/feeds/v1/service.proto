@@ -14,7 +14,11 @@ service FeedService {
   rpc ListArticles(ListArticlesRequest) returns (ListArticlesResponse);
   rpc GetArticle(GetArticleRequest) returns (GetArticleResponse);
   rpc SaveArticle(SaveArticleRequest) returns (SaveArticleResponse);
-  rpc FeedTask(FeedTaskRequest) returns (FeedTaskResponse);
+
+  // Deprecated: use graph service
+  rpc FeedTask(FeedTaskRequest) returns (FeedTaskResponse) {
+    option deprecated = true;
+  }
 }
 
 message Feed {
@@ -116,9 +120,11 @@ message FeedTaskRequest {
     TASK_GENERATE_FEEDS = 1;
   }
   Task task = 1 [(buf.validate.field).enum.defined_only = true];
+  option deprecated = true;
 }
 
 message FeedTaskResponse {
   string id = 1;
   string message = 2;
+  option deprecated = true;
 }

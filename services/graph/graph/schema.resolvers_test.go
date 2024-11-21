@@ -6,6 +6,7 @@ import (
 
 	"github.com/ericbutera/amalgam/internal/converters"
 	svcModel "github.com/ericbutera/amalgam/internal/service/models"
+	"github.com/ericbutera/amalgam/internal/tasks"
 	"github.com/ericbutera/amalgam/internal/test/fixtures"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
 	helpers "github.com/ericbutera/amalgam/pkg/test"
@@ -16,17 +17,21 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func newClient() *pb.MockFeedServiceClient {
-	return new(pb.MockFeedServiceClient)
+type testResolver struct {
+	client   *pb.MockFeedServiceClient
+	task     *tasks.MockTasks
+	resolver *graph.Resolver
 }
 
-func newResolver(client pb.FeedServiceClient) *graph.Resolver {
-	return graph.NewResolver(client)
-}
-
-func newResolverWithClient() (*pb.MockFeedServiceClient, *graph.Resolver) {
-	client := newClient()
-	return client, newResolver(client)
+func newTestResolver() *testResolver {
+	client := new(pb.MockFeedServiceClient)
+	tasks := new(tasks.MockTasks)
+	resolver := graph.NewResolver(client, tasks)
+	return &testResolver{
+		client:   client,
+		task:     tasks,
+		resolver: resolver,
+	}
 }
 
 func newFeed() *svcModel.Feed {
@@ -39,11 +44,11 @@ func newArticle() *svcModel.Article {
 
 func Test_AddFeed(t *testing.T) {
 	t.Parallel()
-	client, resolver := newResolverWithClient()
+	r := newTestResolver()
 
 	svcFeed := newFeed()
 
-	client.EXPECT().
+	r.client.EXPECT().
 		CreateFeed(mock.Anything, &pb.CreateFeedRequest{
 			Feed: &pb.CreateFeedRequest_Feed{
 				Url:  svcFeed.URL,
@@ -52,7 +57,7 @@ func Test_AddFeed(t *testing.T) {
 		}).
 		Return(&pb.CreateFeedResponse{Id: svcFeed.ID}, nil)
 
-	actual, err := resolver.Mutation().
+	actual, err := r.resolver.Mutation().
 		AddFeed(context.Background(), svcFeed.URL, svcFeed.Name)
 
 	require.NoError(t, err)
@@ -61,10 +66,10 @@ func Test_AddFeed(t *testing.T) {
 
 func Test_UpdateFeed(t *testing.T) {
 	t.Parallel()
-	client, resolver := newResolverWithClient()
+	r := newTestResolver()
 
 	svcFeed := newFeed()
-	client.EXPECT().
+	r.client.EXPECT().
 		UpdateFeed(mock.Anything, &pb.UpdateFeedRequest{
 			Feed: &pb.UpdateFeedRequest_Feed{
 				Id:   svcFeed.ID,
@@ -74,7 +79,7 @@ func Test_UpdateFeed(t *testing.T) {
 		}).
 		Return(nil, nil)
 
-	actual, err := resolver.Mutation().
+	actual, err := r.resolver.Mutation().
 		UpdateFeed(context.Background(), svcFeed.ID, &svcFeed.URL, &svcFeed.Name)
 
 	require.NoError(t, err)
@@ -83,20 +88,20 @@ func Test_UpdateFeed(t *testing.T) {
 
 func Test_Feeds(t *testing.T) {
 	t.Parallel()
-	client, resolver := newResolverWithClient()
+	r := newTestResolver()
 
 	svcFeed := newFeed()
 	c := converters.New()
 	graphFeed := c.ServiceToGraphFeed(svcFeed)
 	pbFeed := c.ServiceToProtoFeed(svcFeed)
 	expected := []*graphModel.Feed{graphFeed}
-	client.EXPECT().
+	r.client.EXPECT().
 		ListFeeds(mock.Anything, &pb.ListFeedsRequest{}).
 		Return(&pb.ListFeedsResponse{
 			Feeds: []*pb.Feed{pbFeed},
 		}, nil)
 
-	actual, err := resolver.Query().Feeds(context.Background())
+	actual, err := r.resolver.Query().Feeds(context.Background())
 	require.NoError(t, err)
 	assert.Len(t, actual, 1)
 	helpers.Diff(t, *expected[0], *actual[0])
@@ -104,25 +109,25 @@ func Test_Feeds(t *testing.T) {
 
 func Test_Feed(t *testing.T) {
 	t.Parallel()
-	client, resolver := newResolverWithClient()
+	r := newTestResolver()
 
 	svcFeed := newFeed()
 	c := converters.New()
 	graphFeed := c.ServiceToGraphFeed(svcFeed)
 	pbFeed := c.ServiceToProtoFeed(svcFeed)
 	expected := graphFeed
-	client.EXPECT().
+	r.client.EXPECT().
 		GetFeed(mock.Anything, &pb.GetFeedRequest{Id: svcFeed.ID}).
 		Return(&pb.GetFeedResponse{Feed: pbFeed}, nil)
 
-	actual, err := resolver.Query().Feed(context.Background(), svcFeed.ID)
+	actual, err := r.resolver.Query().Feed(context.Background(), svcFeed.ID)
 	require.NoError(t, err)
 	helpers.Diff(t, *expected, *actual)
 }
 
 func Test_Articles(t *testing.T) {
 	t.Parallel()
-	client, resolver := newResolverWithClient()
+	r := newTestResolver()
 
 	feed := newFeed()
 	svcArticle := newArticle()
@@ -132,13 +137,13 @@ func Test_Articles(t *testing.T) {
 	rpcArticle := c.ServiceToProtoArticle(svcArticle)
 	expected := []*graphModel.Article{graphArticle}
 
-	client.EXPECT().
+	r.client.EXPECT().
 		ListArticles(mock.Anything, &pb.ListArticlesRequest{FeedId: feed.ID}).
 		Return(&pb.ListArticlesResponse{
 			Articles: []*pb.Article{rpcArticle},
 		}, nil)
 
-	actual, err := resolver.Query().Articles(context.Background(), feed.ID)
+	actual, err := r.resolver.Query().Articles(context.Background(), feed.ID)
 	require.NoError(t, err)
 	assert.Len(t, actual, 1)
 	helpers.Diff(t, *expected[0], *actual[0], "FeedID", "ImageURL")
@@ -146,7 +151,7 @@ func Test_Articles(t *testing.T) {
 
 func Test_Article(t *testing.T) {
 	t.Parallel()
-	client, resolver := newResolverWithClient()
+	r := newTestResolver()
 
 	c := converters.New()
 	svcArticle := newArticle()
@@ -154,13 +159,30 @@ func Test_Article(t *testing.T) {
 	rpcArticle := c.ServiceToProtoArticle(svcArticle)
 	expected := graphArticle
 
-	client.EXPECT().
+	r.client.EXPECT().
 		GetArticle(mock.Anything, &pb.GetArticleRequest{Id: svcArticle.ID}).
 		Return(&pb.GetArticleResponse{
 			Article: rpcArticle,
 		}, nil)
 
-	actual, err := resolver.Query().Article(context.Background(), svcArticle.ID)
+	actual, err := r.resolver.Query().Article(context.Background(), svcArticle.ID)
 	require.NoError(t, err)
 	helpers.Diff(t, *expected, *actual, "FeedID", "ImageURL")
+}
+
+func TestFeedTask(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	expectedID := "super-id"
+
+	r := newTestResolver()
+
+	r.task.EXPECT().
+		Workflow(mock.Anything, tasks.TaskGenerateFeeds).
+		Return(&tasks.TaskResult{ID: expectedID}, nil)
+
+	resp, err := r.resolver.Mutation().GenerateFeeds(ctx)
+
+	require.NoError(t, err)
+	assert.Equal(t, expectedID, resp.ID)
 }

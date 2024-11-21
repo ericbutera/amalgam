@@ -26,6 +26,14 @@ type UpdateResponse {
   id: ID!
 }
 
+type GenerateFeedsResponse {
+  id: String!
+}
+
+type FetchFeedsResponse {
+  id: String!
+}
+
 type Query {
   feeds: [Feed!]!
   feed(id: ID!): Feed
@@ -36,4 +44,6 @@ type Query {
 type Mutation {
   addFeed(url: String!, name: String!): AddResponse!
   updateFeed(id: ID!, url: String, name: String): UpdateResponse!
+  generateFeeds: GenerateFeedsResponse!
+  fetchFeeds: FetchFeedsResponse!
 }
