@@ -17,7 +17,6 @@ import (
 	grpc_server "github.com/ericbutera/amalgam/services/rpc/internal/server/grpc"
 	metrics_server "github.com/ericbutera/amalgam/services/rpc/internal/server/metrics"
 	"github.com/ericbutera/amalgam/services/rpc/internal/server/observability"
-	"github.com/ericbutera/amalgam/services/rpc/internal/tasks"
 	"github.com/oklog/run"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
@@ -31,7 +30,6 @@ type Server struct {
 	metricSrv *http.Server
 	db        *gorm.DB
 	service   service.Service
-	tasks     tasks.Tasks
 	shutdowns []func(context.Context) error
 	pb.UnimplementedFeedServiceServer
 }
@@ -130,13 +128,6 @@ func WithMetricServer(srv *http.Server) Option {
 func WithGrpcServer(srv *grpc.Server) Option {
 	return func(s *Server) error {
 		s.grpcSrv = srv
-		return nil
-	}
-}
-
-func WithTasks(tasks tasks.Tasks) Option {
-	return func(s *Server) error {
-		s.tasks = tasks
 		return nil
 	}
 }

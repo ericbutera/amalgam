@@ -71,9 +71,19 @@ type ComplexityRoot struct {
 		URL  func(childComplexity int) int
 	}
 
+	FetchFeedsResponse struct {
+		ID func(childComplexity int) int
+	}
+
+	GenerateFeedsResponse struct {
+		ID func(childComplexity int) int
+	}
+
 	Mutation struct {
-		AddFeed    func(childComplexity int, url string, name string) int
-		UpdateFeed func(childComplexity int, id string, url *string, name *string) int
+		AddFeed       func(childComplexity int, url string, name string) int
+		FetchFeeds    func(childComplexity int) int
+		GenerateFeeds func(childComplexity int) int
+		UpdateFeed    func(childComplexity int, id string, url *string, name *string) int
 	}
 
 	Query struct {
@@ -91,6 +101,8 @@ type ComplexityRoot struct {
 type MutationResolver interface {
 	AddFeed(ctx context.Context, url string, name string) (*model.AddResponse, error)
 	UpdateFeed(ctx context.Context, id string, url *string, name *string) (*model.UpdateResponse, error)
+	GenerateFeeds(ctx context.Context) (*model.GenerateFeedsResponse, error)
+	FetchFeeds(ctx context.Context) (*model.FetchFeedsResponse, error)
 }
 type QueryResolver interface {
 	Feeds(ctx context.Context) ([]*model.Feed, error)
@@ -223,6 +235,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Feed.URL(childComplexity), true
 
+	case "FetchFeedsResponse.id":
+		if e.complexity.FetchFeedsResponse.ID == nil {
+			break
+		}
+
+		return e.complexity.FetchFeedsResponse.ID(childComplexity), true
+
+	case "GenerateFeedsResponse.id":
+		if e.complexity.GenerateFeedsResponse.ID == nil {
+			break
+		}
+
+		return e.complexity.GenerateFeedsResponse.ID(childComplexity), true
+
 	case "Mutation.addFeed":
 		if e.complexity.Mutation.AddFeed == nil {
 			break
@@ -234,6 +260,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.AddFeed(childComplexity, args["url"].(string), args["name"].(string)), true
+
+	case "Mutation.fetchFeeds":
+		if e.complexity.Mutation.FetchFeeds == nil {
+			break
+		}
+
+		return e.complexity.Mutation.FetchFeeds(childComplexity), true
+
+	case "Mutation.generateFeeds":
+		if e.complexity.Mutation.GenerateFeeds == nil {
+			break
+		}
+
+		return e.complexity.Mutation.GenerateFeeds(childComplexity), true
 
 	case "Mutation.updateFeed":
 		if e.complexity.Mutation.UpdateFeed == nil {
@@ -1314,6 +1354,94 @@ func (ec *executionContext) fieldContext_Feed_name(_ context.Context, field grap
 	return fc, nil
 }
 
+func (ec *executionContext) _FetchFeedsResponse_id(ctx context.Context, field graphql.CollectedField, obj *model.FetchFeedsResponse) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_FetchFeedsResponse_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_FetchFeedsResponse_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "FetchFeedsResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _GenerateFeedsResponse_id(ctx context.Context, field graphql.CollectedField, obj *model.GenerateFeedsResponse) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_GenerateFeedsResponse_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_GenerateFeedsResponse_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GenerateFeedsResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Mutation_addFeed(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Mutation_addFeed(ctx, field)
 	if err != nil {
@@ -1428,6 +1556,102 @@ func (ec *executionContext) fieldContext_Mutation_updateFeed(ctx context.Context
 	if fc.Args, err = ec.field_Mutation_updateFeed_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_generateFeeds(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_generateFeeds(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().GenerateFeeds(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.GenerateFeedsResponse)
+	fc.Result = res
+	return ec.marshalNGenerateFeedsResponse2ᚖgithubᚗcomᚋericbuteraᚋamalgamᚋservicesᚋgraphᚋgraphᚋmodelᚐGenerateFeedsResponse(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_generateFeeds(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_GenerateFeedsResponse_id(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type GenerateFeedsResponse", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_fetchFeeds(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_fetchFeeds(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().FetchFeeds(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.FetchFeedsResponse)
+	fc.Result = res
+	return ec.marshalNFetchFeedsResponse2ᚖgithubᚗcomᚋericbuteraᚋamalgamᚋservicesᚋgraphᚋgraphᚋmodelᚐFetchFeedsResponse(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_fetchFeeds(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_FetchFeedsResponse_id(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type FetchFeedsResponse", field.Name)
+		},
 	}
 	return fc, nil
 }
@@ -3818,6 +4042,84 @@ func (ec *executionContext) _Feed(ctx context.Context, sel ast.SelectionSet, obj
 	return out
 }
 
+var fetchFeedsResponseImplementors = []string{"FetchFeedsResponse"}
+
+func (ec *executionContext) _FetchFeedsResponse(ctx context.Context, sel ast.SelectionSet, obj *model.FetchFeedsResponse) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, fetchFeedsResponseImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("FetchFeedsResponse")
+		case "id":
+			out.Values[i] = ec._FetchFeedsResponse_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var generateFeedsResponseImplementors = []string{"GenerateFeedsResponse"}
+
+func (ec *executionContext) _GenerateFeedsResponse(ctx context.Context, sel ast.SelectionSet, obj *model.GenerateFeedsResponse) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, generateFeedsResponseImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("GenerateFeedsResponse")
+		case "id":
+			out.Values[i] = ec._GenerateFeedsResponse_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var mutationImplementors = []string{"Mutation"}
 
 func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet) graphql.Marshaler {
@@ -3847,6 +4149,20 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		case "updateFeed":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_updateFeed(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "generateFeeds":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_generateFeeds(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "fetchFeeds":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_fetchFeeds(ctx, field)
 			})
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
@@ -4506,6 +4822,34 @@ func (ec *executionContext) marshalNFeed2ᚖgithubᚗcomᚋericbuteraᚋamalgam�
 		return graphql.Null
 	}
 	return ec._Feed(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNFetchFeedsResponse2githubᚗcomᚋericbuteraᚋamalgamᚋservicesᚋgraphᚋgraphᚋmodelᚐFetchFeedsResponse(ctx context.Context, sel ast.SelectionSet, v model.FetchFeedsResponse) graphql.Marshaler {
+	return ec._FetchFeedsResponse(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNFetchFeedsResponse2ᚖgithubᚗcomᚋericbuteraᚋamalgamᚋservicesᚋgraphᚋgraphᚋmodelᚐFetchFeedsResponse(ctx context.Context, sel ast.SelectionSet, v *model.FetchFeedsResponse) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._FetchFeedsResponse(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNGenerateFeedsResponse2githubᚗcomᚋericbuteraᚋamalgamᚋservicesᚋgraphᚋgraphᚋmodelᚐGenerateFeedsResponse(ctx context.Context, sel ast.SelectionSet, v model.GenerateFeedsResponse) graphql.Marshaler {
+	return ec._GenerateFeedsResponse(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNGenerateFeedsResponse2ᚖgithubᚗcomᚋericbuteraᚋamalgamᚋservicesᚋgraphᚋgraphᚋmodelᚐGenerateFeedsResponse(ctx context.Context, sel ast.SelectionSet, v *model.GenerateFeedsResponse) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._GenerateFeedsResponse(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNID2string(ctx context.Context, v interface{}) (string, error) {

@@ -40,6 +40,7 @@ type FeedServiceClient interface {
 	ListArticles(ctx context.Context, in *ListArticlesRequest, opts ...grpc.CallOption) (*ListArticlesResponse, error)
 	GetArticle(ctx context.Context, in *GetArticleRequest, opts ...grpc.CallOption) (*GetArticleResponse, error)
 	SaveArticle(ctx context.Context, in *SaveArticleRequest, opts ...grpc.CallOption) (*SaveArticleResponse, error)
+	// Deprecated: Do not use.
 	FeedTask(ctx context.Context, in *FeedTaskRequest, opts ...grpc.CallOption) (*FeedTaskResponse, error)
 }
 
@@ -121,6 +122,7 @@ func (c *feedServiceClient) SaveArticle(ctx context.Context, in *SaveArticleRequ
 	return out, nil
 }
 
+// Deprecated: Do not use.
 func (c *feedServiceClient) FeedTask(ctx context.Context, in *FeedTaskRequest, opts ...grpc.CallOption) (*FeedTaskResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(FeedTaskResponse)
@@ -142,6 +144,7 @@ type FeedServiceServer interface {
 	ListArticles(context.Context, *ListArticlesRequest) (*ListArticlesResponse, error)
 	GetArticle(context.Context, *GetArticleRequest) (*GetArticleResponse, error)
 	SaveArticle(context.Context, *SaveArticleRequest) (*SaveArticleResponse, error)
+	// Deprecated: Do not use.
 	FeedTask(context.Context, *FeedTaskRequest) (*FeedTaskResponse, error)
 	mustEmbedUnimplementedFeedServiceServer()
 }

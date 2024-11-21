@@ -6,12 +6,16 @@ package graph
 
 import (
 	"context"
+	"log/slog"
 
 	"github.com/ericbutera/amalgam/internal/converters"
+	"github.com/ericbutera/amalgam/internal/tasks"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
 	"github.com/ericbutera/amalgam/services/graph/graph/model"
 	errHelper "github.com/ericbutera/amalgam/services/graph/internal/errors"
 	"github.com/samber/lo"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 // AddFeed is the resolver for the addFeed field.
@@ -24,7 +28,7 @@ func (r *mutationResolver) AddFeed(ctx context.Context, url string, name string)
 		},
 	})
 	if err != nil {
-		return nil, errHelper.HandleCommonErrors(ctx, err, "failed to create feed")
+		return nil, errHelper.HandleGrpcErrors(ctx, err, "failed to create feed")
 	}
 	return &model.AddResponse{
 		ID: resp.Id,
@@ -41,7 +45,7 @@ func (r *mutationResolver) UpdateFeed(ctx context.Context, id string, url *strin
 		},
 	})
 	if err != nil {
-		return nil, errHelper.HandleCommonErrors(ctx, err, "failed to update feed")
+		return nil, errHelper.HandleGrpcErrors(ctx, err, "failed to update feed")
 	}
 	// TODO: converter.ServiceToGraphFeed
 	// TODO: revisit returning id (rpc returns empty)
@@ -50,20 +54,51 @@ func (r *mutationResolver) UpdateFeed(ctx context.Context, id string, url *strin
 	}, nil
 }
 
+// GenerateFeeds is the resolver for the generateFeeds field.
+func (r *mutationResolver) GenerateFeeds(ctx context.Context) (*model.GenerateFeedsResponse, error) {
+	// TODO: support task type & args
+	// func pbTaskToTaskType(task pb.FeedTaskRequest_Task) (tasks.TaskType, error) {
+	// 	if task == pb.FeedTaskRequest_TASK_GENERATE_FEEDS {
+	// 		return tasks.TaskGenerateFeeds, nil
+	// 	}
+	// 	return tasks.TaskUnspecified, ErrInvalidTaskType
+	// }
+	// taskType, err := pbTaskToTaskType(in.GetTask())
+	// if err != nil {
+	// 	return nil, status.Errorf(codes.InvalidArgument, "invalid task type")
+	// }
+
+	task, err := r.tasks.Workflow(ctx, tasks.TaskGenerateFeeds)
+	if err != nil {
+		slog.ErrorContext(ctx, "failed to start feed task", "error", err)
+		return nil, status.Errorf(codes.Internal, "failed to start feed task")
+	}
+	return &model.GenerateFeedsResponse{
+		ID: task.ID,
+	}, nil
+}
+
+// FetchFeeds is the resolver for the fetchFeeds field.
+func (r *mutationResolver) FetchFeeds(ctx context.Context) (*model.FetchFeedsResponse, error) {
+	task, err := r.tasks.Workflow(ctx, tasks.TaskFetchFeeds)
+	if err != nil {
+		slog.ErrorContext(ctx, "failed to start feed task", "error", err)
+		return nil, status.Errorf(codes.Internal, "failed to start feed task")
+	}
+	return &model.FetchFeedsResponse{
+		ID: task.ID,
+	}, nil
+}
+
 // Feeds is the resolver for the feeds field.
 func (r *queryResolver) Feeds(ctx context.Context) ([]*model.Feed, error) {
 	var feeds []*model.Feed
 	res, err := r.rpcClient.ListFeeds(ctx, &pb.ListFeedsRequest{})
 	if err != nil {
-		return nil, errHelper.HandleCommonErrors(ctx, err, "failed to list feeds")
+		return nil, errHelper.HandleGrpcErrors(ctx, err, "failed to list feeds")
 	}
 	c := converters.New()
 	for _, feed := range res.Feeds {
-		// feeds = append(feeds, &model.Feed{
-		// 	ID:   feed.Id,
-		// 	URL:  feed.Url,
-		// 	Name: feed.Name,
-		// })
 		feeds = append(feeds, c.ProtoToGraphFeed(feed))
 	}
 	return feeds, nil
@@ -73,14 +108,8 @@ func (r *queryResolver) Feeds(ctx context.Context) ([]*model.Feed, error) {
 func (r *queryResolver) Feed(ctx context.Context, id string) (*model.Feed, error) {
 	resp, err := r.rpcClient.GetFeed(ctx, &pb.GetFeedRequest{Id: id})
 	if err != nil {
-		return nil, errHelper.HandleCommonErrors(ctx, err, "failed to get feed")
+		return nil, errHelper.HandleGrpcErrors(ctx, err, "failed to get feed")
 	}
-	// TODO: converter.ServiceToGraph
-	// return &model.Feed{
-	// 	ID:   resp.Feed.Id,
-	// 	URL:  resp.Feed.Url,
-	// 	Name: resp.Feed.Name,
-	// }, nil
 	return converters.New().ProtoToGraphFeed(resp.Feed), nil
 }
 
@@ -88,26 +117,12 @@ func (r *queryResolver) Feed(ctx context.Context, id string) (*model.Feed, error
 func (r *queryResolver) Articles(ctx context.Context, feedID string) ([]*model.Article, error) {
 	resp, err := r.rpcClient.ListArticles(ctx, &pb.ListArticlesRequest{FeedId: feedID})
 	if err != nil {
-		return nil, errHelper.HandleCommonErrors(ctx, err, "failed to list articles")
+		return nil, errHelper.HandleGrpcErrors(ctx, err, "failed to list articles")
 	}
 
 	c := converters.New()
 	var articles []*model.Article
 	for _, article := range resp.Articles {
-		// TODO: converter.ServiceToGraph
-		// articles = append(articles, &model.Article{
-		// 	// TODO: limit fields on listing (return preview instead of content)
-		// 	ID:          article.Id,
-		// 	Title:       article.Title,
-		// 	Content:     article.Content,
-		// 	FeedID:      article.FeedId,
-		// 	URL:         article.Url,
-		// 	Preview:     article.Preview,
-		// 	GUID:        lo.ToPtr(article.Guid),
-		// 	ImageURL:    lo.ToPtr(article.ImageUrl),
-		// 	AuthorName:  lo.ToPtr(article.AuthorName),
-		// 	AuthorEmail: lo.ToPtr(article.AuthorEmail),
-		// })
 		articles = append(articles, c.ProtoToGraphArticle(article))
 	}
 	return articles, nil
@@ -117,21 +132,9 @@ func (r *queryResolver) Articles(ctx context.Context, feedID string) ([]*model.A
 func (r *queryResolver) Article(ctx context.Context, id string) (*model.Article, error) {
 	resp, err := r.rpcClient.GetArticle(ctx, &pb.GetArticleRequest{Id: id})
 	if err != nil {
-		return nil, errHelper.HandleCommonErrors(ctx, err, "failed to get article")
+		return nil, errHelper.HandleGrpcErrors(ctx, err, "failed to get article")
 	}
 	article := resp.Article
-	// return &model.Article{
-	// 	ID:          article.Id,
-	// 	Title:       article.Title,
-	// 	Content:     article.Content,
-	// 	FeedID:      article.FeedId,
-	// 	URL:         article.Url,
-	// 	Preview:     article.Preview,
-	// 	GUID:        lo.ToPtr(article.Guid),
-	// 	ImageURL:    lo.ToPtr(article.ImageUrl),
-	// 	AuthorName:  lo.ToPtr(article.AuthorName),
-	// 	AuthorEmail: lo.ToPtr(article.AuthorEmail),
-	// }, nil
 	return converters.New().ProtoToGraphArticle(article), nil
 }
 

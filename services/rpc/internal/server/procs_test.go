@@ -10,28 +10,20 @@ import (
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
 	"github.com/ericbutera/amalgam/services/rpc/internal/config"
 	"github.com/ericbutera/amalgam/services/rpc/internal/server"
-	"github.com/ericbutera/amalgam/services/rpc/internal/tasks"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/status"
 )
 
-func newServer(opts ...server.Option) *server.Server {
+func newServer() *server.Server {
 	db := lo.Must(db.NewSqlite("file::memory:", db.WithAutoMigrate()))
 	config := lo.Must(env.New[config.Config]())
 
-	defs := []server.Option{
-		server.WithTasks(nil),
+	server := lo.Must(server.New(
 		server.WithService(service.NewGorm(db)),
 		server.WithConfig(config),
-	}
-	opts = append(defs, opts...)
-
-	server := lo.Must(server.New(
-		opts...,
 	))
 	s := grpc.NewServer()
 	pb.RegisterFeedServiceServer(s, server)
@@ -105,22 +97,4 @@ func TestSaveArticleFeed(t *testing.T) {
 	})
 	require.NoError(t, err)
 	assert.NotEmpty(t, resp.GetId())
-}
-
-func TestFeedTask(t *testing.T) {
-	t.Parallel()
-	ctx := context.Background()
-	expectedID := "super-id"
-
-	mockTasks := new(tasks.MockTasks)
-	mockTasks.EXPECT().
-		Workflow(mock.Anything, tasks.TaskGenerateFeeds).
-		Return(&tasks.TaskResult{ID: expectedID}, nil)
-
-	resp, err := newServer(server.WithTasks(mockTasks)).
-		FeedTask(ctx, &pb.FeedTaskRequest{
-			Task: pb.FeedTaskRequest_TASK_GENERATE_FEEDS,
-		})
-	require.NoError(t, err)
-	assert.Equal(t, expectedID, resp.GetId())
 }
