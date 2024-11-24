@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 
-	feeds "github.com/ericbutera/amalgam/data-pipeline/temporal/feed"
 	"github.com/ericbutera/amalgam/data-pipeline/temporal/feed_tasks"
 )
 
@@ -31,7 +30,7 @@ func taskTypeToWorkflow(taskType TaskType) (any, error) {
 	case TaskGenerateFeeds:
 		return feed_tasks.GenerateFeedsWorkflow, nil
 	case TaskFetchFeeds:
-		return feeds.FetchFeedsWorkflow, nil
+		return feed_tasks.RefreshFeedsWorkflow, nil
 	}
 	return nil, ErrInvalidTaskType
 }
