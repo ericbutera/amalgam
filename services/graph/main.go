@@ -9,6 +9,7 @@ import (
 	"syscall"
 
 	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/ericbutera/amalgam/internal/http/server"
 	"github.com/ericbutera/amalgam/internal/logger"
@@ -44,8 +45,6 @@ func main() {
 
 	srv := newServer(client, tasks)
 
-	// TODO: complexity limit srv.Use(extension.FixedComplexityLimit(config.ComplexityLimit))
-
 	router := newRouter(config.CorsAllowOrigins)
 	router.Handle("/query", srv)
 	router.Handle("/healthz", newHealthzHandler())
@@ -63,7 +62,9 @@ func main() {
 		router.Handle("/metrics", promhttp.Handler())
 	}
 
-	slog.Info("running graphql playground", "port", config.Port)
+	srv.Use(extension.FixedComplexityLimit(config.ComplexityLimit))
+
+	slog.Info("running graph", "port", config.Port)
 	server := lo.Must(server.New(
 		server.WithAddr(":"+config.Port),
 		server.WithHandler(router),
