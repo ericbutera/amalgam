@@ -16,7 +16,6 @@ import (
 const (
 	Seed           = 0
 	Version        = "2.0"
-	ItemCount      = 25
 	LinkTemplate   = "https://faker:8080/feed/%s"
 	TitleWordCount = 5
 	ParagraphCount = 4
@@ -63,20 +62,20 @@ func uuidToSeed(id string) (int64, error) {
 	return seed, nil
 }
 
-func generateChannel(seed int64, id string) Channel {
+func generateChannel(seed int64, id string, itemCount int) Channel {
 	gofakeit.Seed(seed)
 	channel := Channel{
 		Title:       gofakeit.BuzzWord(),
 		Link:        fmt.Sprintf(LinkTemplate, id),
 		Description: gofakeit.Sentence(SentenceCount),
-		Items:       generateItems(),
+		Items:       generateItems(itemCount),
 	}
 	return channel
 }
 
-func generateItems() []Item {
+func generateItems(itemCount int) []Item {
 	gofakeit.Seed(Seed)
-	items := make([]Item, ItemCount)
+	items := make([]Item, itemCount)
 	for i := range items {
 		items[i] = Item{
 			Title:       gofakeit.Sentence(TitleWordCount),
@@ -90,7 +89,7 @@ func generateItems() []Item {
 
 // Generate a deterministic RSS channel based on a UUID.
 // Items within the channel are random.
-func Generate(id string) (*RSS, error) {
+func Generate(id string, itemCount int) (*RSS, error) {
 	seed, err := uuidToSeed(id)
 	if err != nil {
 		return nil, err
@@ -98,6 +97,6 @@ func Generate(id string) (*RSS, error) {
 
 	return &RSS{
 		Version: Version,
-		Channel: generateChannel(seed, id),
+		Channel: generateChannel(seed, id, itemCount),
 	}, nil
 }
