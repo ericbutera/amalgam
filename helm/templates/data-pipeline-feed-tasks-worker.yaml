@@ -32,8 +32,6 @@ spec:
           ports:
             - containerPort: 9090
           env:
-            - name: FAKE_HOST
-              value: "http://faker:8080"
             - name: TEMPORAL_HOST
               value: "temporal:7233"
             - name: GRAPH_HOST

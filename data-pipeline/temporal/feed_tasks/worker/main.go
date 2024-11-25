@@ -16,13 +16,15 @@ import (
 func main() {
 	config := lo.Must(env.New[feed_tasks.Config]())
 	graphClient := graphql.NewClient(config.GraphHost, &http.Client{})
-	activities := feed_tasks.NewActivities(graphClient)
 
 	client := lo.Must(client.NewTemporalClient(config.TemporalHost))
 	defer client.Close()
 
+	activities := feed_tasks.NewActivities(graphClient, client)
+
 	w := worker.New(client, config.TaskQueue, worker.Options{})
 	w.RegisterWorkflow(feed_tasks.GenerateFeedsWorkflow)
+	w.RegisterWorkflow(feed_tasks.RefreshFeedsWorkflow)
 	w.RegisterActivity(activities)
 
 	err := w.Run(worker.InterruptCh())

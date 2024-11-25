@@ -50,18 +50,26 @@ func (t *Temporal) Workflow(ctx context.Context, task TaskType) (*TaskResult, er
 	if err != nil {
 		return nil, err
 	}
+
+	var args []any
+	if task == TaskGenerateFeeds {
+		args = []any{
+			t.config.FakeHost,
+			t.config.GenerateCount,
+		}
+	}
+
 	opts := sdk.StartWorkflowOptions{
 		TaskQueue: t.config.TaskQueue,
 		RetryPolicy: &temporal.RetryPolicy{
-			MaximumAttempts: 1,
+			MaximumAttempts: 1, // TODO: configurable
 		},
 	}
 	we, err := t.client.ExecuteWorkflow(
 		ctx,
 		opts,
 		workflow,
-		t.config.FakeHost,
-		t.config.GenerateCount,
+		args...,
 	)
 	if err != nil {
 		return nil, err

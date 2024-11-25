@@ -9,3 +9,15 @@ mutation UpdateFeed($id: ID!, $url: String, $name: String) {
         id
     }
 }
+
+mutation GenerateFeeds {
+    generateFeeds {
+        id
+    }
+}
+
+mutation FetchFeeds {
+    fetchFeeds {
+        id
+    }
+}

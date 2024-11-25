@@ -10,6 +10,7 @@ import (
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+	"go.temporal.io/sdk/mocks"
 	"google.golang.org/grpc"
 )
 
@@ -61,9 +62,30 @@ func TestGenerateFeedsActivity(t *testing.T) {
 		Return(nil).
 		Times(count)
 
-	activities := feed_tasks.NewActivities(graphMock)
+	activities := feed_tasks.NewActivities(graphMock, nil)
 	err := activities.GenerateFeeds(context.Background(), host, count)
 
 	require.NoError(t, err)
 	graphMock.AssertExpectations(t)
+}
+
+func TestRefreshFeedsActivity(t *testing.T) {
+	t.Parallel()
+
+	mockRun := new(mocks.WorkflowRun)
+	mockRun.On("GetID").Return("123")
+
+	feedMock := new(mocks.Client)
+	feedMock.On("ExecuteWorkflow",
+		mock.Anything,
+		mock.Anything,
+		"FetchFeedsWorkflow",
+	).Return(mockRun, nil)
+
+	activities := feed_tasks.NewActivities(nil, feedMock)
+	err := activities.RefreshFeeds(context.TODO())
+
+	require.NoError(t, err)
+
+	feedMock.AssertExpectations(t)
 }

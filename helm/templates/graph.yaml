@@ -38,6 +38,8 @@ spec:
               value: "rpc:50051"
             - name: RPC_INSECURE
               value: "true"
+            - name: FAKE_HOST
+              value: "faker:8080"
             - name: TEMPORAL_HOST
               value: "temporal:7233"
             - name: OTEL_ENABLE

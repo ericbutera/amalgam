@@ -26,6 +26,7 @@ export default function Feeds({ feedId }: FeedsProps) {
               className={isHighlight(feed.id)}
             >
               {feed.name || feed.url}
+              {/* TODO: <span className="badge badge-sm">99+</span> */}
             </Link>
           </li>
         ))}

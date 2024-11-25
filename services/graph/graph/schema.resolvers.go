@@ -56,18 +56,6 @@ func (r *mutationResolver) UpdateFeed(ctx context.Context, id string, url *strin
 
 // GenerateFeeds is the resolver for the generateFeeds field.
 func (r *mutationResolver) GenerateFeeds(ctx context.Context) (*model.GenerateFeedsResponse, error) {
-	// TODO: support task type & args
-	// func pbTaskToTaskType(task pb.FeedTaskRequest_Task) (tasks.TaskType, error) {
-	// 	if task == pb.FeedTaskRequest_TASK_GENERATE_FEEDS {
-	// 		return tasks.TaskGenerateFeeds, nil
-	// 	}
-	// 	return tasks.TaskUnspecified, ErrInvalidTaskType
-	// }
-	// taskType, err := pbTaskToTaskType(in.GetTask())
-	// if err != nil {
-	// 	return nil, status.Errorf(codes.InvalidArgument, "invalid task type")
-	// }
-
 	task, err := r.tasks.Workflow(ctx, tasks.TaskGenerateFeeds)
 	if err != nil {
 		slog.ErrorContext(ctx, "failed to start feed task", "error", err)
