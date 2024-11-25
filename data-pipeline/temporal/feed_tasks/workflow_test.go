@@ -23,9 +23,7 @@ func TestUnitTestSuite(t *testing.T) {
 
 func (s *UnitTestSuite) Test_GenerateFeedsWorkflow() {
 	env := s.NewTestWorkflowEnvironment()
-	env.SetWorkerOptions(worker.Options{
-		EnableSessionWorker: true, // Important for a worker to participate in the session
-	})
+	env.SetWorkerOptions(worker.Options{EnableSessionWorker: true})
 	var a *feed_tasks.Activities
 
 	host := "faker:8080"
@@ -34,6 +32,22 @@ func (s *UnitTestSuite) Test_GenerateFeedsWorkflow() {
 	env.OnActivity(a.GenerateFeeds, mock.Anything, host, count).Return(nil)
 	env.RegisterActivity(a)
 	env.ExecuteWorkflow(feed_tasks.GenerateFeedsWorkflow, host, count)
+
+	t := s.T()
+	assert.True(t, env.IsWorkflowCompleted())
+	require.NoError(t, env.GetWorkflowError())
+
+	env.AssertExpectations(t)
+}
+
+func (s *UnitTestSuite) Test_RefreshFeedsWorkflow() {
+	env := s.NewTestWorkflowEnvironment()
+	env.SetWorkerOptions(worker.Options{EnableSessionWorker: true})
+	var a *feed_tasks.Activities
+
+	env.OnActivity(a.RefreshFeeds, mock.Anything).Return(nil)
+	env.RegisterActivity(a)
+	env.ExecuteWorkflow(feed_tasks.RefreshFeedsWorkflow)
 
 	t := s.T()
 	assert.True(t, env.IsWorkflowCompleted())
