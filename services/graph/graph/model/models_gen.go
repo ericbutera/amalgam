@@ -2,22 +2,27 @@
 
 package model
 
+import (
+	"time"
+)
+
 type AddResponse struct {
 	ID string `json:"id"`
 }
 
 type Article struct {
-	ID          string  `json:"id"`
-	FeedID      string  `json:"feedId"`
-	URL         string  `json:"url"`
-	Title       string  `json:"title"`
-	ImageURL    *string `json:"imageUrl,omitempty"`
-	Content     string  `json:"content"`
-	Description string  `json:"description"`
-	Preview     string  `json:"preview"`
-	GUID        *string `json:"guid,omitempty"`
-	AuthorName  *string `json:"authorName,omitempty"`
-	AuthorEmail *string `json:"authorEmail,omitempty"`
+	ID          string    `json:"id"`
+	FeedID      string    `json:"feedId"`
+	URL         string    `json:"url"`
+	Title       string    `json:"title"`
+	ImageURL    *string   `json:"imageUrl,omitempty"`
+	Content     string    `json:"content"`
+	Description string    `json:"description"`
+	Preview     string    `json:"preview"`
+	GUID        *string   `json:"guid,omitempty"`
+	AuthorName  *string   `json:"authorName,omitempty"`
+	AuthorEmail *string   `json:"authorEmail,omitempty"`
+	UpdatedAt   time.Time `json:"updatedAt"`
 }
 
 type Feed struct {

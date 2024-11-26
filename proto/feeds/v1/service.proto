@@ -3,6 +3,7 @@ syntax = "proto3";
 package feeds.v1;
 
 import "buf/validate/validate.proto";
+import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/ericbutera/amalgam/services/rpc/gen/go/feeds"; // Adjust this path
 
@@ -39,6 +40,7 @@ message Article {
   string author_name = 9;
   string author_email = 10;
   string description = 11;
+  google.protobuf.Timestamp updated_at = 12;
 }
 
 message Empty {}

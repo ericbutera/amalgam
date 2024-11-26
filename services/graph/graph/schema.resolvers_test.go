@@ -137,6 +137,7 @@ func Test_Articles(t *testing.T) {
 	rpcArticle := c.ServiceToProtoArticle(svcArticle)
 	expected := []*graphModel.Article{graphArticle}
 
+	// TODO: pagination
 	r.client.EXPECT().
 		ListArticles(mock.Anything, &pb.ListArticlesRequest{FeedId: feed.ID}).
 		Return(&pb.ListArticlesResponse{

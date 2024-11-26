@@ -15,6 +15,7 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
+  DateTime: { input: any; output: any; }
 };
 
 export type AddResponse = {
@@ -34,6 +35,7 @@ export type Article = {
   imageUrl?: Maybe<Scalars['String']['output']>;
   preview: Scalars['String']['output'];
   title: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
   url: Scalars['String']['output'];
 };
 
@@ -147,14 +149,14 @@ export type GetArticleQueryVariables = Exact<{
 }>;
 
 
-export type GetArticleQuery = { __typename?: 'Query', article?: { __typename?: 'Article', id: string, feedId: string, url: string, title: string, imageUrl?: string | null, content: string, preview: string, description: string, guid?: string | null, authorName?: string | null, authorEmail?: string | null } | null };
+export type GetArticleQuery = { __typename?: 'Query', article?: { __typename?: 'Article', id: string, feedId: string, url: string, title: string, imageUrl?: string | null, content: string, preview: string, description: string, guid?: string | null, authorName?: string | null, authorEmail?: string | null, updatedAt: any } | null };
 
 export type ListArticlesQueryVariables = Exact<{
   feedId: Scalars['ID']['input'];
 }>;
 
 
-export type ListArticlesQuery = { __typename?: 'Query', articles: Array<{ __typename?: 'Article', id: string, feedId: string, url: string, title: string, imageUrl?: string | null, preview: string, authorName?: string | null, authorEmail?: string | null }> };
+export type ListArticlesQuery = { __typename?: 'Query', articles: Array<{ __typename?: 'Article', id: string, feedId: string, url: string, title: string, imageUrl?: string | null, preview: string, authorName?: string | null, authorEmail?: string | null, updatedAt: any }> };
 
 
 export const AddFeedDocument = gql`
@@ -217,6 +219,7 @@ export const GetArticleDocument = gql`
     guid
     authorName
     authorEmail
+    updatedAt
   }
 }
     `;
@@ -231,6 +234,7 @@ export const ListArticlesDocument = gql`
     preview
     authorName
     authorEmail
+    updatedAt
   }
 }
     `;

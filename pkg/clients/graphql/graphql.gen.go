@@ -4,6 +4,7 @@ package client
 
 import (
 	"context"
+	"time"
 
 	"github.com/Khan/genqlient/graphql"
 )
@@ -26,17 +27,18 @@ func (v *AddFeedResponse) GetAddFeed() AddFeedAddFeedAddResponse { return v.AddF
 
 // GetArticleArticle includes the requested fields of the GraphQL type Article.
 type GetArticleArticle struct {
-	Id          string `json:"id"`
-	FeedId      string `json:"feedId"`
-	Url         string `json:"url"`
-	Title       string `json:"title"`
-	ImageUrl    string `json:"imageUrl"`
-	Content     string `json:"content"`
-	Preview     string `json:"preview"`
-	Description string `json:"description"`
-	Guid        string `json:"guid"`
-	AuthorName  string `json:"authorName"`
-	AuthorEmail string `json:"authorEmail"`
+	Id          string    `json:"id"`
+	FeedId      string    `json:"feedId"`
+	Url         string    `json:"url"`
+	Title       string    `json:"title"`
+	ImageUrl    string    `json:"imageUrl"`
+	Content     string    `json:"content"`
+	Preview     string    `json:"preview"`
+	Description string    `json:"description"`
+	Guid        string    `json:"guid"`
+	AuthorName  string    `json:"authorName"`
+	AuthorEmail string    `json:"authorEmail"`
+	UpdatedAt   time.Time `json:"updatedAt"`
 }
 
 // GetId returns GetArticleArticle.Id, and is useful for accessing the field via an interface.
@@ -72,6 +74,9 @@ func (v *GetArticleArticle) GetAuthorName() string { return v.AuthorName }
 // GetAuthorEmail returns GetArticleArticle.AuthorEmail, and is useful for accessing the field via an interface.
 func (v *GetArticleArticle) GetAuthorEmail() string { return v.AuthorEmail }
 
+// GetUpdatedAt returns GetArticleArticle.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *GetArticleArticle) GetUpdatedAt() time.Time { return v.UpdatedAt }
+
 // GetArticleResponse is returned by GetArticle on success.
 type GetArticleResponse struct {
 	Article GetArticleArticle `json:"article"`
@@ -106,14 +111,15 @@ func (v *GetFeedResponse) GetFeed() GetFeedFeed { return v.Feed }
 
 // ListArticlesArticlesArticle includes the requested fields of the GraphQL type Article.
 type ListArticlesArticlesArticle struct {
-	Id          string `json:"id"`
-	FeedId      string `json:"feedId"`
-	Url         string `json:"url"`
-	Title       string `json:"title"`
-	ImageUrl    string `json:"imageUrl"`
-	Preview     string `json:"preview"`
-	AuthorName  string `json:"authorName"`
-	AuthorEmail string `json:"authorEmail"`
+	Id          string    `json:"id"`
+	FeedId      string    `json:"feedId"`
+	Url         string    `json:"url"`
+	Title       string    `json:"title"`
+	ImageUrl    string    `json:"imageUrl"`
+	Preview     string    `json:"preview"`
+	AuthorName  string    `json:"authorName"`
+	AuthorEmail string    `json:"authorEmail"`
+	UpdatedAt   time.Time `json:"updatedAt"`
 }
 
 // GetId returns ListArticlesArticlesArticle.Id, and is useful for accessing the field via an interface.
@@ -139,6 +145,9 @@ func (v *ListArticlesArticlesArticle) GetAuthorName() string { return v.AuthorNa
 
 // GetAuthorEmail returns ListArticlesArticlesArticle.AuthorEmail, and is useful for accessing the field via an interface.
 func (v *ListArticlesArticlesArticle) GetAuthorEmail() string { return v.AuthorEmail }
+
+// GetUpdatedAt returns ListArticlesArticlesArticle.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *ListArticlesArticlesArticle) GetUpdatedAt() time.Time { return v.UpdatedAt }
 
 // ListArticlesResponse is returned by ListArticles on success.
 type ListArticlesResponse struct {
@@ -292,6 +301,7 @@ query GetArticle ($id: ID!) {
 		guid
 		authorName
 		authorEmail
+		updatedAt
 	}
 }
 `
@@ -371,6 +381,7 @@ query ListArticles ($feedId: ID!) {
 		preview
 		authorName
 		authorEmail
+		updatedAt
 	}
 }
 `

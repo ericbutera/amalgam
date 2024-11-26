@@ -40,7 +40,6 @@ func validationErr(errors []validate.ValidationError) error {
 func (s *Server) ListFeeds(ctx context.Context, _ *pb.ListFeedsRequest) (*pb.ListFeedsResponse, error) {
 	feeds, err := s.service.Feeds(ctx)
 	if err != nil {
-		// return nil, status.Errorf(codes.Internal, "failed to fetch feeds: %v", err)
 		return nil, serviceToProtoErr(err, nil)
 	}
 	pbFeeds := []*pb.Feed{}
@@ -83,16 +82,17 @@ func (s *Server) GetFeed(ctx context.Context, in *pb.GetFeedRequest) (*pb.GetFee
 }
 
 func (s *Server) ListArticles(ctx context.Context, in *pb.ListArticlesRequest) (*pb.ListArticlesResponse, error) {
-	// TODO: support filters (sorting, pagination)
-	// TODO: convert ByFeedId to a filter
-	articles, err := s.service.GetArticlesByFeed(ctx, in.GetFeedId())
+	result, err := s.service.GetArticlesByFeed(ctx, in.GetFeedId(), service.ListOptions{
+		// Cursor: "TODO",
+		// Limit:  0,
+	})
 	if err != nil {
 		return nil, serviceToProtoErr(err, nil)
 	}
+	c := converters.New()
 	pbArticles := []*pb.Article{}
-	for _, article := range articles {
-		pbArticle := converters.New().ServiceToProtoArticle(&article)
-		pbArticles = append(pbArticles, pbArticle)
+	for _, article := range result.Articles {
+		pbArticles = append(pbArticles, c.ServiceToProtoArticle(&article))
 	}
 	return &pb.ListArticlesResponse{Articles: pbArticles}, nil
 }

@@ -123,17 +123,6 @@ func WithAutoMigrate() Options {
 func WithSeedData() Options {
 	return func(db *gorm.DB) error {
 		return db.Transaction(func(tx *gorm.DB) error {
-			// TODO: use seed.Feed()
-			/*
-				c := converters.New()
-				feed := c.ServiceToDbFeed(fixtures.NewFeed())
-				article := c.ServiceToDbArticle(fixtures.NewArticle())
-
-				if err := tx.Create(&feed).Error; err != nil {
-					return err
-				}
-				return tx.Create(&article).Error
-			*/
 			if _, err := seed.FeedAndArticles(tx, 1); err != nil {
 				return err
 			}

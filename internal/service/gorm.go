@@ -144,13 +144,15 @@ func (s *Gorm) GetFeed(ctx context.Context, id string) (*svc_model.Feed, error) 
 	return &feed, nil
 }
 
-func (s *Gorm) GetArticlesByFeed(ctx context.Context, feedId string, options ListOptions) (*ArticlesByFeedResult, error) {
+func (s *Gorm) GetArticlesByFeed(ctx context.Context, feedId string, _ ListOptions) (*ArticlesByFeedResult, error) {
 	result := &ArticlesByFeedResult{} // var articles []svc_model.Article
 	query := s.query(ctx).
-		Limit(DefaultLimit). // TODO: pagination (cursor)
+		Model(&svc_model.Article{}).
+		Limit(DefaultLimit).
 		Find(&result.Articles, "feed_id=?", feedId)
 
 	if query.Error != nil {
+		return nil, query.Error
 	}
 	return result, nil // articles, nil
 }

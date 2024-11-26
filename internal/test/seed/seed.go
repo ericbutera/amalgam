@@ -3,7 +3,6 @@ package seed
 import (
 	"github.com/ericbutera/amalgam/internal/converters"
 	"github.com/ericbutera/amalgam/internal/service/models"
-	// "github.com/ericbutera/amalgam/internal/db/models"
 	"github.com/ericbutera/amalgam/internal/test/faker/rss"
 	"github.com/ericbutera/amalgam/internal/test/fixtures"
 	"github.com/google/uuid"

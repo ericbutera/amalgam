@@ -115,10 +115,7 @@ func TestGetArticlesByFeed(t *testing.T) {
 	data, err := seed.FeedAndArticles(h.db, 2)
 	require.NoError(t, err)
 
-	res, err := h.svc.GetArticlesByFeed(context.Background(), data.Feed.ID, service.ListOptions{
-		Cursor: "",
-		Limit:  0,
-	})
+	res, err := h.svc.GetArticlesByFeed(context.Background(), data.Feed.ID, service.ListOptions{})
 	require.NoError(t, err)
 
 	expected := data.Articles
@@ -126,6 +123,28 @@ func TestGetArticlesByFeed(t *testing.T) {
 	assert.Len(t, actual, 2)
 	helpers.Diff(t, *expected[0], actual[0], "ID")
 	helpers.Diff(t, *expected[1], actual[1], "ID")
+}
+
+func TestGetArticlesByFeed_Pagination(t *testing.T) {
+	t.Parallel()
+	h := newTestHelper(t)
+
+	data, err := seed.FeedAndArticles(h.db, 15)
+	require.NoError(t, err)
+
+	res, err := h.svc.GetArticlesByFeed(context.Background(), data.Feed.ID, service.ListOptions{
+		Cursor: "",
+		Limit:  10,
+	})
+	require.NoError(t, err)
+	assert.Len(t, res.Articles, 10)
+
+	res2, err2 := h.svc.GetArticlesByFeed(context.Background(), data.Feed.ID, service.ListOptions{
+		Cursor: res.Pagination.NextCursor,
+		Limit:  10,
+	})
+	require.NoError(t, err2)
+	assert.Len(t, res2.Articles, 5)
 }
 
 func TestGetArticle(t *testing.T) {
