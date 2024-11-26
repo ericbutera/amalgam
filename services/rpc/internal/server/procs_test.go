@@ -136,23 +136,35 @@ func TestListArticles(t *testing.T) {
 	helpers.Diff(t, *fakes.Articles[0], *c.ProtoToServiceArticle(articles[0]))
 }
 
-/*
-TODO:
 func TestListArticles_Pagination(t *testing.T) {
+	// note: this test only checks for pagination, not the actual content
 	t.Parallel()
 
 	ts := newServer(t)
-	fakes, err := seed.Feed(ts.DB, 11)
+	fakes, err := seed.FeedAndArticles(ts.DB, 2)
 	require.NoError(t, err)
-
 	ctx := context.Background()
+
+	// page 1
 	resp, err := ts.Server.ListArticles(ctx, &pb.ListArticlesRequest{
 		FeedId: fakes.Feed.ID,
+		Options: &pb.ListOptions{
+			Limit: 1,
+		},
 	})
-	articles := resp.GetArticles()
+	cursor := resp.GetPagination().GetNext()
 	require.NoError(t, err)
-	assert.Len(t, articles, 1)
-	c := converters.New()
-	helpers.Diff(t, *fakes.Articles[0], *c.ProtoToServiceArticle(articles[0]))
+	assert.Len(t, resp.GetArticles(), 1)
+	assert.NotEmpty(t, cursor)
+
+	// page 2
+	resp, err = ts.Server.ListArticles(ctx, &pb.ListArticlesRequest{
+		FeedId: fakes.Feed.ID,
+		Options: &pb.ListOptions{
+			Limit:  1,
+			Cursor: cursor,
+		},
+	})
+	require.NoError(t, err)
+	assert.Len(t, resp.GetArticles(), 1)
 }
-*/
