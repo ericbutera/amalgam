@@ -109,8 +109,24 @@ type GetFeedResponse struct {
 // GetFeed returns GetFeedResponse.Feed, and is useful for accessing the field via an interface.
 func (v *GetFeedResponse) GetFeed() GetFeedFeed { return v.Feed }
 
-// ListArticlesArticlesArticle includes the requested fields of the GraphQL type Article.
-type ListArticlesArticlesArticle struct {
+// ListArticlesArticlesArticlesResponse includes the requested fields of the GraphQL type ArticlesResponse.
+type ListArticlesArticlesArticlesResponse struct {
+	Articles   []ListArticlesArticlesArticlesResponseArticlesArticle `json:"articles"`
+	Pagination ListArticlesArticlesArticlesResponsePagination        `json:"pagination"`
+}
+
+// GetArticles returns ListArticlesArticlesArticlesResponse.Articles, and is useful for accessing the field via an interface.
+func (v *ListArticlesArticlesArticlesResponse) GetArticles() []ListArticlesArticlesArticlesResponseArticlesArticle {
+	return v.Articles
+}
+
+// GetPagination returns ListArticlesArticlesArticlesResponse.Pagination, and is useful for accessing the field via an interface.
+func (v *ListArticlesArticlesArticlesResponse) GetPagination() ListArticlesArticlesArticlesResponsePagination {
+	return v.Pagination
+}
+
+// ListArticlesArticlesArticlesResponseArticlesArticle includes the requested fields of the GraphQL type Article.
+type ListArticlesArticlesArticlesResponseArticlesArticle struct {
 	Id          string    `json:"id"`
 	FeedId      string    `json:"feedId"`
 	Url         string    `json:"url"`
@@ -122,40 +138,58 @@ type ListArticlesArticlesArticle struct {
 	UpdatedAt   time.Time `json:"updatedAt"`
 }
 
-// GetId returns ListArticlesArticlesArticle.Id, and is useful for accessing the field via an interface.
-func (v *ListArticlesArticlesArticle) GetId() string { return v.Id }
+// GetId returns ListArticlesArticlesArticlesResponseArticlesArticle.Id, and is useful for accessing the field via an interface.
+func (v *ListArticlesArticlesArticlesResponseArticlesArticle) GetId() string { return v.Id }
 
-// GetFeedId returns ListArticlesArticlesArticle.FeedId, and is useful for accessing the field via an interface.
-func (v *ListArticlesArticlesArticle) GetFeedId() string { return v.FeedId }
+// GetFeedId returns ListArticlesArticlesArticlesResponseArticlesArticle.FeedId, and is useful for accessing the field via an interface.
+func (v *ListArticlesArticlesArticlesResponseArticlesArticle) GetFeedId() string { return v.FeedId }
 
-// GetUrl returns ListArticlesArticlesArticle.Url, and is useful for accessing the field via an interface.
-func (v *ListArticlesArticlesArticle) GetUrl() string { return v.Url }
+// GetUrl returns ListArticlesArticlesArticlesResponseArticlesArticle.Url, and is useful for accessing the field via an interface.
+func (v *ListArticlesArticlesArticlesResponseArticlesArticle) GetUrl() string { return v.Url }
 
-// GetTitle returns ListArticlesArticlesArticle.Title, and is useful for accessing the field via an interface.
-func (v *ListArticlesArticlesArticle) GetTitle() string { return v.Title }
+// GetTitle returns ListArticlesArticlesArticlesResponseArticlesArticle.Title, and is useful for accessing the field via an interface.
+func (v *ListArticlesArticlesArticlesResponseArticlesArticle) GetTitle() string { return v.Title }
 
-// GetImageUrl returns ListArticlesArticlesArticle.ImageUrl, and is useful for accessing the field via an interface.
-func (v *ListArticlesArticlesArticle) GetImageUrl() string { return v.ImageUrl }
+// GetImageUrl returns ListArticlesArticlesArticlesResponseArticlesArticle.ImageUrl, and is useful for accessing the field via an interface.
+func (v *ListArticlesArticlesArticlesResponseArticlesArticle) GetImageUrl() string { return v.ImageUrl }
 
-// GetPreview returns ListArticlesArticlesArticle.Preview, and is useful for accessing the field via an interface.
-func (v *ListArticlesArticlesArticle) GetPreview() string { return v.Preview }
+// GetPreview returns ListArticlesArticlesArticlesResponseArticlesArticle.Preview, and is useful for accessing the field via an interface.
+func (v *ListArticlesArticlesArticlesResponseArticlesArticle) GetPreview() string { return v.Preview }
 
-// GetAuthorName returns ListArticlesArticlesArticle.AuthorName, and is useful for accessing the field via an interface.
-func (v *ListArticlesArticlesArticle) GetAuthorName() string { return v.AuthorName }
+// GetAuthorName returns ListArticlesArticlesArticlesResponseArticlesArticle.AuthorName, and is useful for accessing the field via an interface.
+func (v *ListArticlesArticlesArticlesResponseArticlesArticle) GetAuthorName() string {
+	return v.AuthorName
+}
 
-// GetAuthorEmail returns ListArticlesArticlesArticle.AuthorEmail, and is useful for accessing the field via an interface.
-func (v *ListArticlesArticlesArticle) GetAuthorEmail() string { return v.AuthorEmail }
+// GetAuthorEmail returns ListArticlesArticlesArticlesResponseArticlesArticle.AuthorEmail, and is useful for accessing the field via an interface.
+func (v *ListArticlesArticlesArticlesResponseArticlesArticle) GetAuthorEmail() string {
+	return v.AuthorEmail
+}
 
-// GetUpdatedAt returns ListArticlesArticlesArticle.UpdatedAt, and is useful for accessing the field via an interface.
-func (v *ListArticlesArticlesArticle) GetUpdatedAt() time.Time { return v.UpdatedAt }
+// GetUpdatedAt returns ListArticlesArticlesArticlesResponseArticlesArticle.UpdatedAt, and is useful for accessing the field via an interface.
+func (v *ListArticlesArticlesArticlesResponseArticlesArticle) GetUpdatedAt() time.Time {
+	return v.UpdatedAt
+}
+
+// ListArticlesArticlesArticlesResponsePagination includes the requested fields of the GraphQL type Pagination.
+type ListArticlesArticlesArticlesResponsePagination struct {
+	Next     string `json:"next"`
+	Previous string `json:"previous"`
+}
+
+// GetNext returns ListArticlesArticlesArticlesResponsePagination.Next, and is useful for accessing the field via an interface.
+func (v *ListArticlesArticlesArticlesResponsePagination) GetNext() string { return v.Next }
+
+// GetPrevious returns ListArticlesArticlesArticlesResponsePagination.Previous, and is useful for accessing the field via an interface.
+func (v *ListArticlesArticlesArticlesResponsePagination) GetPrevious() string { return v.Previous }
 
 // ListArticlesResponse is returned by ListArticles on success.
 type ListArticlesResponse struct {
-	Articles []ListArticlesArticlesArticle `json:"articles"`
+	Articles ListArticlesArticlesArticlesResponse `json:"articles"`
 }
 
 // GetArticles returns ListArticlesResponse.Articles, and is useful for accessing the field via an interface.
-func (v *ListArticlesResponse) GetArticles() []ListArticlesArticlesArticle { return v.Articles }
+func (v *ListArticlesResponse) GetArticles() ListArticlesArticlesArticlesResponse { return v.Articles }
 
 // ListFeedsFeedsFeed includes the requested fields of the GraphQL type Feed.
 type ListFeedsFeedsFeed struct {
@@ -373,15 +407,21 @@ func GetFeed(
 const ListArticles_Operation = `
 query ListArticles ($feedId: ID!) {
 	articles(feedId: $feedId) {
-		id
-		feedId
-		url
-		title
-		imageUrl
-		preview
-		authorName
-		authorEmail
-		updatedAt
+		articles {
+			id
+			feedId
+			url
+			title
+			imageUrl
+			preview
+			authorName
+			authorEmail
+			updatedAt
+		}
+		pagination {
+			next
+			previous
+		}
 	}
 }
 `

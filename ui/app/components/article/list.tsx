@@ -12,12 +12,13 @@ export default function Articles({ id }: ArticlesProps) {
 
   if (error) return <div>An error has occurred.</div>;
   if (loading) <div>Loading...</div>;
-  if (!articles || articles?.length === 0) return <div>no articles found</div>;
+  if (!articles || articles?.articles.length === 0)
+    return <div>no articles found</div>;
 
   return (
     <div className="overflow-x-auto">
       <ul>
-        {articles?.map((article) => (
+        {articles?.articles.map((article) => (
           <li
             key={article.id}
             className="border-b border-base-300 last:border-0"
@@ -31,6 +32,10 @@ export default function Articles({ id }: ArticlesProps) {
           </li>
         ))}
       </ul>
+      {/* TODO: fetch more button
+      {articles.pagination?.next && (
+        <button className="btn btn-primary mt-4">Load more</button>
+      )} */}
     </div>
   );
 }

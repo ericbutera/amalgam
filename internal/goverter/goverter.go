@@ -30,11 +30,9 @@ type Converter interface {
 	DbToServiceFeed(*db_model.Feed) *svc_model.Feed
 	// goverter:ignore Base
 	ServiceToDbFeed(*svc_model.Feed) *db_model.Feed
-
 	// goverter:map Base.ID ID
 	// goverter:map Base.UpdatedAt UpdatedAt | Time
 	DbToServiceArticle(*db_model.Article) *svc_model.Article
-
 	// goverter:matchIgnoreCase
 	// goverter:ignore Base Feed
 	ServiceToDbArticle(*svc_model.Article) *db_model.Article
@@ -57,7 +55,7 @@ type Converter interface {
 	// goverter:matchIgnoreCase
 	// goverter:ignoreMissing
 	// goverter:map UpdatedAt UpdatedAt | Time
-	GraphClientToApiArticleList(*gql_client.ListArticlesArticlesArticle) *svc_model.Article
+	GraphClientToApiArticleList(*gql_client.ListArticlesArticlesArticlesResponseArticlesArticle) *svc_model.Article
 
 	// goverter:matchIgnoreCase
 	// goverter:ignoreMissing

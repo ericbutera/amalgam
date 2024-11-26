@@ -12,6 +12,8 @@ import (
 	helpers "github.com/ericbutera/amalgam/pkg/test"
 	"github.com/ericbutera/amalgam/services/graph/graph"
 	graphModel "github.com/ericbutera/amalgam/services/graph/graph/model"
+	"github.com/google/uuid"
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -137,17 +139,57 @@ func Test_Articles(t *testing.T) {
 	rpcArticle := c.ServiceToProtoArticle(svcArticle)
 	expected := []*graphModel.Article{graphArticle}
 
-	// TODO: pagination
 	r.client.EXPECT().
-		ListArticles(mock.Anything, &pb.ListArticlesRequest{FeedId: feed.ID}).
+		ListArticles(mock.Anything, &pb.ListArticlesRequest{
+			FeedId: feed.ID,
+			Options: &pb.ListOptions{
+				Cursor: "",
+				Limit:  graph.DefaultLimit,
+			},
+		}).
 		Return(&pb.ListArticlesResponse{
 			Articles: []*pb.Article{rpcArticle},
 		}, nil)
 
-	actual, err := r.resolver.Query().Articles(context.Background(), feed.ID)
+	resp, err := r.resolver.Query().Articles(context.Background(), feed.ID, &graphModel.ListOptions{})
+	actual := resp.Articles
 	require.NoError(t, err)
 	assert.Len(t, actual, 1)
 	helpers.Diff(t, *expected[0], *actual[0], "FeedID", "ImageURL")
+}
+
+func Test_Articles_Pagination(t *testing.T) {
+	t.Parallel()
+	r := newTestResolver()
+
+	id := uuid.New().String()
+	expectedCursor := "incoming-cursor"
+	expectedLimit := 42
+	expectedPagination := pb.Pagination{
+		Next:     "next",
+		Previous: "previous",
+	}
+
+	r.client.EXPECT().
+		ListArticles(mock.Anything, &pb.ListArticlesRequest{
+			FeedId: id,
+			Options: &pb.ListOptions{
+				Cursor: expectedCursor,
+				Limit:  int32(expectedLimit),
+			},
+		}).
+		Return(&pb.ListArticlesResponse{
+			Articles:   []*pb.Article{},
+			Pagination: &expectedPagination,
+		}, nil)
+
+	resp, err := r.resolver.Query().Articles(context.Background(), id, &graphModel.ListOptions{
+		Cursor: lo.ToPtr(expectedCursor),
+		Limit:  lo.ToPtr(expectedLimit),
+	})
+	require.NoError(t, err)
+	assert.Equal(t, expectedPagination.GetNext(), resp.Pagination.Next)
+	assert.Equal(t, expectedPagination.GetPrevious(), resp.Pagination.Previous)
 }
 
 func Test_Article(t *testing.T) {

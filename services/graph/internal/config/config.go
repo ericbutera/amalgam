@@ -2,7 +2,7 @@ package config
 
 import "github.com/spf13/viper"
 
-const DefaultComplexityLimit = 15
+const DefaultComplexityLimit = 20
 
 type Config struct {
 	OtelEnable        bool     `mapstructure:"otel_enable"`

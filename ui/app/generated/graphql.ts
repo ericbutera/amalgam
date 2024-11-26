@@ -39,6 +39,12 @@ export type Article = {
   url: Scalars['String']['output'];
 };
 
+export type ArticlesResponse = {
+  __typename?: 'ArticlesResponse';
+  articles: Array<Article>;
+  pagination: Pagination;
+};
+
 export type Feed = {
   __typename?: 'Feed';
   id: Scalars['ID']['output'];
@@ -54,6 +60,11 @@ export type FetchFeedsResponse = {
 export type GenerateFeedsResponse = {
   __typename?: 'GenerateFeedsResponse';
   id: Scalars['String']['output'];
+};
+
+export type ListOptions = {
+  cursor?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type Mutation = {
@@ -77,10 +88,16 @@ export type MutationUpdateFeedArgs = {
   url?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type Pagination = {
+  __typename?: 'Pagination';
+  next: Scalars['String']['output'];
+  previous: Scalars['String']['output'];
+};
+
 export type Query = {
   __typename?: 'Query';
   article?: Maybe<Article>;
-  articles: Array<Article>;
+  articles: ArticlesResponse;
   feed?: Maybe<Feed>;
   feeds: Array<Feed>;
 };
@@ -93,6 +110,7 @@ export type QueryArticleArgs = {
 
 export type QueryArticlesArgs = {
   feedId: Scalars['ID']['input'];
+  options?: InputMaybe<ListOptions>;
 };
 
 
@@ -156,7 +174,7 @@ export type ListArticlesQueryVariables = Exact<{
 }>;
 
 
-export type ListArticlesQuery = { __typename?: 'Query', articles: Array<{ __typename?: 'Article', id: string, feedId: string, url: string, title: string, imageUrl?: string | null, preview: string, authorName?: string | null, authorEmail?: string | null, updatedAt: any }> };
+export type ListArticlesQuery = { __typename?: 'Query', articles: { __typename?: 'ArticlesResponse', articles: Array<{ __typename?: 'Article', id: string, feedId: string, url: string, title: string, imageUrl?: string | null, preview: string, authorName?: string | null, authorEmail?: string | null, updatedAt: any }>, pagination: { __typename?: 'Pagination', next: string, previous: string } } };
 
 
 export const AddFeedDocument = gql`
@@ -226,15 +244,21 @@ export const GetArticleDocument = gql`
 export const ListArticlesDocument = gql`
     query ListArticles($feedId: ID!) {
   articles(feedId: $feedId) {
-    id
-    feedId
-    url
-    title
-    imageUrl
-    preview
-    authorName
-    authorEmail
-    updatedAt
+    articles {
+      id
+      feedId
+      url
+      title
+      imageUrl
+      preview
+      authorName
+      authorEmail
+      updatedAt
+    }
+    pagination {
+      next
+      previous
+    }
   }
 }
     `;
