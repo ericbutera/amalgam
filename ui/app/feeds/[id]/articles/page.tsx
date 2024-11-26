@@ -1,7 +1,8 @@
 "use client";
 
 import Feeds from "@/app/components/feed/list";
-import Articles from "../../../components/article/list";
+import Articles from "@/app/components/article/list";
+import Header from "@/app/components/article/header";
 
 interface PageProps {
   params: {
@@ -11,11 +12,12 @@ interface PageProps {
 
 export default function Page({ params }: PageProps) {
   const feedId = params.id;
+
   return (
-    <div className="flex">
+    <div className="flex w-full">
       <Feeds feedId={feedId} />
-      <div className="flex-1">
-        <h1 className="text-2xl font-bold">Articles for Feed {feedId}</h1>
+      <div className="flex-1 w-full">
+        <Header id={feedId} />
         <Articles id={feedId} />
       </div>
     </div>

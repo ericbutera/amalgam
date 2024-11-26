@@ -15,11 +15,19 @@ export default function Articles({ id }: ArticlesProps) {
   if (!articles || articles?.length === 0) return <div>no articles found</div>;
 
   return (
-    <div>
+    <div className="overflow-x-auto">
       <ul>
         {articles?.map((article) => (
-          <li key={article.id}>
-            <Link href={`/article/${article.id}`}>{article.title}</Link>
+          <li
+            key={article.id}
+            className="border-b border-base-300 last:border-0"
+          >
+            <Link
+              href={`/article/${article.id}`}
+              className="block text-sm md:text-base lg:text-lg hover:bg-primary hover:text-white transition-colors duration-200"
+            >
+              {article.title}
+            </Link>
           </li>
         ))}
       </ul>
