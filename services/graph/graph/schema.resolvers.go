@@ -31,7 +31,7 @@ func (r *mutationResolver) AddFeed(ctx context.Context, url string, name string)
 		return nil, errHelper.HandleGrpcErrors(ctx, err, "failed to create feed")
 	}
 	return &model.AddResponse{
-		ID: resp.Id,
+		ID: resp.GetId(),
 	}, nil
 }
 
@@ -81,12 +81,12 @@ func (r *mutationResolver) FetchFeeds(ctx context.Context) (*model.FetchFeedsRes
 // Feeds is the resolver for the feeds field.
 func (r *queryResolver) Feeds(ctx context.Context) ([]*model.Feed, error) {
 	var feeds []*model.Feed
-	res, err := r.rpcClient.ListFeeds(ctx, &pb.ListFeedsRequest{})
+	resp, err := r.rpcClient.ListFeeds(ctx, &pb.ListFeedsRequest{})
 	if err != nil {
 		return nil, errHelper.HandleGrpcErrors(ctx, err, "failed to list feeds")
 	}
 	c := converters.New()
-	for _, feed := range res.Feeds {
+	for _, feed := range resp.GetFeeds() {
 		feeds = append(feeds, c.ProtoToGraphFeed(feed))
 	}
 	return feeds, nil
@@ -98,22 +98,35 @@ func (r *queryResolver) Feed(ctx context.Context, id string) (*model.Feed, error
 	if err != nil {
 		return nil, errHelper.HandleGrpcErrors(ctx, err, "failed to get feed")
 	}
-	return converters.New().ProtoToGraphFeed(resp.Feed), nil
+	return converters.New().ProtoToGraphFeed(resp.GetFeed()), nil
 }
 
 // Articles is the resolver for the articles field.
-func (r *queryResolver) Articles(ctx context.Context, feedID string) ([]*model.Article, error) {
-	resp, err := r.rpcClient.ListArticles(ctx, &pb.ListArticlesRequest{FeedId: feedID})
+func (r *queryResolver) Articles(ctx context.Context, feedID string, options *model.ListOptions) (*model.ArticleResponse, error) {
+	resp, err := r.rpcClient.ListArticles(ctx, &pb.ListArticlesRequest{
+		FeedId: feedID,
+		Options: &pb.ListOptions{
+			Cursor: lo.FromPtr(options.Cursor),
+			Limit:  int32(lo.FromPtr(options.Limit)),
+		},
+	})
 	if err != nil {
 		return nil, errHelper.HandleGrpcErrors(ctx, err, "failed to list articles")
 	}
 
 	c := converters.New()
 	var articles []*model.Article
-	for _, article := range resp.Articles {
+	for _, article := range resp.GetArticles() {
 		articles = append(articles, c.ProtoToGraphArticle(article))
 	}
-	return articles, nil
+	p := resp.GetPagination()
+	return &model.ArticleResponse{
+		Articles: articles,
+		Pagination: &model.Pagination{
+			Next:     p.GetNext(),
+			Previous: p.GetPrevious(),
+		},
+	}, nil
 }
 
 // Article is the resolver for the article field.
@@ -122,7 +135,7 @@ func (r *queryResolver) Article(ctx context.Context, id string) (*model.Article,
 	if err != nil {
 		return nil, errHelper.HandleGrpcErrors(ctx, err, "failed to get article")
 	}
-	article := resp.Article
+	article := resp.GetArticle()
 	return converters.New().ProtoToGraphArticle(article), nil
 }
 

@@ -137,17 +137,24 @@ func Test_Articles(t *testing.T) {
 	rpcArticle := c.ServiceToProtoArticle(svcArticle)
 	expected := []*graphModel.Article{graphArticle}
 
-	// TODO: pagination
 	r.client.EXPECT().
-		ListArticles(mock.Anything, &pb.ListArticlesRequest{FeedId: feed.ID}).
+		ListArticles(mock.Anything, &pb.ListArticlesRequest{
+			FeedId:  feed.ID,
+			Options: &pb.ListOptions{},
+		}).
 		Return(&pb.ListArticlesResponse{
 			Articles: []*pb.Article{rpcArticle},
 		}, nil)
 
-	actual, err := r.resolver.Query().Articles(context.Background(), feed.ID)
+	resp, err := r.resolver.Query().Articles(context.Background(), feed.ID, &graphModel.ListOptions{})
+	actual := resp.Articles
 	require.NoError(t, err)
 	assert.Len(t, actual, 1)
 	helpers.Diff(t, *expected[0], *actual[0], "FeedID", "ImageURL")
+}
+
+func Test_Articles_Pagination(t *testing.T) {
+	t.Skip("TODO")
 }
 
 func Test_Article(t *testing.T) {

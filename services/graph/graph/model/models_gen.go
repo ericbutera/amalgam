@@ -25,6 +25,11 @@ type Article struct {
 	UpdatedAt   time.Time `json:"updatedAt"`
 }
 
+type ArticleResponse struct {
+	Articles   []*Article  `json:"articles"`
+	Pagination *Pagination `json:"pagination"`
+}
+
 type Feed struct {
 	ID   string `json:"id"`
 	URL  string `json:"url"`
@@ -39,7 +44,17 @@ type GenerateFeedsResponse struct {
 	ID string `json:"id"`
 }
 
+type ListOptions struct {
+	Cursor *string `json:"cursor,omitempty"`
+	Limit  *int    `json:"limit,omitempty"`
+}
+
 type Mutation struct {
+}
+
+type Pagination struct {
+	Next     string `json:"next"`
+	Previous string `json:"previous"`
 }
 
 type Query struct {

@@ -37,10 +37,25 @@ type FetchFeedsResponse {
   id: String!
 }
 
+type Pagination {
+  next: String!
+  previous: String!
+}
+
+type ArticleResponse {
+  articles: [Article!]!
+  pagination: Pagination!
+}
+
+input ListOptions {
+  cursor: String
+  limit: Int
+}
+
 type Query {
   feeds: [Feed!]!
   feed(id: ID!): Feed
-  articles(feedId: ID!): [Article!]!
+  articles(feedId: ID!, options: ListOptions): ArticleResponse!
   article(id: ID!): Article
 }
 
