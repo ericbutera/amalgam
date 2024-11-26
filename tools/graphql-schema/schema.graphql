@@ -40,10 +40,13 @@ type Article {
 	guid: String
 	authorName: String
 	authorEmail: String
+	updatedAt: DateTime!
 }
 
 """The `Boolean` scalar type represents `true` or `false`."""
 scalar Boolean
+
+scalar DateTime
 
 type Feed {
 	id: ID!
@@ -101,4 +104,3 @@ scalar String
 type UpdateResponse {
 	id: ID!
 }
-

@@ -27,6 +27,7 @@ query GetArticle($id: ID!) {
         guid
         authorName
         authorEmail
+        updatedAt
     }
 }
 
@@ -40,5 +41,6 @@ query ListArticles($feedId: ID!) {
     preview
     authorName
     authorEmail
+    updatedAt
   }
 }

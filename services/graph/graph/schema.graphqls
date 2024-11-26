@@ -1,3 +1,5 @@
+scalar DateTime
+
 type Feed {
   id: ID!
   url: String!
@@ -16,6 +18,7 @@ type Article {
   guid: String
   authorName: String
   authorEmail: String
+  updatedAt: DateTime!
 }
 
 type AddResponse {

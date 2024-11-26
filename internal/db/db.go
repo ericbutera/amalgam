@@ -3,9 +3,8 @@ package db
 import (
 	"errors"
 
-	"github.com/ericbutera/amalgam/internal/converters"
 	"github.com/ericbutera/amalgam/internal/db/models"
-	"github.com/ericbutera/amalgam/internal/test/fixtures"
+	"github.com/ericbutera/amalgam/internal/test/seed"
 	"github.com/ericbutera/amalgam/pkg/config/env"
 	slog "github.com/orandin/slog-gorm"
 	"github.com/spf13/viper"
@@ -124,14 +123,10 @@ func WithAutoMigrate() Options {
 func WithSeedData() Options {
 	return func(db *gorm.DB) error {
 		return db.Transaction(func(tx *gorm.DB) error {
-			c := converters.New()
-			feed := c.ServiceToDbFeed(fixtures.NewFeed())
-			article := c.ServiceToDbArticle(fixtures.NewArticle())
-
-			if err := tx.Create(&feed).Error; err != nil {
+			if _, err := seed.FeedAndArticles(tx, 1); err != nil {
 				return err
 			}
-			return tx.Create(&article).Error
+			return nil
 		})
 	}
 }

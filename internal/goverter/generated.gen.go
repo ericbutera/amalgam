@@ -9,15 +9,18 @@ import (
 	graphql "github.com/ericbutera/amalgam/pkg/clients/graphql"
 	v1 "github.com/ericbutera/amalgam/pkg/feeds/v1"
 	model "github.com/ericbutera/amalgam/services/graph/graph/model"
+	"time"
 )
 
 type ConverterImpl struct{}
 
 func (c *ConverterImpl) ConvertBase(source struct {
-	ID string
+	ID        string
+	UpdatedAt time.Time
 }) *models.Base {
 	var modelsBase models.Base
 	modelsBase.ID = source.ID
+	modelsBase.UpdatedAt = Time(source.UpdatedAt)
 	return &modelsBase
 }
 func (c *ConverterImpl) DbToServiceArticle(source *models.Article) *models1.Article {
@@ -35,6 +38,7 @@ func (c *ConverterImpl) DbToServiceArticle(source *models.Article) *models1.Arti
 		modelsArticle.GUID = (*source).GUID
 		modelsArticle.AuthorName = (*source).AuthorName
 		modelsArticle.AuthorEmail = (*source).AuthorEmail
+		modelsArticle.UpdatedAt = Time((*source).Base.UpdatedAt)
 		pModelsArticle = &modelsArticle
 	}
 	return pModelsArticle
@@ -66,6 +70,7 @@ func (c *ConverterImpl) GraphClientToApiArticle(source *graphql.GetArticleArticl
 		modelsArticle.GUID = (*source).Guid
 		modelsArticle.AuthorName = (*source).AuthorName
 		modelsArticle.AuthorEmail = (*source).AuthorEmail
+		modelsArticle.UpdatedAt = Time((*source).UpdatedAt)
 		pModelsArticle = &modelsArticle
 	}
 	return pModelsArticle
@@ -82,6 +87,7 @@ func (c *ConverterImpl) GraphClientToApiArticleList(source *graphql.ListArticles
 		modelsArticle.Preview = (*source).Preview
 		modelsArticle.AuthorName = (*source).AuthorName
 		modelsArticle.AuthorEmail = (*source).AuthorEmail
+		modelsArticle.UpdatedAt = Time((*source).UpdatedAt)
 		pModelsArticle = &modelsArticle
 	}
 	return pModelsArticle
@@ -120,6 +126,7 @@ func (c *ConverterImpl) GraphToServiceArticle(source *model.Article) *models1.Ar
 		if (*source).AuthorEmail != nil {
 			modelsArticle.AuthorEmail = *(*source).AuthorEmail
 		}
+		modelsArticle.UpdatedAt = Time((*source).UpdatedAt)
 		pModelsArticle = &modelsArticle
 	}
 	return pModelsArticle
@@ -164,6 +171,7 @@ func (c *ConverterImpl) ProtoToGraphArticle(source *v1.Article) *model.Article {
 		modelArticle.AuthorName = &pString3
 		pString4 := (*source).AuthorEmail
 		modelArticle.AuthorEmail = &pString4
+		modelArticle.UpdatedAt = ProtoTimestampToTime((*source).UpdatedAt)
 		pModelArticle = &modelArticle
 	}
 	return pModelArticle
@@ -194,6 +202,7 @@ func (c *ConverterImpl) ProtoToServiceArticle(source *v1.Article) *models1.Artic
 		modelsArticle.GUID = (*source).Guid
 		modelsArticle.AuthorName = (*source).AuthorName
 		modelsArticle.AuthorEmail = (*source).AuthorEmail
+		modelsArticle.UpdatedAt = ProtoTimestampToTime((*source).UpdatedAt)
 		pModelsArticle = &modelsArticle
 	}
 	return pModelsArticle
@@ -257,6 +266,7 @@ func (c *ConverterImpl) ServiceToGraphArticle(source *models1.Article) *model.Ar
 		modelArticle.AuthorName = &pString3
 		pString4 := (*source).AuthorEmail
 		modelArticle.AuthorEmail = &pString4
+		modelArticle.UpdatedAt = Time((*source).UpdatedAt)
 		pModelArticle = &modelArticle
 	}
 	return pModelArticle
@@ -287,6 +297,7 @@ func (c *ConverterImpl) ServiceToProtoArticle(source *models1.Article) *v1.Artic
 		feedsArticle.AuthorName = (*source).AuthorName
 		feedsArticle.AuthorEmail = (*source).AuthorEmail
 		feedsArticle.Description = (*source).Description
+		feedsArticle.UpdatedAt = TimeToProtoTimestamp((*source).UpdatedAt)
 		pFeedsArticle = &feedsArticle
 	}
 	return pFeedsArticle

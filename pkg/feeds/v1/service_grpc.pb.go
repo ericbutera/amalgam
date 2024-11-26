@@ -41,6 +41,7 @@ type FeedServiceClient interface {
 	GetArticle(ctx context.Context, in *GetArticleRequest, opts ...grpc.CallOption) (*GetArticleResponse, error)
 	SaveArticle(ctx context.Context, in *SaveArticleRequest, opts ...grpc.CallOption) (*SaveArticleResponse, error)
 	// Deprecated: Do not use.
+	// Deprecated: use graph service
 	FeedTask(ctx context.Context, in *FeedTaskRequest, opts ...grpc.CallOption) (*FeedTaskResponse, error)
 }
 
@@ -145,6 +146,7 @@ type FeedServiceServer interface {
 	GetArticle(context.Context, *GetArticleRequest) (*GetArticleResponse, error)
 	SaveArticle(context.Context, *SaveArticleRequest) (*SaveArticleResponse, error)
 	// Deprecated: Do not use.
+	// Deprecated: use graph service
 	FeedTask(context.Context, *FeedTaskRequest) (*FeedTaskResponse, error)
 	mustEmbedUnimplementedFeedServiceServer()
 }

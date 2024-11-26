@@ -10,6 +10,7 @@ import (
 	"github.com/ericbutera/amalgam/internal/sanitize"
 	svc_model "github.com/ericbutera/amalgam/internal/service/models"
 	"github.com/ericbutera/amalgam/internal/validate"
+	"github.com/pilagod/gorm-cursor-paginator/v2/paginator"
 	"github.com/samber/lo"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -19,20 +20,20 @@ const DefaultLimit = 100
 
 var ErrQueryFailed = errors.New("query failed")
 
-type GormService struct {
+type Gorm struct {
 	db *gorm.DB
 }
 
 func NewGorm(db *gorm.DB) Service {
-	return &GormService{db: db}
+	return &Gorm{db: db}
 }
 
 // query returns a new query builder with the given context. required for otel
-func (s *GormService) query(ctx context.Context) *gorm.DB {
+func (s *Gorm) query(ctx context.Context) *gorm.DB {
 	return s.db.WithContext(ctx)
 }
 
-func (s *GormService) Feeds(ctx context.Context) ([]svc_model.Feed, error) {
+func (s *Gorm) Feeds(ctx context.Context) ([]svc_model.Feed, error) {
 	var feeds []svc_model.Feed
 	result := s.query(ctx).
 		Where("is_active=?", true).
@@ -83,7 +84,7 @@ func feedUrlExists(tx *gorm.DB, url string) error {
 	return nil
 }
 
-func (s *GormService) CreateFeed(ctx context.Context, data *svc_model.Feed) (CreateFeedResult, error) {
+func (s *Gorm) CreateFeed(ctx context.Context, data *svc_model.Feed) (CreateFeedResult, error) {
 	res := CreateFeedResult{}
 
 	feed, err := sanitize.Struct(lo.FromPtr(data))
@@ -112,7 +113,7 @@ func (s *GormService) CreateFeed(ctx context.Context, data *svc_model.Feed) (Cre
 	return res, err
 }
 
-func (s *GormService) UpdateFeed(ctx context.Context, id string, feed *svc_model.Feed) error {
+func (s *Gorm) UpdateFeed(ctx context.Context, id string, feed *svc_model.Feed) error {
 	// note: no validation required for update
 	dbFeed := converters.New().ServiceToDbFeed(feed)
 
@@ -132,7 +133,7 @@ func (s *GormService) UpdateFeed(ctx context.Context, id string, feed *svc_model
 	return nil
 }
 
-func (s *GormService) GetFeed(ctx context.Context, id string) (*svc_model.Feed, error) {
+func (s *Gorm) GetFeed(ctx context.Context, id string) (*svc_model.Feed, error) {
 	var feed svc_model.Feed
 	result := s.query(ctx).First(&feed, "id=?", id)
 	if result.Error != nil {
@@ -144,19 +145,45 @@ func (s *GormService) GetFeed(ctx context.Context, id string) (*svc_model.Feed, 
 	return &feed, nil
 }
 
-func (s *GormService) GetArticlesByFeed(ctx context.Context, feedId string) ([]svc_model.Article, error) {
-	var articles []svc_model.Article
-	result := s.query(ctx).
-		Limit(DefaultLimit). // TODO: pagination (cursor)
-		Find(&articles, "feed_id=?", feedId)
+func (s *Gorm) GetArticlesByFeed(ctx context.Context, feedId string, options ListOptions) (*ArticlesByFeedResult, error) {
+	if options.Limit <= 0 || options.Limit > 100 {
+		options.Limit = DefaultLimit
+	}
 
+	// TODO: ensure there is an index on created_at (on db model & migration)
+
+	var articles []svc_model.Article
+
+	query := s.query(ctx).
+		Model(&svc_model.Article{}). // TODO: use db model -> convert to svc
+		Where("feed_id=?", feedId)
+
+	p := paginator.New(&paginator.Config{
+		Rules: []paginator.Rule{
+			{
+				Key:     "UpdatedAt",
+				Order:   paginator.DESC,
+				SQLRepr: "updated_at",
+			},
+		},
+		Limit: options.Limit,
+		After: options.Cursor,
+	})
+
+	result, cursor, err := p.Paginate(query, &articles)
+	if err != nil {
+		return nil, err
+	}
 	if result.Error != nil {
 		return nil, result.Error
 	}
-	return articles, nil
+	return &ArticlesByFeedResult{
+		Articles: articles,
+		Cursor:   cursor,
+	}, nil
 }
 
-func (s *GormService) GetArticle(ctx context.Context, id string) (*svc_model.Article, error) {
+func (s *Gorm) GetArticle(ctx context.Context, id string) (*svc_model.Article, error) {
 	var article svc_model.Article
 	result := s.query(ctx).First(&article, "id=?", id)
 	if result.Error != nil {
@@ -173,7 +200,7 @@ type SaveArticleResult struct {
 	ValidationErrors []validate.ValidationError
 }
 
-func (s *GormService) SaveArticle(ctx context.Context, data *svc_model.Article) (SaveArticleResult, error) {
+func (s *Gorm) SaveArticle(ctx context.Context, data *svc_model.Article) (SaveArticleResult, error) {
 	res := SaveArticleResult{}
 
 	article, err := sanitize.Struct(lo.FromPtr(data))
