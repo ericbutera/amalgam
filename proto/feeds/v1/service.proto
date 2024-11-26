@@ -82,12 +82,25 @@ message UpdateFeedRequest {
 
 message UpdateFeedResponse {}
 
+// List options contains pagination, filtering, sorting, etc.
+message ListOptions {
+  string cursor = 1; // Pagination cursor
+  int32 limit = 2; // Number of records to return
+}
+
+message Pagination {
+  string next = 1; // Cursor for the next page
+  string previous = 2; // Cursor for the previous page
+}
+
 message ListArticlesRequest {
   string feed_id = 1 [(buf.validate.field).string.uuid = true];
+  ListOptions options = 2;
 }
 
 message ListArticlesResponse {
   repeated Article articles = 1;
+  Pagination pagination = 2;
 }
 
 message GetArticleRequest {

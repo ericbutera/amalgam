@@ -8,6 +8,7 @@ import (
 	"github.com/ericbutera/amalgam/internal/service"
 	"github.com/ericbutera/amalgam/internal/validate"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
+	"github.com/samber/lo"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -82,9 +83,10 @@ func (s *Server) GetFeed(ctx context.Context, in *pb.GetFeedRequest) (*pb.GetFee
 }
 
 func (s *Server) ListArticles(ctx context.Context, in *pb.ListArticlesRequest) (*pb.ListArticlesResponse, error) {
+	options := in.GetOptions()
 	result, err := s.service.GetArticlesByFeed(ctx, in.GetFeedId(), service.ListOptions{
-		// Cursor: "TODO",
-		// Limit:  0,
+		Cursor: options.GetCursor(),
+		Limit:  int(options.GetLimit()),
 	})
 	if err != nil {
 		return nil, serviceToProtoErr(err, nil)
@@ -94,7 +96,13 @@ func (s *Server) ListArticles(ctx context.Context, in *pb.ListArticlesRequest) (
 	for _, article := range result.Articles {
 		pbArticles = append(pbArticles, c.ServiceToProtoArticle(&article))
 	}
-	return &pb.ListArticlesResponse{Articles: pbArticles}, nil
+	return &pb.ListArticlesResponse{
+		Articles: pbArticles,
+		Pagination: &pb.Pagination{
+			Previous: lo.FromPtr(result.Cursor.Before),
+			Next:     lo.FromPtr(result.Cursor.After),
+		},
+	}, nil
 }
 
 func (s *Server) GetArticle(ctx context.Context, in *pb.GetArticleRequest) (*pb.GetArticleResponse, error) {
