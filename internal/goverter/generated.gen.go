@@ -75,7 +75,7 @@ func (c *ConverterImpl) GraphClientToApiArticle(source *graphql.GetArticleArticl
 	}
 	return pModelsArticle
 }
-func (c *ConverterImpl) GraphClientToApiArticleList(source *graphql.ListArticlesArticlesArticle) *models1.Article {
+func (c *ConverterImpl) GraphClientToApiArticleList(source *graphql.ListArticlesArticlesArticlesResponseArticlesArticle) *models1.Article {
 	var pModelsArticle *models1.Article
 	if source != nil {
 		var modelsArticle models1.Article

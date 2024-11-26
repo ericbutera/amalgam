@@ -18,6 +18,11 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+const (
+	DefaultLimit int32 = 25
+	LimitMax     int32 = 100
+)
+
 // AddFeed is the resolver for the addFeed field.
 func (r *mutationResolver) AddFeed(ctx context.Context, url string, name string) (*model.AddResponse, error) {
 	// TODO: middleware to log errors
@@ -102,12 +107,26 @@ func (r *queryResolver) Feed(ctx context.Context, id string) (*model.Feed, error
 }
 
 // Articles is the resolver for the articles field.
-func (r *queryResolver) Articles(ctx context.Context, feedID string, options *model.ListOptions) (*model.ArticleResponse, error) {
+func (r *queryResolver) Articles(ctx context.Context, feedID string, options *model.ListOptions) (*model.ArticlesResponse, error) {
+	// TODO: refactor using validation library
+	cursor := ""
+	limit := int32(DefaultLimit)
+	if options != nil {
+		if options.Cursor != nil {
+			cursor = *options.Cursor
+		}
+		if options.Limit != nil {
+			attempt := int32(*options.Limit)
+			if attempt > 0 && attempt <= LimitMax {
+				limit = attempt
+			}
+		}
+	}
 	resp, err := r.rpcClient.ListArticles(ctx, &pb.ListArticlesRequest{
 		FeedId: feedID,
 		Options: &pb.ListOptions{
-			Cursor: lo.FromPtr(options.Cursor),
-			Limit:  int32(lo.FromPtr(options.Limit)),
+			Cursor: cursor,
+			Limit:  limit,
 		},
 	})
 	if err != nil {
@@ -119,13 +138,15 @@ func (r *queryResolver) Articles(ctx context.Context, feedID string, options *mo
 	for _, article := range resp.GetArticles() {
 		articles = append(articles, c.ProtoToGraphArticle(article))
 	}
+	pagination := model.Pagination{}
 	p := resp.GetPagination()
-	return &model.ArticleResponse{
-		Articles: articles,
-		Pagination: &model.Pagination{
-			Next:     p.GetNext(),
-			Previous: p.GetPrevious(),
-		},
+	if p != nil {
+		pagination.Next = p.GetNext()
+		pagination.Previous = p.GetPrevious()
+	}
+	return &model.ArticlesResponse{
+		Articles:   articles,
+		Pagination: &pagination,
 	}, nil
 }
 

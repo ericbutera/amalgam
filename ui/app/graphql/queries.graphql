@@ -33,14 +33,20 @@ query GetArticle($id: ID!) {
 
 query ListArticles($feedId: ID!) {
   articles(feedId: $feedId) {
-    id
-    feedId
-    url
-    title
-    imageUrl
-    preview
-    authorName
-    authorEmail
-    updatedAt
+    articles {
+        id
+        feedId
+        url
+        title
+        imageUrl
+        preview
+        authorName
+        authorEmail
+        updatedAt
+    }
+    pagination {
+      next
+      previous
+    }
   }
 }

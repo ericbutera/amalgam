@@ -25,7 +25,7 @@ type Article struct {
 	UpdatedAt   time.Time `json:"updatedAt"`
 }
 
-type ArticleResponse struct {
+type ArticlesResponse struct {
 	Articles   []*Article  `json:"articles"`
 	Pagination *Pagination `json:"pagination"`
 }

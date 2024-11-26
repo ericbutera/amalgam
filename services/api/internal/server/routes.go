@@ -254,7 +254,7 @@ func (h *handlers) articles(c *gin.Context) {
 		return
 	}
 	articles := []models.Article{}
-	for _, g_article := range resp.Articles {
+	for _, g_article := range resp.Articles.Articles {
 		m_article := converters.New().GraphClientToApiArticleList(&g_article)
 		articles = append(articles, *m_article)
 	}

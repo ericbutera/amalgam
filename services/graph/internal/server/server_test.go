@@ -23,7 +23,7 @@ func Test_ComplexityLimit_Exceeded(t *testing.T) {
 
 	complexQuery := `{
 		"operationName": "Feeds",
-		"query": "query Feeds { feeds { id url name } feed(id: \"1\") { id url name } articles(feedId: \"1\") { id feedId url title imageUrl content description preview guid authorName authorEmail } }"
+		"query": "query Feeds { feeds { id url name } feed(id: \"asdf\") { id url name } articles(feedId: \"asdf2\") { articles { id feedId url title imageUrl content description preview guid authorName authorEmail updatedAt } pagination { next previous } } }"
 	}`
 	req := httptest.NewRequest(http.MethodPost, "/query", bytes.NewBufferString(complexQuery))
 	req.Header.Set("Content-Type", "application/json")

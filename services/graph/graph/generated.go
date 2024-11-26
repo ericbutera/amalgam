@@ -67,7 +67,7 @@ type ComplexityRoot struct {
 		UpdatedAt   func(childComplexity int) int
 	}
 
-	ArticleResponse struct {
+	ArticlesResponse struct {
 		Articles   func(childComplexity int) int
 		Pagination func(childComplexity int) int
 	}
@@ -119,7 +119,7 @@ type MutationResolver interface {
 type QueryResolver interface {
 	Feeds(ctx context.Context) ([]*model.Feed, error)
 	Feed(ctx context.Context, id string) (*model.Feed, error)
-	Articles(ctx context.Context, feedID string, options *model.ListOptions) (*model.ArticleResponse, error)
+	Articles(ctx context.Context, feedID string, options *model.ListOptions) (*model.ArticlesResponse, error)
 	Article(ctx context.Context, id string) (*model.Article, error)
 }
 
@@ -233,19 +233,19 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Article.UpdatedAt(childComplexity), true
 
-	case "ArticleResponse.articles":
-		if e.complexity.ArticleResponse.Articles == nil {
+	case "ArticlesResponse.articles":
+		if e.complexity.ArticlesResponse.Articles == nil {
 			break
 		}
 
-		return e.complexity.ArticleResponse.Articles(childComplexity), true
+		return e.complexity.ArticlesResponse.Articles(childComplexity), true
 
-	case "ArticleResponse.pagination":
-		if e.complexity.ArticleResponse.Pagination == nil {
+	case "ArticlesResponse.pagination":
+		if e.complexity.ArticlesResponse.Pagination == nil {
 			break
 		}
 
-		return e.complexity.ArticleResponse.Pagination(childComplexity), true
+		return e.complexity.ArticlesResponse.Pagination(childComplexity), true
 
 	case "Feed.id":
 		if e.complexity.Feed.ID == nil {
@@ -1333,8 +1333,8 @@ func (ec *executionContext) fieldContext_Article_updatedAt(_ context.Context, fi
 	return fc, nil
 }
 
-func (ec *executionContext) _ArticleResponse_articles(ctx context.Context, field graphql.CollectedField, obj *model.ArticleResponse) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_ArticleResponse_articles(ctx, field)
+func (ec *executionContext) _ArticlesResponse_articles(ctx context.Context, field graphql.CollectedField, obj *model.ArticlesResponse) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ArticlesResponse_articles(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -1364,9 +1364,9 @@ func (ec *executionContext) _ArticleResponse_articles(ctx context.Context, field
 	return ec.marshalNArticle2ᚕᚖgithubᚗcomᚋericbuteraᚋamalgamᚋservicesᚋgraphᚋgraphᚋmodelᚐArticleᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_ArticleResponse_articles(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_ArticlesResponse_articles(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
-		Object:     "ArticleResponse",
+		Object:     "ArticlesResponse",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
@@ -1403,8 +1403,8 @@ func (ec *executionContext) fieldContext_ArticleResponse_articles(_ context.Cont
 	return fc, nil
 }
 
-func (ec *executionContext) _ArticleResponse_pagination(ctx context.Context, field graphql.CollectedField, obj *model.ArticleResponse) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_ArticleResponse_pagination(ctx, field)
+func (ec *executionContext) _ArticlesResponse_pagination(ctx context.Context, field graphql.CollectedField, obj *model.ArticlesResponse) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ArticlesResponse_pagination(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -1434,9 +1434,9 @@ func (ec *executionContext) _ArticleResponse_pagination(ctx context.Context, fie
 	return ec.marshalNPagination2ᚖgithubᚗcomᚋericbuteraᚋamalgamᚋservicesᚋgraphᚋgraphᚋmodelᚐPagination(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_ArticleResponse_pagination(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_ArticlesResponse_pagination(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
-		Object:     "ArticleResponse",
+		Object:     "ArticlesResponse",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
@@ -2113,9 +2113,9 @@ func (ec *executionContext) _Query_articles(ctx context.Context, field graphql.C
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.ArticleResponse)
+	res := resTmp.(*model.ArticlesResponse)
 	fc.Result = res
-	return ec.marshalNArticleResponse2ᚖgithubᚗcomᚋericbuteraᚋamalgamᚋservicesᚋgraphᚋgraphᚋmodelᚐArticleResponse(ctx, field.Selections, res)
+	return ec.marshalNArticlesResponse2ᚖgithubᚗcomᚋericbuteraᚋamalgamᚋservicesᚋgraphᚋgraphᚋmodelᚐArticlesResponse(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_articles(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2127,11 +2127,11 @@ func (ec *executionContext) fieldContext_Query_articles(ctx context.Context, fie
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "articles":
-				return ec.fieldContext_ArticleResponse_articles(ctx, field)
+				return ec.fieldContext_ArticlesResponse_articles(ctx, field)
 			case "pagination":
-				return ec.fieldContext_ArticleResponse_pagination(ctx, field)
+				return ec.fieldContext_ArticlesResponse_pagination(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type ArticleResponse", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type ArticlesResponse", field.Name)
 		},
 	}
 	defer func() {
@@ -4335,24 +4335,24 @@ func (ec *executionContext) _Article(ctx context.Context, sel ast.SelectionSet, 
 	return out
 }
 
-var articleResponseImplementors = []string{"ArticleResponse"}
+var articlesResponseImplementors = []string{"ArticlesResponse"}
 
-func (ec *executionContext) _ArticleResponse(ctx context.Context, sel ast.SelectionSet, obj *model.ArticleResponse) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, articleResponseImplementors)
+func (ec *executionContext) _ArticlesResponse(ctx context.Context, sel ast.SelectionSet, obj *model.ArticlesResponse) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, articlesResponseImplementors)
 
 	out := graphql.NewFieldSet(fields)
 	deferred := make(map[string]*graphql.FieldSet)
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
-			out.Values[i] = graphql.MarshalString("ArticleResponse")
+			out.Values[i] = graphql.MarshalString("ArticlesResponse")
 		case "articles":
-			out.Values[i] = ec._ArticleResponse_articles(ctx, field, obj)
+			out.Values[i] = ec._ArticlesResponse_articles(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
 		case "pagination":
-			out.Values[i] = ec._ArticleResponse_pagination(ctx, field, obj)
+			out.Values[i] = ec._ArticlesResponse_pagination(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -5185,18 +5185,18 @@ func (ec *executionContext) marshalNArticle2ᚖgithubᚗcomᚋericbuteraᚋamalg
 	return ec._Article(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNArticleResponse2githubᚗcomᚋericbuteraᚋamalgamᚋservicesᚋgraphᚋgraphᚋmodelᚐArticleResponse(ctx context.Context, sel ast.SelectionSet, v model.ArticleResponse) graphql.Marshaler {
-	return ec._ArticleResponse(ctx, sel, &v)
+func (ec *executionContext) marshalNArticlesResponse2githubᚗcomᚋericbuteraᚋamalgamᚋservicesᚋgraphᚋgraphᚋmodelᚐArticlesResponse(ctx context.Context, sel ast.SelectionSet, v model.ArticlesResponse) graphql.Marshaler {
+	return ec._ArticlesResponse(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNArticleResponse2ᚖgithubᚗcomᚋericbuteraᚋamalgamᚋservicesᚋgraphᚋgraphᚋmodelᚐArticleResponse(ctx context.Context, sel ast.SelectionSet, v *model.ArticleResponse) graphql.Marshaler {
+func (ec *executionContext) marshalNArticlesResponse2ᚖgithubᚗcomᚋericbuteraᚋamalgamᚋservicesᚋgraphᚋgraphᚋmodelᚐArticlesResponse(ctx context.Context, sel ast.SelectionSet, v *model.ArticlesResponse) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
 		}
 		return graphql.Null
 	}
-	return ec._ArticleResponse(ctx, sel, v)
+	return ec._ArticlesResponse(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNBoolean2bool(ctx context.Context, v interface{}) (bool, error) {

@@ -42,7 +42,7 @@ type Pagination {
   previous: String!
 }
 
-type ArticleResponse {
+type ArticlesResponse {
   articles: [Article!]!
   pagination: Pagination!
 }
@@ -55,7 +55,7 @@ input ListOptions {
 type Query {
   feeds: [Feed!]!
   feed(id: ID!): Feed
-  articles(feedId: ID!, options: ListOptions): ArticleResponse!
+  articles(feedId: ID!, options: ListOptions): ArticlesResponse!
   article(id: ID!): Article
 }
 
