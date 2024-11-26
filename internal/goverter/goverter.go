@@ -1,5 +1,8 @@
 package goverter
 
+// TODO: research https://goverter.jmattheis.de/reference/extend
+// this might be a way to lower the amount of custom conversions
+
 import (
 	"time"
 

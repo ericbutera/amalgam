@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	svc_model "github.com/ericbutera/amalgam/internal/service/models"
+	"github.com/pilagod/gorm-cursor-paginator/v2/paginator"
 )
 
 var (
@@ -24,8 +25,8 @@ type PaginationResult struct {
 }
 
 type ArticlesByFeedResult struct {
-	Articles   []svc_model.Article
-	Pagination PaginationResult
+	Articles []svc_model.Article
+	Cursor   paginator.Cursor // TODO: make custom type (don't leak internal impl)
 }
 
 // domain logic for feeds & articles

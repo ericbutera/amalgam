@@ -9,6 +9,7 @@ import (
 )
 
 func NewDB(t *testing.T) *gorm.DB {
+	// Note: this is a little "slow" for a unit test, but it's much nicer than maintaining mocks.
 	d, err := db.NewSqlite(
 		"file::memory:",
 		db.WithAutoMigrate(),

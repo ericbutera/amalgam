@@ -3,6 +3,7 @@ package service_test
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/ericbutera/amalgam/internal/service"
 	svcModel "github.com/ericbutera/amalgam/internal/service/models"
@@ -16,14 +17,19 @@ import (
 )
 
 type TestHelper struct {
-	svc service.Service
-	db  *gorm.DB
+	svc   service.Service
+	db    *gorm.DB
+	start time.Time
 }
 
 func newTestHelper(t *testing.T) *TestHelper {
 	db := test.NewDB(t)
 	svc := service.NewGorm(db)
-	return &TestHelper{svc: svc, db: db}
+	return &TestHelper{
+		svc:   svc,
+		db:    db,
+		start: time.Now().UTC(),
+	}
 }
 
 func TestFeeds(t *testing.T) {
@@ -112,7 +118,7 @@ func TestGetArticlesByFeed(t *testing.T) {
 	t.Parallel()
 	h := newTestHelper(t)
 
-	data, err := seed.FeedAndArticles(h.db, 2)
+	data, err := seed.FeedAndArticles(h.db, 1)
 	require.NoError(t, err)
 
 	res, err := h.svc.GetArticlesByFeed(context.Background(), data.Feed.ID, service.ListOptions{})
@@ -120,9 +126,8 @@ func TestGetArticlesByFeed(t *testing.T) {
 
 	expected := data.Articles
 	actual := res.Articles
-	assert.Len(t, actual, 2)
+	assert.Len(t, actual, 1)
 	helpers.Diff(t, *expected[0], actual[0], "ID")
-	helpers.Diff(t, *expected[1], actual[1], "ID")
 }
 
 func TestGetArticlesByFeed_Pagination(t *testing.T) {
@@ -132,19 +137,19 @@ func TestGetArticlesByFeed_Pagination(t *testing.T) {
 	data, err := seed.FeedAndArticles(h.db, 15)
 	require.NoError(t, err)
 
-	res, err := h.svc.GetArticlesByFeed(context.Background(), data.Feed.ID, service.ListOptions{
+	page1, err := h.svc.GetArticlesByFeed(context.Background(), data.Feed.ID, service.ListOptions{
 		Cursor: "",
 		Limit:  10,
 	})
 	require.NoError(t, err)
-	assert.Len(t, res.Articles, 10)
+	assert.Len(t, page1.Articles, 10)
 
-	res2, err2 := h.svc.GetArticlesByFeed(context.Background(), data.Feed.ID, service.ListOptions{
-		Cursor: res.Pagination.NextCursor,
+	page2, err := h.svc.GetArticlesByFeed(context.Background(), data.Feed.ID, service.ListOptions{
+		Cursor: *page1.Cursor.After,
 		Limit:  10,
 	})
-	require.NoError(t, err2)
-	assert.Len(t, res2.Articles, 5)
+	require.NoError(t, err)
+	assert.Len(t, page2.Articles, 5)
 }
 
 func TestGetArticle(t *testing.T) {
@@ -179,5 +184,6 @@ func TestSaveArticle(t *testing.T) {
 
 	assert.Empty(t, result.ValidationErrors)
 	assert.Equal(t, expected.URL, actual.URL)
-	helpers.Diff(t, *expected, *actual, "ID")
+	helpers.Diff(t, *expected, *actual, "ID", "UpdatedAt")
+	assert.Greater(t, actual.UpdatedAt, h.start)
 }

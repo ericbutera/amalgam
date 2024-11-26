@@ -10,6 +10,7 @@ import (
 	"github.com/ericbutera/amalgam/internal/sanitize"
 	svc_model "github.com/ericbutera/amalgam/internal/service/models"
 	"github.com/ericbutera/amalgam/internal/validate"
+	"github.com/pilagod/gorm-cursor-paginator/v2/paginator"
 	"github.com/samber/lo"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -144,17 +145,42 @@ func (s *Gorm) GetFeed(ctx context.Context, id string) (*svc_model.Feed, error) 
 	return &feed, nil
 }
 
-func (s *Gorm) GetArticlesByFeed(ctx context.Context, feedId string, _ ListOptions) (*ArticlesByFeedResult, error) {
-	result := &ArticlesByFeedResult{} // var articles []svc_model.Article
-	query := s.query(ctx).
-		Model(&svc_model.Article{}).
-		Limit(DefaultLimit).
-		Find(&result.Articles, "feed_id=?", feedId)
-
-	if query.Error != nil {
-		return nil, query.Error
+func (s *Gorm) GetArticlesByFeed(ctx context.Context, feedId string, options ListOptions) (*ArticlesByFeedResult, error) {
+	if options.Limit <= 0 || options.Limit > 100 {
+		options.Limit = DefaultLimit
 	}
-	return result, nil // articles, nil
+
+	// TODO: ensure there is an index on created_at (on db model & migration)
+
+	var articles []svc_model.Article
+
+	query := s.query(ctx).
+		Model(&svc_model.Article{}). // TODO: use db model -> convert to svc
+		Where("feed_id=?", feedId)
+
+	p := paginator.New(&paginator.Config{
+		Rules: []paginator.Rule{
+			{
+				Key:     "UpdatedAt",
+				Order:   paginator.DESC,
+				SQLRepr: "updated_at",
+			},
+		},
+		Limit: options.Limit,
+		After: options.Cursor,
+	})
+
+	result, cursor, err := p.Paginate(query, &articles)
+	if err != nil {
+		return nil, err
+	}
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return &ArticlesByFeedResult{
+		Articles: articles,
+		Cursor:   cursor,
+	}, nil
 }
 
 func (s *Gorm) GetArticle(ctx context.Context, id string) (*svc_model.Article, error) {
