@@ -2,7 +2,6 @@ package server_test
 
 import (
 	"bytes"
-	"context"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -13,12 +12,11 @@ import (
 )
 
 func Test_ComplexityLimit_Exceeded(t *testing.T) {
-	ctx := context.TODO()
 	config := &config.Config{
 		ComplexityLimit: 1,
 		Port:            "9999",
 	}
-	srv, err := server.New(ctx, config, nil, nil)
+	srv, err := server.New(config, nil, nil)
 	require.NoError(t, err)
 
 	complexQuery := `{

@@ -1,7 +1,6 @@
 package server
 
 import (
-	"context"
 	"log/slog"
 	"net/http"
 
@@ -11,7 +10,6 @@ import (
 	"github.com/ericbutera/amalgam/internal/http/server"
 	"github.com/ericbutera/amalgam/internal/tasks"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
-	"github.com/ericbutera/amalgam/pkg/otel"
 	gql_prom "github.com/ericbutera/amalgam/services/graph/extensions/prometheus"
 	"github.com/ericbutera/amalgam/services/graph/graph"
 	"github.com/ericbutera/amalgam/services/graph/internal/config"
@@ -20,10 +18,9 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/ravilushqa/otelgqlgen"
 	"github.com/rs/cors"
-	"github.com/samber/lo"
 )
 
-func New(ctx context.Context, config *config.Config, rpcClient pb.FeedServiceClient, tasks tasks.Tasks) (*http.Server, error) {
+func New(config *config.Config, rpcClient pb.FeedServiceClient, tasks tasks.Tasks) (*http.Server, error) {
 	srv := newServer(rpcClient, tasks)
 
 	router := newRouter(config.CorsAllowOrigins)
@@ -33,9 +30,6 @@ func New(ctx context.Context, config *config.Config, rpcClient pb.FeedServiceCli
 	router.Handle("/", playground.Handler("GraphQL playground", "/query"))
 
 	if config.OtelEnable {
-		shutdown := lo.Must(otel.Setup(ctx, config.IgnoredSpanNames))
-		defer func() { lo.Must0(shutdown(ctx)) }()
-
 		gql_prom.Register()
 		srv.Use(otelgqlgen.Middleware())
 		srv.Use(gql_prom.Tracer{})
