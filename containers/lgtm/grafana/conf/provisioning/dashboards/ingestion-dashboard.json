@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 15,
+  "id": 10,
   "links": [],
   "panels": [
     {
@@ -530,6 +530,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
+          "description": "Workflow failures will show here. Panel shows \"no data\" if everything works.",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -1072,8 +1073,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -1164,8 +1164,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -1226,13 +1225,13 @@
     "list": []
   },
   "time": {
-    "from": "now-3h",
+    "from": "now-15m",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "browser",
   "title": "ingestion dashboard",
   "uid": "ae57v6i1bbojkf",
-  "version": 31,
+  "version": 1,
   "weekStart": ""
 }
