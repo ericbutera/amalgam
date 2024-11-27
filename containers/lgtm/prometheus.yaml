@@ -21,6 +21,10 @@ scrape_configs:
     static_configs:
       - targets: ["temporal:9090"]
   - job_name: "feed-worker"
-    scrape_interval: 30s
+    scrape_interval: 10s
     static_configs:
       - targets: ["feed-worker:9090"]
+  - job_name: "feed-tasks-worker"
+    scrape_interval: 10s
+    static_configs:
+      - targets: ["feed-tasks-worker:9090"]

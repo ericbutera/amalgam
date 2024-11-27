@@ -92,9 +92,9 @@ k8s_yaml(secret_from_dict("data-pipeline-auth", inputs={
   "MINIO_ACCESS_KEY": "minio",
   "MINIO_SECRET_ACCESS_KEY": "minio-password",
 }))
-go_compile('feed-start-compile', './data-pipeline/temporal/feed/start', ['./data-pipeline/temporal'])
-go_image('feed-start', './data-pipeline/temporal/feed/start')
-k8s_resource("feed-start", resource_deps=["temporal","rpc"], labels=["data-pipeline"], auto_init=(not IS_CI))
+# go_compile('feed-start-compile', './data-pipeline/temporal/feed/start', ['./data-pipeline/temporal'])
+# go_image('feed-start', './data-pipeline/temporal/feed/start')
+# k8s_resource("feed-start", resource_deps=["temporal","rpc"], labels=["data-pipeline"], auto_init=(not IS_CI))
 
 go_compile('feed-worker-compile', './data-pipeline/temporal/feed/worker', ['./data-pipeline/temporal'])
 go_image('feed-worker', './data-pipeline/temporal/feed/worker')
