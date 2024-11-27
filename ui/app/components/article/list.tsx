@@ -4,14 +4,14 @@ import Link from "next/link";
 import useArticles from "../../data/articles";
 
 interface ArticlesProps {
-  id: string;
+  feedId: string;
 }
 
-export default function Articles({ id }: ArticlesProps) {
-  const { loading, error, articles } = useArticles(id);
+export default function Articles({ feedId }: ArticlesProps) {
+  const { loading, error, articles } = useArticles(feedId);
 
-  if (error) return <div>An error has occurred.</div>;
-  if (loading) <div>Loading...</div>;
+  if (error) return <div>failed to load articles</div>;
+  if (loading) return <div>loading...</div>;
   if (!articles || articles?.articles.length === 0)
     return <div>no articles found</div>;
 
@@ -24,7 +24,7 @@ export default function Articles({ id }: ArticlesProps) {
             className="border-b border-base-300 last:border-0"
           >
             <Link
-              href={`/article/${article.id}`}
+              href={`/articles/${article.id}`}
               className="block text-sm md:text-base lg:text-lg hover:bg-primary hover:text-white transition-colors duration-200"
             >
               {article.title}

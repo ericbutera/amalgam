@@ -6,11 +6,11 @@ interface PageProps {
   id: string;
 }
 
-export default function Page({ id }: PageProps) {
+export default function Header({ id }: PageProps) {
   const { loading, feed, error } = useFeed(id);
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error loading feed</div>;
+  if (loading) return <div>loading...</div>;
+  if (error) return <div>failed to load feed</div>;
 
   return <h1 className="text-2xl font-bold">{feed?.name}</h1>;
 }

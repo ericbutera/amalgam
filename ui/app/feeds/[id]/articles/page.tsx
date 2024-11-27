@@ -18,7 +18,7 @@ export default function Page({ params }: PageProps) {
       <Feeds feedId={feedId} />
       <div className="flex-1 w-full">
         <Header id={feedId} />
-        <Articles id={feedId} />
+        <Articles feedId={feedId} />
       </div>
     </div>
   );
