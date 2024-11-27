@@ -10,7 +10,7 @@ interface FeedsProps {
 export default function Feeds({ feedId }: FeedsProps) {
   const { loading, error, feeds } = useFeeds();
 
-  if (error) return <div>failed to load</div>;
+  if (error) return <div>failed to load feeds</div>;
   if (loading) return <div>loading...</div>;
   if (!feeds || feeds?.length === 0) return <div>no feeds found</div>;
 

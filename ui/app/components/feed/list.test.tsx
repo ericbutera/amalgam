@@ -1,14 +1,12 @@
 import { render, screen } from "@testing-library/react";
 import Feeds from "./list";
 import "@testing-library/jest-dom";
-import useFeeds from "../../data/feeds"; // Import to apply dynamic mocks
+import useFeeds from "../../data/feeds";
 
-// Mock useFeeds once at the module level
 jest.mock("../../data/feeds");
 
 describe("Feeds Component", () => {
   beforeEach(() => {
-    // Reset the mock implementation before each test
     jest.clearAllMocks();
   });
 
@@ -26,12 +24,12 @@ describe("Feeds Component", () => {
   test("renders error state", () => {
     (useFeeds as jest.Mock).mockImplementation(() => ({
       loading: false,
-      error: "Failed to fetch feeds",
+      error: "Failed to load feeds",
       feeds: [],
     }));
 
     render(<Feeds />);
-    expect(screen.getByText("failed to load")).toBeInTheDocument();
+    expect(screen.getByText("failed to load feeds")).toBeInTheDocument();
   });
 
   test("renders no feeds found state", () => {
