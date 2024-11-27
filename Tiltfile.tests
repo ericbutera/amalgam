@@ -55,3 +55,11 @@ k8s_resource("k6-simulate-traffic",
   resource_deps=["graph"],
   labels=["test"]
 )
+
+local_resource(
+  "ui tests",
+  "cd ui && npm test",
+  labels=["test"],
+  deps=["ui"],
+  ignore=["ui/coverage/**"],
+)
