@@ -10,9 +10,9 @@ interface ArticleDetailsProps {
 export default function ArticleDetails({ id }: ArticleDetailsProps) {
   const { loading, error, article } = useArticle(id);
 
-  if (error) return <div>An error has occurred while loading the article.</div>;
-  if (loading) return <div>Loading...</div>;
-  if (!article) return <div>Article not found.</div>;
+  if (error) return <div>failed to load article</div>;
+  if (loading) return <div>loading...</div>;
+  if (!article) return <div>article not found</div>;
 
   return (
     <div className="p-4">
