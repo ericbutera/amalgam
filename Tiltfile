@@ -4,6 +4,9 @@ load('ext://secret', 'secret_create_generic', 'secret_from_dict')
 load('ext://uibutton', 'cmd_button')
 secret_settings(disable_scrub=True)
 
+if os.path.exists("./Tiltfile.overrides"):
+  include("./Tiltfile.overrides")
+
 IS_CI = config.tilt_subcommand == 'ci'
 
 dotenv('.env.local')
