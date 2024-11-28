@@ -50,7 +50,6 @@ func newPrometheusScope(c prometheus.Configuration) (tally.Scope, error) {
 		CachedReporter:  reporter,
 		Separator:       prometheus.DefaultSeparator,
 		SanitizeOptions: &sdktally.PrometheusSanitizeOptions,
-		Prefix:          "feed_",
 	}
 	scope, _ := tally.NewRootScope(scopeOpts, time.Second)
 	scope = sdktally.NewPrometheusNamingScope(scope)

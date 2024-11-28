@@ -1,45 +1,45 @@
-apiVersion: batch/v1
-kind: Job
-metadata:
-  labels:
-    service: feed-start
-  name: feed-start
-spec:
-  template:
-    metadata:
-      name: feed-start
-      labels:
-        service: feed-start
-    spec:
-      containers:
-        - name: feed-start
-          image: feed-start-image
-          env:
-            - name: TEMPORAL_HOST
-              value: "temporal:7233"
-            - name: RPC_HOST
-              value: "rpc:50051"
-            - name: RPC_INSECURE
-              value: "true"
-            - name: MINIO_ENDPOINT
-              value: "minio:9000"
-            - name: MINIO_ACCESS_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: data-pipeline-auth
-                  key: MINIO_ACCESS_KEY
-            - name: MINIO_SECRET_ACCESS_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: data-pipeline-auth
-                  key: MINIO_SECRET_ACCESS_KEY
-            - name: OTEL_ENABLE
-              value: "true"
-            - name: OTEL_SERVICE_NAME
-              value: "feed-start"
-            - name: OTEL_EXPORTER_OTLP_INSECURE
-              value: "true"
-            - name: OTEL_EXPORTER_OTLP_ENDPOINT
-              value: "http://lgtm:4318"
-      restartPolicy: Never
-  backoffLimit: 10
+# apiVersion: batch/v1
+# kind: Job
+# metadata:
+#   labels:
+#     service: feed-start
+#   name: feed-start
+# spec:
+#   template:
+#     metadata:
+#       name: feed-start
+#       labels:
+#         service: feed-start
+#     spec:
+#       containers:
+#         - name: feed-start
+#           image: feed-start-image
+#           env:
+#             - name: TEMPORAL_HOST
+#               value: "temporal:7233"
+#             - name: RPC_HOST
+#               value: "rpc:50051"
+#             - name: RPC_INSECURE
+#               value: "true"
+#             - name: MINIO_ENDPOINT
+#               value: "minio:9000"
+#             - name: MINIO_ACCESS_KEY
+#               valueFrom:
+#                 secretKeyRef:
+#                   name: data-pipeline-auth
+#                   key: MINIO_ACCESS_KEY
+#             - name: MINIO_SECRET_ACCESS_KEY
+#               valueFrom:
+#                 secretKeyRef:
+#                   name: data-pipeline-auth
+#                   key: MINIO_SECRET_ACCESS_KEY
+#             - name: OTEL_ENABLE
+#               value: "true"
+#             - name: OTEL_SERVICE_NAME
+#               value: "feed-start"
+#             - name: OTEL_EXPORTER_OTLP_INSECURE
+#               value: "true"
+#             - name: OTEL_EXPORTER_OTLP_ENDPOINT
+#               value: "http://lgtm:4318"
+#       restartPolicy: Never
+#   backoffLimit: 10

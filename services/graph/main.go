@@ -10,6 +10,7 @@ import (
 	"github.com/ericbutera/amalgam/internal/logger"
 	"github.com/ericbutera/amalgam/internal/tasks"
 	"github.com/ericbutera/amalgam/pkg/config/env"
+	"github.com/ericbutera/amalgam/pkg/otel"
 	"github.com/ericbutera/amalgam/services/graph/internal/config"
 	"github.com/ericbutera/amalgam/services/graph/internal/server"
 	rpc "github.com/ericbutera/amalgam/services/rpc/pkg/client"
@@ -31,13 +32,18 @@ func run(slog *slog.Logger) error {
 
 	config := lo.Must(env.New[config.Config]())
 
+	if config.OtelEnable {
+		shutdown := lo.Must(otel.Setup(ctx, config.IgnoredSpanNames))
+		defer func() { lo.Must0(shutdown(ctx)) }()
+	}
+
 	client, closer := lo.Must2(rpc.New(config.RpcHost, config.RpcInsecure))
 	defer func() { lo.Must0(closer()) }()
 
 	tasks := lo.Must(tasks.NewTemporalFromEnv())
 	defer tasks.Close()
 
-	srv, err := server.New(ctx, config, client, tasks)
+	srv, err := server.New(config, client, tasks)
 	if err != nil {
 		return err
 	}

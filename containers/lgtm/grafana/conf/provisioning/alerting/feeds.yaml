@@ -17,7 +17,7 @@ groups:
             model:
               disableTextWrap: false
               editorMode: builder
-              expr: feed__temporal_workflow_failed_total
+              expr: temporal_workflow_failed_total
               fullMetaSearch: false
               includeNullMetadata: true
               instant: true

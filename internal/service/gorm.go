@@ -20,32 +20,6 @@ const DefaultLimit = 100
 
 var ErrQueryFailed = errors.New("query failed")
 
-type Gorm struct {
-	db *gorm.DB
-}
-
-func NewGorm(db *gorm.DB) Service {
-	return &Gorm{db: db}
-}
-
-// query returns a new query builder with the given context. required for otel
-func (s *Gorm) query(ctx context.Context) *gorm.DB {
-	return s.db.WithContext(ctx)
-}
-
-func (s *Gorm) Feeds(ctx context.Context) ([]svc_model.Feed, error) {
-	var feeds []svc_model.Feed
-	result := s.query(ctx).
-		Where("is_active=?", true).
-		Limit(DefaultLimit). // TODO: pagination
-		Find(&feeds)
-
-	if result.Error != nil {
-		return nil, ErrQueryFailed
-	}
-	return feeds, nil
-}
-
 var (
 	validateFeedCreate = validate.CustomMessages{
 		"URL.required": "The URL is required.",
@@ -68,9 +42,31 @@ var (
 	}
 )
 
-type CreateFeedResult struct {
-	ID               string
-	ValidationErrors []validate.ValidationError
+type Gorm struct {
+	db *gorm.DB
+}
+
+func NewGorm(db *gorm.DB) Service {
+	return &Gorm{db: db}
+}
+
+// query returns a new query builder with the given context. required for otel
+func (s *Gorm) query(ctx context.Context) *gorm.DB {
+	return s.db.WithContext(ctx)
+}
+
+func (s *Gorm) Feeds(ctx context.Context) ([]svc_model.Feed, error) {
+	var feeds []svc_model.Feed
+	result := s.query(ctx).
+		Where("is_active=?", true).
+		Order("name").       // TODO index name
+		Limit(DefaultLimit). // TODO: pagination
+		Find(&feeds)
+
+	if result.Error != nil {
+		return nil, ErrQueryFailed
+	}
+	return feeds, nil
 }
 
 func feedUrlExists(tx *gorm.DB, url string) error {
@@ -82,6 +78,11 @@ func feedUrlExists(tx *gorm.DB, url string) error {
 		return ErrDuplicate
 	}
 	return nil
+}
+
+type CreateFeedResult struct {
+	ID               string
+	ValidationErrors []validate.ValidationError
 }
 
 func (s *Gorm) CreateFeed(ctx context.Context, data *svc_model.Feed) (CreateFeedResult, error) {
