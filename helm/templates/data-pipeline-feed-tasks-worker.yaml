@@ -62,3 +62,10 @@ spec:
               value: "true"
             - name: OTEL_EXPORTER_OTLP_ENDPOINT
               value: "http://lgtm:4318"
+            - name: DB_ADAPTER
+              value: "mysql"
+            - name: DB_MYSQL_DSN
+              valueFrom:
+                secretKeyRef:
+                  name: rpc-auth # TODO: temp workaround - remove
+                  key: DB_MYSQL_DSN
