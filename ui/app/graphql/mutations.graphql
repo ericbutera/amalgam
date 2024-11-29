@@ -10,14 +10,8 @@ mutation UpdateFeed($id: ID!, $url: String, $name: String) {
     }
 }
 
-mutation GenerateFeeds {
-    generateFeeds {
-        id
-    }
-}
-
-mutation FetchFeeds {
-    fetchFeeds {
-        id
+mutation FeedTask($task: TaskType!) {
+    feedTask(task: $task) {
+        taskId
     }
 }

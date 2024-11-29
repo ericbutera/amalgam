@@ -3,6 +3,9 @@
 package model
 
 import (
+	"fmt"
+	"io"
+	"strconv"
 	"time"
 )
 
@@ -36,6 +39,10 @@ type Feed struct {
 	Name string `json:"name"`
 }
 
+type FeedTaskResponse struct {
+	TaskID string `json:"taskId"`
+}
+
 type FetchFeedsResponse struct {
 	ID string `json:"id"`
 }
@@ -62,4 +69,47 @@ type Query struct {
 
 type UpdateResponse struct {
 	ID string `json:"id"`
+}
+
+type TaskType string
+
+const (
+	TaskTypeGenerateFeeds  TaskType = "GENERATE_FEEDS"
+	TaskTypeRefreshFeeds   TaskType = "REFRESH_FEEDS"
+	TaskTypeAssociateFeeds TaskType = "ASSOCIATE_FEEDS"
+)
+
+var AllTaskType = []TaskType{
+	TaskTypeGenerateFeeds,
+	TaskTypeRefreshFeeds,
+	TaskTypeAssociateFeeds,
+}
+
+func (e TaskType) IsValid() bool {
+	switch e {
+	case TaskTypeGenerateFeeds, TaskTypeRefreshFeeds, TaskTypeAssociateFeeds:
+		return true
+	}
+	return false
+}
+
+func (e TaskType) String() string {
+	return string(e)
+}
+
+func (e *TaskType) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = TaskType(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid TaskType", str)
+	}
+	return nil
+}
+
+func (e TaskType) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
 }

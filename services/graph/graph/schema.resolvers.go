@@ -18,11 +18,6 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-const (
-	DefaultLimit int32 = 25
-	LimitMax     int32 = 100
-)
-
 // AddFeed is the resolver for the addFeed field.
 func (r *mutationResolver) AddFeed(ctx context.Context, url string, name string) (*model.AddResponse, error) {
 	// TODO: middleware to log errors
@@ -59,27 +54,27 @@ func (r *mutationResolver) UpdateFeed(ctx context.Context, id string, url *strin
 	}, nil
 }
 
-// GenerateFeeds is the resolver for the generateFeeds field.
-func (r *mutationResolver) GenerateFeeds(ctx context.Context) (*model.GenerateFeedsResponse, error) {
-	task, err := r.tasks.Workflow(ctx, tasks.TaskGenerateFeeds)
-	if err != nil {
-		slog.ErrorContext(ctx, "failed to start feed task", "error", err)
-		return nil, status.Errorf(codes.Internal, "failed to start feed task")
+// FeedTask is the resolver for the feedTask field.
+func (r *mutationResolver) FeedTask(ctx context.Context, task model.TaskType) (*model.FeedTaskResponse, error) {
+	var t tasks.TaskType
+	switch task {
+	case model.TaskTypeGenerateFeeds:
+		t = tasks.TaskGenerateFeeds
+	case model.TaskTypeRefreshFeeds:
+		t = tasks.TaskFetchFeeds
+	case model.TaskTypeAssociateFeeds:
+		t = tasks.TaskAssociateFeeds
+	default:
+		return nil, status.Errorf(codes.InvalidArgument, "invalid task type")
 	}
-	return &model.GenerateFeedsResponse{
-		ID: task.ID,
-	}, nil
-}
 
-// FetchFeeds is the resolver for the fetchFeeds field.
-func (r *mutationResolver) FetchFeeds(ctx context.Context) (*model.FetchFeedsResponse, error) {
-	task, err := r.tasks.Workflow(ctx, tasks.TaskFetchFeeds)
+	result, err := r.tasks.Workflow(ctx, t)
 	if err != nil {
 		slog.ErrorContext(ctx, "failed to start feed task", "error", err)
 		return nil, status.Errorf(codes.Internal, "failed to start feed task")
 	}
-	return &model.FetchFeedsResponse{
-		ID: task.ID,
+	return &model.FeedTaskResponse{
+		TaskID: result.ID,
 	}, nil
 }
 

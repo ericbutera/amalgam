@@ -4,6 +4,7 @@ type Feed {
   id: ID!
   url: String!
   name: String!
+  # note: this is not a 1:1 mapping to database. it will contain "unread" and other metadata fields specific to the logged in user
 }
 
 type Article {
@@ -52,6 +53,16 @@ input ListOptions {
   limit: Int
 }
 
+enum TaskType {
+  GENERATE_FEEDS
+  REFRESH_FEEDS
+  ASSOCIATE_FEEDS
+}
+
+type FeedTaskResponse {
+  taskId: ID!
+}
+
 type Query {
   feeds: [Feed!]!
   feed(id: ID!): Feed
@@ -62,6 +73,8 @@ type Query {
 type Mutation {
   addFeed(url: String!, name: String!): AddResponse!
   updateFeed(id: ID!, url: String, name: String): UpdateResponse!
-  generateFeeds: GenerateFeedsResponse!
-  fetchFeeds: FetchFeedsResponse!
+  feedTask(task: TaskType!): FeedTaskResponse!
+  # TODO: deprecate
+  # generateFeeds: GenerateFeedsResponse!
+  # fetchFeeds: FetchFeedsResponse!
 }

@@ -224,8 +224,8 @@ func TestFeedTask(t *testing.T) {
 		Workflow(mock.Anything, tasks.TaskGenerateFeeds).
 		Return(&tasks.TaskResult{ID: expectedID}, nil)
 
-	resp, err := r.resolver.Mutation().GenerateFeeds(ctx)
+	resp, err := r.resolver.Mutation().FeedTask(ctx, graphModel.TaskTypeGenerateFeeds)
 
 	require.NoError(t, err)
-	assert.Equal(t, expectedID, resp.ID)
+	assert.Equal(t, expectedID, resp.TaskID)
 }

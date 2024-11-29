@@ -33,3 +33,17 @@ func RefreshFeedsWorkflow(ctx workflow.Context) error {
 	}
 	return nil
 }
+
+func AssociateFeedsWorkflow(ctx workflow.Context) error {
+	ctx = workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
+		StartToCloseTimeout: time.Minute,
+	})
+
+	var a *Activities
+
+	err := workflow.ExecuteActivity(ctx, a.AssociateFeeds).Get(ctx, nil)
+	if err != nil {
+		return err
+	}
+	return nil
+}
