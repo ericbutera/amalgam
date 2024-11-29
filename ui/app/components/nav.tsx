@@ -33,7 +33,7 @@ const fetchFeeds = async () => {
 
 export default function Nav() {
   return (
-    <div className="navbar bg-base-100">
+    <nav className="navbar bg-base-100 sticky top-0 z-50">
       <div className="navbar-none">
         <Link href="/" className="btn btn-ghost text-xl">
           home
@@ -65,6 +65,6 @@ export default function Nav() {
           </ul>
         </div>
       </div>
-    </div>
+    </nav>
   );
 }

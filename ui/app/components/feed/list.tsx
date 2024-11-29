@@ -14,11 +14,11 @@ export default function Feeds({ feedId }: FeedsProps) {
   if (loading) return <div>loading...</div>;
   if (!feeds || feeds?.length === 0) return <div>no feeds found</div>;
 
-  const isHighlight = (id: string) => (id == feedId ? "active" : "");
+  const isHighlight = (id: string) => (feedId && id == feedId ? "active" : "");
 
   return (
     <div>
-      <ul className="menu bg-base-200 w-56">
+      <ul className="menu bg-base-200 text-base-content min-h-full w-56 p-4">
         {feeds?.map((feed) => (
           <li key={feed.id}>
             <Link
