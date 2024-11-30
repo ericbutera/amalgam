@@ -7,11 +7,13 @@ import (
 	"github.com/ericbutera/amalgam/internal/converters"
 	svcModel "github.com/ericbutera/amalgam/internal/service/models"
 	"github.com/ericbutera/amalgam/internal/tasks"
+	"github.com/ericbutera/amalgam/internal/test"
 	"github.com/ericbutera/amalgam/internal/test/fixtures"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
 	helpers "github.com/ericbutera/amalgam/pkg/test"
 	"github.com/ericbutera/amalgam/services/graph/graph"
 	graphModel "github.com/ericbutera/amalgam/services/graph/graph/model"
+	"github.com/ericbutera/amalgam/services/graph/internal/middleware"
 	"github.com/google/uuid"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
@@ -36,6 +38,10 @@ func newTestResolver() *testResolver {
 	}
 }
 
+func newAuthCtx() context.Context {
+	return middleware.WithUserID(context.Background(), test.UserID) // TODO: a better way to do this would be DI auth provider in the resolver
+}
+
 func newFeed() *svcModel.Feed {
 	return fixtures.NewFeed(fixtures.WithFeedID(fixtures.NewID()))
 }
@@ -56,11 +62,14 @@ func Test_AddFeed(t *testing.T) {
 				Url:  svcFeed.URL,
 				Name: svcFeed.Name,
 			},
+			User: &pb.User{
+				Id: test.UserID,
+			},
 		}).
 		Return(&pb.CreateFeedResponse{Id: svcFeed.ID}, nil)
 
 	actual, err := r.resolver.Mutation().
-		AddFeed(context.Background(), svcFeed.URL, svcFeed.Name)
+		AddFeed(newAuthCtx(), svcFeed.URL, svcFeed.Name)
 
 	require.NoError(t, err)
 	helpers.Diff(t, graphModel.AddResponse{ID: svcFeed.ID}, *actual)
@@ -98,12 +107,14 @@ func Test_Feeds(t *testing.T) {
 	pbFeed := c.ServiceToProtoFeed(svcFeed)
 	expected := []*graphModel.Feed{graphFeed}
 	r.client.EXPECT().
-		ListFeeds(mock.Anything, &pb.ListFeedsRequest{}).
+		ListFeeds(mock.Anything, &pb.ListFeedsRequest{
+			User: &pb.User{Id: test.UserID},
+		}).
 		Return(&pb.ListFeedsResponse{
 			Feeds: []*pb.Feed{pbFeed},
 		}, nil)
 
-	actual, err := r.resolver.Query().Feeds(context.Background())
+	actual, err := r.resolver.Query().Feeds(newAuthCtx())
 	require.NoError(t, err)
 	assert.Len(t, actual, 1)
 	helpers.Diff(t, *expected[0], *actual[0])

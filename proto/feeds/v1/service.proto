@@ -15,6 +15,7 @@ service FeedService {
   rpc ListArticles(ListArticlesRequest) returns (ListArticlesResponse);
   rpc GetArticle(GetArticleRequest) returns (GetArticleResponse);
   rpc SaveArticle(SaveArticleRequest) returns (SaveArticleResponse);
+  rpc Ready(ReadyRequest) returns (ReadyResponse);
 
   // Deprecated: use graph service
   rpc FeedTask(FeedTaskRequest) returns (FeedTaskResponse) {
@@ -45,6 +46,13 @@ message Article {
 
 message Empty {}
 
+message User {
+  string id = 1 [
+    (buf.validate.field).string.uuid = true,
+    (buf.validate.field).required = true
+  ];
+}
+
 message GetFeedRequest {
   string id = 1 [(buf.validate.field).string.uuid = true];
 }
@@ -53,7 +61,9 @@ message GetFeedResponse {
   Feed feed = 1;
 }
 
-message ListFeedsRequest {}
+message ListFeedsRequest {
+  User user = 1 [(buf.validate.field).required = true];
+}
 
 message ListFeedsResponse {
   repeated Feed feeds = 1;
@@ -65,6 +75,7 @@ message CreateFeedRequest {
     string name = 2;
   }
   Feed feed = 1;
+  User user = 2 [(buf.validate.field).required = true];
 }
 
 message CreateFeedResponse {
@@ -143,3 +154,6 @@ message FeedTaskResponse {
   string message = 2;
   option deprecated = true;
 }
+
+message ReadyRequest {}
+message ReadyResponse {}

@@ -13,6 +13,7 @@ import (
 	gql_prom "github.com/ericbutera/amalgam/services/graph/extensions/prometheus"
 	"github.com/ericbutera/amalgam/services/graph/graph"
 	"github.com/ericbutera/amalgam/services/graph/internal/config"
+	"github.com/ericbutera/amalgam/services/graph/internal/middleware"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/httplog/v2"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -24,7 +25,7 @@ func New(config *config.Config, rpcClient pb.FeedServiceClient, tasks tasks.Task
 	srv := newServer(rpcClient, tasks)
 
 	router := newRouter(config.CorsAllowOrigins)
-	router.Handle("/query", srv)
+	router.Handle("/query", middleware.Auth(srv))
 	router.Handle("/healthz", newHealthzHandler())
 	router.Handle("/readyz", newReadyzHandler(rpcClient))
 	router.Handle("/", playground.Handler("GraphQL playground", "/query"))
@@ -38,6 +39,7 @@ func New(config *config.Config, rpcClient pb.FeedServiceClient, tasks tasks.Task
 	}
 
 	srv.Use(extension.FixedComplexityLimit(config.ComplexityLimit))
+	srv.Use(middleware.NewErrorLogging())
 
 	return server.New(
 		server.WithAddr(":"+config.Port),
@@ -53,8 +55,7 @@ func newHealthzHandler() http.HandlerFunc {
 
 func newReadyzHandler(client pb.FeedServiceClient) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// TODO: add a low cost readiness endpoint (listfeeds could be expensive)
-		_, err := client.ListFeeds(r.Context(), &pb.ListFeedsRequest{})
+		_, err := client.Ready(r.Context(), &pb.ReadyRequest{})
 		if err != nil {
 			w.WriteHeader(http.StatusServiceUnavailable)
 			return

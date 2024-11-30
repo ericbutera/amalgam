@@ -14,6 +14,13 @@ var (
 	ErrValidation = errors.New("validation error")
 )
 
+/*
+TODO:
+type FeedsOptions struct {
+	UserID string
+}
+*/
+
 type ListOptions struct {
 	Cursor string // Encoded cursor for current page
 	Limit  int    // Limit for pagination
@@ -31,8 +38,9 @@ type ArticlesByFeedResult struct {
 
 // domain logic for feeds & articles
 type Service interface {
-	Feeds(ctx context.Context) ([]svc_model.Feed, error)
+	Feeds(ctx context.Context /*, options *FeedsOptions*/) ([]svc_model.Feed, error)
 	CreateFeed(ctx context.Context, feed *svc_model.Feed) (CreateFeedResult, error)
+	SubscribeFeed(ctx context.Context, feedID, userID string) error
 	UpdateFeed(ctx context.Context, id string, feed *svc_model.Feed) error
 	GetFeed(ctx context.Context, id string) (*svc_model.Feed, error)
 	GetArticlesByFeed(ctx context.Context, feedId string, options ListOptions) (*ArticlesByFeedResult, error)

@@ -26,6 +26,7 @@ const (
 	FeedService_ListArticles_FullMethodName = "/feeds.v1.FeedService/ListArticles"
 	FeedService_GetArticle_FullMethodName   = "/feeds.v1.FeedService/GetArticle"
 	FeedService_SaveArticle_FullMethodName  = "/feeds.v1.FeedService/SaveArticle"
+	FeedService_Ready_FullMethodName        = "/feeds.v1.FeedService/Ready"
 	FeedService_FeedTask_FullMethodName     = "/feeds.v1.FeedService/FeedTask"
 )
 
@@ -40,6 +41,7 @@ type FeedServiceClient interface {
 	ListArticles(ctx context.Context, in *ListArticlesRequest, opts ...grpc.CallOption) (*ListArticlesResponse, error)
 	GetArticle(ctx context.Context, in *GetArticleRequest, opts ...grpc.CallOption) (*GetArticleResponse, error)
 	SaveArticle(ctx context.Context, in *SaveArticleRequest, opts ...grpc.CallOption) (*SaveArticleResponse, error)
+	Ready(ctx context.Context, in *ReadyRequest, opts ...grpc.CallOption) (*ReadyResponse, error)
 	// Deprecated: Do not use.
 	// Deprecated: use graph service
 	FeedTask(ctx context.Context, in *FeedTaskRequest, opts ...grpc.CallOption) (*FeedTaskResponse, error)
@@ -123,6 +125,16 @@ func (c *feedServiceClient) SaveArticle(ctx context.Context, in *SaveArticleRequ
 	return out, nil
 }
 
+func (c *feedServiceClient) Ready(ctx context.Context, in *ReadyRequest, opts ...grpc.CallOption) (*ReadyResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ReadyResponse)
+	err := c.cc.Invoke(ctx, FeedService_Ready_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Deprecated: Do not use.
 func (c *feedServiceClient) FeedTask(ctx context.Context, in *FeedTaskRequest, opts ...grpc.CallOption) (*FeedTaskResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
@@ -145,6 +157,7 @@ type FeedServiceServer interface {
 	ListArticles(context.Context, *ListArticlesRequest) (*ListArticlesResponse, error)
 	GetArticle(context.Context, *GetArticleRequest) (*GetArticleResponse, error)
 	SaveArticle(context.Context, *SaveArticleRequest) (*SaveArticleResponse, error)
+	Ready(context.Context, *ReadyRequest) (*ReadyResponse, error)
 	// Deprecated: Do not use.
 	// Deprecated: use graph service
 	FeedTask(context.Context, *FeedTaskRequest) (*FeedTaskResponse, error)
@@ -178,6 +191,9 @@ func (UnimplementedFeedServiceServer) GetArticle(context.Context, *GetArticleReq
 }
 func (UnimplementedFeedServiceServer) SaveArticle(context.Context, *SaveArticleRequest) (*SaveArticleResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SaveArticle not implemented")
+}
+func (UnimplementedFeedServiceServer) Ready(context.Context, *ReadyRequest) (*ReadyResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Ready not implemented")
 }
 func (UnimplementedFeedServiceServer) FeedTask(context.Context, *FeedTaskRequest) (*FeedTaskResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FeedTask not implemented")
@@ -329,6 +345,24 @@ func _FeedService_SaveArticle_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _FeedService_Ready_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReadyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FeedServiceServer).Ready(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FeedService_Ready_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FeedServiceServer).Ready(ctx, req.(*ReadyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _FeedService_FeedTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(FeedTaskRequest)
 	if err := dec(in); err != nil {
@@ -381,6 +415,10 @@ var FeedService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SaveArticle",
 			Handler:    _FeedService_SaveArticle_Handler,
+		},
+		{
+			MethodName: "Ready",
+			Handler:    _FeedService_Ready_Handler,
 		},
 		{
 			MethodName: "FeedTask",

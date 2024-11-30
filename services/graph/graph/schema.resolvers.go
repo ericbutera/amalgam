@@ -8,11 +8,11 @@ import (
 	"context"
 	"log/slog"
 
-	"github.com/ericbutera/amalgam/internal/converters"
 	"github.com/ericbutera/amalgam/internal/tasks"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
 	"github.com/ericbutera/amalgam/services/graph/graph/model"
 	errHelper "github.com/ericbutera/amalgam/services/graph/internal/errors"
+	"github.com/ericbutera/amalgam/services/graph/internal/middleware"
 	"github.com/samber/lo"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -20,12 +20,12 @@ import (
 
 // AddFeed is the resolver for the addFeed field.
 func (r *mutationResolver) AddFeed(ctx context.Context, url string, name string) (*model.AddResponse, error) {
-	// TODO: middleware to log errors
 	resp, err := r.rpcClient.CreateFeed(ctx, &pb.CreateFeedRequest{
 		Feed: &pb.CreateFeedRequest_Feed{
 			Url:  url,
 			Name: name,
 		},
+		User: &pb.User{Id: middleware.GetUserID(ctx)}, // TODO: r.auth.GetUserID(ctx)
 	})
 	if err != nil {
 		return nil, errHelper.HandleGrpcErrors(ctx, err, "failed to create feed")
@@ -62,13 +62,11 @@ func (r *mutationResolver) FeedTask(ctx context.Context, task model.TaskType) (*
 		t = tasks.TaskGenerateFeeds
 	case model.TaskTypeRefreshFeeds:
 		t = tasks.TaskFetchFeeds
-	case model.TaskTypeAssociateFeeds:
-		t = tasks.TaskAssociateFeeds
 	default:
 		return nil, status.Errorf(codes.InvalidArgument, "invalid task type")
 	}
 
-	result, err := r.tasks.Workflow(ctx, t)
+	result, err := r.tasks.Workflow(ctx, t /*middleware.GetUserID(ctx)*/) // TODO: r.auth.GetUserID(ctx)
 	if err != nil {
 		slog.ErrorContext(ctx, "failed to start feed task", "error", err)
 		return nil, status.Errorf(codes.Internal, "failed to start feed task")
@@ -81,13 +79,14 @@ func (r *mutationResolver) FeedTask(ctx context.Context, task model.TaskType) (*
 // Feeds is the resolver for the feeds field.
 func (r *queryResolver) Feeds(ctx context.Context) ([]*model.Feed, error) {
 	var feeds []*model.Feed
-	resp, err := r.rpcClient.ListFeeds(ctx, &pb.ListFeedsRequest{})
+	resp, err := r.rpcClient.ListFeeds(ctx, &pb.ListFeedsRequest{
+		User: &pb.User{Id: middleware.GetUserID(ctx)}, // TODO: r.auth.GetUserID(ctx)
+	})
 	if err != nil {
 		return nil, errHelper.HandleGrpcErrors(ctx, err, "failed to list feeds")
 	}
-	c := converters.New()
 	for _, feed := range resp.GetFeeds() {
-		feeds = append(feeds, c.ProtoToGraphFeed(feed))
+		feeds = append(feeds, r.converter.ProtoToGraphFeed(feed))
 	}
 	return feeds, nil
 }
@@ -98,7 +97,7 @@ func (r *queryResolver) Feed(ctx context.Context, id string) (*model.Feed, error
 	if err != nil {
 		return nil, errHelper.HandleGrpcErrors(ctx, err, "failed to get feed")
 	}
-	return converters.New().ProtoToGraphFeed(resp.GetFeed()), nil
+	return r.converter.ProtoToGraphFeed(resp.GetFeed()), nil
 }
 
 // Articles is the resolver for the articles field.
@@ -117,6 +116,8 @@ func (r *queryResolver) Articles(ctx context.Context, feedID string, options *mo
 			}
 		}
 	}
+
+	// TODO: dataloader for articles seen
 	resp, err := r.rpcClient.ListArticles(ctx, &pb.ListArticlesRequest{
 		FeedId: feedID,
 		Options: &pb.ListOptions{
@@ -128,10 +129,9 @@ func (r *queryResolver) Articles(ctx context.Context, feedID string, options *mo
 		return nil, errHelper.HandleGrpcErrors(ctx, err, "failed to list articles")
 	}
 
-	c := converters.New()
 	var articles []*model.Article
 	for _, article := range resp.GetArticles() {
-		articles = append(articles, c.ProtoToGraphArticle(article))
+		articles = append(articles, r.converter.ProtoToGraphArticle(article))
 	}
 	pagination := model.Pagination{}
 	p := resp.GetPagination()
@@ -152,7 +152,7 @@ func (r *queryResolver) Article(ctx context.Context, id string) (*model.Article,
 		return nil, errHelper.HandleGrpcErrors(ctx, err, "failed to get article")
 	}
 	article := resp.GetArticle()
-	return converters.New().ProtoToGraphArticle(article), nil
+	return r.converter.ProtoToGraphArticle(article), nil
 }
 
 // Mutation returns MutationResolver implementation.

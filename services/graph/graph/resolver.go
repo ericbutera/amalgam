@@ -1,6 +1,7 @@
 package graph
 
 import (
+	"github.com/ericbutera/amalgam/internal/converters"
 	"github.com/ericbutera/amalgam/internal/tasks"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
 )
@@ -16,11 +17,15 @@ const (
 type Resolver struct {
 	rpcClient pb.FeedServiceClient
 	tasks     tasks.Tasks
+	converter converters.Converter
+	// TODO: auth authprovider
 }
 
 func NewResolver(rpcClient pb.FeedServiceClient, tasks tasks.Tasks) *Resolver {
 	return &Resolver{
 		rpcClient: rpcClient,
 		tasks:     tasks,
+		converter: converters.New(),
+		// TODO: auth authprovider
 	}
 }

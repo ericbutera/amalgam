@@ -56,7 +56,6 @@ input ListOptions {
 enum TaskType {
   GENERATE_FEEDS
   REFRESH_FEEDS
-  ASSOCIATE_FEEDS
 }
 
 type FeedTaskResponse {
@@ -71,10 +70,11 @@ type Query {
 }
 
 type Mutation {
+  # TODO: directive OR context
+  # admin and backend should be able to assign a userId to a feed
+  # - execution: userRole := ctx.Value("role").(string)
+  # - on data: userId: ID @role(requiredRole: "admin")
   addFeed(url: String!, name: String!): AddResponse!
   updateFeed(id: ID!, url: String, name: String): UpdateResponse!
   feedTask(task: TaskType!): FeedTaskResponse!
-  # TODO: deprecate
-  # generateFeeds: GenerateFeedsResponse!
-  # fetchFeeds: FetchFeedsResponse!
 }

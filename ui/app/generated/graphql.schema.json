@@ -866,12 +866,6 @@
         "interfaces": null,
         "enumValues": [
           {
-            "name": "ASSOCIATE_FEEDS",
-            "description": null,
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "GENERATE_FEEDS",
             "description": null,
             "isDeprecated": false,

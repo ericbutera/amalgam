@@ -125,7 +125,6 @@ scalar String
 enum TaskType {
 	GENERATE_FEEDS
 	REFRESH_FEEDS
-	ASSOCIATE_FEEDS
 }
 
 type UpdateResponse {

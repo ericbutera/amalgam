@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 
-	"github.com/ericbutera/amalgam/internal/converters"
 	"github.com/ericbutera/amalgam/internal/service"
 	"github.com/ericbutera/amalgam/internal/validate"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
@@ -39,31 +38,40 @@ func validationErr(errors []validate.ValidationError) error {
 }
 
 func (s *Server) ListFeeds(ctx context.Context, _ *pb.ListFeedsRequest) (*pb.ListFeedsResponse, error) {
-	feeds, err := s.service.Feeds(ctx)
+	feeds, err := s.service.Feeds(ctx /*, in.GetUser().GetId()*/)
 	if err != nil {
 		return nil, serviceToProtoErr(err, nil)
 	}
 	pbFeeds := []*pb.Feed{}
 	for _, feed := range feeds {
-		pbFeed := converters.New().ServiceToProtoFeed(&feed)
-		pbFeeds = append(pbFeeds, pbFeed)
+		pbFeeds = append(pbFeeds, s.converters.ServiceToProtoFeed(&feed))
 	}
 	return &pb.ListFeedsResponse{Feeds: pbFeeds}, nil
 }
 
 func (s *Server) CreateFeed(ctx context.Context, in *pb.CreateFeedRequest) (*pb.CreateFeedResponse, error) {
-	feed := converters.New().ProtoCreateFeedToService(in.GetFeed())
+	feed := s.converters.ProtoCreateFeedToService(in.GetFeed())
+
+	// 1. create feed (if not exists)
 	res, err := s.service.CreateFeed(ctx, feed)
 	if err != nil {
 		return nil, serviceToProtoErr(err, res.ValidationErrors)
 	}
+
+	// 2. associate feed with user
+	if in.GetUser() != nil && in.GetUser().GetId() != "" {
+		if err := s.service.SubscribeFeed(ctx, res.ID, in.GetUser().GetId()); err != nil {
+			return nil, serviceToProtoErr(err, nil)
+		}
+	}
+
 	return &pb.CreateFeedResponse{
 		Id: res.ID,
 	}, nil
 }
 
 func (s *Server) UpdateFeed(ctx context.Context, in *pb.UpdateFeedRequest) (*pb.UpdateFeedResponse, error) {
-	feed := converters.New().ProtoUpdateFeedToService(in.GetFeed())
+	feed := s.converters.ProtoUpdateFeedToService(in.GetFeed())
 	if err := s.service.UpdateFeed(ctx, feed.ID, feed); err != nil {
 		return nil, serviceToProtoErr(err, nil)
 	}
@@ -75,10 +83,8 @@ func (s *Server) GetFeed(ctx context.Context, in *pb.GetFeedRequest) (*pb.GetFee
 	if err != nil {
 		return nil, serviceToProtoErr(err, nil)
 	}
-
-	pbFeed := converters.New().ServiceToProtoFeed(feed)
 	return &pb.GetFeedResponse{
-		Feed: pbFeed,
+		Feed: s.converters.ServiceToProtoFeed(feed),
 	}, nil
 }
 
@@ -91,13 +97,12 @@ func (s *Server) ListArticles(ctx context.Context, in *pb.ListArticlesRequest) (
 	if err != nil {
 		return nil, serviceToProtoErr(err, nil)
 	}
-	c := converters.New()
-	pbArticles := []*pb.Article{}
+	articles := []*pb.Article{}
 	for _, article := range result.Articles {
-		pbArticles = append(pbArticles, c.ServiceToProtoArticle(&article))
+		articles = append(articles, s.converters.ServiceToProtoArticle(&article))
 	}
 	return &pb.ListArticlesResponse{
-		Articles: pbArticles,
+		Articles: articles,
 		Pagination: &pb.Pagination{
 			Previous: lo.FromPtr(result.Cursor.Before),
 			Next:     lo.FromPtr(result.Cursor.After),
@@ -110,15 +115,13 @@ func (s *Server) GetArticle(ctx context.Context, in *pb.GetArticleRequest) (*pb.
 	if err != nil {
 		return nil, serviceToProtoErr(err, nil)
 	}
-	pbArticle := converters.New().ServiceToProtoArticle(article)
 	return &pb.GetArticleResponse{
-		Article: pbArticle,
+		Article: s.converters.ServiceToProtoArticle(article),
 	}, nil
 }
 
 func (s *Server) SaveArticle(ctx context.Context, in *pb.SaveArticleRequest) (*pb.SaveArticleResponse, error) {
-	article := converters.New().ProtoToServiceArticle(in.GetArticle())
-
+	article := s.converters.ProtoToServiceArticle(in.GetArticle())
 	res, err := s.service.SaveArticle(ctx, article)
 	if err != nil {
 		return nil, serviceToProtoErr(err, res.ValidationErrors)
@@ -143,4 +146,13 @@ func validationErrToPb(errs []validate.ValidationError) []*pb.ValidationError {
 
 func (*Server) FeedTask(_ context.Context, _ *pb.FeedTaskRequest) (*pb.FeedTaskResponse, error) { //nolint
 	return nil, status.Error(codes.Unimplemented, "feed task has been moved to graphql")
+}
+
+func (s *Server) Ready(_ context.Context, _ *pb.ReadyRequest) (*pb.ReadyResponse, error) {
+	// TODO: without this the graph and rpc services are "ready" before the database is actually ready
+	res := s.db.Exec("SELECT 1 FROM feeds LIMIT 1")
+	if res.Error != nil {
+		return nil, status.Error(codes.Internal, "database not ready")
+	}
+	return &pb.ReadyResponse{}, nil
 }

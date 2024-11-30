@@ -46,7 +46,7 @@ type Base struct {
 	DeletedAt gorm.DeletedAt `json:"deletedAt" gorm:"index"`
 }
 
-type UserFeed struct {
+type UserFeeds struct {
 	UserID        string    `gorm:"column:user_id;primaryKey"`
 	FeedID        string    `gorm:"column:feed_id;primaryKey"`
 	CreatedAt     time.Time `gorm:"column:created_at;autoCreateTime"`
@@ -54,7 +54,7 @@ type UserFeed struct {
 	UnreadStartAt time.Time `gorm:"column:unread_start_at"`
 }
 
-type UserArticle struct {
+type UserArticles struct {
 	UserID    string    `gorm:"column:user_id;primaryKey"`
 	ArticleID string    `gorm:"column:article_id;primaryKey"`
 	CreatedAt time.Time `gorm:"column:created_at;autoCreateTime"`

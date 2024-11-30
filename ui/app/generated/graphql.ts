@@ -128,7 +128,6 @@ export type QueryFeedArgs = {
 };
 
 export enum TaskType {
-  AssociateFeeds = 'ASSOCIATE_FEEDS',
   GenerateFeeds = 'GENERATE_FEEDS',
   RefreshFeeds = 'REFRESH_FEEDS'
 }

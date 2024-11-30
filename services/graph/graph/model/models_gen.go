@@ -74,20 +74,18 @@ type UpdateResponse struct {
 type TaskType string
 
 const (
-	TaskTypeGenerateFeeds  TaskType = "GENERATE_FEEDS"
-	TaskTypeRefreshFeeds   TaskType = "REFRESH_FEEDS"
-	TaskTypeAssociateFeeds TaskType = "ASSOCIATE_FEEDS"
+	TaskTypeGenerateFeeds TaskType = "GENERATE_FEEDS"
+	TaskTypeRefreshFeeds  TaskType = "REFRESH_FEEDS"
 )
 
 var AllTaskType = []TaskType{
 	TaskTypeGenerateFeeds,
 	TaskTypeRefreshFeeds,
-	TaskTypeAssociateFeeds,
 }
 
 func (e TaskType) IsValid() bool {
 	switch e {
-	case TaskTypeGenerateFeeds, TaskTypeRefreshFeeds, TaskTypeAssociateFeeds:
+	case TaskTypeGenerateFeeds, TaskTypeRefreshFeeds:
 		return true
 	}
 	return false

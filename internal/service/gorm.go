@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/ericbutera/amalgam/internal/converters"
 	db_model "github.com/ericbutera/amalgam/internal/db/models"
@@ -112,6 +113,19 @@ func (s *Gorm) CreateFeed(ctx context.Context, data *svc_model.Feed) (CreateFeed
 	})
 
 	return res, err
+}
+
+// TODO: method name
+func (s *Gorm) SubscribeFeed(_ context.Context, feedID, userID string) error {
+	res := s.db.Clauses(clause.OnConflict{
+		Columns:   []clause.Column{{Name: "feed_id"}, {Name: "user_id"}},
+		DoNothing: true,
+	}).Create(&db_model.UserFeeds{
+		FeedID:        feedID,
+		UserID:        userID,
+		UnreadStartAt: time.Now().AddDate(0, -1, 0).UTC(), // -1 month
+	}) // upsert
+	return res.Error
 }
 
 func (s *Gorm) UpdateFeed(ctx context.Context, id string, feed *svc_model.Feed) error {

@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"syscall"
 
+	"github.com/ericbutera/amalgam/internal/converters"
 	"github.com/ericbutera/amalgam/internal/db"
 	"github.com/ericbutera/amalgam/internal/service"
 	"github.com/ericbutera/amalgam/pkg/config/env"
@@ -25,12 +26,13 @@ import (
 )
 
 type Server struct {
-	config    *config.Config
-	grpcSrv   *grpc.Server
-	metricSrv *http.Server
-	db        *gorm.DB
-	service   service.Service
-	shutdowns []func(context.Context) error
+	config     *config.Config
+	grpcSrv    *grpc.Server
+	metricSrv  *http.Server
+	db         *gorm.DB
+	service    service.Service
+	converters converters.Converter
+	shutdowns  []func(context.Context) error
 	pb.UnimplementedFeedServiceServer
 }
 
@@ -134,7 +136,9 @@ func WithGrpcServer(srv *grpc.Server) Option {
 
 // TODO: its time to split up New into separate types
 func New(opts ...Option) (*Server, error) {
-	server := Server{}
+	server := Server{
+		converters: converters.New(),
+	}
 
 	for _, opt := range opts {
 		if err := opt(&server); err != nil {

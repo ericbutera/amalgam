@@ -12,10 +12,9 @@ var ErrInvalidTaskType = errors.New("invalid task type")
 type TaskType string
 
 const (
-	TaskUnspecified    TaskType = ""
-	TaskGenerateFeeds  TaskType = "generate_feeds"
-	TaskFetchFeeds     TaskType = "fetch_feeds"
-	TaskAssociateFeeds TaskType = "associate_feeds"
+	TaskUnspecified   TaskType = ""
+	TaskGenerateFeeds TaskType = "generate_feeds"
+	TaskFetchFeeds    TaskType = "fetch_feeds"
 )
 
 type Tasks interface {
@@ -32,8 +31,6 @@ func taskTypeToWorkflow(taskType TaskType) (any, error) {
 		return feed_tasks.GenerateFeedsWorkflow, nil
 	case TaskFetchFeeds:
 		return feed_tasks.RefreshFeedsWorkflow, nil
-	case TaskAssociateFeeds:
-		return feed_tasks.AssociateFeedsWorkflow, nil
 	}
 	return nil, ErrInvalidTaskType
 }
