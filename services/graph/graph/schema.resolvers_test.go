@@ -239,19 +239,34 @@ func Test_Article(t *testing.T) {
 	helpers.Diff(t, *expected, *actual, "FeedID", "ImageURL")
 }
 
-func TestFeedTask(t *testing.T) {
+func TestFeedTasks(t *testing.T) {
 	t.Parallel()
-	expectedID := "super-id"
 
-	r := newTestResolver()
+	cases := []struct {
+		name      string
+		taskType  tasks.TaskType
+		graphType graphModel.TaskType
+	}{
+		{"generate feeds", tasks.TaskGenerateFeeds, graphModel.TaskTypeGenerateFeeds},
+		{"fetch feeds", tasks.TaskFetchFeeds, graphModel.TaskTypeRefreshFeeds},
+	}
 
-	r.task.EXPECT().
-		Workflow(mock.Anything, tasks.TaskGenerateFeeds).
-		Return(&tasks.TaskResult{ID: expectedID}, nil)
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			expectedID := "super-id"
 
-	resp, err := r.resolver.Mutation().
-		FeedTask(newAuthCtx(), graphModel.TaskTypeGenerateFeeds)
+			r := newTestResolver()
 
-	require.NoError(t, err)
-	assert.Equal(t, expectedID, resp.TaskID)
+			r.task.EXPECT().
+				Workflow(mock.Anything, tc.taskType).
+				Return(&tasks.TaskResult{ID: expectedID}, nil)
+
+			resp, err := r.resolver.Mutation().
+				FeedTask(newAuthCtx(), tc.graphType)
+
+			require.NoError(t, err)
+			assert.Equal(t, expectedID, resp.TaskID)
+		})
+	}
 }
