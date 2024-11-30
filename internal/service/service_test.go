@@ -187,3 +187,51 @@ func TestSaveArticle(t *testing.T) {
 	helpers.Diff(t, *expected, *actual, "ID", "UpdatedAt")
 	assert.Greater(t, actual.UpdatedAt, h.start)
 }
+
+func TestUserFeeds(t *testing.T) {
+	t.Parallel()
+	h := newTestHelper(t)
+
+	data, err := seed.FeedAndArticles(h.db, 1)
+	require.NoError(t, err)
+
+	result, err := h.svc.GetUserFeeds(context.Background(), data.UserFeed.UserID)
+	require.NoError(t, err)
+
+	assert.Len(t, result.Feeds, 1)
+	assert.Equal(t, data.UserFeed.FeedID, result.Feeds[0].FeedID)
+}
+
+func TestUserFeed(t *testing.T) {
+	t.Parallel()
+	h := newTestHelper(t)
+
+	data, err := seed.FeedAndArticles(h.db, 1)
+	require.NoError(t, err)
+
+	result, err := h.svc.GetUserFeed(context.Background(), data.UserFeed.UserID, data.UserFeed.FeedID)
+	require.NoError(t, err)
+
+	assert.Equal(t, data.UserFeed.FeedID, result.FeedID)
+}
+
+func TestSaveUserFeed(t *testing.T) {
+	t.Parallel()
+	h := newTestHelper(t)
+
+	feed := fixtures.NewFeed()
+	require.NoError(t, h.db.Create(&feed).Error)
+
+	uf := svcModel.UserFeed{
+		UserID: seed.UserID,
+		FeedID: feed.ID,
+	}
+	err := h.svc.SaveUserFeed(context.Background(), &uf)
+	require.NoError(t, err)
+
+	actual := &svcModel.UserFeed{}
+	res := h.db.First(actual, "user_id=? AND feed_id=?", seed.UserID, feed.ID)
+	require.NoError(t, res.Error)
+
+	helpers.Diff(t, uf, *actual, "CreatedAt", "ViewedAt", "UnreadStartAt")
+}

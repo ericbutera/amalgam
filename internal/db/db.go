@@ -114,7 +114,13 @@ func WithTraceAll() Options {
 
 func WithAutoMigrate() Options {
 	return func(db *gorm.DB) error {
-		return db.AutoMigrate(&models.Feed{}, &models.Article{}, &models.User{})
+		return db.AutoMigrate(
+			&models.Feed{},
+			&models.Article{},
+			&models.User{},
+			&models.UserFeeds{},
+			&models.UserArticles{},
+		)
 	}
 }
 

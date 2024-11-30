@@ -14,13 +14,6 @@ var (
 	ErrValidation = errors.New("validation error")
 )
 
-/*
-TODO:
-type FeedsOptions struct {
-	UserID string
-}
-*/
-
 type ListOptions struct {
 	Cursor string // Encoded cursor for current page
 	Limit  int    // Limit for pagination

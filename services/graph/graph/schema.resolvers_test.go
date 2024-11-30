@@ -8,8 +8,8 @@ import (
 	"github.com/ericbutera/amalgam/internal/converters"
 	svcModel "github.com/ericbutera/amalgam/internal/service/models"
 	"github.com/ericbutera/amalgam/internal/tasks"
-	"github.com/ericbutera/amalgam/internal/test"
 	"github.com/ericbutera/amalgam/internal/test/fixtures"
+	"github.com/ericbutera/amalgam/internal/test/seed"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
 	helpers "github.com/ericbutera/amalgam/pkg/test"
 	"github.com/ericbutera/amalgam/services/graph/graph"
@@ -40,7 +40,7 @@ func newTestResolver() *testResolver {
 }
 
 func newAuthCtx() context.Context {
-	return middleware.WithUserID(context.Background(), test.UserID) // TODO: a better way to do this would be DI auth provider in the resolver
+	return middleware.WithUserID(context.Background(), seed.UserID) // TODO: a better way to do this would be DI auth provider in the resolver
 }
 
 func newFeed() *svcModel.Feed {
@@ -78,7 +78,7 @@ func Test_AddFeed(t *testing.T) {
 				Name: svcFeed.Name,
 			},
 			User: &pb.User{
-				Id: test.UserID,
+				Id: seed.UserID,
 			},
 		}).
 		Return(&pb.CreateFeedResponse{Id: svcFeed.ID}, nil)
@@ -123,7 +123,7 @@ func Test_Feeds(t *testing.T) {
 	expected := []*graphModel.Feed{graphFeed}
 	r.client.EXPECT().
 		ListUserFeeds(mock.Anything, &pb.ListUserFeedsRequest{
-			User: &pb.User{Id: test.UserID},
+			User: &pb.User{Id: seed.UserID},
 		}).
 		Return(&pb.ListUserFeedsResponse{
 			Feeds: []*pb.UserFeed{pbFeed},
@@ -145,7 +145,7 @@ func Test_Feed(t *testing.T) {
 	pbFeed := c.ServiceToProtoUserFeed(feed)
 	expected := graphFeed
 	r.client.EXPECT().
-		GetUserFeed(mock.Anything, &pb.GetUserFeedRequest{FeedId: feed.FeedID, UserId: test.UserID}).
+		GetUserFeed(mock.Anything, &pb.GetUserFeedRequest{FeedId: feed.FeedID, UserId: seed.UserID}).
 		Return(&pb.GetUserFeedResponse{Feed: pbFeed}, nil)
 
 	actual, err := r.resolver.Query().Feed(newAuthCtx(), feed.FeedID)
