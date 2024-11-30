@@ -20,9 +20,9 @@ go-checks: go-lint go-test
 ts-checks: ts-lint ts-test
 
 go-coverage-report:
-	go test -coverprofile=reports/coverage.out ./...
-	go tool cover -func reports/coverage.out -o reports/coverage.txt
-	go tool cover -html reports/coverage.out -o reports/cover.html
+	go test -coverprofile=reports/go/coverage.out ./...
+	go tool cover -func reports/go/coverage.out -o reports/go/coverage.txt
+	go tool cover -html reports/go/coverage.out -o reports/go/cover.html
 
 go-lint-changed: install-go-tools
 	@echo Linting recently changed go files
