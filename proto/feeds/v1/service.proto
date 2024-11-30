@@ -62,7 +62,7 @@ message GetFeedResponse {
 }
 
 message ListFeedsRequest {
-  User user = 1 [(buf.validate.field).required = true];
+  User user = 1; // There are parts that don't require a user like refresh feeds
 }
 
 message ListFeedsResponse {
