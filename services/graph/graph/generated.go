@@ -73,9 +73,17 @@ type ComplexityRoot struct {
 	}
 
 	Feed struct {
-		ID   func(childComplexity int) int
-		Name func(childComplexity int) int
-		URL  func(childComplexity int) int
+		CreatedAt     func(childComplexity int) int
+		ID            func(childComplexity int) int
+		Name          func(childComplexity int) int
+		URL           func(childComplexity int) int
+		UnreadCount   func(childComplexity int) int
+		UnreadStartAt func(childComplexity int) int
+		ViewedAt      func(childComplexity int) int
+	}
+
+	FeedResponse struct {
+		Feeds func(childComplexity int) int
 	}
 
 	FeedTaskResponse struct {
@@ -119,7 +127,7 @@ type MutationResolver interface {
 	FeedTask(ctx context.Context, task model.TaskType) (*model.FeedTaskResponse, error)
 }
 type QueryResolver interface {
-	Feeds(ctx context.Context) ([]*model.Feed, error)
+	Feeds(ctx context.Context) (*model.FeedResponse, error)
 	Feed(ctx context.Context, id string) (*model.Feed, error)
 	Articles(ctx context.Context, feedID string, options *model.ListOptions) (*model.ArticlesResponse, error)
 	Article(ctx context.Context, id string) (*model.Article, error)
@@ -249,6 +257,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.ArticlesResponse.Pagination(childComplexity), true
 
+	case "Feed.createdAt":
+		if e.complexity.Feed.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Feed.CreatedAt(childComplexity), true
+
 	case "Feed.id":
 		if e.complexity.Feed.ID == nil {
 			break
@@ -269,6 +284,34 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Feed.URL(childComplexity), true
+
+	case "Feed.unreadCount":
+		if e.complexity.Feed.UnreadCount == nil {
+			break
+		}
+
+		return e.complexity.Feed.UnreadCount(childComplexity), true
+
+	case "Feed.unreadStartAt":
+		if e.complexity.Feed.UnreadStartAt == nil {
+			break
+		}
+
+		return e.complexity.Feed.UnreadStartAt(childComplexity), true
+
+	case "Feed.viewedAt":
+		if e.complexity.Feed.ViewedAt == nil {
+			break
+		}
+
+		return e.complexity.Feed.ViewedAt(childComplexity), true
+
+	case "FeedResponse.feeds":
+		if e.complexity.FeedResponse.Feeds == nil {
+			break
+		}
+
+		return e.complexity.FeedResponse.Feeds(childComplexity), true
 
 	case "FeedTaskResponse.taskId":
 		if e.complexity.FeedTaskResponse.TaskID == nil {
@@ -1615,6 +1658,242 @@ func (ec *executionContext) fieldContext_Feed_name(_ context.Context, field grap
 	return fc, nil
 }
 
+func (ec *executionContext) _Feed_createdAt(ctx context.Context, field graphql.CollectedField, obj *model.Feed) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Feed_createdAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNDateTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Feed_createdAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Feed",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type DateTime does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Feed_viewedAt(ctx context.Context, field graphql.CollectedField, obj *model.Feed) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Feed_viewedAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ViewedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNDateTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Feed_viewedAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Feed",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type DateTime does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Feed_unreadStartAt(ctx context.Context, field graphql.CollectedField, obj *model.Feed) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Feed_unreadStartAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UnreadStartAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNDateTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Feed_unreadStartAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Feed",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type DateTime does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Feed_unreadCount(ctx context.Context, field graphql.CollectedField, obj *model.Feed) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Feed_unreadCount(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UnreadCount, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Feed_unreadCount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Feed",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _FeedResponse_feeds(ctx context.Context, field graphql.CollectedField, obj *model.FeedResponse) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_FeedResponse_feeds(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Feeds, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Feed)
+	fc.Result = res
+	return ec.marshalNFeed2ᚕᚖgithubᚗcomᚋericbuteraᚋamalgamᚋservicesᚋgraphᚋgraphᚋmodelᚐFeedᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_FeedResponse_feeds(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "FeedResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Feed_id(ctx, field)
+			case "url":
+				return ec.fieldContext_Feed_url(ctx, field)
+			case "name":
+				return ec.fieldContext_Feed_name(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Feed_createdAt(ctx, field)
+			case "viewedAt":
+				return ec.fieldContext_Feed_viewedAt(ctx, field)
+			case "unreadStartAt":
+				return ec.fieldContext_Feed_unreadStartAt(ctx, field)
+			case "unreadCount":
+				return ec.fieldContext_Feed_unreadCount(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Feed", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _FeedTaskResponse_taskId(ctx context.Context, field graphql.CollectedField, obj *model.FeedTaskResponse) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_FeedTaskResponse_taskId(ctx, field)
 	if err != nil {
@@ -2038,9 +2317,9 @@ func (ec *executionContext) _Query_feeds(ctx context.Context, field graphql.Coll
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*model.Feed)
+	res := resTmp.(*model.FeedResponse)
 	fc.Result = res
-	return ec.marshalNFeed2ᚕᚖgithubᚗcomᚋericbuteraᚋamalgamᚋservicesᚋgraphᚋgraphᚋmodelᚐFeedᚄ(ctx, field.Selections, res)
+	return ec.marshalNFeedResponse2ᚖgithubᚗcomᚋericbuteraᚋamalgamᚋservicesᚋgraphᚋgraphᚋmodelᚐFeedResponse(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_feeds(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2051,14 +2330,10 @@ func (ec *executionContext) fieldContext_Query_feeds(_ context.Context, field gr
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_Feed_id(ctx, field)
-			case "url":
-				return ec.fieldContext_Feed_url(ctx, field)
-			case "name":
-				return ec.fieldContext_Feed_name(ctx, field)
+			case "feeds":
+				return ec.fieldContext_FeedResponse_feeds(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Feed", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type FeedResponse", field.Name)
 		},
 	}
 	return fc, nil
@@ -2106,6 +2381,14 @@ func (ec *executionContext) fieldContext_Query_feed(ctx context.Context, field g
 				return ec.fieldContext_Feed_url(ctx, field)
 			case "name":
 				return ec.fieldContext_Feed_name(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Feed_createdAt(ctx, field)
+			case "viewedAt":
+				return ec.fieldContext_Feed_viewedAt(ctx, field)
+			case "unreadStartAt":
+				return ec.fieldContext_Feed_unreadStartAt(ctx, field)
+			case "unreadCount":
+				return ec.fieldContext_Feed_unreadCount(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Feed", field.Name)
 		},
@@ -4442,6 +4725,65 @@ func (ec *executionContext) _Feed(ctx context.Context, sel ast.SelectionSet, obj
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "createdAt":
+			out.Values[i] = ec._Feed_createdAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "viewedAt":
+			out.Values[i] = ec._Feed_viewedAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "unreadStartAt":
+			out.Values[i] = ec._Feed_unreadStartAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "unreadCount":
+			out.Values[i] = ec._Feed_unreadCount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var feedResponseImplementors = []string{"FeedResponse"}
+
+func (ec *executionContext) _FeedResponse(ctx context.Context, sel ast.SelectionSet, obj *model.FeedResponse) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, feedResponseImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("FeedResponse")
+		case "feeds":
+			out.Values[i] = ec._FeedResponse_feeds(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -5352,6 +5694,20 @@ func (ec *executionContext) marshalNFeed2ᚖgithubᚗcomᚋericbuteraᚋamalgam�
 	return ec._Feed(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNFeedResponse2githubᚗcomᚋericbuteraᚋamalgamᚋservicesᚋgraphᚋgraphᚋmodelᚐFeedResponse(ctx context.Context, sel ast.SelectionSet, v model.FeedResponse) graphql.Marshaler {
+	return ec._FeedResponse(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNFeedResponse2ᚖgithubᚗcomᚋericbuteraᚋamalgamᚋservicesᚋgraphᚋgraphᚋmodelᚐFeedResponse(ctx context.Context, sel ast.SelectionSet, v *model.FeedResponse) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._FeedResponse(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalNFeedTaskResponse2githubᚗcomᚋericbuteraᚋamalgamᚋservicesᚋgraphᚋgraphᚋmodelᚐFeedTaskResponse(ctx context.Context, sel ast.SelectionSet, v model.FeedTaskResponse) graphql.Marshaler {
 	return ec._FeedTaskResponse(ctx, sel, &v)
 }
@@ -5373,6 +5729,21 @@ func (ec *executionContext) unmarshalNID2string(ctx context.Context, v interface
 
 func (ec *executionContext) marshalNID2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
 	res := graphql.MarshalID(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v interface{}) (int, error) {
+	res, err := graphql.UnmarshalInt(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.SelectionSet, v int) graphql.Marshaler {
+	res := graphql.MarshalInt(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")

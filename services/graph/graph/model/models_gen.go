@@ -34,9 +34,17 @@ type ArticlesResponse struct {
 }
 
 type Feed struct {
-	ID   string `json:"id"`
-	URL  string `json:"url"`
-	Name string `json:"name"`
+	ID            string    `json:"id"`
+	URL           string    `json:"url"`
+	Name          string    `json:"name"`
+	CreatedAt     time.Time `json:"createdAt"`
+	ViewedAt      time.Time `json:"viewedAt"`
+	UnreadStartAt time.Time `json:"unreadStartAt"`
+	UnreadCount   int       `json:"unreadCount"`
+}
+
+type FeedResponse struct {
+	Feeds []*Feed `json:"feeds"`
 }
 
 type FeedTaskResponse struct {

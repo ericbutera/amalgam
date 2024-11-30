@@ -191,7 +191,7 @@ func (h *handlers) feedsList(c *gin.Context) {
 	}
 
 	feeds := []ListFeed{}
-	for _, feed := range resp.Feeds {
+	for _, feed := range resp.Feeds.Feeds {
 		feeds = append(feeds, ListFeed{
 			Id:   feed.Id,
 			Name: feed.Name,

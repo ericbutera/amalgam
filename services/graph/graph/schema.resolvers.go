@@ -77,27 +77,32 @@ func (r *mutationResolver) FeedTask(ctx context.Context, task model.TaskType) (*
 }
 
 // Feeds is the resolver for the feeds field.
-func (r *queryResolver) Feeds(ctx context.Context) ([]*model.Feed, error) {
-	var feeds []*model.Feed
-	resp, err := r.rpcClient.ListFeeds(ctx, &pb.ListFeedsRequest{
+func (r *queryResolver) Feeds(ctx context.Context) (*model.FeedResponse, error) {
+	resp, err := r.rpcClient.ListUserFeeds(ctx, &pb.ListUserFeedsRequest{
 		User: &pb.User{Id: middleware.GetUserID(ctx)}, // TODO: r.auth.GetUserID(ctx)
 	})
 	if err != nil {
 		return nil, errHelper.HandleGrpcErrors(ctx, err, "failed to list feeds")
 	}
+	var feeds []*model.Feed
 	for _, feed := range resp.GetFeeds() {
-		feeds = append(feeds, r.converter.ProtoToGraphFeed(feed))
+		feeds = append(feeds, r.converter.ProtoUserFeedToGraphUserFeed(feed))
 	}
-	return feeds, nil
+	return &model.FeedResponse{
+		Feeds: feeds,
+	}, nil
 }
 
 // Feed is the resolver for the feed field.
 func (r *queryResolver) Feed(ctx context.Context, id string) (*model.Feed, error) {
-	resp, err := r.rpcClient.GetFeed(ctx, &pb.GetFeedRequest{Id: id})
+	resp, err := r.rpcClient.GetUserFeed(ctx, &pb.GetUserFeedRequest{
+		UserId: middleware.GetUserID(ctx), // TODO: r.auth.GetUserID(ctx)
+		FeedId: id,
+	})
 	if err != nil {
 		return nil, errHelper.HandleGrpcErrors(ctx, err, "failed to get feed")
 	}
-	return r.converter.ProtoToGraphFeed(resp.GetFeed()), nil
+	return r.converter.ProtoUserFeedToGraphUserFeed(resp.GetFeed()), nil
 }
 
 // Articles is the resolver for the articles field.

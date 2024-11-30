@@ -3,8 +3,10 @@ package server
 import (
 	"context"
 	"errors"
+	"log/slog"
 
 	"github.com/ericbutera/amalgam/internal/service"
+	"github.com/ericbutera/amalgam/internal/service/models"
 	"github.com/ericbutera/amalgam/internal/validate"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
 	"github.com/samber/lo"
@@ -38,7 +40,7 @@ func validationErr(errors []validate.ValidationError) error {
 }
 
 func (s *Server) ListFeeds(ctx context.Context, _ *pb.ListFeedsRequest) (*pb.ListFeedsResponse, error) {
-	feeds, err := s.service.Feeds(ctx /*, in.GetUser().GetId()*/)
+	feeds, err := s.service.Feeds(ctx)
 	if err != nil {
 		return nil, serviceToProtoErr(err, nil)
 	}
@@ -47,6 +49,20 @@ func (s *Server) ListFeeds(ctx context.Context, _ *pb.ListFeedsRequest) (*pb.Lis
 		pbFeeds = append(pbFeeds, s.converters.ServiceToProtoFeed(&feed))
 	}
 	return &pb.ListFeedsResponse{Feeds: pbFeeds}, nil
+}
+
+func (s *Server) ListUserFeeds(ctx context.Context, in *pb.ListUserFeedsRequest) (*pb.ListUserFeedsResponse, error) {
+	userID := in.GetUser().GetId()
+	slog.Info("rpc list user feeds", "user_id", userID)
+	res, err := s.service.GetUserFeeds(ctx, userID)
+	if err != nil {
+		return nil, serviceToProtoErr(err, nil)
+	}
+	feeds := []*pb.UserFeed{}
+	for _, feed := range res.Feeds {
+		feeds = append(feeds, s.converters.ServiceToProtoUserFeed(&feed))
+	}
+	return &pb.ListUserFeedsResponse{Feeds: feeds}, nil
 }
 
 func (s *Server) CreateFeed(ctx context.Context, in *pb.CreateFeedRequest) (*pb.CreateFeedResponse, error) {
@@ -60,7 +76,11 @@ func (s *Server) CreateFeed(ctx context.Context, in *pb.CreateFeedRequest) (*pb.
 
 	// 2. associate feed with user
 	if in.GetUser() != nil && in.GetUser().GetId() != "" {
-		if err := s.service.SubscribeFeed(ctx, res.ID, in.GetUser().GetId()); err != nil {
+		uf := &models.UserFeed{
+			UserID: in.GetUser().GetId(),
+			FeedID: res.ID,
+		}
+		if err := s.service.SaveUserFeed(ctx, uf); err != nil {
 			return nil, serviceToProtoErr(err, nil)
 		}
 	}
@@ -85,6 +105,16 @@ func (s *Server) GetFeed(ctx context.Context, in *pb.GetFeedRequest) (*pb.GetFee
 	}
 	return &pb.GetFeedResponse{
 		Feed: s.converters.ServiceToProtoFeed(feed),
+	}, nil
+}
+
+func (s *Server) GetUserFeed(ctx context.Context, in *pb.GetUserFeedRequest) (*pb.GetUserFeedResponse, error) {
+	feed, err := s.service.GetUserFeed(ctx, in.GetUserId(), in.GetFeedId())
+	if err != nil {
+		return nil, serviceToProtoErr(err, nil)
+	}
+	return &pb.GetUserFeedResponse{
+		Feed: s.converters.ServiceToProtoUserFeed(feed),
 	}, nil
 }
 

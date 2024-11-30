@@ -19,15 +19,17 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	FeedService_GetFeed_FullMethodName      = "/feeds.v1.FeedService/GetFeed"
-	FeedService_ListFeeds_FullMethodName    = "/feeds.v1.FeedService/ListFeeds"
-	FeedService_CreateFeed_FullMethodName   = "/feeds.v1.FeedService/CreateFeed"
-	FeedService_UpdateFeed_FullMethodName   = "/feeds.v1.FeedService/UpdateFeed"
-	FeedService_ListArticles_FullMethodName = "/feeds.v1.FeedService/ListArticles"
-	FeedService_GetArticle_FullMethodName   = "/feeds.v1.FeedService/GetArticle"
-	FeedService_SaveArticle_FullMethodName  = "/feeds.v1.FeedService/SaveArticle"
-	FeedService_Ready_FullMethodName        = "/feeds.v1.FeedService/Ready"
-	FeedService_FeedTask_FullMethodName     = "/feeds.v1.FeedService/FeedTask"
+	FeedService_GetFeed_FullMethodName       = "/feeds.v1.FeedService/GetFeed"
+	FeedService_GetUserFeed_FullMethodName   = "/feeds.v1.FeedService/GetUserFeed"
+	FeedService_ListFeeds_FullMethodName     = "/feeds.v1.FeedService/ListFeeds"
+	FeedService_ListUserFeeds_FullMethodName = "/feeds.v1.FeedService/ListUserFeeds"
+	FeedService_CreateFeed_FullMethodName    = "/feeds.v1.FeedService/CreateFeed"
+	FeedService_UpdateFeed_FullMethodName    = "/feeds.v1.FeedService/UpdateFeed"
+	FeedService_ListArticles_FullMethodName  = "/feeds.v1.FeedService/ListArticles"
+	FeedService_GetArticle_FullMethodName    = "/feeds.v1.FeedService/GetArticle"
+	FeedService_SaveArticle_FullMethodName   = "/feeds.v1.FeedService/SaveArticle"
+	FeedService_Ready_FullMethodName         = "/feeds.v1.FeedService/Ready"
+	FeedService_FeedTask_FullMethodName      = "/feeds.v1.FeedService/FeedTask"
 )
 
 // FeedServiceClient is the client API for FeedService service.
@@ -35,7 +37,9 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type FeedServiceClient interface {
 	GetFeed(ctx context.Context, in *GetFeedRequest, opts ...grpc.CallOption) (*GetFeedResponse, error)
+	GetUserFeed(ctx context.Context, in *GetUserFeedRequest, opts ...grpc.CallOption) (*GetUserFeedResponse, error)
 	ListFeeds(ctx context.Context, in *ListFeedsRequest, opts ...grpc.CallOption) (*ListFeedsResponse, error)
+	ListUserFeeds(ctx context.Context, in *ListUserFeedsRequest, opts ...grpc.CallOption) (*ListUserFeedsResponse, error)
 	CreateFeed(ctx context.Context, in *CreateFeedRequest, opts ...grpc.CallOption) (*CreateFeedResponse, error)
 	UpdateFeed(ctx context.Context, in *UpdateFeedRequest, opts ...grpc.CallOption) (*UpdateFeedResponse, error)
 	ListArticles(ctx context.Context, in *ListArticlesRequest, opts ...grpc.CallOption) (*ListArticlesResponse, error)
@@ -65,10 +69,30 @@ func (c *feedServiceClient) GetFeed(ctx context.Context, in *GetFeedRequest, opt
 	return out, nil
 }
 
+func (c *feedServiceClient) GetUserFeed(ctx context.Context, in *GetUserFeedRequest, opts ...grpc.CallOption) (*GetUserFeedResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetUserFeedResponse)
+	err := c.cc.Invoke(ctx, FeedService_GetUserFeed_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *feedServiceClient) ListFeeds(ctx context.Context, in *ListFeedsRequest, opts ...grpc.CallOption) (*ListFeedsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ListFeedsResponse)
 	err := c.cc.Invoke(ctx, FeedService_ListFeeds_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *feedServiceClient) ListUserFeeds(ctx context.Context, in *ListUserFeedsRequest, opts ...grpc.CallOption) (*ListUserFeedsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListUserFeedsResponse)
+	err := c.cc.Invoke(ctx, FeedService_ListUserFeeds_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -151,7 +175,9 @@ func (c *feedServiceClient) FeedTask(ctx context.Context, in *FeedTaskRequest, o
 // for forward compatibility.
 type FeedServiceServer interface {
 	GetFeed(context.Context, *GetFeedRequest) (*GetFeedResponse, error)
+	GetUserFeed(context.Context, *GetUserFeedRequest) (*GetUserFeedResponse, error)
 	ListFeeds(context.Context, *ListFeedsRequest) (*ListFeedsResponse, error)
+	ListUserFeeds(context.Context, *ListUserFeedsRequest) (*ListUserFeedsResponse, error)
 	CreateFeed(context.Context, *CreateFeedRequest) (*CreateFeedResponse, error)
 	UpdateFeed(context.Context, *UpdateFeedRequest) (*UpdateFeedResponse, error)
 	ListArticles(context.Context, *ListArticlesRequest) (*ListArticlesResponse, error)
@@ -174,8 +200,14 @@ type UnimplementedFeedServiceServer struct{}
 func (UnimplementedFeedServiceServer) GetFeed(context.Context, *GetFeedRequest) (*GetFeedResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetFeed not implemented")
 }
+func (UnimplementedFeedServiceServer) GetUserFeed(context.Context, *GetUserFeedRequest) (*GetUserFeedResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserFeed not implemented")
+}
 func (UnimplementedFeedServiceServer) ListFeeds(context.Context, *ListFeedsRequest) (*ListFeedsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListFeeds not implemented")
+}
+func (UnimplementedFeedServiceServer) ListUserFeeds(context.Context, *ListUserFeedsRequest) (*ListUserFeedsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListUserFeeds not implemented")
 }
 func (UnimplementedFeedServiceServer) CreateFeed(context.Context, *CreateFeedRequest) (*CreateFeedResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateFeed not implemented")
@@ -237,6 +269,24 @@ func _FeedService_GetFeed_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _FeedService_GetUserFeed_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserFeedRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FeedServiceServer).GetUserFeed(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FeedService_GetUserFeed_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FeedServiceServer).GetUserFeed(ctx, req.(*GetUserFeedRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _FeedService_ListFeeds_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListFeedsRequest)
 	if err := dec(in); err != nil {
@@ -251,6 +301,24 @@ func _FeedService_ListFeeds_Handler(srv interface{}, ctx context.Context, dec fu
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(FeedServiceServer).ListFeeds(ctx, req.(*ListFeedsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FeedService_ListUserFeeds_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListUserFeedsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FeedServiceServer).ListUserFeeds(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FeedService_ListUserFeeds_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FeedServiceServer).ListUserFeeds(ctx, req.(*ListUserFeedsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -393,8 +461,16 @@ var FeedService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _FeedService_GetFeed_Handler,
 		},
 		{
+			MethodName: "GetUserFeed",
+			Handler:    _FeedService_GetUserFeed_Handler,
+		},
+		{
 			MethodName: "ListFeeds",
 			Handler:    _FeedService_ListFeeds_Handler,
+		},
+		{
+			MethodName: "ListUserFeeds",
+			Handler:    _FeedService_ListUserFeeds_Handler,
 		},
 		{
 			MethodName: "CreateFeed",

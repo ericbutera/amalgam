@@ -319,6 +319,80 @@ func (_c *MockFeedServiceClient_GetFeed_Call) RunAndReturn(run func(context.Cont
 	return _c
 }
 
+// GetUserFeed provides a mock function with given fields: ctx, in, opts
+func (_m *MockFeedServiceClient) GetUserFeed(ctx context.Context, in *GetUserFeedRequest, opts ...grpc.CallOption) (*GetUserFeedResponse, error) {
+	_va := make([]interface{}, len(opts))
+	for _i := range opts {
+		_va[_i] = opts[_i]
+	}
+	var _ca []interface{}
+	_ca = append(_ca, ctx, in)
+	_ca = append(_ca, _va...)
+	ret := _m.Called(_ca...)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetUserFeed")
+	}
+
+	var r0 *GetUserFeedResponse
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, *GetUserFeedRequest, ...grpc.CallOption) (*GetUserFeedResponse, error)); ok {
+		return rf(ctx, in, opts...)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, *GetUserFeedRequest, ...grpc.CallOption) *GetUserFeedResponse); ok {
+		r0 = rf(ctx, in, opts...)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*GetUserFeedResponse)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, *GetUserFeedRequest, ...grpc.CallOption) error); ok {
+		r1 = rf(ctx, in, opts...)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// MockFeedServiceClient_GetUserFeed_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetUserFeed'
+type MockFeedServiceClient_GetUserFeed_Call struct {
+	*mock.Call
+}
+
+// GetUserFeed is a helper method to define mock.On call
+//   - ctx context.Context
+//   - in *GetUserFeedRequest
+//   - opts ...grpc.CallOption
+func (_e *MockFeedServiceClient_Expecter) GetUserFeed(ctx interface{}, in interface{}, opts ...interface{}) *MockFeedServiceClient_GetUserFeed_Call {
+	return &MockFeedServiceClient_GetUserFeed_Call{Call: _e.mock.On("GetUserFeed",
+		append([]interface{}{ctx, in}, opts...)...)}
+}
+
+func (_c *MockFeedServiceClient_GetUserFeed_Call) Run(run func(ctx context.Context, in *GetUserFeedRequest, opts ...grpc.CallOption)) *MockFeedServiceClient_GetUserFeed_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		variadicArgs := make([]grpc.CallOption, len(args)-2)
+		for i, a := range args[2:] {
+			if a != nil {
+				variadicArgs[i] = a.(grpc.CallOption)
+			}
+		}
+		run(args[0].(context.Context), args[1].(*GetUserFeedRequest), variadicArgs...)
+	})
+	return _c
+}
+
+func (_c *MockFeedServiceClient_GetUserFeed_Call) Return(_a0 *GetUserFeedResponse, _a1 error) *MockFeedServiceClient_GetUserFeed_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *MockFeedServiceClient_GetUserFeed_Call) RunAndReturn(run func(context.Context, *GetUserFeedRequest, ...grpc.CallOption) (*GetUserFeedResponse, error)) *MockFeedServiceClient_GetUserFeed_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // ListArticles provides a mock function with given fields: ctx, in, opts
 func (_m *MockFeedServiceClient) ListArticles(ctx context.Context, in *ListArticlesRequest, opts ...grpc.CallOption) (*ListArticlesResponse, error) {
 	_va := make([]interface{}, len(opts))
@@ -463,6 +537,80 @@ func (_c *MockFeedServiceClient_ListFeeds_Call) Return(_a0 *ListFeedsResponse, _
 }
 
 func (_c *MockFeedServiceClient_ListFeeds_Call) RunAndReturn(run func(context.Context, *ListFeedsRequest, ...grpc.CallOption) (*ListFeedsResponse, error)) *MockFeedServiceClient_ListFeeds_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// ListUserFeeds provides a mock function with given fields: ctx, in, opts
+func (_m *MockFeedServiceClient) ListUserFeeds(ctx context.Context, in *ListUserFeedsRequest, opts ...grpc.CallOption) (*ListUserFeedsResponse, error) {
+	_va := make([]interface{}, len(opts))
+	for _i := range opts {
+		_va[_i] = opts[_i]
+	}
+	var _ca []interface{}
+	_ca = append(_ca, ctx, in)
+	_ca = append(_ca, _va...)
+	ret := _m.Called(_ca...)
+
+	if len(ret) == 0 {
+		panic("no return value specified for ListUserFeeds")
+	}
+
+	var r0 *ListUserFeedsResponse
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, *ListUserFeedsRequest, ...grpc.CallOption) (*ListUserFeedsResponse, error)); ok {
+		return rf(ctx, in, opts...)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, *ListUserFeedsRequest, ...grpc.CallOption) *ListUserFeedsResponse); ok {
+		r0 = rf(ctx, in, opts...)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*ListUserFeedsResponse)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, *ListUserFeedsRequest, ...grpc.CallOption) error); ok {
+		r1 = rf(ctx, in, opts...)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// MockFeedServiceClient_ListUserFeeds_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ListUserFeeds'
+type MockFeedServiceClient_ListUserFeeds_Call struct {
+	*mock.Call
+}
+
+// ListUserFeeds is a helper method to define mock.On call
+//   - ctx context.Context
+//   - in *ListUserFeedsRequest
+//   - opts ...grpc.CallOption
+func (_e *MockFeedServiceClient_Expecter) ListUserFeeds(ctx interface{}, in interface{}, opts ...interface{}) *MockFeedServiceClient_ListUserFeeds_Call {
+	return &MockFeedServiceClient_ListUserFeeds_Call{Call: _e.mock.On("ListUserFeeds",
+		append([]interface{}{ctx, in}, opts...)...)}
+}
+
+func (_c *MockFeedServiceClient_ListUserFeeds_Call) Run(run func(ctx context.Context, in *ListUserFeedsRequest, opts ...grpc.CallOption)) *MockFeedServiceClient_ListUserFeeds_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		variadicArgs := make([]grpc.CallOption, len(args)-2)
+		for i, a := range args[2:] {
+			if a != nil {
+				variadicArgs[i] = a.(grpc.CallOption)
+			}
+		}
+		run(args[0].(context.Context), args[1].(*ListUserFeedsRequest), variadicArgs...)
+	})
+	return _c
+}
+
+func (_c *MockFeedServiceClient_ListUserFeeds_Call) Return(_a0 *ListUserFeedsResponse, _a1 error) *MockFeedServiceClient_ListUserFeeds_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *MockFeedServiceClient_ListUserFeeds_Call) RunAndReturn(run func(context.Context, *ListUserFeedsRequest, ...grpc.CallOption) (*ListUserFeedsResponse, error)) *MockFeedServiceClient_ListUserFeeds_Call {
 	_c.Call.Return(run)
 	return _c
 }

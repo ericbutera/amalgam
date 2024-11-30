@@ -23,3 +23,14 @@ type Article struct {
 	AuthorEmail string    `json:"authorEmail"`
 	UpdatedAt   time.Time `json:"updatedAt"`
 }
+
+type UserFeed struct {
+	FeedID        string    `json:"feed_id"`
+	UserID        string    `json:"user_id,omitempty"`
+	Name          string    `json:"name"`
+	URL           string    `json:"url"`
+	CreatedAt     time.Time `json:"createdAt"`
+	ViewedAt      time.Time `json:"viewedAt"`
+	UnreadStartAt time.Time `json:"unreadStartAt"`
+	UnreadCount   int32     `json:"unreadCount"`
+}

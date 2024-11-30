@@ -26,7 +26,7 @@ export default function Feeds({ feedId }: FeedsProps) {
               className={isHighlight(feed.id)}
             >
               {feed.name || feed.url}
-              <span className="badge badge-sm">99+</span>
+              <span className="badge badge-sm">{feed.unreadCount}</span>
             </Link>
           </li>
         ))}

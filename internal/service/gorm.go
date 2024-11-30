@@ -115,19 +115,6 @@ func (s *Gorm) CreateFeed(ctx context.Context, data *svc_model.Feed) (CreateFeed
 	return res, err
 }
 
-// TODO: method name
-func (s *Gorm) SubscribeFeed(_ context.Context, feedID, userID string) error {
-	res := s.db.Clauses(clause.OnConflict{
-		Columns:   []clause.Column{{Name: "feed_id"}, {Name: "user_id"}},
-		DoNothing: true,
-	}).Create(&db_model.UserFeeds{
-		FeedID:        feedID,
-		UserID:        userID,
-		UnreadStartAt: time.Now().AddDate(0, -1, 0).UTC(), // -1 month
-	}) // upsert
-	return res.Error
-}
-
 func (s *Gorm) UpdateFeed(ctx context.Context, id string, feed *svc_model.Feed) error {
 	// note: no validation required for update
 	dbFeed := converters.New().ServiceToDbFeed(feed)
@@ -241,4 +228,56 @@ func (s *Gorm) SaveArticle(ctx context.Context, data *svc_model.Article) (SaveAr
 
 	res.ID = dbArticle.ID
 	return res, err
+}
+
+func (s *Gorm) userFeeds(ctx context.Context, userID string) *gorm.DB {
+	return s.query(ctx).
+		Table("user_feeds uf").
+		Select(
+			"f.id feed_id", "f.name", "f.url",
+			"uf.created_at", "uf.viewed_at", "uf.unread_start_at",
+		).
+		Joins("JOIN feeds f ON uf.feed_id = f.id").
+		Where("uf.user_id=?", userID).
+		Order("f.name").
+		Limit(DefaultLimit)
+}
+
+func (s *Gorm) GetUserFeed(ctx context.Context, userID string, feedID string) (*svc_model.UserFeed, error) {
+	var feed svc_model.UserFeed
+	result := s.userFeeds(ctx, userID).Where("uf.feed_id=?", feedID).Find(&feed)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, ErrNotFound
+		}
+		return nil, result.Error
+	}
+	return &feed, nil
+}
+
+func (s *Gorm) GetUserFeeds(ctx context.Context, userID string) (*GetUserFeedsResult, error) {
+	result := &GetUserFeedsResult{}
+	query := s.userFeeds(ctx, userID).Find(&result.Feeds)
+	if query.Error != nil {
+		return nil, query.Error
+	}
+	return result, nil
+}
+
+func (s *Gorm) SaveUserFeed(ctx context.Context, uf *svc_model.UserFeed) error {
+	return s.query(ctx).
+		Clauses(clause.OnConflict{
+			Columns: []clause.Column{
+				{Name: "user_id"},
+				{Name: "feed_id"},
+			},
+			DoNothing: true,
+		}).
+		Create(&db_model.UserFeeds{
+			UserID:        uf.UserID,
+			FeedID:        uf.FeedID,
+			CreatedAt:     time.Now().UTC(),
+			ViewedAt:      time.Now().UTC(),
+			UnreadStartAt: time.Now().AddDate(0, -1, 0).UTC(), // -1 month
+		}).Error
 }

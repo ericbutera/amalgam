@@ -3,6 +3,7 @@ package graph_test
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/ericbutera/amalgam/internal/converters"
 	svcModel "github.com/ericbutera/amalgam/internal/service/models"
@@ -50,6 +51,20 @@ func newArticle() *svcModel.Article {
 	return fixtures.NewArticle(fixtures.WithArticleID(fixtures.NewID()))
 }
 
+func newUserFeed() *svcModel.UserFeed {
+	now := time.Now().UTC()
+	id := uuid.New().String()
+	return &svcModel.UserFeed{
+		FeedID:        id,
+		Name:          "Feed Name",
+		URL:           "https://faker:8080/feeds/" + id,
+		CreatedAt:     now,
+		ViewedAt:      now,
+		UnreadStartAt: now,
+		UnreadCount:   1,
+	}
+}
+
 func Test_AddFeed(t *testing.T) {
 	t.Parallel()
 	r := newTestResolver()
@@ -91,7 +106,7 @@ func Test_UpdateFeed(t *testing.T) {
 		Return(nil, nil)
 
 	actual, err := r.resolver.Mutation().
-		UpdateFeed(context.Background(), svcFeed.ID, &svcFeed.URL, &svcFeed.Name)
+		UpdateFeed(newAuthCtx(), svcFeed.ID, &svcFeed.URL, &svcFeed.Name)
 
 	require.NoError(t, err)
 	helpers.Diff(t, graphModel.UpdateResponse{ID: svcFeed.ID}, *actual)
@@ -101,39 +116,39 @@ func Test_Feeds(t *testing.T) {
 	t.Parallel()
 	r := newTestResolver()
 
-	svcFeed := newFeed()
+	userFeed := newUserFeed()
 	c := converters.New()
-	graphFeed := c.ServiceToGraphFeed(svcFeed)
-	pbFeed := c.ServiceToProtoFeed(svcFeed)
+	graphFeed := c.ServiceToGraphFeed(userFeed)
+	pbFeed := c.ServiceToProtoUserFeed(userFeed)
 	expected := []*graphModel.Feed{graphFeed}
 	r.client.EXPECT().
-		ListFeeds(mock.Anything, &pb.ListFeedsRequest{
+		ListUserFeeds(mock.Anything, &pb.ListUserFeedsRequest{
 			User: &pb.User{Id: test.UserID},
 		}).
-		Return(&pb.ListFeedsResponse{
-			Feeds: []*pb.Feed{pbFeed},
+		Return(&pb.ListUserFeedsResponse{
+			Feeds: []*pb.UserFeed{pbFeed},
 		}, nil)
 
 	actual, err := r.resolver.Query().Feeds(newAuthCtx())
 	require.NoError(t, err)
-	assert.Len(t, actual, 1)
-	helpers.Diff(t, *expected[0], *actual[0])
+	assert.Len(t, actual.Feeds, 1)
+	helpers.Diff(t, *expected[0], *actual.Feeds[0])
 }
 
 func Test_Feed(t *testing.T) {
 	t.Parallel()
 	r := newTestResolver()
 
-	svcFeed := newFeed()
+	feed := newUserFeed()
 	c := converters.New()
-	graphFeed := c.ServiceToGraphFeed(svcFeed)
-	pbFeed := c.ServiceToProtoFeed(svcFeed)
+	graphFeed := c.ServiceToGraphFeed(feed)
+	pbFeed := c.ServiceToProtoUserFeed(feed)
 	expected := graphFeed
 	r.client.EXPECT().
-		GetFeed(mock.Anything, &pb.GetFeedRequest{Id: svcFeed.ID}).
-		Return(&pb.GetFeedResponse{Feed: pbFeed}, nil)
+		GetUserFeed(mock.Anything, &pb.GetUserFeedRequest{FeedId: feed.FeedID, UserId: test.UserID}).
+		Return(&pb.GetUserFeedResponse{Feed: pbFeed}, nil)
 
-	actual, err := r.resolver.Query().Feed(context.Background(), svcFeed.ID)
+	actual, err := r.resolver.Query().Feed(newAuthCtx(), feed.FeedID)
 	require.NoError(t, err)
 	helpers.Diff(t, *expected, *actual)
 }
@@ -162,7 +177,7 @@ func Test_Articles(t *testing.T) {
 			Articles: []*pb.Article{rpcArticle},
 		}, nil)
 
-	resp, err := r.resolver.Query().Articles(context.Background(), feed.ID, &graphModel.ListOptions{})
+	resp, err := r.resolver.Query().Articles(newAuthCtx(), feed.ID, &graphModel.ListOptions{})
 	actual := resp.Articles
 	require.NoError(t, err)
 	assert.Len(t, actual, 1)
@@ -194,7 +209,7 @@ func Test_Articles_Pagination(t *testing.T) {
 			Pagination: &expectedPagination,
 		}, nil)
 
-	resp, err := r.resolver.Query().Articles(context.Background(), id, &graphModel.ListOptions{
+	resp, err := r.resolver.Query().Articles(newAuthCtx(), id, &graphModel.ListOptions{
 		Cursor: lo.ToPtr(expectedCursor),
 		Limit:  lo.ToPtr(expectedLimit),
 	})
@@ -219,14 +234,13 @@ func Test_Article(t *testing.T) {
 			Article: rpcArticle,
 		}, nil)
 
-	actual, err := r.resolver.Query().Article(context.Background(), svcArticle.ID)
+	actual, err := r.resolver.Query().Article(newAuthCtx(), svcArticle.ID)
 	require.NoError(t, err)
 	helpers.Diff(t, *expected, *actual, "FeedID", "ImageURL")
 }
 
 func TestFeedTask(t *testing.T) {
 	t.Parallel()
-	ctx := context.Background()
 	expectedID := "super-id"
 
 	r := newTestResolver()
@@ -235,7 +249,8 @@ func TestFeedTask(t *testing.T) {
 		Workflow(mock.Anything, tasks.TaskGenerateFeeds).
 		Return(&tasks.TaskResult{ID: expectedID}, nil)
 
-	resp, err := r.resolver.Mutation().FeedTask(ctx, graphModel.TaskTypeGenerateFeeds)
+	resp, err := r.resolver.Mutation().
+		FeedTask(newAuthCtx(), graphModel.TaskTypeGenerateFeeds)
 
 	require.NoError(t, err)
 	assert.Equal(t, expectedID, resp.TaskID)

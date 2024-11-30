@@ -47,9 +47,18 @@ export type ArticlesResponse = {
 
 export type Feed = {
   __typename?: 'Feed';
+  createdAt: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
+  unreadCount: Scalars['Int']['output'];
+  unreadStartAt: Scalars['DateTime']['output'];
   url: Scalars['String']['output'];
+  viewedAt: Scalars['DateTime']['output'];
+};
+
+export type FeedResponse = {
+  __typename?: 'FeedResponse';
+  feeds: Array<Feed>;
 };
 
 export type FeedTaskResponse = {
@@ -108,7 +117,7 @@ export type Query = {
   article?: Maybe<Article>;
   articles: ArticlesResponse;
   feed?: Maybe<Feed>;
-  feeds: Array<Feed>;
+  feeds: FeedResponse;
 };
 
 
@@ -164,7 +173,7 @@ export type FeedTaskMutation = { __typename?: 'Mutation', feedTask: { __typename
 export type ListFeedsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ListFeedsQuery = { __typename?: 'Query', feeds: Array<{ __typename?: 'Feed', id: string, url: string, name: string }> };
+export type ListFeedsQuery = { __typename?: 'Query', feeds: { __typename?: 'FeedResponse', feeds: Array<{ __typename?: 'Feed', id: string, url: string, name: string, createdAt: any, viewedAt: any, unreadStartAt: any, unreadCount: number }> } };
 
 export type GetFeedQueryVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -212,9 +221,15 @@ export const FeedTaskDocument = gql`
 export const ListFeedsDocument = gql`
     query ListFeeds {
   feeds {
-    id
-    url
-    name
+    feeds {
+      id
+      url
+      name
+      createdAt
+      viewedAt
+      unreadStartAt
+      unreadCount
+    }
   }
 }
     `;

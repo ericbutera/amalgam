@@ -9,7 +9,9 @@ option go_package = "github.com/ericbutera/amalgam/services/rpc/gen/go/feeds"; /
 
 service FeedService {
   rpc GetFeed(GetFeedRequest) returns (GetFeedResponse);
+  rpc GetUserFeed(GetUserFeedRequest) returns (GetUserFeedResponse);
   rpc ListFeeds(ListFeedsRequest) returns (ListFeedsResponse);
+  rpc ListUserFeeds(ListUserFeedsRequest) returns (ListUserFeedsResponse);
   rpc CreateFeed(CreateFeedRequest) returns (CreateFeedResponse);
   rpc UpdateFeed(UpdateFeedRequest) returns (UpdateFeedResponse);
   rpc ListArticles(ListArticlesRequest) returns (ListArticlesResponse);
@@ -61,12 +63,43 @@ message GetFeedResponse {
   Feed feed = 1;
 }
 
-message ListFeedsRequest {
-  User user = 1; // There are parts that don't require a user like refresh feeds
+message GetUserFeedRequest {
+  string user_id = 1 [
+    (buf.validate.field).string.uuid = true,
+    (buf.validate.field).required = true
+  ];
+  string feed_id = 2 [
+    (buf.validate.field).string.uuid = true,
+    (buf.validate.field).required = true
+  ];
 }
+
+message GetUserFeedResponse {
+  UserFeed feed = 1;
+}
+
+message ListFeedsRequest {}
 
 message ListFeedsResponse {
   repeated Feed feeds = 1;
+}
+
+message ListUserFeedsRequest {
+  User user = 1 [(buf.validate.field).required = true];
+}
+
+message UserFeed {
+  string feed_id = 1;
+  string url = 2;
+  string name = 3;
+  int32 unread_count = 4;
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp viewed_at = 6;
+  google.protobuf.Timestamp unread_start_at = 7;
+}
+
+message ListUserFeedsResponse {
+  repeated UserFeed feeds = 1;
 }
 
 message CreateFeedRequest {

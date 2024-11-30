@@ -57,6 +57,14 @@ type Feed {
 	id: ID!
 	url: String!
 	name: String!
+	createdAt: DateTime!
+	viewedAt: DateTime!
+	unreadStartAt: DateTime!
+	unreadCount: Int!
+}
+
+type FeedResponse {
+	feeds: [Feed!]!
 }
 
 type FeedTaskResponse {
@@ -106,7 +114,7 @@ type Pagination {
 }
 
 type Query {
-	feeds: [Feed!]!
+	feeds: FeedResponse!
 	feed(
 		id: ID!
 	): Feed
