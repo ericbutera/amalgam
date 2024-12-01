@@ -40,8 +40,8 @@ func NewFeedListCmd() *cobra.Command {
 				slog.Error("failed to list feeds", "error", err)
 				return
 			}
-			slog.Debug("feed count", "feeds", len(res.Feeds))
-			for _, feed := range res.Feeds {
+			slog.Debug("feed count", "feeds", len(res.Feeds.Feeds))
+			for _, feed := range res.Feeds.Feeds {
 				fmt.Printf("feed id: %s, url: %s\n", feed.Id, feed.Url) //nolint:forbidigo
 			}
 		},

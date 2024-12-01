@@ -32,10 +32,10 @@ func NewActivities(graphClient graphql.Client, feedClient sdk.Client) *Activitie
 	}
 }
 
-func (a *Activities) GenerateFeeds(ctx context.Context, host string, count int) error {
+func (a *Activities) GenerateFeeds(ctx context.Context, host string, count int /*, userID string*/) error {
 	for x := 0; x < count; x++ {
 		url := fmt.Sprintf(UrlFormat, host, uuid.New().String())
-		resp, err := graph_client.AddFeed(ctx, a.graphClient, url, fmt.Sprintf("generated-%d", x))
+		resp, err := graph_client.AddFeed(ctx, a.graphClient, url, fmt.Sprintf("generated-%d", x) /*, userID*/)
 		if err != nil {
 			return err
 		}
@@ -45,13 +45,6 @@ func (a *Activities) GenerateFeeds(ctx context.Context, host string, count int) 
 }
 
 func (a *Activities) RefreshFeeds(ctx context.Context) error {
-	// start the Refresh workflow inside the external worker
-	//
-	// this might seem convoluted, but the point is that graph should be able to ask
-	// "feed tasks" to perform an action without worrying how. feed tasks are designed
-	// to be background jobs. graph shouldn't care how that happens.
-
-	// TODO: dependency injection of client
 	config := lo.Must(env.New[Config]())
 
 	opts := sdk.StartWorkflowOptions{
@@ -61,7 +54,6 @@ func (a *Activities) RefreshFeeds(ctx context.Context) error {
 		},
 	}
 	args := []any{}
-	// _, err := a.feedClient.ExecuteWorkflow(ctx, opts, app.FetchFeedsWorkflow, args...)
 	_, err := a.feedClient.ExecuteWorkflow(ctx, opts, "FetchFeedsWorkflow", args...)
 	if err != nil {
 		return fmt.Errorf("failed to execute workflow: %w", err)

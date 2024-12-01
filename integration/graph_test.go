@@ -24,7 +24,7 @@ func TestGraphListFeeds(t *testing.T) {
 	t.Parallel()
 	res, err := graphClient.ListFeeds(context.Background(), getGraphQLClient(t))
 	require.NoError(t, err)
-	assert.Empty(t, res.Feeds)
+	assert.NotEmpty(t, res.Feeds) // populated by seed data
 }
 
 func TestGraphGetFeedMissingID(t *testing.T) {

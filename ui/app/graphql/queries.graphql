@@ -1,8 +1,14 @@
 query ListFeeds {
     feeds {
-        id
-        url
-        name
+        feeds {
+            id
+            url
+            name
+            createdAt
+            viewedAt
+            unreadStartAt
+            unreadCount
+        }
     }
 }
 

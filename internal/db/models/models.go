@@ -46,6 +46,22 @@ type Base struct {
 	DeletedAt gorm.DeletedAt `json:"deletedAt" gorm:"index"`
 }
 
+type UserFeeds struct {
+	UserID        string    `gorm:"column:user_id;primaryKey"`
+	FeedID        string    `gorm:"column:feed_id;primaryKey"`
+	CreatedAt     time.Time `gorm:"column:created_at;autoCreateTime"`
+	ViewedAt      time.Time `gorm:"column:viewed_at;autoUpdateTime"`
+	UnreadStartAt time.Time `gorm:"column:unread_start_at;autoCreateTime"`
+	UnreadCount   int32     `gorm:"column:unread_count"`
+}
+
+type UserArticles struct {
+	UserID    string    `gorm:"column:user_id;primaryKey"`
+	ArticleID string    `gorm:"column:article_id;primaryKey"`
+	CreatedAt time.Time `gorm:"column:created_at;autoCreateTime"`
+	ViewedAt  time.Time `gorm:"column:viewed_at;autoUpdateTime"`
+}
+
 // Credit to https://medium.com/@amrilsyaifa_21001/how-to-use-uuid-in-gorm-golang-74be997d7087
 // BeforeCreate will set a UUID rather than numeric ID.
 func (b *Base) BeforeCreate(_ *gorm.DB) error {

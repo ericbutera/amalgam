@@ -4,6 +4,11 @@ type Feed {
   id: ID!
   url: String!
   name: String!
+  createdAt: DateTime!
+  viewedAt: DateTime!
+  unreadStartAt: DateTime!
+  unreadCount: Int!
+  # note: this is not a 1:1 mapping to database. it will contain "unread" and other metadata fields specific to the logged in user
 }
 
 type Article {
@@ -19,6 +24,10 @@ type Article {
   authorName: String
   authorEmail: String
   updatedAt: DateTime!
+}
+
+type FeedResponse {
+  feeds: [Feed!]!
 }
 
 type AddResponse {
@@ -52,16 +61,28 @@ input ListOptions {
   limit: Int
 }
 
+enum TaskType {
+  GENERATE_FEEDS
+  REFRESH_FEEDS
+}
+
+type FeedTaskResponse {
+  taskId: ID!
+}
+
 type Query {
-  feeds: [Feed!]!
+  feeds: FeedResponse! # fetch a users feeds
   feed(id: ID!): Feed
   articles(feedId: ID!, options: ListOptions): ArticlesResponse!
   article(id: ID!): Article
 }
 
 type Mutation {
+  # TODO: directive OR context
+  # admin and backend should be able to assign a userId to a feed
+  # - execution: userRole := ctx.Value("role").(string)
+  # - on data: userId: ID @role(requiredRole: "admin")
   addFeed(url: String!, name: String!): AddResponse!
   updateFeed(id: ID!, url: String, name: String): UpdateResponse!
-  generateFeeds: GenerateFeedsResponse!
-  fetchFeeds: FetchFeedsResponse!
+  feedTask(task: TaskType!): FeedTaskResponse!
 }

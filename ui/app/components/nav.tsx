@@ -8,6 +8,11 @@ import {
 } from "@heroicons/react/24/solid";
 import { getGraph } from "../lib/fetch";
 import withToast from "../lib/toast";
+import { TaskType } from "../generated/graphql";
+
+const task = async (task: TaskType) => {
+  return getGraph().FeedTask({ task });
+}
 
 const generateFeeds = async () => {
   await withToast(
@@ -15,7 +20,7 @@ const generateFeeds = async () => {
     "Feeds generated successfully!",
     "Failed to generate feeds.",
     async () => {
-      await getGraph().GenerateFeeds();
+      await task(TaskType.GenerateFeeds)
     }
   );
 };
@@ -26,7 +31,7 @@ const fetchFeeds = async () => {
     "Feeds fetched successfully!",
     "Failed to fetch feeds.",
     async () => {
-      await getGraph().FetchFeeds();
+      await task(TaskType.RefreshFeeds)
     }
   );
 };

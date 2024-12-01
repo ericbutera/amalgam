@@ -65,7 +65,7 @@ func (x FeedTaskRequest_Task) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use FeedTaskRequest_Task.Descriptor instead.
 func (FeedTaskRequest_Task) EnumDescriptor() ([]byte, []int) {
-	return file_feeds_v1_service_proto_rawDescGZIP(), []int{21, 0}
+	return file_feeds_v1_service_proto_rawDescGZIP(), []int{27, 0}
 }
 
 type Feed struct {
@@ -298,6 +298,51 @@ func (*Empty) Descriptor() ([]byte, []int) {
 	return file_feeds_v1_service_proto_rawDescGZIP(), []int{2}
 }
 
+type User struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+}
+
+func (x *User) Reset() {
+	*x = User{}
+	mi := &file_feeds_v1_service_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *User) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*User) ProtoMessage() {}
+
+func (x *User) ProtoReflect() protoreflect.Message {
+	mi := &file_feeds_v1_service_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use User.ProtoReflect.Descriptor instead.
+func (*User) Descriptor() ([]byte, []int) {
+	return file_feeds_v1_service_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *User) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
 type GetFeedRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -308,7 +353,7 @@ type GetFeedRequest struct {
 
 func (x *GetFeedRequest) Reset() {
 	*x = GetFeedRequest{}
-	mi := &file_feeds_v1_service_proto_msgTypes[3]
+	mi := &file_feeds_v1_service_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -320,7 +365,7 @@ func (x *GetFeedRequest) String() string {
 func (*GetFeedRequest) ProtoMessage() {}
 
 func (x *GetFeedRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_feeds_v1_service_proto_msgTypes[3]
+	mi := &file_feeds_v1_service_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -333,7 +378,7 @@ func (x *GetFeedRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetFeedRequest.ProtoReflect.Descriptor instead.
 func (*GetFeedRequest) Descriptor() ([]byte, []int) {
-	return file_feeds_v1_service_proto_rawDescGZIP(), []int{3}
+	return file_feeds_v1_service_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *GetFeedRequest) GetId() string {
@@ -353,7 +398,7 @@ type GetFeedResponse struct {
 
 func (x *GetFeedResponse) Reset() {
 	*x = GetFeedResponse{}
-	mi := &file_feeds_v1_service_proto_msgTypes[4]
+	mi := &file_feeds_v1_service_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -365,7 +410,7 @@ func (x *GetFeedResponse) String() string {
 func (*GetFeedResponse) ProtoMessage() {}
 
 func (x *GetFeedResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_feeds_v1_service_proto_msgTypes[4]
+	mi := &file_feeds_v1_service_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -378,10 +423,108 @@ func (x *GetFeedResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetFeedResponse.ProtoReflect.Descriptor instead.
 func (*GetFeedResponse) Descriptor() ([]byte, []int) {
-	return file_feeds_v1_service_proto_rawDescGZIP(), []int{4}
+	return file_feeds_v1_service_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *GetFeedResponse) GetFeed() *Feed {
+	if x != nil {
+		return x.Feed
+	}
+	return nil
+}
+
+type GetUserFeedRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	UserId string `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	FeedId string `protobuf:"bytes,2,opt,name=feed_id,json=feedId,proto3" json:"feed_id,omitempty"`
+}
+
+func (x *GetUserFeedRequest) Reset() {
+	*x = GetUserFeedRequest{}
+	mi := &file_feeds_v1_service_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetUserFeedRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetUserFeedRequest) ProtoMessage() {}
+
+func (x *GetUserFeedRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_feeds_v1_service_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetUserFeedRequest.ProtoReflect.Descriptor instead.
+func (*GetUserFeedRequest) Descriptor() ([]byte, []int) {
+	return file_feeds_v1_service_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *GetUserFeedRequest) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+func (x *GetUserFeedRequest) GetFeedId() string {
+	if x != nil {
+		return x.FeedId
+	}
+	return ""
+}
+
+type GetUserFeedResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Feed *UserFeed `protobuf:"bytes,1,opt,name=feed,proto3" json:"feed,omitempty"`
+}
+
+func (x *GetUserFeedResponse) Reset() {
+	*x = GetUserFeedResponse{}
+	mi := &file_feeds_v1_service_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetUserFeedResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetUserFeedResponse) ProtoMessage() {}
+
+func (x *GetUserFeedResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_feeds_v1_service_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetUserFeedResponse.ProtoReflect.Descriptor instead.
+func (*GetUserFeedResponse) Descriptor() ([]byte, []int) {
+	return file_feeds_v1_service_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *GetUserFeedResponse) GetFeed() *UserFeed {
 	if x != nil {
 		return x.Feed
 	}
@@ -396,7 +539,7 @@ type ListFeedsRequest struct {
 
 func (x *ListFeedsRequest) Reset() {
 	*x = ListFeedsRequest{}
-	mi := &file_feeds_v1_service_proto_msgTypes[5]
+	mi := &file_feeds_v1_service_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -408,7 +551,7 @@ func (x *ListFeedsRequest) String() string {
 func (*ListFeedsRequest) ProtoMessage() {}
 
 func (x *ListFeedsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_feeds_v1_service_proto_msgTypes[5]
+	mi := &file_feeds_v1_service_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -421,7 +564,7 @@ func (x *ListFeedsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListFeedsRequest.ProtoReflect.Descriptor instead.
 func (*ListFeedsRequest) Descriptor() ([]byte, []int) {
-	return file_feeds_v1_service_proto_rawDescGZIP(), []int{5}
+	return file_feeds_v1_service_proto_rawDescGZIP(), []int{8}
 }
 
 type ListFeedsResponse struct {
@@ -434,7 +577,7 @@ type ListFeedsResponse struct {
 
 func (x *ListFeedsResponse) Reset() {
 	*x = ListFeedsResponse{}
-	mi := &file_feeds_v1_service_proto_msgTypes[6]
+	mi := &file_feeds_v1_service_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -446,7 +589,7 @@ func (x *ListFeedsResponse) String() string {
 func (*ListFeedsResponse) ProtoMessage() {}
 
 func (x *ListFeedsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_feeds_v1_service_proto_msgTypes[6]
+	mi := &file_feeds_v1_service_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -459,10 +602,193 @@ func (x *ListFeedsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListFeedsResponse.ProtoReflect.Descriptor instead.
 func (*ListFeedsResponse) Descriptor() ([]byte, []int) {
-	return file_feeds_v1_service_proto_rawDescGZIP(), []int{6}
+	return file_feeds_v1_service_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *ListFeedsResponse) GetFeeds() []*Feed {
+	if x != nil {
+		return x.Feeds
+	}
+	return nil
+}
+
+type ListUserFeedsRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	User *User `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
+}
+
+func (x *ListUserFeedsRequest) Reset() {
+	*x = ListUserFeedsRequest{}
+	mi := &file_feeds_v1_service_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListUserFeedsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListUserFeedsRequest) ProtoMessage() {}
+
+func (x *ListUserFeedsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_feeds_v1_service_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListUserFeedsRequest.ProtoReflect.Descriptor instead.
+func (*ListUserFeedsRequest) Descriptor() ([]byte, []int) {
+	return file_feeds_v1_service_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *ListUserFeedsRequest) GetUser() *User {
+	if x != nil {
+		return x.User
+	}
+	return nil
+}
+
+type UserFeed struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	FeedId        string                 `protobuf:"bytes,1,opt,name=feed_id,json=feedId,proto3" json:"feed_id,omitempty"`
+	Url           string                 `protobuf:"bytes,2,opt,name=url,proto3" json:"url,omitempty"`
+	Name          string                 `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
+	UnreadCount   int32                  `protobuf:"varint,4,opt,name=unread_count,json=unreadCount,proto3" json:"unread_count,omitempty"`
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	ViewedAt      *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=viewed_at,json=viewedAt,proto3" json:"viewed_at,omitempty"`
+	UnreadStartAt *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=unread_start_at,json=unreadStartAt,proto3" json:"unread_start_at,omitempty"`
+}
+
+func (x *UserFeed) Reset() {
+	*x = UserFeed{}
+	mi := &file_feeds_v1_service_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UserFeed) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UserFeed) ProtoMessage() {}
+
+func (x *UserFeed) ProtoReflect() protoreflect.Message {
+	mi := &file_feeds_v1_service_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UserFeed.ProtoReflect.Descriptor instead.
+func (*UserFeed) Descriptor() ([]byte, []int) {
+	return file_feeds_v1_service_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *UserFeed) GetFeedId() string {
+	if x != nil {
+		return x.FeedId
+	}
+	return ""
+}
+
+func (x *UserFeed) GetUrl() string {
+	if x != nil {
+		return x.Url
+	}
+	return ""
+}
+
+func (x *UserFeed) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *UserFeed) GetUnreadCount() int32 {
+	if x != nil {
+		return x.UnreadCount
+	}
+	return 0
+}
+
+func (x *UserFeed) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+func (x *UserFeed) GetViewedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ViewedAt
+	}
+	return nil
+}
+
+func (x *UserFeed) GetUnreadStartAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.UnreadStartAt
+	}
+	return nil
+}
+
+type ListUserFeedsResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Feeds []*UserFeed `protobuf:"bytes,1,rep,name=feeds,proto3" json:"feeds,omitempty"`
+}
+
+func (x *ListUserFeedsResponse) Reset() {
+	*x = ListUserFeedsResponse{}
+	mi := &file_feeds_v1_service_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListUserFeedsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListUserFeedsResponse) ProtoMessage() {}
+
+func (x *ListUserFeedsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_feeds_v1_service_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListUserFeedsResponse.ProtoReflect.Descriptor instead.
+func (*ListUserFeedsResponse) Descriptor() ([]byte, []int) {
+	return file_feeds_v1_service_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *ListUserFeedsResponse) GetFeeds() []*UserFeed {
 	if x != nil {
 		return x.Feeds
 	}
@@ -475,11 +801,12 @@ type CreateFeedRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	Feed *CreateFeedRequest_Feed `protobuf:"bytes,1,opt,name=feed,proto3" json:"feed,omitempty"`
+	User *User                   `protobuf:"bytes,2,opt,name=user,proto3" json:"user,omitempty"`
 }
 
 func (x *CreateFeedRequest) Reset() {
 	*x = CreateFeedRequest{}
-	mi := &file_feeds_v1_service_proto_msgTypes[7]
+	mi := &file_feeds_v1_service_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -491,7 +818,7 @@ func (x *CreateFeedRequest) String() string {
 func (*CreateFeedRequest) ProtoMessage() {}
 
 func (x *CreateFeedRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_feeds_v1_service_proto_msgTypes[7]
+	mi := &file_feeds_v1_service_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -504,12 +831,19 @@ func (x *CreateFeedRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateFeedRequest.ProtoReflect.Descriptor instead.
 func (*CreateFeedRequest) Descriptor() ([]byte, []int) {
-	return file_feeds_v1_service_proto_rawDescGZIP(), []int{7}
+	return file_feeds_v1_service_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *CreateFeedRequest) GetFeed() *CreateFeedRequest_Feed {
 	if x != nil {
 		return x.Feed
+	}
+	return nil
+}
+
+func (x *CreateFeedRequest) GetUser() *User {
+	if x != nil {
+		return x.User
 	}
 	return nil
 }
@@ -524,7 +858,7 @@ type CreateFeedResponse struct {
 
 func (x *CreateFeedResponse) Reset() {
 	*x = CreateFeedResponse{}
-	mi := &file_feeds_v1_service_proto_msgTypes[8]
+	mi := &file_feeds_v1_service_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -536,7 +870,7 @@ func (x *CreateFeedResponse) String() string {
 func (*CreateFeedResponse) ProtoMessage() {}
 
 func (x *CreateFeedResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_feeds_v1_service_proto_msgTypes[8]
+	mi := &file_feeds_v1_service_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -549,7 +883,7 @@ func (x *CreateFeedResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateFeedResponse.ProtoReflect.Descriptor instead.
 func (*CreateFeedResponse) Descriptor() ([]byte, []int) {
-	return file_feeds_v1_service_proto_rawDescGZIP(), []int{8}
+	return file_feeds_v1_service_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *CreateFeedResponse) GetId() string {
@@ -569,7 +903,7 @@ type UpdateFeedRequest struct {
 
 func (x *UpdateFeedRequest) Reset() {
 	*x = UpdateFeedRequest{}
-	mi := &file_feeds_v1_service_proto_msgTypes[9]
+	mi := &file_feeds_v1_service_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -581,7 +915,7 @@ func (x *UpdateFeedRequest) String() string {
 func (*UpdateFeedRequest) ProtoMessage() {}
 
 func (x *UpdateFeedRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_feeds_v1_service_proto_msgTypes[9]
+	mi := &file_feeds_v1_service_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -594,7 +928,7 @@ func (x *UpdateFeedRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateFeedRequest.ProtoReflect.Descriptor instead.
 func (*UpdateFeedRequest) Descriptor() ([]byte, []int) {
-	return file_feeds_v1_service_proto_rawDescGZIP(), []int{9}
+	return file_feeds_v1_service_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *UpdateFeedRequest) GetFeed() *UpdateFeedRequest_Feed {
@@ -612,7 +946,7 @@ type UpdateFeedResponse struct {
 
 func (x *UpdateFeedResponse) Reset() {
 	*x = UpdateFeedResponse{}
-	mi := &file_feeds_v1_service_proto_msgTypes[10]
+	mi := &file_feeds_v1_service_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -624,7 +958,7 @@ func (x *UpdateFeedResponse) String() string {
 func (*UpdateFeedResponse) ProtoMessage() {}
 
 func (x *UpdateFeedResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_feeds_v1_service_proto_msgTypes[10]
+	mi := &file_feeds_v1_service_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -637,7 +971,7 @@ func (x *UpdateFeedResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateFeedResponse.ProtoReflect.Descriptor instead.
 func (*UpdateFeedResponse) Descriptor() ([]byte, []int) {
-	return file_feeds_v1_service_proto_rawDescGZIP(), []int{10}
+	return file_feeds_v1_service_proto_rawDescGZIP(), []int{16}
 }
 
 // List options contains pagination, filtering, sorting, etc.
@@ -652,7 +986,7 @@ type ListOptions struct {
 
 func (x *ListOptions) Reset() {
 	*x = ListOptions{}
-	mi := &file_feeds_v1_service_proto_msgTypes[11]
+	mi := &file_feeds_v1_service_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -664,7 +998,7 @@ func (x *ListOptions) String() string {
 func (*ListOptions) ProtoMessage() {}
 
 func (x *ListOptions) ProtoReflect() protoreflect.Message {
-	mi := &file_feeds_v1_service_proto_msgTypes[11]
+	mi := &file_feeds_v1_service_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -677,7 +1011,7 @@ func (x *ListOptions) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListOptions.ProtoReflect.Descriptor instead.
 func (*ListOptions) Descriptor() ([]byte, []int) {
-	return file_feeds_v1_service_proto_rawDescGZIP(), []int{11}
+	return file_feeds_v1_service_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *ListOptions) GetCursor() string {
@@ -705,7 +1039,7 @@ type Pagination struct {
 
 func (x *Pagination) Reset() {
 	*x = Pagination{}
-	mi := &file_feeds_v1_service_proto_msgTypes[12]
+	mi := &file_feeds_v1_service_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -717,7 +1051,7 @@ func (x *Pagination) String() string {
 func (*Pagination) ProtoMessage() {}
 
 func (x *Pagination) ProtoReflect() protoreflect.Message {
-	mi := &file_feeds_v1_service_proto_msgTypes[12]
+	mi := &file_feeds_v1_service_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -730,7 +1064,7 @@ func (x *Pagination) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Pagination.ProtoReflect.Descriptor instead.
 func (*Pagination) Descriptor() ([]byte, []int) {
-	return file_feeds_v1_service_proto_rawDescGZIP(), []int{12}
+	return file_feeds_v1_service_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *Pagination) GetNext() string {
@@ -758,7 +1092,7 @@ type ListArticlesRequest struct {
 
 func (x *ListArticlesRequest) Reset() {
 	*x = ListArticlesRequest{}
-	mi := &file_feeds_v1_service_proto_msgTypes[13]
+	mi := &file_feeds_v1_service_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -770,7 +1104,7 @@ func (x *ListArticlesRequest) String() string {
 func (*ListArticlesRequest) ProtoMessage() {}
 
 func (x *ListArticlesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_feeds_v1_service_proto_msgTypes[13]
+	mi := &file_feeds_v1_service_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -783,7 +1117,7 @@ func (x *ListArticlesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListArticlesRequest.ProtoReflect.Descriptor instead.
 func (*ListArticlesRequest) Descriptor() ([]byte, []int) {
-	return file_feeds_v1_service_proto_rawDescGZIP(), []int{13}
+	return file_feeds_v1_service_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *ListArticlesRequest) GetFeedId() string {
@@ -811,7 +1145,7 @@ type ListArticlesResponse struct {
 
 func (x *ListArticlesResponse) Reset() {
 	*x = ListArticlesResponse{}
-	mi := &file_feeds_v1_service_proto_msgTypes[14]
+	mi := &file_feeds_v1_service_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -823,7 +1157,7 @@ func (x *ListArticlesResponse) String() string {
 func (*ListArticlesResponse) ProtoMessage() {}
 
 func (x *ListArticlesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_feeds_v1_service_proto_msgTypes[14]
+	mi := &file_feeds_v1_service_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -836,7 +1170,7 @@ func (x *ListArticlesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListArticlesResponse.ProtoReflect.Descriptor instead.
 func (*ListArticlesResponse) Descriptor() ([]byte, []int) {
-	return file_feeds_v1_service_proto_rawDescGZIP(), []int{14}
+	return file_feeds_v1_service_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *ListArticlesResponse) GetArticles() []*Article {
@@ -863,7 +1197,7 @@ type GetArticleRequest struct {
 
 func (x *GetArticleRequest) Reset() {
 	*x = GetArticleRequest{}
-	mi := &file_feeds_v1_service_proto_msgTypes[15]
+	mi := &file_feeds_v1_service_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -875,7 +1209,7 @@ func (x *GetArticleRequest) String() string {
 func (*GetArticleRequest) ProtoMessage() {}
 
 func (x *GetArticleRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_feeds_v1_service_proto_msgTypes[15]
+	mi := &file_feeds_v1_service_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -888,7 +1222,7 @@ func (x *GetArticleRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetArticleRequest.ProtoReflect.Descriptor instead.
 func (*GetArticleRequest) Descriptor() ([]byte, []int) {
-	return file_feeds_v1_service_proto_rawDescGZIP(), []int{15}
+	return file_feeds_v1_service_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *GetArticleRequest) GetId() string {
@@ -908,7 +1242,7 @@ type GetArticleResponse struct {
 
 func (x *GetArticleResponse) Reset() {
 	*x = GetArticleResponse{}
-	mi := &file_feeds_v1_service_proto_msgTypes[16]
+	mi := &file_feeds_v1_service_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -920,7 +1254,7 @@ func (x *GetArticleResponse) String() string {
 func (*GetArticleResponse) ProtoMessage() {}
 
 func (x *GetArticleResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_feeds_v1_service_proto_msgTypes[16]
+	mi := &file_feeds_v1_service_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -933,7 +1267,7 @@ func (x *GetArticleResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetArticleResponse.ProtoReflect.Descriptor instead.
 func (*GetArticleResponse) Descriptor() ([]byte, []int) {
-	return file_feeds_v1_service_proto_rawDescGZIP(), []int{16}
+	return file_feeds_v1_service_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *GetArticleResponse) GetArticle() *Article {
@@ -953,7 +1287,7 @@ type SaveArticleRequest struct {
 
 func (x *SaveArticleRequest) Reset() {
 	*x = SaveArticleRequest{}
-	mi := &file_feeds_v1_service_proto_msgTypes[17]
+	mi := &file_feeds_v1_service_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -965,7 +1299,7 @@ func (x *SaveArticleRequest) String() string {
 func (*SaveArticleRequest) ProtoMessage() {}
 
 func (x *SaveArticleRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_feeds_v1_service_proto_msgTypes[17]
+	mi := &file_feeds_v1_service_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -978,7 +1312,7 @@ func (x *SaveArticleRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SaveArticleRequest.ProtoReflect.Descriptor instead.
 func (*SaveArticleRequest) Descriptor() ([]byte, []int) {
-	return file_feeds_v1_service_proto_rawDescGZIP(), []int{17}
+	return file_feeds_v1_service_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *SaveArticleRequest) GetArticle() *Article {
@@ -998,7 +1332,7 @@ type SaveArticleResponse struct {
 
 func (x *SaveArticleResponse) Reset() {
 	*x = SaveArticleResponse{}
-	mi := &file_feeds_v1_service_proto_msgTypes[18]
+	mi := &file_feeds_v1_service_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1010,7 +1344,7 @@ func (x *SaveArticleResponse) String() string {
 func (*SaveArticleResponse) ProtoMessage() {}
 
 func (x *SaveArticleResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_feeds_v1_service_proto_msgTypes[18]
+	mi := &file_feeds_v1_service_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1023,7 +1357,7 @@ func (x *SaveArticleResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SaveArticleResponse.ProtoReflect.Descriptor instead.
 func (*SaveArticleResponse) Descriptor() ([]byte, []int) {
-	return file_feeds_v1_service_proto_rawDescGZIP(), []int{18}
+	return file_feeds_v1_service_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *SaveArticleResponse) GetId() string {
@@ -1043,7 +1377,7 @@ type ValidationErrors struct {
 
 func (x *ValidationErrors) Reset() {
 	*x = ValidationErrors{}
-	mi := &file_feeds_v1_service_proto_msgTypes[19]
+	mi := &file_feeds_v1_service_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1055,7 +1389,7 @@ func (x *ValidationErrors) String() string {
 func (*ValidationErrors) ProtoMessage() {}
 
 func (x *ValidationErrors) ProtoReflect() protoreflect.Message {
-	mi := &file_feeds_v1_service_proto_msgTypes[19]
+	mi := &file_feeds_v1_service_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1068,7 +1402,7 @@ func (x *ValidationErrors) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ValidationErrors.ProtoReflect.Descriptor instead.
 func (*ValidationErrors) Descriptor() ([]byte, []int) {
-	return file_feeds_v1_service_proto_rawDescGZIP(), []int{19}
+	return file_feeds_v1_service_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *ValidationErrors) GetErrors() []*ValidationError {
@@ -1091,7 +1425,7 @@ type ValidationError struct {
 
 func (x *ValidationError) Reset() {
 	*x = ValidationError{}
-	mi := &file_feeds_v1_service_proto_msgTypes[20]
+	mi := &file_feeds_v1_service_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1103,7 +1437,7 @@ func (x *ValidationError) String() string {
 func (*ValidationError) ProtoMessage() {}
 
 func (x *ValidationError) ProtoReflect() protoreflect.Message {
-	mi := &file_feeds_v1_service_proto_msgTypes[20]
+	mi := &file_feeds_v1_service_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1116,7 +1450,7 @@ func (x *ValidationError) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ValidationError.ProtoReflect.Descriptor instead.
 func (*ValidationError) Descriptor() ([]byte, []int) {
-	return file_feeds_v1_service_proto_rawDescGZIP(), []int{20}
+	return file_feeds_v1_service_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *ValidationError) GetField() string {
@@ -1158,7 +1492,7 @@ type FeedTaskRequest struct {
 
 func (x *FeedTaskRequest) Reset() {
 	*x = FeedTaskRequest{}
-	mi := &file_feeds_v1_service_proto_msgTypes[21]
+	mi := &file_feeds_v1_service_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1170,7 +1504,7 @@ func (x *FeedTaskRequest) String() string {
 func (*FeedTaskRequest) ProtoMessage() {}
 
 func (x *FeedTaskRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_feeds_v1_service_proto_msgTypes[21]
+	mi := &file_feeds_v1_service_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1183,7 +1517,7 @@ func (x *FeedTaskRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FeedTaskRequest.ProtoReflect.Descriptor instead.
 func (*FeedTaskRequest) Descriptor() ([]byte, []int) {
-	return file_feeds_v1_service_proto_rawDescGZIP(), []int{21}
+	return file_feeds_v1_service_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *FeedTaskRequest) GetTask() FeedTaskRequest_Task {
@@ -1205,7 +1539,7 @@ type FeedTaskResponse struct {
 
 func (x *FeedTaskResponse) Reset() {
 	*x = FeedTaskResponse{}
-	mi := &file_feeds_v1_service_proto_msgTypes[22]
+	mi := &file_feeds_v1_service_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1217,7 +1551,7 @@ func (x *FeedTaskResponse) String() string {
 func (*FeedTaskResponse) ProtoMessage() {}
 
 func (x *FeedTaskResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_feeds_v1_service_proto_msgTypes[22]
+	mi := &file_feeds_v1_service_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1230,7 +1564,7 @@ func (x *FeedTaskResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FeedTaskResponse.ProtoReflect.Descriptor instead.
 func (*FeedTaskResponse) Descriptor() ([]byte, []int) {
-	return file_feeds_v1_service_proto_rawDescGZIP(), []int{22}
+	return file_feeds_v1_service_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *FeedTaskResponse) GetId() string {
@@ -1247,6 +1581,78 @@ func (x *FeedTaskResponse) GetMessage() string {
 	return ""
 }
 
+type ReadyRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *ReadyRequest) Reset() {
+	*x = ReadyRequest{}
+	mi := &file_feeds_v1_service_proto_msgTypes[29]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ReadyRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ReadyRequest) ProtoMessage() {}
+
+func (x *ReadyRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_feeds_v1_service_proto_msgTypes[29]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ReadyRequest.ProtoReflect.Descriptor instead.
+func (*ReadyRequest) Descriptor() ([]byte, []int) {
+	return file_feeds_v1_service_proto_rawDescGZIP(), []int{29}
+}
+
+type ReadyResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *ReadyResponse) Reset() {
+	*x = ReadyResponse{}
+	mi := &file_feeds_v1_service_proto_msgTypes[30]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ReadyResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ReadyResponse) ProtoMessage() {}
+
+func (x *ReadyResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_feeds_v1_service_proto_msgTypes[30]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ReadyResponse.ProtoReflect.Descriptor instead.
+func (*ReadyResponse) Descriptor() ([]byte, []int) {
+	return file_feeds_v1_service_proto_rawDescGZIP(), []int{30}
+}
+
 type CreateFeedRequest_Feed struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1258,7 +1664,7 @@ type CreateFeedRequest_Feed struct {
 
 func (x *CreateFeedRequest_Feed) Reset() {
 	*x = CreateFeedRequest_Feed{}
-	mi := &file_feeds_v1_service_proto_msgTypes[23]
+	mi := &file_feeds_v1_service_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1270,7 +1676,7 @@ func (x *CreateFeedRequest_Feed) String() string {
 func (*CreateFeedRequest_Feed) ProtoMessage() {}
 
 func (x *CreateFeedRequest_Feed) ProtoReflect() protoreflect.Message {
-	mi := &file_feeds_v1_service_proto_msgTypes[23]
+	mi := &file_feeds_v1_service_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1283,7 +1689,7 @@ func (x *CreateFeedRequest_Feed) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateFeedRequest_Feed.ProtoReflect.Descriptor instead.
 func (*CreateFeedRequest_Feed) Descriptor() ([]byte, []int) {
-	return file_feeds_v1_service_proto_rawDescGZIP(), []int{7, 0}
+	return file_feeds_v1_service_proto_rawDescGZIP(), []int{13, 0}
 }
 
 func (x *CreateFeedRequest_Feed) GetUrl() string {
@@ -1312,7 +1718,7 @@ type UpdateFeedRequest_Feed struct {
 
 func (x *UpdateFeedRequest_Feed) Reset() {
 	*x = UpdateFeedRequest_Feed{}
-	mi := &file_feeds_v1_service_proto_msgTypes[24]
+	mi := &file_feeds_v1_service_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1324,7 +1730,7 @@ func (x *UpdateFeedRequest_Feed) String() string {
 func (*UpdateFeedRequest_Feed) ProtoMessage() {}
 
 func (x *UpdateFeedRequest_Feed) ProtoReflect() protoreflect.Message {
-	mi := &file_feeds_v1_service_proto_msgTypes[24]
+	mi := &file_feeds_v1_service_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1337,7 +1743,7 @@ func (x *UpdateFeedRequest_Feed) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateFeedRequest_Feed.ProtoReflect.Descriptor instead.
 func (*UpdateFeedRequest_Feed) Descriptor() ([]byte, []int) {
-	return file_feeds_v1_service_proto_rawDescGZIP(), []int{9, 0}
+	return file_feeds_v1_service_proto_rawDescGZIP(), []int{15, 0}
 }
 
 func (x *UpdateFeedRequest_Feed) GetId() string {
@@ -1396,23 +1802,65 @@ var file_feeds_v1_service_proto_rawDesc = []byte{
 	0x64, 0x5f, 0x61, 0x74, 0x18, 0x0c, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f,
 	0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d,
 	0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x09, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x64, 0x41,
-	0x74, 0x22, 0x07, 0x0a, 0x05, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x22, 0x2a, 0x0a, 0x0e, 0x47, 0x65,
-	0x74, 0x46, 0x65, 0x65, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x18, 0x0a, 0x02,
-	0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x08, 0xba, 0x48, 0x05, 0x72, 0x03, 0xb0,
-	0x01, 0x01, 0x52, 0x02, 0x69, 0x64, 0x22, 0x35, 0x0a, 0x0f, 0x47, 0x65, 0x74, 0x46, 0x65, 0x65,
-	0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x22, 0x0a, 0x04, 0x66, 0x65, 0x65,
-	0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0e, 0x2e, 0x66, 0x65, 0x65, 0x64, 0x73, 0x2e,
-	0x76, 0x31, 0x2e, 0x46, 0x65, 0x65, 0x64, 0x52, 0x04, 0x66, 0x65, 0x65, 0x64, 0x22, 0x12, 0x0a,
-	0x10, 0x4c, 0x69, 0x73, 0x74, 0x46, 0x65, 0x65, 0x64, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
-	0x74, 0x22, 0x39, 0x0a, 0x11, 0x4c, 0x69, 0x73, 0x74, 0x46, 0x65, 0x65, 0x64, 0x73, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x24, 0x0a, 0x05, 0x66, 0x65, 0x65, 0x64, 0x73, 0x18,
-	0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x0e, 0x2e, 0x66, 0x65, 0x65, 0x64, 0x73, 0x2e, 0x76, 0x31,
-	0x2e, 0x46, 0x65, 0x65, 0x64, 0x52, 0x05, 0x66, 0x65, 0x65, 0x64, 0x73, 0x22, 0x81, 0x01, 0x0a,
-	0x11, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x46, 0x65, 0x65, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65,
-	0x73, 0x74, 0x12, 0x34, 0x0a, 0x04, 0x66, 0x65, 0x65, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b,
-	0x32, 0x20, 0x2e, 0x66, 0x65, 0x65, 0x64, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x72, 0x65, 0x61,
-	0x74, 0x65, 0x46, 0x65, 0x65, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x2e, 0x46, 0x65,
-	0x65, 0x64, 0x52, 0x04, 0x66, 0x65, 0x65, 0x64, 0x1a, 0x36, 0x0a, 0x04, 0x46, 0x65, 0x65, 0x64,
+	0x74, 0x22, 0x07, 0x0a, 0x05, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x22, 0x23, 0x0a, 0x04, 0x55, 0x73,
+	0x65, 0x72, 0x12, 0x1b, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x0b,
+	0xba, 0x48, 0x08, 0xc8, 0x01, 0x01, 0x72, 0x03, 0xb0, 0x01, 0x01, 0x52, 0x02, 0x69, 0x64, 0x22,
+	0x2a, 0x0a, 0x0e, 0x47, 0x65, 0x74, 0x46, 0x65, 0x65, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
+	0x74, 0x12, 0x18, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x08, 0xba,
+	0x48, 0x05, 0x72, 0x03, 0xb0, 0x01, 0x01, 0x52, 0x02, 0x69, 0x64, 0x22, 0x35, 0x0a, 0x0f, 0x47,
+	0x65, 0x74, 0x46, 0x65, 0x65, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x22,
+	0x0a, 0x04, 0x66, 0x65, 0x65, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0e, 0x2e, 0x66,
+	0x65, 0x65, 0x64, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x46, 0x65, 0x65, 0x64, 0x52, 0x04, 0x66, 0x65,
+	0x65, 0x64, 0x22, 0x60, 0x0a, 0x12, 0x47, 0x65, 0x74, 0x55, 0x73, 0x65, 0x72, 0x46, 0x65, 0x65,
+	0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x24, 0x0a, 0x07, 0x75, 0x73, 0x65, 0x72,
+	0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x0b, 0xba, 0x48, 0x08, 0xc8, 0x01,
+	0x01, 0x72, 0x03, 0xb0, 0x01, 0x01, 0x52, 0x06, 0x75, 0x73, 0x65, 0x72, 0x49, 0x64, 0x12, 0x24,
+	0x0a, 0x07, 0x66, 0x65, 0x65, 0x64, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x42,
+	0x0b, 0xba, 0x48, 0x08, 0xc8, 0x01, 0x01, 0x72, 0x03, 0xb0, 0x01, 0x01, 0x52, 0x06, 0x66, 0x65,
+	0x65, 0x64, 0x49, 0x64, 0x22, 0x3d, 0x0a, 0x13, 0x47, 0x65, 0x74, 0x55, 0x73, 0x65, 0x72, 0x46,
+	0x65, 0x65, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x26, 0x0a, 0x04, 0x66,
+	0x65, 0x65, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x12, 0x2e, 0x66, 0x65, 0x65, 0x64,
+	0x73, 0x2e, 0x76, 0x31, 0x2e, 0x55, 0x73, 0x65, 0x72, 0x46, 0x65, 0x65, 0x64, 0x52, 0x04, 0x66,
+	0x65, 0x65, 0x64, 0x22, 0x12, 0x0a, 0x10, 0x4c, 0x69, 0x73, 0x74, 0x46, 0x65, 0x65, 0x64, 0x73,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x39, 0x0a, 0x11, 0x4c, 0x69, 0x73, 0x74, 0x46,
+	0x65, 0x65, 0x64, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x24, 0x0a, 0x05,
+	0x66, 0x65, 0x65, 0x64, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x0e, 0x2e, 0x66, 0x65,
+	0x65, 0x64, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x46, 0x65, 0x65, 0x64, 0x52, 0x05, 0x66, 0x65, 0x65,
+	0x64, 0x73, 0x22, 0x42, 0x0a, 0x14, 0x4c, 0x69, 0x73, 0x74, 0x55, 0x73, 0x65, 0x72, 0x46, 0x65,
+	0x65, 0x64, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x2a, 0x0a, 0x04, 0x75, 0x73,
+	0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0e, 0x2e, 0x66, 0x65, 0x65, 0x64, 0x73,
+	0x2e, 0x76, 0x31, 0x2e, 0x55, 0x73, 0x65, 0x72, 0x42, 0x06, 0xba, 0x48, 0x03, 0xc8, 0x01, 0x01,
+	0x52, 0x04, 0x75, 0x73, 0x65, 0x72, 0x22, 0xa4, 0x02, 0x0a, 0x08, 0x55, 0x73, 0x65, 0x72, 0x46,
+	0x65, 0x65, 0x64, 0x12, 0x17, 0x0a, 0x07, 0x66, 0x65, 0x65, 0x64, 0x5f, 0x69, 0x64, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x66, 0x65, 0x65, 0x64, 0x49, 0x64, 0x12, 0x10, 0x0a, 0x03,
+	0x75, 0x72, 0x6c, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x75, 0x72, 0x6c, 0x12, 0x12,
+	0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61,
+	0x6d, 0x65, 0x12, 0x21, 0x0a, 0x0c, 0x75, 0x6e, 0x72, 0x65, 0x61, 0x64, 0x5f, 0x63, 0x6f, 0x75,
+	0x6e, 0x74, 0x18, 0x04, 0x20, 0x01, 0x28, 0x05, 0x52, 0x0b, 0x75, 0x6e, 0x72, 0x65, 0x61, 0x64,
+	0x43, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x39, 0x0a, 0x0a, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64,
+	0x5f, 0x61, 0x74, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67,
+	0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65,
+	0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x09, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x41, 0x74,
+	0x12, 0x37, 0x0a, 0x09, 0x76, 0x69, 0x65, 0x77, 0x65, 0x64, 0x5f, 0x61, 0x74, 0x18, 0x06, 0x20,
+	0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f,
+	0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52,
+	0x08, 0x76, 0x69, 0x65, 0x77, 0x65, 0x64, 0x41, 0x74, 0x12, 0x42, 0x0a, 0x0f, 0x75, 0x6e, 0x72,
+	0x65, 0x61, 0x64, 0x5f, 0x73, 0x74, 0x61, 0x72, 0x74, 0x5f, 0x61, 0x74, 0x18, 0x07, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74,
+	0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x0d,
+	0x75, 0x6e, 0x72, 0x65, 0x61, 0x64, 0x53, 0x74, 0x61, 0x72, 0x74, 0x41, 0x74, 0x22, 0x41, 0x0a,
+	0x15, 0x4c, 0x69, 0x73, 0x74, 0x55, 0x73, 0x65, 0x72, 0x46, 0x65, 0x65, 0x64, 0x73, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x28, 0x0a, 0x05, 0x66, 0x65, 0x65, 0x64, 0x73, 0x18,
+	0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x12, 0x2e, 0x66, 0x65, 0x65, 0x64, 0x73, 0x2e, 0x76, 0x31,
+	0x2e, 0x55, 0x73, 0x65, 0x72, 0x46, 0x65, 0x65, 0x64, 0x52, 0x05, 0x66, 0x65, 0x65, 0x64, 0x73,
+	0x22, 0xad, 0x01, 0x0a, 0x11, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x46, 0x65, 0x65, 0x64, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x34, 0x0a, 0x04, 0x66, 0x65, 0x65, 0x64, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x0b, 0x32, 0x20, 0x2e, 0x66, 0x65, 0x65, 0x64, 0x73, 0x2e, 0x76, 0x31, 0x2e,
+	0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x46, 0x65, 0x65, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
+	0x74, 0x2e, 0x46, 0x65, 0x65, 0x64, 0x52, 0x04, 0x66, 0x65, 0x65, 0x64, 0x12, 0x2a, 0x0a, 0x04,
+	0x75, 0x73, 0x65, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0e, 0x2e, 0x66, 0x65, 0x65,
+	0x64, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x55, 0x73, 0x65, 0x72, 0x42, 0x06, 0xba, 0x48, 0x03, 0xc8,
+	0x01, 0x01, 0x52, 0x04, 0x75, 0x73, 0x65, 0x72, 0x1a, 0x36, 0x0a, 0x04, 0x46, 0x65, 0x65, 0x64,
 	0x12, 0x1a, 0x0a, 0x03, 0x75, 0x72, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x08, 0xba,
 	0x48, 0x05, 0x72, 0x03, 0x88, 0x01, 0x01, 0x52, 0x03, 0x75, 0x72, 0x6c, 0x12, 0x12, 0x0a, 0x04,
 	0x6e, 0x61, 0x6d, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65,
@@ -1489,49 +1937,64 @@ var file_feeds_v1_service_proto_rawDesc = []byte{
 	0x64, 0x54, 0x61, 0x73, 0x6b, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x0e, 0x0a,
 	0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x12, 0x18, 0x0a,
 	0x07, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07,
-	0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x3a, 0x02, 0x18, 0x01, 0x32, 0xd1, 0x04, 0x0a, 0x0b,
-	0x46, 0x65, 0x65, 0x64, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x3e, 0x0a, 0x07, 0x47,
-	0x65, 0x74, 0x46, 0x65, 0x65, 0x64, 0x12, 0x18, 0x2e, 0x66, 0x65, 0x65, 0x64, 0x73, 0x2e, 0x76,
-	0x31, 0x2e, 0x47, 0x65, 0x74, 0x46, 0x65, 0x65, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
-	0x1a, 0x19, 0x2e, 0x66, 0x65, 0x65, 0x64, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x65, 0x74, 0x46,
-	0x65, 0x65, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x44, 0x0a, 0x09, 0x4c,
-	0x69, 0x73, 0x74, 0x46, 0x65, 0x65, 0x64, 0x73, 0x12, 0x1a, 0x2e, 0x66, 0x65, 0x65, 0x64, 0x73,
-	0x2e, 0x76, 0x31, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x46, 0x65, 0x65, 0x64, 0x73, 0x52, 0x65, 0x71,
-	0x75, 0x65, 0x73, 0x74, 0x1a, 0x1b, 0x2e, 0x66, 0x65, 0x65, 0x64, 0x73, 0x2e, 0x76, 0x31, 0x2e,
-	0x4c, 0x69, 0x73, 0x74, 0x46, 0x65, 0x65, 0x64, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x12, 0x47, 0x0a, 0x0a, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x46, 0x65, 0x65, 0x64, 0x12,
-	0x1b, 0x2e, 0x66, 0x65, 0x65, 0x64, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x72, 0x65, 0x61, 0x74,
-	0x65, 0x46, 0x65, 0x65, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1c, 0x2e, 0x66,
-	0x65, 0x65, 0x64, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x46, 0x65,
-	0x65, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x47, 0x0a, 0x0a, 0x55, 0x70,
-	0x64, 0x61, 0x74, 0x65, 0x46, 0x65, 0x65, 0x64, 0x12, 0x1b, 0x2e, 0x66, 0x65, 0x65, 0x64, 0x73,
-	0x2e, 0x76, 0x31, 0x2e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x46, 0x65, 0x65, 0x64, 0x52, 0x65,
-	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1c, 0x2e, 0x66, 0x65, 0x65, 0x64, 0x73, 0x2e, 0x76, 0x31,
-	0x2e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x46, 0x65, 0x65, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x12, 0x4d, 0x0a, 0x0c, 0x4c, 0x69, 0x73, 0x74, 0x41, 0x72, 0x74, 0x69, 0x63,
-	0x6c, 0x65, 0x73, 0x12, 0x1d, 0x2e, 0x66, 0x65, 0x65, 0x64, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x4c,
-	0x69, 0x73, 0x74, 0x41, 0x72, 0x74, 0x69, 0x63, 0x6c, 0x65, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65,
-	0x73, 0x74, 0x1a, 0x1e, 0x2e, 0x66, 0x65, 0x65, 0x64, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x4c, 0x69,
-	0x73, 0x74, 0x41, 0x72, 0x74, 0x69, 0x63, 0x6c, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x12, 0x47, 0x0a, 0x0a, 0x47, 0x65, 0x74, 0x41, 0x72, 0x74, 0x69, 0x63, 0x6c, 0x65,
-	0x12, 0x1b, 0x2e, 0x66, 0x65, 0x65, 0x64, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x65, 0x74, 0x41,
-	0x72, 0x74, 0x69, 0x63, 0x6c, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1c, 0x2e,
-	0x66, 0x65, 0x65, 0x64, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x65, 0x74, 0x41, 0x72, 0x74, 0x69,
-	0x63, 0x6c, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x4a, 0x0a, 0x0b, 0x53,
-	0x61, 0x76, 0x65, 0x41, 0x72, 0x74, 0x69, 0x63, 0x6c, 0x65, 0x12, 0x1c, 0x2e, 0x66, 0x65, 0x65,
-	0x64, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x61, 0x76, 0x65, 0x41, 0x72, 0x74, 0x69, 0x63, 0x6c,
-	0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1d, 0x2e, 0x66, 0x65, 0x65, 0x64, 0x73,
-	0x2e, 0x76, 0x31, 0x2e, 0x53, 0x61, 0x76, 0x65, 0x41, 0x72, 0x74, 0x69, 0x63, 0x6c, 0x65, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x46, 0x0a, 0x08, 0x46, 0x65, 0x65, 0x64, 0x54,
-	0x61, 0x73, 0x6b, 0x12, 0x19, 0x2e, 0x66, 0x65, 0x65, 0x64, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x46,
-	0x65, 0x65, 0x64, 0x54, 0x61, 0x73, 0x6b, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1a,
-	0x2e, 0x66, 0x65, 0x65, 0x64, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x46, 0x65, 0x65, 0x64, 0x54, 0x61,
-	0x73, 0x6b, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x03, 0x88, 0x02, 0x01, 0x42,
-	0x39, 0x5a, 0x37, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x65, 0x72,
-	0x69, 0x63, 0x62, 0x75, 0x74, 0x65, 0x72, 0x61, 0x2f, 0x61, 0x6d, 0x61, 0x6c, 0x67, 0x61, 0x6d,
-	0x2f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x73, 0x2f, 0x72, 0x70, 0x63, 0x2f, 0x67, 0x65,
-	0x6e, 0x2f, 0x67, 0x6f, 0x2f, 0x66, 0x65, 0x65, 0x64, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x33,
+	0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x3a, 0x02, 0x18, 0x01, 0x22, 0x0e, 0x0a, 0x0c, 0x52,
+	0x65, 0x61, 0x64, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x0f, 0x0a, 0x0d, 0x52,
+	0x65, 0x61, 0x64, 0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x32, 0xa9, 0x06, 0x0a,
+	0x0b, 0x46, 0x65, 0x65, 0x64, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x3e, 0x0a, 0x07,
+	0x47, 0x65, 0x74, 0x46, 0x65, 0x65, 0x64, 0x12, 0x18, 0x2e, 0x66, 0x65, 0x65, 0x64, 0x73, 0x2e,
+	0x76, 0x31, 0x2e, 0x47, 0x65, 0x74, 0x46, 0x65, 0x65, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
+	0x74, 0x1a, 0x19, 0x2e, 0x66, 0x65, 0x65, 0x64, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x65, 0x74,
+	0x46, 0x65, 0x65, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x4a, 0x0a, 0x0b,
+	0x47, 0x65, 0x74, 0x55, 0x73, 0x65, 0x72, 0x46, 0x65, 0x65, 0x64, 0x12, 0x1c, 0x2e, 0x66, 0x65,
+	0x65, 0x64, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x65, 0x74, 0x55, 0x73, 0x65, 0x72, 0x46, 0x65,
+	0x65, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1d, 0x2e, 0x66, 0x65, 0x65, 0x64,
+	0x73, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x65, 0x74, 0x55, 0x73, 0x65, 0x72, 0x46, 0x65, 0x65, 0x64,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x44, 0x0a, 0x09, 0x4c, 0x69, 0x73, 0x74,
+	0x46, 0x65, 0x65, 0x64, 0x73, 0x12, 0x1a, 0x2e, 0x66, 0x65, 0x65, 0x64, 0x73, 0x2e, 0x76, 0x31,
+	0x2e, 0x4c, 0x69, 0x73, 0x74, 0x46, 0x65, 0x65, 0x64, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
+	0x74, 0x1a, 0x1b, 0x2e, 0x66, 0x65, 0x65, 0x64, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x4c, 0x69, 0x73,
+	0x74, 0x46, 0x65, 0x65, 0x64, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x50,
+	0x0a, 0x0d, 0x4c, 0x69, 0x73, 0x74, 0x55, 0x73, 0x65, 0x72, 0x46, 0x65, 0x65, 0x64, 0x73, 0x12,
+	0x1e, 0x2e, 0x66, 0x65, 0x65, 0x64, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x55,
+	0x73, 0x65, 0x72, 0x46, 0x65, 0x65, 0x64, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a,
+	0x1f, 0x2e, 0x66, 0x65, 0x65, 0x64, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x55,
+	0x73, 0x65, 0x72, 0x46, 0x65, 0x65, 0x64, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x12, 0x47, 0x0a, 0x0a, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x46, 0x65, 0x65, 0x64, 0x12, 0x1b,
+	0x2e, 0x66, 0x65, 0x65, 0x64, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65,
+	0x46, 0x65, 0x65, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1c, 0x2e, 0x66, 0x65,
+	0x65, 0x64, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x46, 0x65, 0x65,
+	0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x47, 0x0a, 0x0a, 0x55, 0x70, 0x64,
+	0x61, 0x74, 0x65, 0x46, 0x65, 0x65, 0x64, 0x12, 0x1b, 0x2e, 0x66, 0x65, 0x65, 0x64, 0x73, 0x2e,
+	0x76, 0x31, 0x2e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x46, 0x65, 0x65, 0x64, 0x52, 0x65, 0x71,
+	0x75, 0x65, 0x73, 0x74, 0x1a, 0x1c, 0x2e, 0x66, 0x65, 0x65, 0x64, 0x73, 0x2e, 0x76, 0x31, 0x2e,
+	0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x46, 0x65, 0x65, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x12, 0x4d, 0x0a, 0x0c, 0x4c, 0x69, 0x73, 0x74, 0x41, 0x72, 0x74, 0x69, 0x63, 0x6c,
+	0x65, 0x73, 0x12, 0x1d, 0x2e, 0x66, 0x65, 0x65, 0x64, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x4c, 0x69,
+	0x73, 0x74, 0x41, 0x72, 0x74, 0x69, 0x63, 0x6c, 0x65, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
+	0x74, 0x1a, 0x1e, 0x2e, 0x66, 0x65, 0x65, 0x64, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x4c, 0x69, 0x73,
+	0x74, 0x41, 0x72, 0x74, 0x69, 0x63, 0x6c, 0x65, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x12, 0x47, 0x0a, 0x0a, 0x47, 0x65, 0x74, 0x41, 0x72, 0x74, 0x69, 0x63, 0x6c, 0x65, 0x12,
+	0x1b, 0x2e, 0x66, 0x65, 0x65, 0x64, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x65, 0x74, 0x41, 0x72,
+	0x74, 0x69, 0x63, 0x6c, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1c, 0x2e, 0x66,
+	0x65, 0x65, 0x64, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x65, 0x74, 0x41, 0x72, 0x74, 0x69, 0x63,
+	0x6c, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x4a, 0x0a, 0x0b, 0x53, 0x61,
+	0x76, 0x65, 0x41, 0x72, 0x74, 0x69, 0x63, 0x6c, 0x65, 0x12, 0x1c, 0x2e, 0x66, 0x65, 0x65, 0x64,
+	0x73, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x61, 0x76, 0x65, 0x41, 0x72, 0x74, 0x69, 0x63, 0x6c, 0x65,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1d, 0x2e, 0x66, 0x65, 0x65, 0x64, 0x73, 0x2e,
+	0x76, 0x31, 0x2e, 0x53, 0x61, 0x76, 0x65, 0x41, 0x72, 0x74, 0x69, 0x63, 0x6c, 0x65, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x38, 0x0a, 0x05, 0x52, 0x65, 0x61, 0x64, 0x79, 0x12,
+	0x16, 0x2e, 0x66, 0x65, 0x65, 0x64, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65, 0x61, 0x64, 0x79,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x17, 0x2e, 0x66, 0x65, 0x65, 0x64, 0x73, 0x2e,
+	0x76, 0x31, 0x2e, 0x52, 0x65, 0x61, 0x64, 0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x12, 0x46, 0x0a, 0x08, 0x46, 0x65, 0x65, 0x64, 0x54, 0x61, 0x73, 0x6b, 0x12, 0x19, 0x2e, 0x66,
+	0x65, 0x65, 0x64, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x46, 0x65, 0x65, 0x64, 0x54, 0x61, 0x73, 0x6b,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1a, 0x2e, 0x66, 0x65, 0x65, 0x64, 0x73, 0x2e,
+	0x76, 0x31, 0x2e, 0x46, 0x65, 0x65, 0x64, 0x54, 0x61, 0x73, 0x6b, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x22, 0x03, 0x88, 0x02, 0x01, 0x42, 0x39, 0x5a, 0x37, 0x67, 0x69, 0x74, 0x68,
+	0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x65, 0x72, 0x69, 0x63, 0x62, 0x75, 0x74, 0x65, 0x72,
+	0x61, 0x2f, 0x61, 0x6d, 0x61, 0x6c, 0x67, 0x61, 0x6d, 0x2f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63,
+	0x65, 0x73, 0x2f, 0x72, 0x70, 0x63, 0x2f, 0x67, 0x65, 0x6e, 0x2f, 0x67, 0x6f, 0x2f, 0x66, 0x65,
+	0x65, 0x64, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -1547,70 +2010,91 @@ func file_feeds_v1_service_proto_rawDescGZIP() []byte {
 }
 
 var file_feeds_v1_service_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_feeds_v1_service_proto_msgTypes = make([]protoimpl.MessageInfo, 25)
+var file_feeds_v1_service_proto_msgTypes = make([]protoimpl.MessageInfo, 33)
 var file_feeds_v1_service_proto_goTypes = []any{
 	(FeedTaskRequest_Task)(0),      // 0: feeds.v1.FeedTaskRequest.Task
 	(*Feed)(nil),                   // 1: feeds.v1.Feed
 	(*Article)(nil),                // 2: feeds.v1.Article
 	(*Empty)(nil),                  // 3: feeds.v1.Empty
-	(*GetFeedRequest)(nil),         // 4: feeds.v1.GetFeedRequest
-	(*GetFeedResponse)(nil),        // 5: feeds.v1.GetFeedResponse
-	(*ListFeedsRequest)(nil),       // 6: feeds.v1.ListFeedsRequest
-	(*ListFeedsResponse)(nil),      // 7: feeds.v1.ListFeedsResponse
-	(*CreateFeedRequest)(nil),      // 8: feeds.v1.CreateFeedRequest
-	(*CreateFeedResponse)(nil),     // 9: feeds.v1.CreateFeedResponse
-	(*UpdateFeedRequest)(nil),      // 10: feeds.v1.UpdateFeedRequest
-	(*UpdateFeedResponse)(nil),     // 11: feeds.v1.UpdateFeedResponse
-	(*ListOptions)(nil),            // 12: feeds.v1.ListOptions
-	(*Pagination)(nil),             // 13: feeds.v1.Pagination
-	(*ListArticlesRequest)(nil),    // 14: feeds.v1.ListArticlesRequest
-	(*ListArticlesResponse)(nil),   // 15: feeds.v1.ListArticlesResponse
-	(*GetArticleRequest)(nil),      // 16: feeds.v1.GetArticleRequest
-	(*GetArticleResponse)(nil),     // 17: feeds.v1.GetArticleResponse
-	(*SaveArticleRequest)(nil),     // 18: feeds.v1.SaveArticleRequest
-	(*SaveArticleResponse)(nil),    // 19: feeds.v1.SaveArticleResponse
-	(*ValidationErrors)(nil),       // 20: feeds.v1.ValidationErrors
-	(*ValidationError)(nil),        // 21: feeds.v1.ValidationError
-	(*FeedTaskRequest)(nil),        // 22: feeds.v1.FeedTaskRequest
-	(*FeedTaskResponse)(nil),       // 23: feeds.v1.FeedTaskResponse
-	(*CreateFeedRequest_Feed)(nil), // 24: feeds.v1.CreateFeedRequest.Feed
-	(*UpdateFeedRequest_Feed)(nil), // 25: feeds.v1.UpdateFeedRequest.Feed
-	(*timestamppb.Timestamp)(nil),  // 26: google.protobuf.Timestamp
+	(*User)(nil),                   // 4: feeds.v1.User
+	(*GetFeedRequest)(nil),         // 5: feeds.v1.GetFeedRequest
+	(*GetFeedResponse)(nil),        // 6: feeds.v1.GetFeedResponse
+	(*GetUserFeedRequest)(nil),     // 7: feeds.v1.GetUserFeedRequest
+	(*GetUserFeedResponse)(nil),    // 8: feeds.v1.GetUserFeedResponse
+	(*ListFeedsRequest)(nil),       // 9: feeds.v1.ListFeedsRequest
+	(*ListFeedsResponse)(nil),      // 10: feeds.v1.ListFeedsResponse
+	(*ListUserFeedsRequest)(nil),   // 11: feeds.v1.ListUserFeedsRequest
+	(*UserFeed)(nil),               // 12: feeds.v1.UserFeed
+	(*ListUserFeedsResponse)(nil),  // 13: feeds.v1.ListUserFeedsResponse
+	(*CreateFeedRequest)(nil),      // 14: feeds.v1.CreateFeedRequest
+	(*CreateFeedResponse)(nil),     // 15: feeds.v1.CreateFeedResponse
+	(*UpdateFeedRequest)(nil),      // 16: feeds.v1.UpdateFeedRequest
+	(*UpdateFeedResponse)(nil),     // 17: feeds.v1.UpdateFeedResponse
+	(*ListOptions)(nil),            // 18: feeds.v1.ListOptions
+	(*Pagination)(nil),             // 19: feeds.v1.Pagination
+	(*ListArticlesRequest)(nil),    // 20: feeds.v1.ListArticlesRequest
+	(*ListArticlesResponse)(nil),   // 21: feeds.v1.ListArticlesResponse
+	(*GetArticleRequest)(nil),      // 22: feeds.v1.GetArticleRequest
+	(*GetArticleResponse)(nil),     // 23: feeds.v1.GetArticleResponse
+	(*SaveArticleRequest)(nil),     // 24: feeds.v1.SaveArticleRequest
+	(*SaveArticleResponse)(nil),    // 25: feeds.v1.SaveArticleResponse
+	(*ValidationErrors)(nil),       // 26: feeds.v1.ValidationErrors
+	(*ValidationError)(nil),        // 27: feeds.v1.ValidationError
+	(*FeedTaskRequest)(nil),        // 28: feeds.v1.FeedTaskRequest
+	(*FeedTaskResponse)(nil),       // 29: feeds.v1.FeedTaskResponse
+	(*ReadyRequest)(nil),           // 30: feeds.v1.ReadyRequest
+	(*ReadyResponse)(nil),          // 31: feeds.v1.ReadyResponse
+	(*CreateFeedRequest_Feed)(nil), // 32: feeds.v1.CreateFeedRequest.Feed
+	(*UpdateFeedRequest_Feed)(nil), // 33: feeds.v1.UpdateFeedRequest.Feed
+	(*timestamppb.Timestamp)(nil),  // 34: google.protobuf.Timestamp
 }
 var file_feeds_v1_service_proto_depIdxs = []int32{
-	26, // 0: feeds.v1.Article.updated_at:type_name -> google.protobuf.Timestamp
+	34, // 0: feeds.v1.Article.updated_at:type_name -> google.protobuf.Timestamp
 	1,  // 1: feeds.v1.GetFeedResponse.feed:type_name -> feeds.v1.Feed
-	1,  // 2: feeds.v1.ListFeedsResponse.feeds:type_name -> feeds.v1.Feed
-	24, // 3: feeds.v1.CreateFeedRequest.feed:type_name -> feeds.v1.CreateFeedRequest.Feed
-	25, // 4: feeds.v1.UpdateFeedRequest.feed:type_name -> feeds.v1.UpdateFeedRequest.Feed
-	12, // 5: feeds.v1.ListArticlesRequest.options:type_name -> feeds.v1.ListOptions
-	2,  // 6: feeds.v1.ListArticlesResponse.articles:type_name -> feeds.v1.Article
-	13, // 7: feeds.v1.ListArticlesResponse.pagination:type_name -> feeds.v1.Pagination
-	2,  // 8: feeds.v1.GetArticleResponse.article:type_name -> feeds.v1.Article
-	2,  // 9: feeds.v1.SaveArticleRequest.article:type_name -> feeds.v1.Article
-	21, // 10: feeds.v1.ValidationErrors.errors:type_name -> feeds.v1.ValidationError
-	0,  // 11: feeds.v1.FeedTaskRequest.task:type_name -> feeds.v1.FeedTaskRequest.Task
-	4,  // 12: feeds.v1.FeedService.GetFeed:input_type -> feeds.v1.GetFeedRequest
-	6,  // 13: feeds.v1.FeedService.ListFeeds:input_type -> feeds.v1.ListFeedsRequest
-	8,  // 14: feeds.v1.FeedService.CreateFeed:input_type -> feeds.v1.CreateFeedRequest
-	10, // 15: feeds.v1.FeedService.UpdateFeed:input_type -> feeds.v1.UpdateFeedRequest
-	14, // 16: feeds.v1.FeedService.ListArticles:input_type -> feeds.v1.ListArticlesRequest
-	16, // 17: feeds.v1.FeedService.GetArticle:input_type -> feeds.v1.GetArticleRequest
-	18, // 18: feeds.v1.FeedService.SaveArticle:input_type -> feeds.v1.SaveArticleRequest
-	22, // 19: feeds.v1.FeedService.FeedTask:input_type -> feeds.v1.FeedTaskRequest
-	5,  // 20: feeds.v1.FeedService.GetFeed:output_type -> feeds.v1.GetFeedResponse
-	7,  // 21: feeds.v1.FeedService.ListFeeds:output_type -> feeds.v1.ListFeedsResponse
-	9,  // 22: feeds.v1.FeedService.CreateFeed:output_type -> feeds.v1.CreateFeedResponse
-	11, // 23: feeds.v1.FeedService.UpdateFeed:output_type -> feeds.v1.UpdateFeedResponse
-	15, // 24: feeds.v1.FeedService.ListArticles:output_type -> feeds.v1.ListArticlesResponse
-	17, // 25: feeds.v1.FeedService.GetArticle:output_type -> feeds.v1.GetArticleResponse
-	19, // 26: feeds.v1.FeedService.SaveArticle:output_type -> feeds.v1.SaveArticleResponse
-	23, // 27: feeds.v1.FeedService.FeedTask:output_type -> feeds.v1.FeedTaskResponse
-	20, // [20:28] is the sub-list for method output_type
-	12, // [12:20] is the sub-list for method input_type
-	12, // [12:12] is the sub-list for extension type_name
-	12, // [12:12] is the sub-list for extension extendee
-	0,  // [0:12] is the sub-list for field type_name
+	12, // 2: feeds.v1.GetUserFeedResponse.feed:type_name -> feeds.v1.UserFeed
+	1,  // 3: feeds.v1.ListFeedsResponse.feeds:type_name -> feeds.v1.Feed
+	4,  // 4: feeds.v1.ListUserFeedsRequest.user:type_name -> feeds.v1.User
+	34, // 5: feeds.v1.UserFeed.created_at:type_name -> google.protobuf.Timestamp
+	34, // 6: feeds.v1.UserFeed.viewed_at:type_name -> google.protobuf.Timestamp
+	34, // 7: feeds.v1.UserFeed.unread_start_at:type_name -> google.protobuf.Timestamp
+	12, // 8: feeds.v1.ListUserFeedsResponse.feeds:type_name -> feeds.v1.UserFeed
+	32, // 9: feeds.v1.CreateFeedRequest.feed:type_name -> feeds.v1.CreateFeedRequest.Feed
+	4,  // 10: feeds.v1.CreateFeedRequest.user:type_name -> feeds.v1.User
+	33, // 11: feeds.v1.UpdateFeedRequest.feed:type_name -> feeds.v1.UpdateFeedRequest.Feed
+	18, // 12: feeds.v1.ListArticlesRequest.options:type_name -> feeds.v1.ListOptions
+	2,  // 13: feeds.v1.ListArticlesResponse.articles:type_name -> feeds.v1.Article
+	19, // 14: feeds.v1.ListArticlesResponse.pagination:type_name -> feeds.v1.Pagination
+	2,  // 15: feeds.v1.GetArticleResponse.article:type_name -> feeds.v1.Article
+	2,  // 16: feeds.v1.SaveArticleRequest.article:type_name -> feeds.v1.Article
+	27, // 17: feeds.v1.ValidationErrors.errors:type_name -> feeds.v1.ValidationError
+	0,  // 18: feeds.v1.FeedTaskRequest.task:type_name -> feeds.v1.FeedTaskRequest.Task
+	5,  // 19: feeds.v1.FeedService.GetFeed:input_type -> feeds.v1.GetFeedRequest
+	7,  // 20: feeds.v1.FeedService.GetUserFeed:input_type -> feeds.v1.GetUserFeedRequest
+	9,  // 21: feeds.v1.FeedService.ListFeeds:input_type -> feeds.v1.ListFeedsRequest
+	11, // 22: feeds.v1.FeedService.ListUserFeeds:input_type -> feeds.v1.ListUserFeedsRequest
+	14, // 23: feeds.v1.FeedService.CreateFeed:input_type -> feeds.v1.CreateFeedRequest
+	16, // 24: feeds.v1.FeedService.UpdateFeed:input_type -> feeds.v1.UpdateFeedRequest
+	20, // 25: feeds.v1.FeedService.ListArticles:input_type -> feeds.v1.ListArticlesRequest
+	22, // 26: feeds.v1.FeedService.GetArticle:input_type -> feeds.v1.GetArticleRequest
+	24, // 27: feeds.v1.FeedService.SaveArticle:input_type -> feeds.v1.SaveArticleRequest
+	30, // 28: feeds.v1.FeedService.Ready:input_type -> feeds.v1.ReadyRequest
+	28, // 29: feeds.v1.FeedService.FeedTask:input_type -> feeds.v1.FeedTaskRequest
+	6,  // 30: feeds.v1.FeedService.GetFeed:output_type -> feeds.v1.GetFeedResponse
+	8,  // 31: feeds.v1.FeedService.GetUserFeed:output_type -> feeds.v1.GetUserFeedResponse
+	10, // 32: feeds.v1.FeedService.ListFeeds:output_type -> feeds.v1.ListFeedsResponse
+	13, // 33: feeds.v1.FeedService.ListUserFeeds:output_type -> feeds.v1.ListUserFeedsResponse
+	15, // 34: feeds.v1.FeedService.CreateFeed:output_type -> feeds.v1.CreateFeedResponse
+	17, // 35: feeds.v1.FeedService.UpdateFeed:output_type -> feeds.v1.UpdateFeedResponse
+	21, // 36: feeds.v1.FeedService.ListArticles:output_type -> feeds.v1.ListArticlesResponse
+	23, // 37: feeds.v1.FeedService.GetArticle:output_type -> feeds.v1.GetArticleResponse
+	25, // 38: feeds.v1.FeedService.SaveArticle:output_type -> feeds.v1.SaveArticleResponse
+	31, // 39: feeds.v1.FeedService.Ready:output_type -> feeds.v1.ReadyResponse
+	29, // 40: feeds.v1.FeedService.FeedTask:output_type -> feeds.v1.FeedTaskResponse
+	30, // [30:41] is the sub-list for method output_type
+	19, // [19:30] is the sub-list for method input_type
+	19, // [19:19] is the sub-list for extension type_name
+	19, // [19:19] is the sub-list for extension extendee
+	0,  // [0:19] is the sub-list for field type_name
 }
 
 func init() { file_feeds_v1_service_proto_init() }
@@ -1624,7 +2108,7 @@ func file_feeds_v1_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_feeds_v1_service_proto_rawDesc,
 			NumEnums:      1,
-			NumMessages:   25,
+			NumMessages:   33,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

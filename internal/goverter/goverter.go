@@ -39,11 +39,12 @@ type Converter interface {
 
 	// goverter:matchIgnoreCase
 	// goverter:ignoreMissing
-	GraphToServiceFeed(*gql_model.Feed) *svc_model.Feed
-	ServiceToGraphFeed(*svc_model.Feed) *gql_model.Feed
-	// goverter:useZeroValueOnPointerInconsistency
-	// goverter:map UpdatedAt UpdatedAt | Time
-	GraphToServiceArticle(*gql_model.Article) *svc_model.Article
+	// goverter:map FeedID ID
+	// goverter:map CreatedAt CreatedAt | Time
+	// goverter:map ViewedAt ViewedAt | Time
+	// goverter:map UnreadStartAt UnreadStartAt | Time
+	// goverter:map UnreadCount UnreadCount | Int32ToInt
+	ServiceToGraphFeed(*svc_model.UserFeed) *gql_model.Feed
 	// goverter:map UpdatedAt UpdatedAt | Time
 	ServiceToGraphArticle(*svc_model.Article) *gql_model.Article
 	// goverter:matchIgnoreCase
@@ -67,6 +68,21 @@ type Converter interface {
 	// goverter:ignore state sizeCache unknownFields
 	ServiceToProtoFeed(*svc_model.Feed) *pb.Feed
 	// goverter:matchIgnoreCase
+	// goverter:ignoreMissing
+	ProtoToServiceFeed(*pb.Feed) *svc_model.Feed
+	// goverter:matchIgnoreCase
+	// goverter:ignoreMissing
+	// goverter:map CreatedAt | ProtoTimestampToTime
+	// goverter:map ViewedAt | ProtoTimestampToTime
+	// goverter:map UnreadStartAt | ProtoTimestampToTime
+	ProtoToServiceUserFeed(*pb.UserFeed) *svc_model.UserFeed
+	// goverter:matchIgnoreCase
+	// goverter:ignore state sizeCache unknownFields
+	// goverter:map CreatedAt | TimeToProtoTimestamp
+	// goverter:map UnreadStartAt | TimeToProtoTimestamp
+	// goverter:map ViewedAt | TimeToProtoTimestamp
+	ServiceToProtoUserFeed(*svc_model.UserFeed) *pb.UserFeed
+	// goverter:matchIgnoreCase
 	// goverter:map UpdatedAt | ProtoTimestampToTime
 	ProtoToServiceArticle(*pb.Article) *svc_model.Article
 	// goverter:matchIgnoreCase
@@ -75,7 +91,12 @@ type Converter interface {
 	ServiceToProtoArticle(*svc_model.Article) *pb.Article
 	// goverter:matchIgnoreCase
 	// goverter:ignoreMissing
-	ProtoToGraphFeed(*pb.Feed) *gql_model.Feed
+	// goverter:map FeedId ID
+	// goverter:map CreatedAt | ProtoTimestampToTime
+	// goverter:map ViewedAt | ProtoTimestampToTime
+	// goverter:map UnreadStartAt | ProtoTimestampToTime
+	// goverter:map UnreadCount | Int32ToInt
+	ProtoUserFeedToGraphUserFeed(*pb.UserFeed) *gql_model.Feed
 	// goverter:matchIgnoreCase
 	// goverter:ignoreMissing
 	// goverter:map UpdatedAt | ProtoTimestampToTime
@@ -95,4 +116,8 @@ func ProtoTimestampToTime(ts *timestamppb.Timestamp) time.Time {
 
 func TimeToProtoTimestamp(t time.Time) *timestamppb.Timestamp {
 	return timestamppb.New(t)
+}
+
+func Int32ToInt(i int32) int {
+	return int(i)
 }

@@ -78,17 +78,23 @@ func newLogger() (logging.Logger, []logging.Option) {
 // This code is simple enough to be copied and not imported.
 func interceptorLogger(l *slog.Logger) logging.Logger {
 	return logging.LoggerFunc(func(ctx context.Context, lvl logging.Level, msg string, fields ...any) {
-		// well this is ridiculous. ignore health check logs.
-		for i := 0; i < len(fields); i += 2 {
-			if key, ok := fields[i].(string); ok && key == "grpc.service" {
-				if val, ok := fields[i+1].(string); ok && val == "grpc.health.v1.Health" {
-					return
-				}
-				break
-			}
+		if shouldIgnoreLog(fields, "grpc.service", "grpc.health.v1.Health") ||
+			shouldIgnoreLog(fields, "grpc.method", "Ready") {
+			return
 		}
 		l.Log(ctx, slog.Level(lvl), msg, fields...)
 	})
+}
+
+func shouldIgnoreLog(fields []any, key, value string) bool {
+	for i := 0; i < len(fields)-1; i += 2 {
+		if k, ok := fields[i].(string); ok && k == key {
+			if v, ok := fields[i+1].(string); ok && v == value {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func exemplarFromContext(ctx context.Context) prometheus.Labels {

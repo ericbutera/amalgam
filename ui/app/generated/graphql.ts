@@ -47,9 +47,23 @@ export type ArticlesResponse = {
 
 export type Feed = {
   __typename?: 'Feed';
+  createdAt: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
+  unreadCount: Scalars['Int']['output'];
+  unreadStartAt: Scalars['DateTime']['output'];
   url: Scalars['String']['output'];
+  viewedAt: Scalars['DateTime']['output'];
+};
+
+export type FeedResponse = {
+  __typename?: 'FeedResponse';
+  feeds: Array<Feed>;
+};
+
+export type FeedTaskResponse = {
+  __typename?: 'FeedTaskResponse';
+  taskId: Scalars['ID']['output'];
 };
 
 export type FetchFeedsResponse = {
@@ -70,8 +84,7 @@ export type ListOptions = {
 export type Mutation = {
   __typename?: 'Mutation';
   addFeed: AddResponse;
-  fetchFeeds: FetchFeedsResponse;
-  generateFeeds: GenerateFeedsResponse;
+  feedTask: FeedTaskResponse;
   updateFeed: UpdateResponse;
 };
 
@@ -79,6 +92,11 @@ export type Mutation = {
 export type MutationAddFeedArgs = {
   name: Scalars['String']['input'];
   url: Scalars['String']['input'];
+};
+
+
+export type MutationFeedTaskArgs = {
+  task: TaskType;
 };
 
 
@@ -99,7 +117,7 @@ export type Query = {
   article?: Maybe<Article>;
   articles: ArticlesResponse;
   feed?: Maybe<Feed>;
-  feeds: Array<Feed>;
+  feeds: FeedResponse;
 };
 
 
@@ -117,6 +135,11 @@ export type QueryArticlesArgs = {
 export type QueryFeedArgs = {
   id: Scalars['ID']['input'];
 };
+
+export enum TaskType {
+  GenerateFeeds = 'GENERATE_FEEDS',
+  RefreshFeeds = 'REFRESH_FEEDS'
+}
 
 export type UpdateResponse = {
   __typename?: 'UpdateResponse';
@@ -140,20 +163,17 @@ export type UpdateFeedMutationVariables = Exact<{
 
 export type UpdateFeedMutation = { __typename?: 'Mutation', updateFeed: { __typename?: 'UpdateResponse', id: string } };
 
-export type GenerateFeedsMutationVariables = Exact<{ [key: string]: never; }>;
+export type FeedTaskMutationVariables = Exact<{
+  task: TaskType;
+}>;
 
 
-export type GenerateFeedsMutation = { __typename?: 'Mutation', generateFeeds: { __typename?: 'GenerateFeedsResponse', id: string } };
-
-export type FetchFeedsMutationVariables = Exact<{ [key: string]: never; }>;
-
-
-export type FetchFeedsMutation = { __typename?: 'Mutation', fetchFeeds: { __typename?: 'FetchFeedsResponse', id: string } };
+export type FeedTaskMutation = { __typename?: 'Mutation', feedTask: { __typename?: 'FeedTaskResponse', taskId: string } };
 
 export type ListFeedsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ListFeedsQuery = { __typename?: 'Query', feeds: Array<{ __typename?: 'Feed', id: string, url: string, name: string }> };
+export type ListFeedsQuery = { __typename?: 'Query', feeds: { __typename?: 'FeedResponse', feeds: Array<{ __typename?: 'Feed', id: string, url: string, name: string, createdAt: any, viewedAt: any, unreadStartAt: any, unreadCount: number }> } };
 
 export type GetFeedQueryVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -191,26 +211,25 @@ export const UpdateFeedDocument = gql`
   }
 }
     `;
-export const GenerateFeedsDocument = gql`
-    mutation GenerateFeeds {
-  generateFeeds {
-    id
-  }
-}
-    `;
-export const FetchFeedsDocument = gql`
-    mutation FetchFeeds {
-  fetchFeeds {
-    id
+export const FeedTaskDocument = gql`
+    mutation FeedTask($task: TaskType!) {
+  feedTask(task: $task) {
+    taskId
   }
 }
     `;
 export const ListFeedsDocument = gql`
     query ListFeeds {
   feeds {
-    id
-    url
-    name
+    feeds {
+      id
+      url
+      name
+      createdAt
+      viewedAt
+      unreadStartAt
+      unreadCount
+    }
   }
 }
     `;
@@ -276,11 +295,8 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     UpdateFeed(variables: UpdateFeedMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<UpdateFeedMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<UpdateFeedMutation>(UpdateFeedDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'UpdateFeed', 'mutation', variables);
     },
-    GenerateFeeds(variables?: GenerateFeedsMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GenerateFeedsMutation> {
-      return withWrapper((wrappedRequestHeaders) => client.request<GenerateFeedsMutation>(GenerateFeedsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'GenerateFeeds', 'mutation', variables);
-    },
-    FetchFeeds(variables?: FetchFeedsMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<FetchFeedsMutation> {
-      return withWrapper((wrappedRequestHeaders) => client.request<FetchFeedsMutation>(FetchFeedsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'FetchFeeds', 'mutation', variables);
+    FeedTask(variables: FeedTaskMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<FeedTaskMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<FeedTaskMutation>(FeedTaskDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'FeedTask', 'mutation', variables);
     },
     ListFeeds(variables?: ListFeedsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<ListFeedsQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<ListFeedsQuery>(ListFeedsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'ListFeeds', 'query', variables);

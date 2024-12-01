@@ -191,29 +191,53 @@ type ListArticlesResponse struct {
 // GetArticles returns ListArticlesResponse.Articles, and is useful for accessing the field via an interface.
 func (v *ListArticlesResponse) GetArticles() ListArticlesArticlesArticlesResponse { return v.Articles }
 
-// ListFeedsFeedsFeed includes the requested fields of the GraphQL type Feed.
-type ListFeedsFeedsFeed struct {
-	Id   string `json:"id"`
-	Url  string `json:"url"`
-	Name string `json:"name"`
+// ListFeedsFeedsFeedResponse includes the requested fields of the GraphQL type FeedResponse.
+type ListFeedsFeedsFeedResponse struct {
+	Feeds []ListFeedsFeedsFeedResponseFeedsFeed `json:"feeds"`
 }
 
-// GetId returns ListFeedsFeedsFeed.Id, and is useful for accessing the field via an interface.
-func (v *ListFeedsFeedsFeed) GetId() string { return v.Id }
+// GetFeeds returns ListFeedsFeedsFeedResponse.Feeds, and is useful for accessing the field via an interface.
+func (v *ListFeedsFeedsFeedResponse) GetFeeds() []ListFeedsFeedsFeedResponseFeedsFeed { return v.Feeds }
 
-// GetUrl returns ListFeedsFeedsFeed.Url, and is useful for accessing the field via an interface.
-func (v *ListFeedsFeedsFeed) GetUrl() string { return v.Url }
+// ListFeedsFeedsFeedResponseFeedsFeed includes the requested fields of the GraphQL type Feed.
+type ListFeedsFeedsFeedResponseFeedsFeed struct {
+	Id            string    `json:"id"`
+	Url           string    `json:"url"`
+	Name          string    `json:"name"`
+	CreatedAt     time.Time `json:"createdAt"`
+	ViewedAt      time.Time `json:"viewedAt"`
+	UnreadStartAt time.Time `json:"unreadStartAt"`
+	UnreadCount   int       `json:"unreadCount"`
+}
 
-// GetName returns ListFeedsFeedsFeed.Name, and is useful for accessing the field via an interface.
-func (v *ListFeedsFeedsFeed) GetName() string { return v.Name }
+// GetId returns ListFeedsFeedsFeedResponseFeedsFeed.Id, and is useful for accessing the field via an interface.
+func (v *ListFeedsFeedsFeedResponseFeedsFeed) GetId() string { return v.Id }
+
+// GetUrl returns ListFeedsFeedsFeedResponseFeedsFeed.Url, and is useful for accessing the field via an interface.
+func (v *ListFeedsFeedsFeedResponseFeedsFeed) GetUrl() string { return v.Url }
+
+// GetName returns ListFeedsFeedsFeedResponseFeedsFeed.Name, and is useful for accessing the field via an interface.
+func (v *ListFeedsFeedsFeedResponseFeedsFeed) GetName() string { return v.Name }
+
+// GetCreatedAt returns ListFeedsFeedsFeedResponseFeedsFeed.CreatedAt, and is useful for accessing the field via an interface.
+func (v *ListFeedsFeedsFeedResponseFeedsFeed) GetCreatedAt() time.Time { return v.CreatedAt }
+
+// GetViewedAt returns ListFeedsFeedsFeedResponseFeedsFeed.ViewedAt, and is useful for accessing the field via an interface.
+func (v *ListFeedsFeedsFeedResponseFeedsFeed) GetViewedAt() time.Time { return v.ViewedAt }
+
+// GetUnreadStartAt returns ListFeedsFeedsFeedResponseFeedsFeed.UnreadStartAt, and is useful for accessing the field via an interface.
+func (v *ListFeedsFeedsFeedResponseFeedsFeed) GetUnreadStartAt() time.Time { return v.UnreadStartAt }
+
+// GetUnreadCount returns ListFeedsFeedsFeedResponseFeedsFeed.UnreadCount, and is useful for accessing the field via an interface.
+func (v *ListFeedsFeedsFeedResponseFeedsFeed) GetUnreadCount() int { return v.UnreadCount }
 
 // ListFeedsResponse is returned by ListFeeds on success.
 type ListFeedsResponse struct {
-	Feeds []ListFeedsFeedsFeed `json:"feeds"`
+	Feeds ListFeedsFeedsFeedResponse `json:"feeds"`
 }
 
 // GetFeeds returns ListFeedsResponse.Feeds, and is useful for accessing the field via an interface.
-func (v *ListFeedsResponse) GetFeeds() []ListFeedsFeedsFeed { return v.Feeds }
+func (v *ListFeedsResponse) GetFeeds() ListFeedsFeedsFeedResponse { return v.Feeds }
 
 // UpdateFeedResponse is returned by UpdateFeed on success.
 type UpdateFeedResponse struct {
@@ -456,9 +480,15 @@ func ListArticles(
 const ListFeeds_Operation = `
 query ListFeeds {
 	feeds {
-		id
-		url
-		name
+		feeds {
+			id
+			url
+			name
+			createdAt
+			viewedAt
+			unreadStartAt
+			unreadCount
+		}
 	}
 }
 `

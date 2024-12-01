@@ -57,6 +57,18 @@ type Feed {
 	id: ID!
 	url: String!
 	name: String!
+	createdAt: DateTime!
+	viewedAt: DateTime!
+	unreadStartAt: DateTime!
+	unreadCount: Int!
+}
+
+type FeedResponse {
+	feeds: [Feed!]!
+}
+
+type FeedTaskResponse {
+	taskId: ID!
 }
 
 type FetchFeedsResponse {
@@ -91,8 +103,9 @@ type Mutation {
 		url: String
 		name: String
 	): UpdateResponse!
-	generateFeeds: GenerateFeedsResponse!
-	fetchFeeds: FetchFeedsResponse!
+	feedTask(
+		task: TaskType!
+	): FeedTaskResponse!
 }
 
 type Pagination {
@@ -101,7 +114,7 @@ type Pagination {
 }
 
 type Query {
-	feeds: [Feed!]!
+	feeds: FeedResponse!
 	feed(
 		id: ID!
 	): Feed
@@ -116,6 +129,11 @@ type Query {
 
 """The `String`scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text."""
 scalar String
+
+enum TaskType {
+	GENERATE_FEEDS
+	REFRESH_FEEDS
+}
 
 type UpdateResponse {
 	id: ID!

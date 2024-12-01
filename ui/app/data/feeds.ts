@@ -9,7 +9,7 @@ export default function useFeeds() {
   return {
     loading,
     error,
-    feeds: data?.feeds,
+    feeds: data?.feeds?.feeds,
     mutate,
   };
 }

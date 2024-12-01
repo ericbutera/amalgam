@@ -19,13 +19,10 @@ buf-lint:
 go-checks: go-lint go-test
 ts-checks: ts-lint ts-test
 
-go-generate-mocks:
-	mockery
-
 go-coverage-report:
-	go test -coverprofile=reports/coverage.out ./...
-	go tool cover -func reports/coverage.out -o reports/coverage.txt
-	go tool cover -html reports/coverage.out -o reports/cover.html
+	go test -coverprofile=reports/go/coverage.out ./...
+	go tool cover -func reports/go/coverage.out -o reports/go/coverage.txt
+	go tool cover -html reports/go/coverage.out -o reports/go/cover.html
 
 go-lint-changed: install-go-tools
 	@echo Linting recently changed go files
@@ -85,6 +82,7 @@ generate-k6:
 		-o "/out" \
 		--skip-validate-spec
 
+# rest
 generate-go-api-client:
 	# https://github.com/OpenAPITools/openapi-generator?tab=readme-ov-file#16---docker
 	@echo Generating Go API client
@@ -103,14 +101,20 @@ generate-typescript-client: install-ts-tools
 	@echo Deprecated: generating graphql instead
 	just generate-graph-ts-client
 
-generate-proto:
-	@echo Generating protobuf
-	buf generate
+# mockery test mocks defined in .mockery.yaml
+generate-go-mocks:
+	mockery
 
-generate-converters: install-go-tools
+# struct to struct data mapping using goverter
+generate-go-converters: install-go-tools
 	@echo Generating converters
 	go install github.com/jmattheis/goverter/cmd/goverter@v1.5.1
 	goverter gen ./internal/goverter
+
+
+generate-proto:
+	@echo Generating protobuf
+	buf generate
 
 go-mod-download:
 	@echo Download go.mod dependencies
@@ -131,19 +135,22 @@ setup:
 	pre-commit install --hook-type commit-msg
 	@echo Ensure you run "setup-asdf" or install .tool-versions manually
 
+# regenerate the graph server using gqlgen
 generate-graph-server:
 	@echo Generating graph server
 	go get github.com/99designs/gqlgen@v0.17.55
 	go install github.com/99designs/gqlgen
 	cd services/graph && gqlgen generate
 
+# download the graphql schema used to generate clients; requires the graph server to be running
 generate-graph-schema:
 	@echo This requires the graph service running in tilt to generate the schema
 	go get github.com/alexflint/go-arg
 	go get github.com/suessflorian/gqlfetch
 	cd tools/graphql-schema && go run main.go
 
-generate-graph-clients: generate-graph-schema generate-graph-golang-client generate-graph-ts-client
+# generate graphql clients (from schema)
+generate-graph-clients: generate-graph-golang-client generate-graph-ts-client
 	echo Generating graphql clients
 	echo This will fail if the graph service is not running in tilt
 

@@ -13,11 +13,14 @@ import (
 	helpers "github.com/ericbutera/amalgam/pkg/test"
 	"github.com/ericbutera/amalgam/services/rpc/internal/config"
 	"github.com/ericbutera/amalgam/services/rpc/internal/server"
+	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"gorm.io/gorm"
 )
 
@@ -28,10 +31,12 @@ type TestServer struct {
 }
 
 func newServer(t *testing.T) *TestServer {
+	t.Helper()
 	config := lo.Must(env.New[config.Config]())
 	db := test.NewDB(t) // db := lo.Must(db.NewSqlite("file::memory:", db.WithAutoMigrate()))
 	svc := service.NewGorm(db)
 	server := lo.Must(server.New(
+		server.WithDb(db),
 		server.WithService(svc),
 		server.WithConfig(config),
 	))
@@ -78,9 +83,34 @@ func TestCreateFeed(t *testing.T) {
 			Name: "a",
 			Url:  "https://example.com",
 		},
+		User: &pb.User{Id: seed.UserID},
 	})
 	require.NoError(t, err)
 	assert.NotEmpty(t, resp.GetId())
+}
+
+func TestUpdateFeed(t *testing.T) {
+	t.Parallel()
+	ts := newServer(t)
+	ctx := context.Background()
+	fakes, err := seed.FeedAndArticles(ts.DB, 1)
+	require.NoError(t, err)
+
+	attempt := pb.UpdateFeedRequest_Feed{
+		Id:   fakes.Feed.ID,
+		Name: "new name",
+		Url:  "https://example.com/not-allowed",
+	}
+
+	_, err = ts.Server.UpdateFeed(ctx, &pb.UpdateFeedRequest{
+		Feed: &attempt,
+	})
+	require.NoError(t, err)
+
+	actual, err := ts.Service.GetFeed(ctx, fakes.Feed.ID)
+	require.NoError(t, err)
+	assert.Equal(t, attempt.GetName(), actual.Name)
+	assert.Equal(t, fakes.Feed.URL, actual.URL, "URL is immutable")
 }
 
 func TestSaveArticleValidateError(t *testing.T) {
@@ -167,4 +197,111 @@ func TestListArticles_Pagination(t *testing.T) {
 	})
 	require.NoError(t, err)
 	assert.Len(t, resp.GetArticles(), 1)
+}
+
+func TestListFeeds(t *testing.T) {
+	t.Parallel()
+	ts := newServer(t)
+	ctx := context.Background()
+
+	fakes, err := seed.FeedAndArticles(ts.DB, 1)
+	require.NoError(t, err)
+
+	resp, err := ts.Server.ListFeeds(ctx, &pb.ListFeedsRequest{})
+	require.NoError(t, err)
+	assert.Len(t, resp.GetFeeds(), 1)
+	assert.Equal(t, fakes.Feed.ID, resp.GetFeeds()[0].GetId())
+}
+
+func TestListUserFeeds(t *testing.T) {
+	t.Parallel()
+	ts := newServer(t)
+	ctx := context.Background()
+
+	fakes, err := seed.FeedAndArticles(ts.DB, 1)
+	require.NoError(t, err)
+
+	resp, err := ts.Server.ListUserFeeds(ctx, &pb.ListUserFeedsRequest{
+		User: &pb.User{Id: seed.UserID},
+	})
+	require.NoError(t, err)
+	assert.Len(t, resp.GetFeeds(), 1)
+	assert.Equal(t, fakes.Feed.ID, resp.GetFeeds()[0].GetFeedId())
+}
+
+func TestGetFeed(t *testing.T) {
+	t.Parallel()
+	ts := newServer(t)
+	fakes, err := seed.FeedAndArticles(ts.DB, 1)
+	require.NoError(t, err)
+
+	ctx := context.Background()
+	resp, err := ts.Server.GetFeed(ctx, &pb.GetFeedRequest{
+		Id: fakes.Feed.ID,
+	})
+	require.NoError(t, err)
+	c := converters.New()
+	helpers.Diff(t, *fakes.Feed, *c.ProtoToServiceFeed(resp.GetFeed()), "IsActive")
+}
+
+func TestGetUserFeed(t *testing.T) {
+	t.Parallel()
+	ts := newServer(t)
+	articleCount := 1
+	fakes, err := seed.FeedAndArticles(ts.DB, articleCount)
+	require.NoError(t, err)
+
+	expected := &pb.UserFeed{
+		FeedId:        fakes.Feed.ID,
+		Url:           fakes.Feed.URL,
+		Name:          fakes.Feed.Name,
+		UnreadCount:   int32(articleCount),
+		CreatedAt:     timestamppb.New(fakes.UserFeed.CreatedAt),
+		ViewedAt:      timestamppb.New(fakes.UserFeed.ViewedAt),
+		UnreadStartAt: timestamppb.New(fakes.UserFeed.UnreadStartAt),
+	}
+
+	ctx := context.Background()
+	resp, err := ts.Server.GetUserFeed(ctx, &pb.GetUserFeedRequest{
+		UserId: seed.UserID,
+		FeedId: fakes.Feed.ID,
+	})
+	require.NoError(t, err)
+
+	assert.Empty(t, cmp.Diff(
+		expected,
+		resp.GetFeed(),
+		cmpopts.IgnoreUnexported(pb.UserFeed{}, timestamppb.Timestamp{}),
+	))
+}
+
+func TestGetArticle(t *testing.T) {
+	t.Parallel()
+	ts := newServer(t)
+	fakes, err := seed.FeedAndArticles(ts.DB, 1)
+	require.NoError(t, err)
+
+	ctx := context.Background()
+	resp, err := ts.Server.GetArticle(ctx, &pb.GetArticleRequest{
+		Id: fakes.Articles[0].ID,
+	})
+	require.NoError(t, err)
+	c := converters.New()
+	helpers.Diff(t, *fakes.Articles[0], *c.ProtoToServiceArticle(resp.GetArticle()))
+}
+
+func TestFeedTasks(t *testing.T) {
+	t.Parallel()
+	ts := newServer(t)
+	ctx := context.Background()
+	_, err := ts.Server.FeedTask(ctx, &pb.FeedTaskRequest{}) //nolint: staticcheck
+	require.Error(t, err)
+}
+
+func TestReady(t *testing.T) {
+	t.Parallel()
+	ts := newServer(t)
+	ctx := context.Background()
+	_, err := ts.Server.Ready(ctx, &pb.ReadyRequest{})
+	require.NoError(t, err)
 }
