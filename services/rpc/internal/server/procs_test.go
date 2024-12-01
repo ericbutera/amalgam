@@ -17,6 +17,7 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/status"
@@ -33,7 +34,7 @@ type TestServer struct {
 func newServer(t *testing.T) *TestServer {
 	t.Helper()
 	config := lo.Must(env.New[config.Config]())
-	db := test.NewDB(t) // db := lo.Must(db.NewSqlite("file::memory:", db.WithAutoMigrate()))
+	db := test.NewDB(t)
 	svc := service.NewGorm(db)
 	server := lo.Must(server.New(
 		server.WithDb(db),
@@ -296,6 +297,27 @@ func TestFeedTasks(t *testing.T) {
 	ctx := context.Background()
 	_, err := ts.Server.FeedTask(ctx, &pb.FeedTaskRequest{}) //nolint: staticcheck
 	require.Error(t, err)
+}
+
+func TestUpdateStats(t *testing.T) {
+	t.Parallel()
+
+	feedID := "0e597e90-ece5-463e-8608-ff687bf286da"
+
+	svc := new(service.MockService)
+	svc.EXPECT().UpdateFeedArticleCount(mock.Anything, feedID).Return(nil)
+
+	s, err := server.New(
+		server.WithService(svc),
+	)
+	require.NoError(t, err)
+
+	resp, err := s.UpdateStats(context.Background(), &pb.UpdateStatsRequest{
+		Stat:   pb.UpdateStatsRequest_STAT_FEED_ARTICLE_COUNT,
+		FeedId: feedID,
+	})
+	require.NoError(t, err)
+	assert.NotNil(t, resp)
 }
 
 func TestReady(t *testing.T) {

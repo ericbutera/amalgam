@@ -11,6 +11,7 @@ import (
 	"github.com/ericbutera/amalgam/internal/test/fixtures"
 	"github.com/ericbutera/amalgam/internal/test/seed"
 	helpers "github.com/ericbutera/amalgam/pkg/test"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gorm.io/gorm"
@@ -234,4 +235,40 @@ func TestSaveUserFeed(t *testing.T) {
 	require.NoError(t, res.Error)
 
 	helpers.Diff(t, uf, *actual, "CreatedAt", "ViewedAt", "UnreadStartAt")
+}
+
+func TestUserFeedArticleCount(t *testing.T) {
+	t.Parallel()
+	h := newTestHelper(t)
+
+	data, err := seed.FeedAndArticles(h.db, 1)
+	require.NoError(t, err)
+
+	uf, err := h.svc.GetUserFeed(context.Background(), data.UserFeed.UserID, data.Feed.ID)
+	require.NoError(t, err)
+
+	assert.Equal(t, int32(1), uf.UnreadCount)
+}
+
+func TestUpdateFeedArticleCount(t *testing.T) {
+	t.Parallel()
+	h := newTestHelper(t)
+
+	data, err := seed.FeedAndArticles(h.db, 1)
+	require.NoError(t, err)
+
+	// add another article which will should the unread count
+	article := fixtures.NewArticle(
+		fixtures.WithArticleFeedID(data.Feed.ID),
+		fixtures.WithArticleID(uuid.New().String()),
+	)
+	require.NoError(t, h.db.Create(&article).Error)
+
+	err = h.svc.UpdateFeedArticleCount(context.Background(), data.Feed.ID)
+	require.NoError(t, err)
+
+	actual, err := h.svc.GetUserFeed(context.Background(), data.UserFeed.UserID, data.UserFeed.FeedID)
+	require.NoError(t, err)
+
+	assert.Equal(t, int32(2), actual.UnreadCount)
 }

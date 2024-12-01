@@ -280,6 +280,7 @@ func (s *Gorm) SaveUserFeed(ctx context.Context, uf *svc_model.UserFeed) error {
 			CreatedAt:     time.Now().UTC(),
 			ViewedAt:      time.Now().UTC(),
 			UnreadStartAt: time.Now().AddDate(0, -1, 0).UTC(), // -1 month
+			UnreadCount:   0,                                  // TODO: show last N articles as new
 		}).Error
 }
 
@@ -294,8 +295,8 @@ func (s *Gorm) findFeedUserIDs(ctx context.Context, feedID string) ([]string, er
 
 func (s *Gorm) updateArticleCount(ctx context.Context, userID string, feedID string) error {
 	sql := `
-	UPDATE user_feeds uf
-	SET uf.unread_count = (
+	UPDATE user_feeds
+	SET unread_count = (
 		SELECT
 			count(a.id)
 		FROM articles a
@@ -304,7 +305,7 @@ func (s *Gorm) updateArticleCount(ctx context.Context, userID string, feedID str
 			a.feed_id = ? AND
 			ua.viewed_at IS NULL
 	)
-	WHERE uf.user_id = ? AND uf.feed_id = ?
+	WHERE user_id = ? AND feed_id = ?
 	`
 	return s.query(ctx).Exec(sql, feedID, userID, feedID).Error
 }
