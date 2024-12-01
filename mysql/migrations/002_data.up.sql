@@ -18,7 +18,7 @@ VALUES
     (
         "0e597e90-ece5-463e-8608-ff687bf286da",
         '2024-10-12 13:44:40.000',
-        NULL,
+        '2024-10-12 13:44:40.000',
         NULL,
         'https://news.ycombinator.com/rss',
         'hacker news',
@@ -27,7 +27,7 @@ VALUES
     (
         "9677b210-2211-49f1-902c-dbd5ee357ac9",
         '2024-10-12 13:44:40.000',
-        NULL,
+        '2024-10-12 13:44:40.000',
         NULL,
         'http://faker:8080/feed/9677b210-2211-49f1-902c-dbd5ee357ac9',
         'fake feed',
@@ -59,7 +59,7 @@ VALUES
     (
         "2e597e90-ece5-463e-8608-ff687bf286da",
         '2024-10-12 13:43:25.000',
-        NULL,
+        '2024-10-12 13:43:25.000',
         NULL,
         'user',
         'user',
@@ -97,7 +97,7 @@ VALUES
     (
         "2a1a227d-0375-4d9a-943f-85017ac4f930",
         '2024-10-12 13:42:14.000',
-        NULL,
+        '2024-10-12 13:42:14.000',
         NULL,
         "9677b210-2211-49f1-902c-dbd5ee357ac9",
         'https://mainichi.jp/english/articles/20220916/p2a/00m/0sc/017000c',

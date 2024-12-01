@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 	"time"
 
 	"github.com/ericbutera/amalgam/internal/converters"
@@ -280,4 +281,51 @@ func (s *Gorm) SaveUserFeed(ctx context.Context, uf *svc_model.UserFeed) error {
 			ViewedAt:      time.Now().UTC(),
 			UnreadStartAt: time.Now().AddDate(0, -1, 0).UTC(), // -1 month
 		}).Error
+}
+
+func (s *Gorm) findFeedUserIDs(ctx context.Context, feedID string) ([]string, error) {
+	var userIds []string
+	res := s.query(ctx).
+		Model(&db_model.UserFeeds{}).
+		Select("user_id").
+		Find(&userIds, "feed_id=?", feedID)
+	return userIds, res.Error
+}
+
+func (s *Gorm) updateArticleCount(ctx context.Context, userID string, feedID string) error {
+	sql := `
+	UPDATE user_feeds uf
+	SET uf.unread_count = (
+		SELECT
+			count(a.id)
+		FROM articles a
+		LEFT JOIN user_articles ua ON a.id = ua.article_id
+		WHERE
+			a.feed_id = ? AND
+			ua.viewed_at IS NULL
+	)
+	WHERE uf.user_id = ? AND uf.feed_id = ?
+	`
+	return s.query(ctx).Exec(sql, feedID, userID, feedID).Error
+}
+
+func (s *Gorm) UpdateFeedArticleCount(ctx context.Context, feedID string) error {
+	userIDs, err := s.findFeedUserIDs(ctx, feedID)
+	if err != nil {
+		return err
+	}
+
+	hasError := false
+	for _, userID := range userIDs {
+		if err := s.updateArticleCount(ctx, userID, feedID); err != nil {
+			if !hasError {
+				slog.Error("update user feed article count", "error", err) // TODO: rate limit
+				hasError = true
+			}
+		}
+	}
+	if hasError {
+		return ErrQueryFailed
+	}
+	return nil
 }

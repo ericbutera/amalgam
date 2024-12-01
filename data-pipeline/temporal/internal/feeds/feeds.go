@@ -13,6 +13,7 @@ type Feeds interface {
 	Close() error
 	GetFeeds() ([]Feed, error)
 	SaveArticle(ctx context.Context, article rss.Article) (string, error)
+	UpdateStats(ctx context.Context, feedID string) error
 }
 
 type Feed struct {
@@ -82,4 +83,13 @@ func (h *FeedHelper) SaveArticle(ctx context.Context, article rss.Article) (stri
 		return "", err
 	}
 	return res.GetId(), nil
+}
+
+func (h *FeedHelper) UpdateStats(ctx context.Context, feedID string) error {
+	// TODO: move Update Stats (feed + article count) into a durable workflow
+	_, err := h.client.UpdateStats(ctx, &pb.UpdateStatsRequest{
+		FeedId: feedID,
+		Stat:   pb.UpdateStatsRequest_STAT_FEED_ARTICLE_COUNT,
+	})
+	return err
 }

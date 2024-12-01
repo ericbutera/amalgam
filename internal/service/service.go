@@ -38,6 +38,7 @@ type Service interface {
 	Feeds(ctx context.Context /*, options *FeedsOptions*/) ([]svc_model.Feed, error) // Fetch all feeds in system (not intended for public use)
 	CreateFeed(ctx context.Context, feed *svc_model.Feed) (CreateFeedResult, error)
 	UpdateFeed(ctx context.Context, id string, feed *svc_model.Feed) error
+	UpdateFeedArticleCount(ctx context.Context, feedID string) error
 	GetFeed(ctx context.Context, id string) (*svc_model.Feed, error)
 	GetUserFeed(ctx context.Context, userID string, feedID string) (*svc_model.UserFeed, error)
 	GetArticlesByFeed(ctx context.Context, feedId string, options ListOptions) (*ArticlesByFeedResult, error)

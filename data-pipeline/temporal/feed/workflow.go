@@ -37,6 +37,10 @@ func FeedWorkflow(ctx workflow.Context, feedId string, url string) error {
 	if err != nil {
 		return err
 	}
+	err = workflow.ExecuteActivity(ctx, a.StatsActivity, feedId).Get(ctx, nil)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 

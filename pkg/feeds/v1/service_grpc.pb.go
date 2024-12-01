@@ -28,6 +28,7 @@ const (
 	FeedService_ListArticles_FullMethodName  = "/feeds.v1.FeedService/ListArticles"
 	FeedService_GetArticle_FullMethodName    = "/feeds.v1.FeedService/GetArticle"
 	FeedService_SaveArticle_FullMethodName   = "/feeds.v1.FeedService/SaveArticle"
+	FeedService_UpdateStats_FullMethodName   = "/feeds.v1.FeedService/UpdateStats"
 	FeedService_Ready_FullMethodName         = "/feeds.v1.FeedService/Ready"
 	FeedService_FeedTask_FullMethodName      = "/feeds.v1.FeedService/FeedTask"
 )
@@ -45,6 +46,7 @@ type FeedServiceClient interface {
 	ListArticles(ctx context.Context, in *ListArticlesRequest, opts ...grpc.CallOption) (*ListArticlesResponse, error)
 	GetArticle(ctx context.Context, in *GetArticleRequest, opts ...grpc.CallOption) (*GetArticleResponse, error)
 	SaveArticle(ctx context.Context, in *SaveArticleRequest, opts ...grpc.CallOption) (*SaveArticleResponse, error)
+	UpdateStats(ctx context.Context, in *UpdateStatsRequest, opts ...grpc.CallOption) (*UpdateStatsResponse, error)
 	Ready(ctx context.Context, in *ReadyRequest, opts ...grpc.CallOption) (*ReadyResponse, error)
 	// Deprecated: Do not use.
 	// Deprecated: use graph service
@@ -149,6 +151,16 @@ func (c *feedServiceClient) SaveArticle(ctx context.Context, in *SaveArticleRequ
 	return out, nil
 }
 
+func (c *feedServiceClient) UpdateStats(ctx context.Context, in *UpdateStatsRequest, opts ...grpc.CallOption) (*UpdateStatsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdateStatsResponse)
+	err := c.cc.Invoke(ctx, FeedService_UpdateStats_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *feedServiceClient) Ready(ctx context.Context, in *ReadyRequest, opts ...grpc.CallOption) (*ReadyResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ReadyResponse)
@@ -183,6 +195,7 @@ type FeedServiceServer interface {
 	ListArticles(context.Context, *ListArticlesRequest) (*ListArticlesResponse, error)
 	GetArticle(context.Context, *GetArticleRequest) (*GetArticleResponse, error)
 	SaveArticle(context.Context, *SaveArticleRequest) (*SaveArticleResponse, error)
+	UpdateStats(context.Context, *UpdateStatsRequest) (*UpdateStatsResponse, error)
 	Ready(context.Context, *ReadyRequest) (*ReadyResponse, error)
 	// Deprecated: Do not use.
 	// Deprecated: use graph service
@@ -223,6 +236,9 @@ func (UnimplementedFeedServiceServer) GetArticle(context.Context, *GetArticleReq
 }
 func (UnimplementedFeedServiceServer) SaveArticle(context.Context, *SaveArticleRequest) (*SaveArticleResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SaveArticle not implemented")
+}
+func (UnimplementedFeedServiceServer) UpdateStats(context.Context, *UpdateStatsRequest) (*UpdateStatsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateStats not implemented")
 }
 func (UnimplementedFeedServiceServer) Ready(context.Context, *ReadyRequest) (*ReadyResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Ready not implemented")
@@ -413,6 +429,24 @@ func _FeedService_SaveArticle_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _FeedService_UpdateStats_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateStatsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FeedServiceServer).UpdateStats(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FeedService_UpdateStats_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FeedServiceServer).UpdateStats(ctx, req.(*UpdateStatsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _FeedService_Ready_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ReadyRequest)
 	if err := dec(in); err != nil {
@@ -491,6 +525,10 @@ var FeedService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SaveArticle",
 			Handler:    _FeedService_SaveArticle_Handler,
+		},
+		{
+			MethodName: "UpdateStats",
+			Handler:    _FeedService_UpdateStats_Handler,
 		},
 		{
 			MethodName: "Ready",

@@ -17,6 +17,7 @@ service FeedService {
   rpc ListArticles(ListArticlesRequest) returns (ListArticlesResponse);
   rpc GetArticle(GetArticleRequest) returns (GetArticleResponse);
   rpc SaveArticle(SaveArticleRequest) returns (SaveArticleResponse);
+  rpc UpdateStats(UpdateStatsRequest) returns (UpdateStatsResponse);
   rpc Ready(ReadyRequest) returns (ReadyResponse);
 
   // Deprecated: use graph service
@@ -162,6 +163,17 @@ message SaveArticleRequest {
 message SaveArticleResponse {
   string id = 1;
 }
+
+message UpdateStatsRequest {
+  enum Stat {
+    STAT_UNSPECIFIED = 0;
+    STAT_FEED_ARTICLE_COUNT = 1;
+  }
+  Stat stat = 1 [(buf.validate.field).enum.defined_only = true, (buf.validate.field).required = true];
+  string feed_id = 2 [(buf.validate.field).string.uuid = true];
+}
+
+message UpdateStatsResponse {}
 
 message ValidationErrors {
   repeated ValidationError errors = 1;

@@ -181,6 +181,53 @@ func (_c *MockFeeds_SaveArticle_Call) RunAndReturn(run func(context.Context, par
 	return _c
 }
 
+// UpdateStats provides a mock function with given fields: ctx, feedID
+func (_m *MockFeeds) UpdateStats(ctx context.Context, feedID string) error {
+	ret := _m.Called(ctx, feedID)
+
+	if len(ret) == 0 {
+		panic("no return value specified for UpdateStats")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, string) error); ok {
+		r0 = rf(ctx, feedID)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// MockFeeds_UpdateStats_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'UpdateStats'
+type MockFeeds_UpdateStats_Call struct {
+	*mock.Call
+}
+
+// UpdateStats is a helper method to define mock.On call
+//   - ctx context.Context
+//   - feedID string
+func (_e *MockFeeds_Expecter) UpdateStats(ctx interface{}, feedID interface{}) *MockFeeds_UpdateStats_Call {
+	return &MockFeeds_UpdateStats_Call{Call: _e.mock.On("UpdateStats", ctx, feedID)}
+}
+
+func (_c *MockFeeds_UpdateStats_Call) Run(run func(ctx context.Context, feedID string)) *MockFeeds_UpdateStats_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(string))
+	})
+	return _c
+}
+
+func (_c *MockFeeds_UpdateStats_Call) Return(_a0 error) *MockFeeds_UpdateStats_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *MockFeeds_UpdateStats_Call) RunAndReturn(run func(context.Context, string) error) *MockFeeds_UpdateStats_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // NewMockFeeds creates a new instance of MockFeeds. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewMockFeeds(t interface {
