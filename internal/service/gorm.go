@@ -245,7 +245,7 @@ func (s *Gorm) userFeeds(ctx context.Context, userID string) *gorm.DB {
 
 func (s *Gorm) GetUserFeed(ctx context.Context, userID string, feedID string) (*svc_model.UserFeed, error) {
 	var feed svc_model.UserFeed
-	result := s.userFeeds(ctx, userID).Where("uf.feed_id=?", feedID).Find(&feed)
+	result := s.userFeeds(ctx, userID).Where("uf.feed_id=?", feedID).First(&feed)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			return nil, ErrNotFound
