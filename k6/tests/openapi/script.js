@@ -25,7 +25,7 @@ const SLEEP_DURATION = 0.1;
 
 const FEED_ID = "0e597e90-ece5-463e-8608-ff687bf286da";
 const FEED_ID_UPDATE = "1e597e90-ece5-463e-8608-ff687bf286da";
-const ARTICLE_ID = "2e597e90-ece5-463e-8608-ff687bf286da";
+const ARTICLE_ID = "2a1a227d-0375-4d9a-943f-85017ac4f930";
 
 export default function () {
     group("/feeds/{id}", () => {

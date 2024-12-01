@@ -176,6 +176,24 @@ func (*Server) FeedTask(_ context.Context, _ *pb.FeedTaskRequest) (*pb.FeedTaskR
 	return nil, status.Error(codes.Unimplemented, "feed task has been moved to graphql")
 }
 
+func (s *Server) UpdateStats(ctx context.Context, in *pb.UpdateStatsRequest) (*pb.UpdateStatsResponse, error) {
+	var err error
+
+	if in.GetStat() == pb.UpdateStatsRequest_STAT_FEED_ARTICLE_COUNT {
+		feedID := in.GetFeedId()
+		if feedID == "" {
+			return nil, status.Error(codes.InvalidArgument, "feed_id is required")
+		}
+		err = s.service.UpdateFeedArticleCount(ctx, feedID)
+	}
+
+	if err != nil {
+		return nil, serviceToProtoErr(err, nil)
+	}
+
+	return &pb.UpdateStatsResponse{}, nil
+}
+
 func (s *Server) Ready(_ context.Context, _ *pb.ReadyRequest) (*pb.ReadyResponse, error) {
 	// TODO: without this the graph and rpc services are "ready" before the database is actually ready
 	res := s.db.Exec("SELECT 1 FROM feeds LIMIT 1")

@@ -20,6 +20,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+const TestFeedID = "feed-id-123"
+
 func newReader(s string) io.ReadCloser {
 	return io.NopCloser(bytes.NewBufferString(s))
 }
@@ -50,9 +52,8 @@ func setupActivities(t *testing.T) *activitySetup {
 
 func TestDownloadActivity(t *testing.T) {
 	t.Parallel()
-	feedId := "feed-id-123"
 	url := "http://localhost/feed.xml"
-	rssFile := app.RssPath(feedId)
+	rssFile := app.RssPath(TestFeedID)
 	reader := newReader("test data")
 	contentType := "application/xml"
 	size := int64(9)
@@ -70,9 +71,9 @@ func TestDownloadActivity(t *testing.T) {
 		WriteStream(mock.Anything, app.BucketName, rssFile, reader, contentType).
 		Return(&bucket.UploadInfo{Key: rssFile, Bucket: app.BucketName}, nil)
 
-	out, err := s.activities.DownloadActivity(context.Background(), feedId, url)
+	out, err := s.activities.DownloadActivity(context.Background(), TestFeedID, url)
 	require.NoError(t, err)
-	assert.Equal(t, "feeds/feed-id-123/raw.xml", out)
+	assert.Equal(t, "feeds/"+TestFeedID+"/raw.xml", out)
 }
 
 func dataToArticles(t *testing.T, data io.Reader) parse.Articles {
@@ -103,9 +104,8 @@ func getRssData(t *testing.T) io.ReadCloser {
 
 func TestParseActivity(t *testing.T) {
 	t.Parallel()
-	feedId := "feed-id-123"
-	rssFile := app.RssPath(feedId)
-	articlesFile := app.ArticlePath(feedId)
+	rssFile := app.RssPath(TestFeedID)
+	articlesFile := app.ArticlePath(TestFeedID)
 
 	s := setupActivities(t)
 
@@ -130,7 +130,7 @@ func TestParseActivity(t *testing.T) {
 		WriteStream(mock.Anything, app.BucketName, articlesFile, mock.AnythingOfType("*bytes.Buffer"), app.ArticleContentType).
 		Return(&bucket.UploadInfo{Key: articlesFile, Bucket: app.BucketName}, nil)
 
-	out, err := s.activities.ParseActivity(context.Background(), feedId, rssFile)
+	out, err := s.activities.ParseActivity(context.Background(), TestFeedID, rssFile)
 	require.NoError(t, err)
 	assert.Equal(t, articlesFile, out)
 	s.bucket.AssertCalled(t, "WriteStream", mock.Anything, app.BucketName, articlesFile, matcher, app.ArticleContentType)
@@ -141,22 +141,34 @@ func TestSaveActivity(t *testing.T) {
 	s := setupActivities(t)
 
 	article := parse.Article{
-		FeedId: "feed-id-123",
+		FeedId: TestFeedID,
 		Title:  "Test Article",
 		Url:    "http://example.com/test",
 	}
 
 	s.bucket.EXPECT().
-		Read(mock.Anything, app.BucketName, app.ArticlePath("feed-id-123")).
+		Read(mock.Anything, app.BucketName, app.ArticlePath(TestFeedID)).
 		Return(newReader(`{"feed_id":"feed-id-123","title":"Test Article","url":"http://example.com/test"}`), nil)
 
 	s.feeds.EXPECT().
 		SaveArticle(mock.Anything, article).
 		Return("id", nil)
 
-	articlesFile := app.ArticlePath("feed-id-123")
+	articlesFile := app.ArticlePath(TestFeedID)
 
-	results, err := s.activities.SaveActivity(context.Background(), "feed-id-123", articlesFile)
+	results, err := s.activities.SaveActivity(context.Background(), TestFeedID, articlesFile)
 	require.NoError(t, err)
 	assert.Equal(t, app.SaveResults{Succeeded: 1, Failed: 0}, results)
+}
+
+func TestStatsActivity(t *testing.T) {
+	t.Parallel()
+	s := setupActivities(t)
+
+	s.feeds.EXPECT().
+		UpdateStats(mock.Anything, TestFeedID).
+		Return(nil)
+
+	err := s.activities.StatsActivity(context.Background(), TestFeedID)
+	require.NoError(t, err)
 }

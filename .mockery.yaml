@@ -26,3 +26,6 @@ packages:
   github.com/ericbutera/amalgam/internal/tasks:
     interfaces:
       Tasks:
+  github.com/ericbutera/amalgam/internal/service:
+    interfaces:
+      Service:

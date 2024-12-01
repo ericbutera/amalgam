@@ -34,6 +34,7 @@ func (s *UnitTestSuite) Test_FeedWorkflow() {
 	env.OnActivity(a.DownloadActivity, mock.Anything, feedID, feedURL).Return("rss_file", nil)
 	env.OnActivity(a.ParseActivity, mock.Anything, feedID, "rss_file").Return("articles_file", nil)
 	env.OnActivity(a.SaveActivity, mock.Anything, feedID, "articles_file").Return(app.SaveResults{}, nil)
+	env.OnActivity(a.StatsActivity, mock.Anything, feedID).Return(nil)
 	env.RegisterActivity(a)
 	env.ExecuteWorkflow(app.FeedWorkflow, feedID, feedURL)
 

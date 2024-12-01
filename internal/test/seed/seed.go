@@ -10,7 +10,9 @@ import (
 	"gorm.io/gorm"
 )
 
-const UserID = "a3dce526-adf2-4f2d-bda9-e42dfd520ba5"
+const (
+	UserID = "a3dce526-adf2-4f2d-bda9-e42dfd520ba5"
+)
 
 type Result struct {
 	Feed     *models.Feed

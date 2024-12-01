@@ -157,6 +157,10 @@ func (a *Activities) SaveActivity(ctx context.Context, feedId string, articlesPa
 	return results, nil
 }
 
+func (a *Activities) StatsActivity(ctx context.Context, feedId string) error {
+	return a.feeds.UpdateStats(ctx, feedId)
+}
+
 func handleSaveError(err error, url string, entry *slog.Logger) {
 	// TODO: research recording errors like this using grpc middleware
 	// need to have to correlate errors with the feed & article that caused it

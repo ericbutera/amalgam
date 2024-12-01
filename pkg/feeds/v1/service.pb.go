@@ -22,6 +22,52 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type UpdateStatsRequest_Stat int32
+
+const (
+	UpdateStatsRequest_STAT_UNSPECIFIED        UpdateStatsRequest_Stat = 0
+	UpdateStatsRequest_STAT_FEED_ARTICLE_COUNT UpdateStatsRequest_Stat = 1
+)
+
+// Enum value maps for UpdateStatsRequest_Stat.
+var (
+	UpdateStatsRequest_Stat_name = map[int32]string{
+		0: "STAT_UNSPECIFIED",
+		1: "STAT_FEED_ARTICLE_COUNT",
+	}
+	UpdateStatsRequest_Stat_value = map[string]int32{
+		"STAT_UNSPECIFIED":        0,
+		"STAT_FEED_ARTICLE_COUNT": 1,
+	}
+)
+
+func (x UpdateStatsRequest_Stat) Enum() *UpdateStatsRequest_Stat {
+	p := new(UpdateStatsRequest_Stat)
+	*p = x
+	return p
+}
+
+func (x UpdateStatsRequest_Stat) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (UpdateStatsRequest_Stat) Descriptor() protoreflect.EnumDescriptor {
+	return file_feeds_v1_service_proto_enumTypes[0].Descriptor()
+}
+
+func (UpdateStatsRequest_Stat) Type() protoreflect.EnumType {
+	return &file_feeds_v1_service_proto_enumTypes[0]
+}
+
+func (x UpdateStatsRequest_Stat) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use UpdateStatsRequest_Stat.Descriptor instead.
+func (UpdateStatsRequest_Stat) EnumDescriptor() ([]byte, []int) {
+	return file_feeds_v1_service_proto_rawDescGZIP(), []int{25, 0}
+}
+
 type FeedTaskRequest_Task int32
 
 const (
@@ -52,11 +98,11 @@ func (x FeedTaskRequest_Task) String() string {
 }
 
 func (FeedTaskRequest_Task) Descriptor() protoreflect.EnumDescriptor {
-	return file_feeds_v1_service_proto_enumTypes[0].Descriptor()
+	return file_feeds_v1_service_proto_enumTypes[1].Descriptor()
 }
 
 func (FeedTaskRequest_Task) Type() protoreflect.EnumType {
-	return &file_feeds_v1_service_proto_enumTypes[0]
+	return &file_feeds_v1_service_proto_enumTypes[1]
 }
 
 func (x FeedTaskRequest_Task) Number() protoreflect.EnumNumber {
@@ -65,7 +111,7 @@ func (x FeedTaskRequest_Task) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use FeedTaskRequest_Task.Descriptor instead.
 func (FeedTaskRequest_Task) EnumDescriptor() ([]byte, []int) {
-	return file_feeds_v1_service_proto_rawDescGZIP(), []int{27, 0}
+	return file_feeds_v1_service_proto_rawDescGZIP(), []int{29, 0}
 }
 
 type Feed struct {
@@ -1367,6 +1413,95 @@ func (x *SaveArticleResponse) GetId() string {
 	return ""
 }
 
+type UpdateStatsRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Stat   UpdateStatsRequest_Stat `protobuf:"varint,1,opt,name=stat,proto3,enum=feeds.v1.UpdateStatsRequest_Stat" json:"stat,omitempty"`
+	FeedId string                  `protobuf:"bytes,2,opt,name=feed_id,json=feedId,proto3" json:"feed_id,omitempty"`
+}
+
+func (x *UpdateStatsRequest) Reset() {
+	*x = UpdateStatsRequest{}
+	mi := &file_feeds_v1_service_proto_msgTypes[25]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateStatsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateStatsRequest) ProtoMessage() {}
+
+func (x *UpdateStatsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_feeds_v1_service_proto_msgTypes[25]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateStatsRequest.ProtoReflect.Descriptor instead.
+func (*UpdateStatsRequest) Descriptor() ([]byte, []int) {
+	return file_feeds_v1_service_proto_rawDescGZIP(), []int{25}
+}
+
+func (x *UpdateStatsRequest) GetStat() UpdateStatsRequest_Stat {
+	if x != nil {
+		return x.Stat
+	}
+	return UpdateStatsRequest_STAT_UNSPECIFIED
+}
+
+func (x *UpdateStatsRequest) GetFeedId() string {
+	if x != nil {
+		return x.FeedId
+	}
+	return ""
+}
+
+type UpdateStatsResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *UpdateStatsResponse) Reset() {
+	*x = UpdateStatsResponse{}
+	mi := &file_feeds_v1_service_proto_msgTypes[26]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateStatsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateStatsResponse) ProtoMessage() {}
+
+func (x *UpdateStatsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_feeds_v1_service_proto_msgTypes[26]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateStatsResponse.ProtoReflect.Descriptor instead.
+func (*UpdateStatsResponse) Descriptor() ([]byte, []int) {
+	return file_feeds_v1_service_proto_rawDescGZIP(), []int{26}
+}
+
 type ValidationErrors struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1377,7 +1512,7 @@ type ValidationErrors struct {
 
 func (x *ValidationErrors) Reset() {
 	*x = ValidationErrors{}
-	mi := &file_feeds_v1_service_proto_msgTypes[25]
+	mi := &file_feeds_v1_service_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1389,7 +1524,7 @@ func (x *ValidationErrors) String() string {
 func (*ValidationErrors) ProtoMessage() {}
 
 func (x *ValidationErrors) ProtoReflect() protoreflect.Message {
-	mi := &file_feeds_v1_service_proto_msgTypes[25]
+	mi := &file_feeds_v1_service_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1402,7 +1537,7 @@ func (x *ValidationErrors) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ValidationErrors.ProtoReflect.Descriptor instead.
 func (*ValidationErrors) Descriptor() ([]byte, []int) {
-	return file_feeds_v1_service_proto_rawDescGZIP(), []int{25}
+	return file_feeds_v1_service_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *ValidationErrors) GetErrors() []*ValidationError {
@@ -1425,7 +1560,7 @@ type ValidationError struct {
 
 func (x *ValidationError) Reset() {
 	*x = ValidationError{}
-	mi := &file_feeds_v1_service_proto_msgTypes[26]
+	mi := &file_feeds_v1_service_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1437,7 +1572,7 @@ func (x *ValidationError) String() string {
 func (*ValidationError) ProtoMessage() {}
 
 func (x *ValidationError) ProtoReflect() protoreflect.Message {
-	mi := &file_feeds_v1_service_proto_msgTypes[26]
+	mi := &file_feeds_v1_service_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1450,7 +1585,7 @@ func (x *ValidationError) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ValidationError.ProtoReflect.Descriptor instead.
 func (*ValidationError) Descriptor() ([]byte, []int) {
-	return file_feeds_v1_service_proto_rawDescGZIP(), []int{26}
+	return file_feeds_v1_service_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *ValidationError) GetField() string {
@@ -1492,7 +1627,7 @@ type FeedTaskRequest struct {
 
 func (x *FeedTaskRequest) Reset() {
 	*x = FeedTaskRequest{}
-	mi := &file_feeds_v1_service_proto_msgTypes[27]
+	mi := &file_feeds_v1_service_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1504,7 +1639,7 @@ func (x *FeedTaskRequest) String() string {
 func (*FeedTaskRequest) ProtoMessage() {}
 
 func (x *FeedTaskRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_feeds_v1_service_proto_msgTypes[27]
+	mi := &file_feeds_v1_service_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1517,7 +1652,7 @@ func (x *FeedTaskRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FeedTaskRequest.ProtoReflect.Descriptor instead.
 func (*FeedTaskRequest) Descriptor() ([]byte, []int) {
-	return file_feeds_v1_service_proto_rawDescGZIP(), []int{27}
+	return file_feeds_v1_service_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *FeedTaskRequest) GetTask() FeedTaskRequest_Task {
@@ -1539,7 +1674,7 @@ type FeedTaskResponse struct {
 
 func (x *FeedTaskResponse) Reset() {
 	*x = FeedTaskResponse{}
-	mi := &file_feeds_v1_service_proto_msgTypes[28]
+	mi := &file_feeds_v1_service_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1551,7 +1686,7 @@ func (x *FeedTaskResponse) String() string {
 func (*FeedTaskResponse) ProtoMessage() {}
 
 func (x *FeedTaskResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_feeds_v1_service_proto_msgTypes[28]
+	mi := &file_feeds_v1_service_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1564,7 +1699,7 @@ func (x *FeedTaskResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FeedTaskResponse.ProtoReflect.Descriptor instead.
 func (*FeedTaskResponse) Descriptor() ([]byte, []int) {
-	return file_feeds_v1_service_proto_rawDescGZIP(), []int{28}
+	return file_feeds_v1_service_proto_rawDescGZIP(), []int{30}
 }
 
 func (x *FeedTaskResponse) GetId() string {
@@ -1589,7 +1724,7 @@ type ReadyRequest struct {
 
 func (x *ReadyRequest) Reset() {
 	*x = ReadyRequest{}
-	mi := &file_feeds_v1_service_proto_msgTypes[29]
+	mi := &file_feeds_v1_service_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1601,7 +1736,7 @@ func (x *ReadyRequest) String() string {
 func (*ReadyRequest) ProtoMessage() {}
 
 func (x *ReadyRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_feeds_v1_service_proto_msgTypes[29]
+	mi := &file_feeds_v1_service_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1614,7 +1749,7 @@ func (x *ReadyRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReadyRequest.ProtoReflect.Descriptor instead.
 func (*ReadyRequest) Descriptor() ([]byte, []int) {
-	return file_feeds_v1_service_proto_rawDescGZIP(), []int{29}
+	return file_feeds_v1_service_proto_rawDescGZIP(), []int{31}
 }
 
 type ReadyResponse struct {
@@ -1625,7 +1760,7 @@ type ReadyResponse struct {
 
 func (x *ReadyResponse) Reset() {
 	*x = ReadyResponse{}
-	mi := &file_feeds_v1_service_proto_msgTypes[30]
+	mi := &file_feeds_v1_service_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1637,7 +1772,7 @@ func (x *ReadyResponse) String() string {
 func (*ReadyResponse) ProtoMessage() {}
 
 func (x *ReadyResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_feeds_v1_service_proto_msgTypes[30]
+	mi := &file_feeds_v1_service_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1650,7 +1785,7 @@ func (x *ReadyResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReadyResponse.ProtoReflect.Descriptor instead.
 func (*ReadyResponse) Descriptor() ([]byte, []int) {
-	return file_feeds_v1_service_proto_rawDescGZIP(), []int{30}
+	return file_feeds_v1_service_proto_rawDescGZIP(), []int{32}
 }
 
 type CreateFeedRequest_Feed struct {
@@ -1664,7 +1799,7 @@ type CreateFeedRequest_Feed struct {
 
 func (x *CreateFeedRequest_Feed) Reset() {
 	*x = CreateFeedRequest_Feed{}
-	mi := &file_feeds_v1_service_proto_msgTypes[31]
+	mi := &file_feeds_v1_service_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1676,7 +1811,7 @@ func (x *CreateFeedRequest_Feed) String() string {
 func (*CreateFeedRequest_Feed) ProtoMessage() {}
 
 func (x *CreateFeedRequest_Feed) ProtoReflect() protoreflect.Message {
-	mi := &file_feeds_v1_service_proto_msgTypes[31]
+	mi := &file_feeds_v1_service_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1718,7 +1853,7 @@ type UpdateFeedRequest_Feed struct {
 
 func (x *UpdateFeedRequest_Feed) Reset() {
 	*x = UpdateFeedRequest_Feed{}
-	mi := &file_feeds_v1_service_proto_msgTypes[32]
+	mi := &file_feeds_v1_service_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1730,7 +1865,7 @@ func (x *UpdateFeedRequest_Feed) String() string {
 func (*UpdateFeedRequest_Feed) ProtoMessage() {}
 
 func (x *UpdateFeedRequest_Feed) ProtoReflect() protoreflect.Message {
-	mi := &file_feeds_v1_service_proto_msgTypes[32]
+	mi := &file_feeds_v1_service_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1913,6 +2048,19 @@ var file_feeds_v1_service_proto_rawDesc = []byte{
 	0x07, 0x61, 0x72, 0x74, 0x69, 0x63, 0x6c, 0x65, 0x22, 0x25, 0x0a, 0x13, 0x53, 0x61, 0x76, 0x65,
 	0x41, 0x72, 0x74, 0x69, 0x63, 0x6c, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
 	0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x22,
+	0xb6, 0x01, 0x0a, 0x12, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x53, 0x74, 0x61, 0x74, 0x73, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x42, 0x0a, 0x04, 0x73, 0x74, 0x61, 0x74, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x0e, 0x32, 0x21, 0x2e, 0x66, 0x65, 0x65, 0x64, 0x73, 0x2e, 0x76, 0x31, 0x2e,
+	0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x53, 0x74, 0x61, 0x74, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x2e, 0x53, 0x74, 0x61, 0x74, 0x42, 0x0b, 0xba, 0x48, 0x08, 0xc8, 0x01, 0x01, 0x82,
+	0x01, 0x02, 0x10, 0x01, 0x52, 0x04, 0x73, 0x74, 0x61, 0x74, 0x12, 0x21, 0x0a, 0x07, 0x66, 0x65,
+	0x65, 0x64, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x42, 0x08, 0xba, 0x48, 0x05,
+	0x72, 0x03, 0xb0, 0x01, 0x01, 0x52, 0x06, 0x66, 0x65, 0x65, 0x64, 0x49, 0x64, 0x22, 0x39, 0x0a,
+	0x04, 0x53, 0x74, 0x61, 0x74, 0x12, 0x14, 0x0a, 0x10, 0x53, 0x54, 0x41, 0x54, 0x5f, 0x55, 0x4e,
+	0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x1b, 0x0a, 0x17, 0x53,
+	0x54, 0x41, 0x54, 0x5f, 0x46, 0x45, 0x45, 0x44, 0x5f, 0x41, 0x52, 0x54, 0x49, 0x43, 0x4c, 0x45,
+	0x5f, 0x43, 0x4f, 0x55, 0x4e, 0x54, 0x10, 0x01, 0x22, 0x15, 0x0a, 0x13, 0x55, 0x70, 0x64, 0x61,
+	0x74, 0x65, 0x53, 0x74, 0x61, 0x74, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22,
 	0x45, 0x0a, 0x10, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x45, 0x72, 0x72,
 	0x6f, 0x72, 0x73, 0x12, 0x31, 0x0a, 0x06, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x73, 0x18, 0x01, 0x20,
 	0x03, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x66, 0x65, 0x65, 0x64, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x56,
@@ -1939,7 +2087,7 @@ var file_feeds_v1_service_proto_rawDesc = []byte{
 	0x07, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07,
 	0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x3a, 0x02, 0x18, 0x01, 0x22, 0x0e, 0x0a, 0x0c, 0x52,
 	0x65, 0x61, 0x64, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x0f, 0x0a, 0x0d, 0x52,
-	0x65, 0x61, 0x64, 0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x32, 0xa9, 0x06, 0x0a,
+	0x65, 0x61, 0x64, 0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x32, 0xf5, 0x06, 0x0a,
 	0x0b, 0x46, 0x65, 0x65, 0x64, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x3e, 0x0a, 0x07,
 	0x47, 0x65, 0x74, 0x46, 0x65, 0x65, 0x64, 0x12, 0x18, 0x2e, 0x66, 0x65, 0x65, 0x64, 0x73, 0x2e,
 	0x76, 0x31, 0x2e, 0x47, 0x65, 0x74, 0x46, 0x65, 0x65, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
@@ -1982,19 +2130,24 @@ var file_feeds_v1_service_proto_rawDesc = []byte{
 	0x73, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x61, 0x76, 0x65, 0x41, 0x72, 0x74, 0x69, 0x63, 0x6c, 0x65,
 	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1d, 0x2e, 0x66, 0x65, 0x65, 0x64, 0x73, 0x2e,
 	0x76, 0x31, 0x2e, 0x53, 0x61, 0x76, 0x65, 0x41, 0x72, 0x74, 0x69, 0x63, 0x6c, 0x65, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x38, 0x0a, 0x05, 0x52, 0x65, 0x61, 0x64, 0x79, 0x12,
-	0x16, 0x2e, 0x66, 0x65, 0x65, 0x64, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65, 0x61, 0x64, 0x79,
-	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x17, 0x2e, 0x66, 0x65, 0x65, 0x64, 0x73, 0x2e,
-	0x76, 0x31, 0x2e, 0x52, 0x65, 0x61, 0x64, 0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x12, 0x46, 0x0a, 0x08, 0x46, 0x65, 0x65, 0x64, 0x54, 0x61, 0x73, 0x6b, 0x12, 0x19, 0x2e, 0x66,
-	0x65, 0x65, 0x64, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x46, 0x65, 0x65, 0x64, 0x54, 0x61, 0x73, 0x6b,
-	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1a, 0x2e, 0x66, 0x65, 0x65, 0x64, 0x73, 0x2e,
-	0x76, 0x31, 0x2e, 0x46, 0x65, 0x65, 0x64, 0x54, 0x61, 0x73, 0x6b, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x22, 0x03, 0x88, 0x02, 0x01, 0x42, 0x39, 0x5a, 0x37, 0x67, 0x69, 0x74, 0x68,
-	0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x65, 0x72, 0x69, 0x63, 0x62, 0x75, 0x74, 0x65, 0x72,
-	0x61, 0x2f, 0x61, 0x6d, 0x61, 0x6c, 0x67, 0x61, 0x6d, 0x2f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63,
-	0x65, 0x73, 0x2f, 0x72, 0x70, 0x63, 0x2f, 0x67, 0x65, 0x6e, 0x2f, 0x67, 0x6f, 0x2f, 0x66, 0x65,
-	0x65, 0x64, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x4a, 0x0a, 0x0b, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65,
+	0x53, 0x74, 0x61, 0x74, 0x73, 0x12, 0x1c, 0x2e, 0x66, 0x65, 0x65, 0x64, 0x73, 0x2e, 0x76, 0x31,
+	0x2e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x53, 0x74, 0x61, 0x74, 0x73, 0x52, 0x65, 0x71, 0x75,
+	0x65, 0x73, 0x74, 0x1a, 0x1d, 0x2e, 0x66, 0x65, 0x65, 0x64, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x55,
+	0x70, 0x64, 0x61, 0x74, 0x65, 0x53, 0x74, 0x61, 0x74, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x12, 0x38, 0x0a, 0x05, 0x52, 0x65, 0x61, 0x64, 0x79, 0x12, 0x16, 0x2e, 0x66, 0x65,
+	0x65, 0x64, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x52, 0x65, 0x61, 0x64, 0x79, 0x52, 0x65, 0x71, 0x75,
+	0x65, 0x73, 0x74, 0x1a, 0x17, 0x2e, 0x66, 0x65, 0x65, 0x64, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x52,
+	0x65, 0x61, 0x64, 0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x46, 0x0a, 0x08,
+	0x46, 0x65, 0x65, 0x64, 0x54, 0x61, 0x73, 0x6b, 0x12, 0x19, 0x2e, 0x66, 0x65, 0x65, 0x64, 0x73,
+	0x2e, 0x76, 0x31, 0x2e, 0x46, 0x65, 0x65, 0x64, 0x54, 0x61, 0x73, 0x6b, 0x52, 0x65, 0x71, 0x75,
+	0x65, 0x73, 0x74, 0x1a, 0x1a, 0x2e, 0x66, 0x65, 0x65, 0x64, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x46,
+	0x65, 0x65, 0x64, 0x54, 0x61, 0x73, 0x6b, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22,
+	0x03, 0x88, 0x02, 0x01, 0x42, 0x39, 0x5a, 0x37, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63,
+	0x6f, 0x6d, 0x2f, 0x65, 0x72, 0x69, 0x63, 0x62, 0x75, 0x74, 0x65, 0x72, 0x61, 0x2f, 0x61, 0x6d,
+	0x61, 0x6c, 0x67, 0x61, 0x6d, 0x2f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x73, 0x2f, 0x72,
+	0x70, 0x63, 0x2f, 0x67, 0x65, 0x6e, 0x2f, 0x67, 0x6f, 0x2f, 0x66, 0x65, 0x65, 0x64, 0x73, 0x62,
+	0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -2009,92 +2162,98 @@ func file_feeds_v1_service_proto_rawDescGZIP() []byte {
 	return file_feeds_v1_service_proto_rawDescData
 }
 
-var file_feeds_v1_service_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_feeds_v1_service_proto_msgTypes = make([]protoimpl.MessageInfo, 33)
+var file_feeds_v1_service_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_feeds_v1_service_proto_msgTypes = make([]protoimpl.MessageInfo, 35)
 var file_feeds_v1_service_proto_goTypes = []any{
-	(FeedTaskRequest_Task)(0),      // 0: feeds.v1.FeedTaskRequest.Task
-	(*Feed)(nil),                   // 1: feeds.v1.Feed
-	(*Article)(nil),                // 2: feeds.v1.Article
-	(*Empty)(nil),                  // 3: feeds.v1.Empty
-	(*User)(nil),                   // 4: feeds.v1.User
-	(*GetFeedRequest)(nil),         // 5: feeds.v1.GetFeedRequest
-	(*GetFeedResponse)(nil),        // 6: feeds.v1.GetFeedResponse
-	(*GetUserFeedRequest)(nil),     // 7: feeds.v1.GetUserFeedRequest
-	(*GetUserFeedResponse)(nil),    // 8: feeds.v1.GetUserFeedResponse
-	(*ListFeedsRequest)(nil),       // 9: feeds.v1.ListFeedsRequest
-	(*ListFeedsResponse)(nil),      // 10: feeds.v1.ListFeedsResponse
-	(*ListUserFeedsRequest)(nil),   // 11: feeds.v1.ListUserFeedsRequest
-	(*UserFeed)(nil),               // 12: feeds.v1.UserFeed
-	(*ListUserFeedsResponse)(nil),  // 13: feeds.v1.ListUserFeedsResponse
-	(*CreateFeedRequest)(nil),      // 14: feeds.v1.CreateFeedRequest
-	(*CreateFeedResponse)(nil),     // 15: feeds.v1.CreateFeedResponse
-	(*UpdateFeedRequest)(nil),      // 16: feeds.v1.UpdateFeedRequest
-	(*UpdateFeedResponse)(nil),     // 17: feeds.v1.UpdateFeedResponse
-	(*ListOptions)(nil),            // 18: feeds.v1.ListOptions
-	(*Pagination)(nil),             // 19: feeds.v1.Pagination
-	(*ListArticlesRequest)(nil),    // 20: feeds.v1.ListArticlesRequest
-	(*ListArticlesResponse)(nil),   // 21: feeds.v1.ListArticlesResponse
-	(*GetArticleRequest)(nil),      // 22: feeds.v1.GetArticleRequest
-	(*GetArticleResponse)(nil),     // 23: feeds.v1.GetArticleResponse
-	(*SaveArticleRequest)(nil),     // 24: feeds.v1.SaveArticleRequest
-	(*SaveArticleResponse)(nil),    // 25: feeds.v1.SaveArticleResponse
-	(*ValidationErrors)(nil),       // 26: feeds.v1.ValidationErrors
-	(*ValidationError)(nil),        // 27: feeds.v1.ValidationError
-	(*FeedTaskRequest)(nil),        // 28: feeds.v1.FeedTaskRequest
-	(*FeedTaskResponse)(nil),       // 29: feeds.v1.FeedTaskResponse
-	(*ReadyRequest)(nil),           // 30: feeds.v1.ReadyRequest
-	(*ReadyResponse)(nil),          // 31: feeds.v1.ReadyResponse
-	(*CreateFeedRequest_Feed)(nil), // 32: feeds.v1.CreateFeedRequest.Feed
-	(*UpdateFeedRequest_Feed)(nil), // 33: feeds.v1.UpdateFeedRequest.Feed
-	(*timestamppb.Timestamp)(nil),  // 34: google.protobuf.Timestamp
+	(UpdateStatsRequest_Stat)(0),   // 0: feeds.v1.UpdateStatsRequest.Stat
+	(FeedTaskRequest_Task)(0),      // 1: feeds.v1.FeedTaskRequest.Task
+	(*Feed)(nil),                   // 2: feeds.v1.Feed
+	(*Article)(nil),                // 3: feeds.v1.Article
+	(*Empty)(nil),                  // 4: feeds.v1.Empty
+	(*User)(nil),                   // 5: feeds.v1.User
+	(*GetFeedRequest)(nil),         // 6: feeds.v1.GetFeedRequest
+	(*GetFeedResponse)(nil),        // 7: feeds.v1.GetFeedResponse
+	(*GetUserFeedRequest)(nil),     // 8: feeds.v1.GetUserFeedRequest
+	(*GetUserFeedResponse)(nil),    // 9: feeds.v1.GetUserFeedResponse
+	(*ListFeedsRequest)(nil),       // 10: feeds.v1.ListFeedsRequest
+	(*ListFeedsResponse)(nil),      // 11: feeds.v1.ListFeedsResponse
+	(*ListUserFeedsRequest)(nil),   // 12: feeds.v1.ListUserFeedsRequest
+	(*UserFeed)(nil),               // 13: feeds.v1.UserFeed
+	(*ListUserFeedsResponse)(nil),  // 14: feeds.v1.ListUserFeedsResponse
+	(*CreateFeedRequest)(nil),      // 15: feeds.v1.CreateFeedRequest
+	(*CreateFeedResponse)(nil),     // 16: feeds.v1.CreateFeedResponse
+	(*UpdateFeedRequest)(nil),      // 17: feeds.v1.UpdateFeedRequest
+	(*UpdateFeedResponse)(nil),     // 18: feeds.v1.UpdateFeedResponse
+	(*ListOptions)(nil),            // 19: feeds.v1.ListOptions
+	(*Pagination)(nil),             // 20: feeds.v1.Pagination
+	(*ListArticlesRequest)(nil),    // 21: feeds.v1.ListArticlesRequest
+	(*ListArticlesResponse)(nil),   // 22: feeds.v1.ListArticlesResponse
+	(*GetArticleRequest)(nil),      // 23: feeds.v1.GetArticleRequest
+	(*GetArticleResponse)(nil),     // 24: feeds.v1.GetArticleResponse
+	(*SaveArticleRequest)(nil),     // 25: feeds.v1.SaveArticleRequest
+	(*SaveArticleResponse)(nil),    // 26: feeds.v1.SaveArticleResponse
+	(*UpdateStatsRequest)(nil),     // 27: feeds.v1.UpdateStatsRequest
+	(*UpdateStatsResponse)(nil),    // 28: feeds.v1.UpdateStatsResponse
+	(*ValidationErrors)(nil),       // 29: feeds.v1.ValidationErrors
+	(*ValidationError)(nil),        // 30: feeds.v1.ValidationError
+	(*FeedTaskRequest)(nil),        // 31: feeds.v1.FeedTaskRequest
+	(*FeedTaskResponse)(nil),       // 32: feeds.v1.FeedTaskResponse
+	(*ReadyRequest)(nil),           // 33: feeds.v1.ReadyRequest
+	(*ReadyResponse)(nil),          // 34: feeds.v1.ReadyResponse
+	(*CreateFeedRequest_Feed)(nil), // 35: feeds.v1.CreateFeedRequest.Feed
+	(*UpdateFeedRequest_Feed)(nil), // 36: feeds.v1.UpdateFeedRequest.Feed
+	(*timestamppb.Timestamp)(nil),  // 37: google.protobuf.Timestamp
 }
 var file_feeds_v1_service_proto_depIdxs = []int32{
-	34, // 0: feeds.v1.Article.updated_at:type_name -> google.protobuf.Timestamp
-	1,  // 1: feeds.v1.GetFeedResponse.feed:type_name -> feeds.v1.Feed
-	12, // 2: feeds.v1.GetUserFeedResponse.feed:type_name -> feeds.v1.UserFeed
-	1,  // 3: feeds.v1.ListFeedsResponse.feeds:type_name -> feeds.v1.Feed
-	4,  // 4: feeds.v1.ListUserFeedsRequest.user:type_name -> feeds.v1.User
-	34, // 5: feeds.v1.UserFeed.created_at:type_name -> google.protobuf.Timestamp
-	34, // 6: feeds.v1.UserFeed.viewed_at:type_name -> google.protobuf.Timestamp
-	34, // 7: feeds.v1.UserFeed.unread_start_at:type_name -> google.protobuf.Timestamp
-	12, // 8: feeds.v1.ListUserFeedsResponse.feeds:type_name -> feeds.v1.UserFeed
-	32, // 9: feeds.v1.CreateFeedRequest.feed:type_name -> feeds.v1.CreateFeedRequest.Feed
-	4,  // 10: feeds.v1.CreateFeedRequest.user:type_name -> feeds.v1.User
-	33, // 11: feeds.v1.UpdateFeedRequest.feed:type_name -> feeds.v1.UpdateFeedRequest.Feed
-	18, // 12: feeds.v1.ListArticlesRequest.options:type_name -> feeds.v1.ListOptions
-	2,  // 13: feeds.v1.ListArticlesResponse.articles:type_name -> feeds.v1.Article
-	19, // 14: feeds.v1.ListArticlesResponse.pagination:type_name -> feeds.v1.Pagination
-	2,  // 15: feeds.v1.GetArticleResponse.article:type_name -> feeds.v1.Article
-	2,  // 16: feeds.v1.SaveArticleRequest.article:type_name -> feeds.v1.Article
-	27, // 17: feeds.v1.ValidationErrors.errors:type_name -> feeds.v1.ValidationError
-	0,  // 18: feeds.v1.FeedTaskRequest.task:type_name -> feeds.v1.FeedTaskRequest.Task
-	5,  // 19: feeds.v1.FeedService.GetFeed:input_type -> feeds.v1.GetFeedRequest
-	7,  // 20: feeds.v1.FeedService.GetUserFeed:input_type -> feeds.v1.GetUserFeedRequest
-	9,  // 21: feeds.v1.FeedService.ListFeeds:input_type -> feeds.v1.ListFeedsRequest
-	11, // 22: feeds.v1.FeedService.ListUserFeeds:input_type -> feeds.v1.ListUserFeedsRequest
-	14, // 23: feeds.v1.FeedService.CreateFeed:input_type -> feeds.v1.CreateFeedRequest
-	16, // 24: feeds.v1.FeedService.UpdateFeed:input_type -> feeds.v1.UpdateFeedRequest
-	20, // 25: feeds.v1.FeedService.ListArticles:input_type -> feeds.v1.ListArticlesRequest
-	22, // 26: feeds.v1.FeedService.GetArticle:input_type -> feeds.v1.GetArticleRequest
-	24, // 27: feeds.v1.FeedService.SaveArticle:input_type -> feeds.v1.SaveArticleRequest
-	30, // 28: feeds.v1.FeedService.Ready:input_type -> feeds.v1.ReadyRequest
-	28, // 29: feeds.v1.FeedService.FeedTask:input_type -> feeds.v1.FeedTaskRequest
-	6,  // 30: feeds.v1.FeedService.GetFeed:output_type -> feeds.v1.GetFeedResponse
-	8,  // 31: feeds.v1.FeedService.GetUserFeed:output_type -> feeds.v1.GetUserFeedResponse
-	10, // 32: feeds.v1.FeedService.ListFeeds:output_type -> feeds.v1.ListFeedsResponse
-	13, // 33: feeds.v1.FeedService.ListUserFeeds:output_type -> feeds.v1.ListUserFeedsResponse
-	15, // 34: feeds.v1.FeedService.CreateFeed:output_type -> feeds.v1.CreateFeedResponse
-	17, // 35: feeds.v1.FeedService.UpdateFeed:output_type -> feeds.v1.UpdateFeedResponse
-	21, // 36: feeds.v1.FeedService.ListArticles:output_type -> feeds.v1.ListArticlesResponse
-	23, // 37: feeds.v1.FeedService.GetArticle:output_type -> feeds.v1.GetArticleResponse
-	25, // 38: feeds.v1.FeedService.SaveArticle:output_type -> feeds.v1.SaveArticleResponse
-	31, // 39: feeds.v1.FeedService.Ready:output_type -> feeds.v1.ReadyResponse
-	29, // 40: feeds.v1.FeedService.FeedTask:output_type -> feeds.v1.FeedTaskResponse
-	30, // [30:41] is the sub-list for method output_type
-	19, // [19:30] is the sub-list for method input_type
-	19, // [19:19] is the sub-list for extension type_name
-	19, // [19:19] is the sub-list for extension extendee
-	0,  // [0:19] is the sub-list for field type_name
+	37, // 0: feeds.v1.Article.updated_at:type_name -> google.protobuf.Timestamp
+	2,  // 1: feeds.v1.GetFeedResponse.feed:type_name -> feeds.v1.Feed
+	13, // 2: feeds.v1.GetUserFeedResponse.feed:type_name -> feeds.v1.UserFeed
+	2,  // 3: feeds.v1.ListFeedsResponse.feeds:type_name -> feeds.v1.Feed
+	5,  // 4: feeds.v1.ListUserFeedsRequest.user:type_name -> feeds.v1.User
+	37, // 5: feeds.v1.UserFeed.created_at:type_name -> google.protobuf.Timestamp
+	37, // 6: feeds.v1.UserFeed.viewed_at:type_name -> google.protobuf.Timestamp
+	37, // 7: feeds.v1.UserFeed.unread_start_at:type_name -> google.protobuf.Timestamp
+	13, // 8: feeds.v1.ListUserFeedsResponse.feeds:type_name -> feeds.v1.UserFeed
+	35, // 9: feeds.v1.CreateFeedRequest.feed:type_name -> feeds.v1.CreateFeedRequest.Feed
+	5,  // 10: feeds.v1.CreateFeedRequest.user:type_name -> feeds.v1.User
+	36, // 11: feeds.v1.UpdateFeedRequest.feed:type_name -> feeds.v1.UpdateFeedRequest.Feed
+	19, // 12: feeds.v1.ListArticlesRequest.options:type_name -> feeds.v1.ListOptions
+	3,  // 13: feeds.v1.ListArticlesResponse.articles:type_name -> feeds.v1.Article
+	20, // 14: feeds.v1.ListArticlesResponse.pagination:type_name -> feeds.v1.Pagination
+	3,  // 15: feeds.v1.GetArticleResponse.article:type_name -> feeds.v1.Article
+	3,  // 16: feeds.v1.SaveArticleRequest.article:type_name -> feeds.v1.Article
+	0,  // 17: feeds.v1.UpdateStatsRequest.stat:type_name -> feeds.v1.UpdateStatsRequest.Stat
+	30, // 18: feeds.v1.ValidationErrors.errors:type_name -> feeds.v1.ValidationError
+	1,  // 19: feeds.v1.FeedTaskRequest.task:type_name -> feeds.v1.FeedTaskRequest.Task
+	6,  // 20: feeds.v1.FeedService.GetFeed:input_type -> feeds.v1.GetFeedRequest
+	8,  // 21: feeds.v1.FeedService.GetUserFeed:input_type -> feeds.v1.GetUserFeedRequest
+	10, // 22: feeds.v1.FeedService.ListFeeds:input_type -> feeds.v1.ListFeedsRequest
+	12, // 23: feeds.v1.FeedService.ListUserFeeds:input_type -> feeds.v1.ListUserFeedsRequest
+	15, // 24: feeds.v1.FeedService.CreateFeed:input_type -> feeds.v1.CreateFeedRequest
+	17, // 25: feeds.v1.FeedService.UpdateFeed:input_type -> feeds.v1.UpdateFeedRequest
+	21, // 26: feeds.v1.FeedService.ListArticles:input_type -> feeds.v1.ListArticlesRequest
+	23, // 27: feeds.v1.FeedService.GetArticle:input_type -> feeds.v1.GetArticleRequest
+	25, // 28: feeds.v1.FeedService.SaveArticle:input_type -> feeds.v1.SaveArticleRequest
+	27, // 29: feeds.v1.FeedService.UpdateStats:input_type -> feeds.v1.UpdateStatsRequest
+	33, // 30: feeds.v1.FeedService.Ready:input_type -> feeds.v1.ReadyRequest
+	31, // 31: feeds.v1.FeedService.FeedTask:input_type -> feeds.v1.FeedTaskRequest
+	7,  // 32: feeds.v1.FeedService.GetFeed:output_type -> feeds.v1.GetFeedResponse
+	9,  // 33: feeds.v1.FeedService.GetUserFeed:output_type -> feeds.v1.GetUserFeedResponse
+	11, // 34: feeds.v1.FeedService.ListFeeds:output_type -> feeds.v1.ListFeedsResponse
+	14, // 35: feeds.v1.FeedService.ListUserFeeds:output_type -> feeds.v1.ListUserFeedsResponse
+	16, // 36: feeds.v1.FeedService.CreateFeed:output_type -> feeds.v1.CreateFeedResponse
+	18, // 37: feeds.v1.FeedService.UpdateFeed:output_type -> feeds.v1.UpdateFeedResponse
+	22, // 38: feeds.v1.FeedService.ListArticles:output_type -> feeds.v1.ListArticlesResponse
+	24, // 39: feeds.v1.FeedService.GetArticle:output_type -> feeds.v1.GetArticleResponse
+	26, // 40: feeds.v1.FeedService.SaveArticle:output_type -> feeds.v1.SaveArticleResponse
+	28, // 41: feeds.v1.FeedService.UpdateStats:output_type -> feeds.v1.UpdateStatsResponse
+	34, // 42: feeds.v1.FeedService.Ready:output_type -> feeds.v1.ReadyResponse
+	32, // 43: feeds.v1.FeedService.FeedTask:output_type -> feeds.v1.FeedTaskResponse
+	32, // [32:44] is the sub-list for method output_type
+	20, // [20:32] is the sub-list for method input_type
+	20, // [20:20] is the sub-list for extension type_name
+	20, // [20:20] is the sub-list for extension extendee
+	0,  // [0:20] is the sub-list for field type_name
 }
 
 func init() { file_feeds_v1_service_proto_init() }
@@ -2107,8 +2266,8 @@ func file_feeds_v1_service_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_feeds_v1_service_proto_rawDesc,
-			NumEnums:      1,
-			NumMessages:   33,
+			NumEnums:      2,
+			NumMessages:   35,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
