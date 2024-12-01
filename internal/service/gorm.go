@@ -235,7 +235,7 @@ func (s *Gorm) userFeeds(ctx context.Context, userID string) *gorm.DB {
 		Table("user_feeds uf").
 		Select(
 			"f.id feed_id", "f.name", "f.url",
-			"uf.created_at", "uf.viewed_at", "uf.unread_start_at",
+			"uf.created_at", "uf.viewed_at", "uf.unread_start_at", "uf.unread_count",
 		).
 		Joins("JOIN feeds f ON uf.feed_id = f.id").
 		Where("uf.user_id=?", userID).

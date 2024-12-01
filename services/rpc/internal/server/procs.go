@@ -3,7 +3,6 @@ package server
 import (
 	"context"
 	"errors"
-	"log/slog"
 
 	"github.com/ericbutera/amalgam/internal/service"
 	"github.com/ericbutera/amalgam/internal/service/models"
@@ -53,7 +52,6 @@ func (s *Server) ListFeeds(ctx context.Context, _ *pb.ListFeedsRequest) (*pb.Lis
 
 func (s *Server) ListUserFeeds(ctx context.Context, in *pb.ListUserFeedsRequest) (*pb.ListUserFeedsResponse, error) {
 	userID := in.GetUser().GetId()
-	slog.Info("rpc list user feeds", "user_id", userID)
 	res, err := s.service.GetUserFeeds(ctx, userID)
 	if err != nil {
 		return nil, serviceToProtoErr(err, nil)

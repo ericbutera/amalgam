@@ -51,7 +51,8 @@ type UserFeeds struct {
 	FeedID        string    `gorm:"column:feed_id;primaryKey"`
 	CreatedAt     time.Time `gorm:"column:created_at;autoCreateTime"`
 	ViewedAt      time.Time `gorm:"column:viewed_at;autoUpdateTime"`
-	UnreadStartAt time.Time `gorm:"column:unread_start_at"`
+	UnreadStartAt time.Time `gorm:"column:unread_start_at;autoCreateTime"`
+	UnreadCount   int32     `gorm:"column:unread_count"`
 }
 
 type UserArticles struct {

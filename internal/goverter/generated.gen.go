@@ -113,17 +113,6 @@ func (c *ConverterImpl) ProtoCreateFeedToService(source *v1.CreateFeedRequest_Fe
 	}
 	return pModelsFeed
 }
-func (c *ConverterImpl) ProtoFeedToGraphUserFeed(source *v1.Feed) *model.Feed {
-	var pModelFeed *model.Feed
-	if source != nil {
-		var modelFeed model.Feed
-		modelFeed.ID = (*source).Id
-		modelFeed.URL = (*source).Url
-		modelFeed.Name = (*source).Name
-		pModelFeed = &modelFeed
-	}
-	return pModelFeed
-}
 func (c *ConverterImpl) ProtoToGraphArticle(source *v1.Article) *model.Article {
 	var pModelArticle *model.Article
 	if source != nil {
@@ -167,6 +156,32 @@ func (c *ConverterImpl) ProtoToServiceArticle(source *v1.Article) *models1.Artic
 		pModelsArticle = &modelsArticle
 	}
 	return pModelsArticle
+}
+func (c *ConverterImpl) ProtoToServiceFeed(source *v1.Feed) *models1.Feed {
+	var pModelsFeed *models1.Feed
+	if source != nil {
+		var modelsFeed models1.Feed
+		modelsFeed.ID = (*source).Id
+		modelsFeed.Name = (*source).Name
+		modelsFeed.URL = (*source).Url
+		pModelsFeed = &modelsFeed
+	}
+	return pModelsFeed
+}
+func (c *ConverterImpl) ProtoToServiceUserFeed(source *v1.UserFeed) *models1.UserFeed {
+	var pModelsUserFeed *models1.UserFeed
+	if source != nil {
+		var modelsUserFeed models1.UserFeed
+		modelsUserFeed.FeedID = (*source).FeedId
+		modelsUserFeed.Name = (*source).Name
+		modelsUserFeed.URL = (*source).Url
+		modelsUserFeed.CreatedAt = ProtoTimestampToTime((*source).CreatedAt)
+		modelsUserFeed.ViewedAt = ProtoTimestampToTime((*source).ViewedAt)
+		modelsUserFeed.UnreadStartAt = ProtoTimestampToTime((*source).UnreadStartAt)
+		modelsUserFeed.UnreadCount = (*source).UnreadCount
+		pModelsUserFeed = &modelsUserFeed
+	}
+	return pModelsUserFeed
 }
 func (c *ConverterImpl) ProtoUpdateFeedToService(source *v1.UpdateFeedRequest_Feed) *models1.Feed {
 	var pModelsFeed *models1.Feed

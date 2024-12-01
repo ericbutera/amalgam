@@ -68,6 +68,15 @@ type Converter interface {
 	// goverter:ignore state sizeCache unknownFields
 	ServiceToProtoFeed(*svc_model.Feed) *pb.Feed
 	// goverter:matchIgnoreCase
+	// goverter:ignoreMissing
+	ProtoToServiceFeed(*pb.Feed) *svc_model.Feed
+	// goverter:matchIgnoreCase
+	// goverter:ignoreMissing
+	// goverter:map CreatedAt | ProtoTimestampToTime
+	// goverter:map ViewedAt | ProtoTimestampToTime
+	// goverter:map UnreadStartAt | ProtoTimestampToTime
+	ProtoToServiceUserFeed(*pb.UserFeed) *svc_model.UserFeed
+	// goverter:matchIgnoreCase
 	// goverter:ignore state sizeCache unknownFields
 	// goverter:map CreatedAt | TimeToProtoTimestamp
 	// goverter:map UnreadStartAt | TimeToProtoTimestamp

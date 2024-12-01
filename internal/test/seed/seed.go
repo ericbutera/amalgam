@@ -54,7 +54,11 @@ func FeedAndArticles(db *gorm.DB, articleCount int) (*Result, error) {
 		res.Articles = append(res.Articles, c.DbToServiceArticle(article))
 	}
 
-	uf := dbModels.UserFeeds{UserID: UserID, FeedID: feed.ID}
+	uf := dbModels.UserFeeds{
+		UserID:      UserID,
+		FeedID:      feed.ID,
+		UnreadCount: int32(articleCount), //nolint:gosec
+	}
 	if err := db.Create(&uf).Error; err != nil {
 		return nil, err
 	}
