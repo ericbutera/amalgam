@@ -56,10 +56,9 @@ type UserFeeds struct {
 }
 
 type UserArticles struct {
-	UserID    string    `gorm:"column:user_id;primaryKey"`
-	ArticleID string    `gorm:"column:article_id;primaryKey"`
-	CreatedAt time.Time `gorm:"column:created_at;autoCreateTime"`
-	ViewedAt  time.Time `gorm:"column:viewed_at;autoUpdateTime"`
+	UserID    string     `gorm:"column:user_id;primaryKey"`
+	ArticleID string     `gorm:"column:article_id;primaryKey"`
+	ViewedAt  *time.Time `gorm:"column:viewed_at;autoUpdateTime"`
 }
 
 // Credit to https://medium.com/@amrilsyaifa_21001/how-to-use-uuid-in-gorm-golang-74be997d7087

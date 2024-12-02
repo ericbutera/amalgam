@@ -12,6 +12,7 @@ import (
 	"github.com/ericbutera/amalgam/internal/test/seed"
 	helpers "github.com/ericbutera/amalgam/pkg/test"
 	"github.com/google/uuid"
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gorm.io/gorm"
@@ -235,6 +236,28 @@ func TestSaveUserFeed(t *testing.T) {
 	require.NoError(t, res.Error)
 
 	helpers.Diff(t, uf, *actual, "CreatedAt", "ViewedAt", "UnreadStartAt")
+}
+
+func TestSaveUserArticle(t *testing.T) {
+	t.Parallel()
+	h := newTestHelper(t)
+
+	data, err := seed.FeedAndArticles(h.db, 1)
+	require.NoError(t, err)
+
+	ua := svcModel.UserArticle{
+		UserID:    data.UserFeed.UserID,
+		ArticleID: data.Articles[0].ID,
+		ViewedAt:  lo.ToPtr(time.Now().UTC()),
+	}
+	err = h.svc.SaveUserArticle(context.Background(), &ua)
+	require.NoError(t, err)
+
+	actual := &svcModel.UserArticle{}
+	res := h.db.First(actual, "user_id=? AND article_id=?", data.UserFeed.UserID, data.Articles[0].ID)
+	require.NoError(t, res.Error)
+
+	helpers.Diff(t, ua, *actual)
 }
 
 func TestUserFeedArticleCount(t *testing.T) {

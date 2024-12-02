@@ -116,7 +116,7 @@ type Converter interface {
 	// goverter:map Limit Limit | IntPtrToInt32
 	GraphToProtoListOptions(*gql_model.ListOptions) *pb.ListOptions
 	// goverter:ignore state sizeCache unknownFields
-	// goverter:map ViewedAt | TimeToProtoTimestamp
+	// goverter:map ViewedAt | NillableTimeToProtoTimestamp
 	ServiceToProtoUserArticle(*svc_model.UserArticle) *pb.GetUserArticlesResponse_UserArticle
 }
 
@@ -133,6 +133,13 @@ func ProtoTimestampToTime(ts *timestamppb.Timestamp) time.Time {
 
 func TimeToProtoTimestamp(t time.Time) *timestamppb.Timestamp {
 	return timestamppb.New(t)
+}
+
+func NillableTimeToProtoTimestamp(t *time.Time) *timestamppb.Timestamp {
+	if t == nil {
+		return nil
+	}
+	return timestamppb.New(*t)
 }
 
 func Int32ToInt(i int32) int {

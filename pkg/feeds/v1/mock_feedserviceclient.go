@@ -689,6 +689,80 @@ func (_c *MockFeedServiceClient_ListUserFeeds_Call) RunAndReturn(run func(contex
 	return _c
 }
 
+// MarkArticleAsRead provides a mock function with given fields: ctx, in, opts
+func (_m *MockFeedServiceClient) MarkArticleAsRead(ctx context.Context, in *MarkArticleAsReadRequest, opts ...grpc.CallOption) (*MarkArticleAsReadResponse, error) {
+	_va := make([]interface{}, len(opts))
+	for _i := range opts {
+		_va[_i] = opts[_i]
+	}
+	var _ca []interface{}
+	_ca = append(_ca, ctx, in)
+	_ca = append(_ca, _va...)
+	ret := _m.Called(_ca...)
+
+	if len(ret) == 0 {
+		panic("no return value specified for MarkArticleAsRead")
+	}
+
+	var r0 *MarkArticleAsReadResponse
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, *MarkArticleAsReadRequest, ...grpc.CallOption) (*MarkArticleAsReadResponse, error)); ok {
+		return rf(ctx, in, opts...)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, *MarkArticleAsReadRequest, ...grpc.CallOption) *MarkArticleAsReadResponse); ok {
+		r0 = rf(ctx, in, opts...)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*MarkArticleAsReadResponse)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, *MarkArticleAsReadRequest, ...grpc.CallOption) error); ok {
+		r1 = rf(ctx, in, opts...)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// MockFeedServiceClient_MarkArticleAsRead_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'MarkArticleAsRead'
+type MockFeedServiceClient_MarkArticleAsRead_Call struct {
+	*mock.Call
+}
+
+// MarkArticleAsRead is a helper method to define mock.On call
+//   - ctx context.Context
+//   - in *MarkArticleAsReadRequest
+//   - opts ...grpc.CallOption
+func (_e *MockFeedServiceClient_Expecter) MarkArticleAsRead(ctx interface{}, in interface{}, opts ...interface{}) *MockFeedServiceClient_MarkArticleAsRead_Call {
+	return &MockFeedServiceClient_MarkArticleAsRead_Call{Call: _e.mock.On("MarkArticleAsRead",
+		append([]interface{}{ctx, in}, opts...)...)}
+}
+
+func (_c *MockFeedServiceClient_MarkArticleAsRead_Call) Run(run func(ctx context.Context, in *MarkArticleAsReadRequest, opts ...grpc.CallOption)) *MockFeedServiceClient_MarkArticleAsRead_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		variadicArgs := make([]grpc.CallOption, len(args)-2)
+		for i, a := range args[2:] {
+			if a != nil {
+				variadicArgs[i] = a.(grpc.CallOption)
+			}
+		}
+		run(args[0].(context.Context), args[1].(*MarkArticleAsReadRequest), variadicArgs...)
+	})
+	return _c
+}
+
+func (_c *MockFeedServiceClient_MarkArticleAsRead_Call) Return(_a0 *MarkArticleAsReadResponse, _a1 error) *MockFeedServiceClient_MarkArticleAsRead_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *MockFeedServiceClient_MarkArticleAsRead_Call) RunAndReturn(run func(context.Context, *MarkArticleAsReadRequest, ...grpc.CallOption) (*MarkArticleAsReadResponse, error)) *MockFeedServiceClient_MarkArticleAsRead_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // Ready provides a mock function with given fields: ctx, in, opts
 func (_m *MockFeedServiceClient) Ready(ctx context.Context, in *ReadyRequest, opts ...grpc.CallOption) (*ReadyResponse, error) {
 	_va := make([]interface{}, len(opts))

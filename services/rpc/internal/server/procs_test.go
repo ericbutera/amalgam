@@ -6,6 +6,7 @@ import (
 
 	"github.com/ericbutera/amalgam/internal/converters"
 	"github.com/ericbutera/amalgam/internal/service"
+	svcModel "github.com/ericbutera/amalgam/internal/service/models"
 	"github.com/ericbutera/amalgam/internal/test"
 	"github.com/ericbutera/amalgam/internal/test/seed"
 	"github.com/ericbutera/amalgam/pkg/config/env"
@@ -325,5 +326,28 @@ func TestReady(t *testing.T) {
 	ts := newServer(t)
 	ctx := context.Background()
 	_, err := ts.Server.Ready(ctx, &pb.ReadyRequest{})
+	require.NoError(t, err)
+}
+
+func TestMarkArticleAsRead(t *testing.T) {
+	t.Parallel()
+
+	articleID := "0e597e90-ece5-463e-8608-ff687bf286da"
+
+	svc := new(service.MockService)
+	svc.EXPECT().SaveUserArticle(mock.Anything, svcModel.UserArticle{
+		UserID:    seed.UserID,
+		ArticleID: articleID,
+	}).Return(nil)
+
+	s, err := server.New(
+		server.WithService(svc),
+	)
+	require.NoError(t, err)
+
+	_, err = s.MarkArticleAsRead(context.Background(), &pb.MarkArticleAsReadRequest{
+		User:      &pb.User{Id: seed.UserID},
+		ArticleId: articleID,
+	})
 	require.NoError(t, err)
 }

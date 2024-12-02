@@ -37,6 +37,7 @@ export type Article = {
   title: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
   url: Scalars['String']['output'];
+  userArticle?: Maybe<UserArticle>;
 };
 
 export type ArticlesResponse = {
@@ -85,6 +86,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   addFeed: AddResponse;
   feedTask: FeedTaskResponse;
+  markArticleRead: UpdateResponse;
   updateFeed: UpdateResponse;
 };
 
@@ -97,6 +99,11 @@ export type MutationAddFeedArgs = {
 
 export type MutationFeedTaskArgs = {
   task: TaskType;
+};
+
+
+export type MutationMarkArticleReadArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -146,6 +153,11 @@ export type UpdateResponse = {
   id: Scalars['ID']['output'];
 };
 
+export type UserArticle = {
+  __typename?: 'UserArticle';
+  viewedAt: Scalars['DateTime']['output'];
+};
+
 export type AddFeedMutationVariables = Exact<{
   url: Scalars['String']['input'];
   name: Scalars['String']['input'];
@@ -170,6 +182,13 @@ export type FeedTaskMutationVariables = Exact<{
 
 export type FeedTaskMutation = { __typename?: 'Mutation', feedTask: { __typename?: 'FeedTaskResponse', taskId: string } };
 
+export type MarkArticleReadMutationVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type MarkArticleReadMutation = { __typename?: 'Mutation', markArticleRead: { __typename?: 'UpdateResponse', id: string } };
+
 export type ListFeedsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -187,7 +206,7 @@ export type GetArticleQueryVariables = Exact<{
 }>;
 
 
-export type GetArticleQuery = { __typename?: 'Query', article?: { __typename?: 'Article', id: string, feedId: string, url: string, title: string, imageUrl?: string | null, content: string, preview: string, description: string, guid?: string | null, authorName?: string | null, authorEmail?: string | null, updatedAt: any } | null };
+export type GetArticleQuery = { __typename?: 'Query', article?: { __typename?: 'Article', id: string, feedId: string, url: string, title: string, imageUrl?: string | null, content: string, preview: string, description: string, guid?: string | null, authorName?: string | null, authorEmail?: string | null, updatedAt: any, userArticle?: { __typename?: 'UserArticle', viewedAt: any } | null } | null };
 
 export type ListArticlesQueryVariables = Exact<{
   feedId: Scalars['ID']['input'];
@@ -215,6 +234,13 @@ export const FeedTaskDocument = gql`
     mutation FeedTask($task: TaskType!) {
   feedTask(task: $task) {
     taskId
+  }
+}
+    `;
+export const MarkArticleReadDocument = gql`
+    mutation MarkArticleRead($id: ID!) {
+  markArticleRead(id: $id) {
+    id
   }
 }
     `;
@@ -257,6 +283,9 @@ export const GetArticleDocument = gql`
     authorName
     authorEmail
     updatedAt
+    userArticle {
+      viewedAt
+    }
   }
 }
     `;
@@ -297,6 +326,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     FeedTask(variables: FeedTaskMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<FeedTaskMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<FeedTaskMutation>(FeedTaskDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'FeedTask', 'mutation', variables);
+    },
+    MarkArticleRead(variables: MarkArticleReadMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<MarkArticleReadMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<MarkArticleReadMutation>(MarkArticleReadDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'MarkArticleRead', 'mutation', variables);
     },
     ListFeeds(variables?: ListFeedsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<ListFeedsQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<ListFeedsQuery>(ListFeedsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'ListFeeds', 'query', variables);

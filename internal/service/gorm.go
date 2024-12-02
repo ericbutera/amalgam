@@ -274,13 +274,29 @@ func (s *Gorm) SaveUserFeed(ctx context.Context, uf *svc_model.UserFeed) error {
 			},
 			DoNothing: true,
 		}).
-		Create(&db_model.UserFeeds{
+		Create(&db_model.UserFeeds{ // TODO convets.SvcToDbUserFeed
 			UserID:        uf.UserID,
 			FeedID:        uf.FeedID,
 			CreatedAt:     time.Now().UTC(),
 			ViewedAt:      time.Now().UTC(),
 			UnreadStartAt: time.Now().AddDate(0, -1, 0).UTC(), // -1 month
 			UnreadCount:   0,                                  // TODO: show last N articles as new
+		}).Error
+}
+
+func (s *Gorm) SaveUserArticle(ctx context.Context, ua *svc_model.UserArticle) error {
+	return s.query(ctx).
+		Clauses(clause.OnConflict{
+			Columns: []clause.Column{
+				{Name: "user_id"},
+				{Name: "article_id"},
+			},
+			DoNothing: true,
+		}).
+		Create(&db_model.UserArticles{ // TODO converts.SvcToDbUserArticle
+			UserID:    ua.UserID,
+			ArticleID: ua.ArticleID,
+			ViewedAt:  ua.ViewedAt, // TODO: ensure nil case (mark unread)
 		}).Error
 }
 

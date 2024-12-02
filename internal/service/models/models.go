@@ -36,8 +36,7 @@ type UserFeed struct {
 }
 
 type UserArticle struct {
-	FeedID    string    `json:"feed_id"`
-	UserID    string    `json:"user_id"`
-	ArticleID string    `json:"article_id"`
-	ViewedAt  time.Time `json:"viewed_at"`
+	UserID    string     `json:"user_id"`
+	ArticleID string     `json:"article_id"`
+	ViewedAt  *time.Time `json:"viewed_at"`
 }

@@ -218,3 +218,14 @@ func (s *Server) Ready(_ context.Context, _ *pb.ReadyRequest) (*pb.ReadyResponse
 	}
 	return &pb.ReadyResponse{}, nil
 }
+
+func (s *Server) MarkArticleAsRead(ctx context.Context, in *pb.MarkArticleAsReadRequest) (*pb.MarkArticleAsReadResponse, error) {
+	err := s.service.SaveUserArticle(ctx, &models.UserArticle{
+		UserID:    in.GetUser().GetId(),
+		ArticleID: in.GetArticleId(),
+	})
+	if err != nil {
+		return nil, serviceToProtoErr(err, nil)
+	}
+	return &pb.MarkArticleAsReadResponse{}, nil
+}

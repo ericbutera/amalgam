@@ -343,7 +343,7 @@ func (c *ConverterImpl) ServiceToProtoUserArticle(source *models1.UserArticle) *
 	var pFeedsGetUserArticlesResponse_UserArticle *v1.GetUserArticlesResponse_UserArticle
 	if source != nil {
 		var feedsGetUserArticlesResponse_UserArticle v1.GetUserArticlesResponse_UserArticle
-		feedsGetUserArticlesResponse_UserArticle.ViewedAt = TimeToProtoTimestamp((*source).ViewedAt)
+		feedsGetUserArticlesResponse_UserArticle.ViewedAt = NillableTimeToProtoTimestamp((*source).ViewedAt)
 		pFeedsGetUserArticlesResponse_UserArticle = &feedsGetUserArticlesResponse_UserArticle
 	}
 	return pFeedsGetUserArticlesResponse_UserArticle

@@ -13,6 +13,7 @@ service FeedService {
   rpc ListFeeds(ListFeedsRequest) returns (ListFeedsResponse);
   rpc ListUserFeeds(ListUserFeedsRequest) returns (ListUserFeedsResponse);
   rpc GetUserArticles(GetUserArticlesRequest) returns (GetUserArticlesResponse);
+  rpc MarkArticleAsRead(MarkArticleAsReadRequest) returns (MarkArticleAsReadResponse);
   rpc CreateFeed(CreateFeedRequest) returns (CreateFeedResponse);
   rpc UpdateFeed(UpdateFeedRequest) returns (UpdateFeedResponse);
   rpc ListArticles(ListArticlesRequest) returns (ListArticlesResponse);
@@ -115,6 +116,15 @@ message GetUserArticlesResponse {
   }
   map<string, UserArticle> articles = 1;
 }
+
+message MarkArticleAsReadRequest {
+  User user = 1 [(buf.validate.field).required = true];
+  string article_id = 2 [(buf.validate.field).string.uuid = true];
+}
+
+message MarkArticleAsReadResponse {
+}
+
 
 message CreateFeedRequest {
   message Feed {

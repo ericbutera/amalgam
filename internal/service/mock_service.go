@@ -551,6 +551,53 @@ func (_c *MockService_SaveArticle_Call) RunAndReturn(run func(context.Context, *
 	return _c
 }
 
+// SaveUserArticle provides a mock function with given fields: ctx, userArticle
+func (_m *MockService) SaveUserArticle(ctx context.Context, userArticle *models.UserArticle) error {
+	ret := _m.Called(ctx, userArticle)
+
+	if len(ret) == 0 {
+		panic("no return value specified for SaveUserArticle")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, *models.UserArticle) error); ok {
+		r0 = rf(ctx, userArticle)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// MockService_SaveUserArticle_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'SaveUserArticle'
+type MockService_SaveUserArticle_Call struct {
+	*mock.Call
+}
+
+// SaveUserArticle is a helper method to define mock.On call
+//   - ctx context.Context
+//   - userArticle *models.UserArticle
+func (_e *MockService_Expecter) SaveUserArticle(ctx interface{}, userArticle interface{}) *MockService_SaveUserArticle_Call {
+	return &MockService_SaveUserArticle_Call{Call: _e.mock.On("SaveUserArticle", ctx, userArticle)}
+}
+
+func (_c *MockService_SaveUserArticle_Call) Run(run func(ctx context.Context, userArticle *models.UserArticle)) *MockService_SaveUserArticle_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(*models.UserArticle))
+	})
+	return _c
+}
+
+func (_c *MockService_SaveUserArticle_Call) Return(_a0 error) *MockService_SaveUserArticle_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *MockService_SaveUserArticle_Call) RunAndReturn(run func(context.Context, *models.UserArticle) error) *MockService_SaveUserArticle_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // SaveUserFeed provides a mock function with given fields: ctx, userFeed
 func (_m *MockService) SaveUserFeed(ctx context.Context, userFeed *models.UserFeed) error {
 	ret := _m.Called(ctx, userFeed)

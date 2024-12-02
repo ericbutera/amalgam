@@ -114,24 +114,6 @@ VALUES
 
 UNLOCK TABLES;
 
-LOCK TABLES `user_articles` WRITE;
-
-/*!40000 ALTER TABLE `user_articles` DISABLE KEYS */;
-
-INSERT INTO
-    `user_articles` (`feed_id`, `user_id`, `article_id`, `viewed_at`)
-VALUES
-    (
-        "0e597e90-ece5-463e-8608-ff687bf286da",
-        "2e597e90-ece5-463e-8608-ff687bf286da",
-        "2a1a227d-0375-4d9a-943f-85017ac4f930",
-        '2022-10-09 23:17:22'
-    );
-
-/*!40000 ALTER TABLE `user_articles` ENABLE KEYS */;
-
-UNLOCK TABLES;
-
 LOCK TABLES `user_feeds` WRITE;
 
 /*!40000 ALTER TABLE `user_feeds` DISABLE KEYS */;
