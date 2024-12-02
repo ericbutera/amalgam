@@ -65,6 +65,7 @@ type ComplexityRoot struct {
 		Title       func(childComplexity int) int
 		URL         func(childComplexity int) int
 		UpdatedAt   func(childComplexity int) int
+		UserArticle func(childComplexity int) int
 	}
 
 	ArticlesResponse struct {
@@ -118,6 +119,10 @@ type ComplexityRoot struct {
 
 	UpdateResponse struct {
 		ID func(childComplexity int) int
+	}
+
+	UserArticle struct {
+		ViewedAt func(childComplexity int) int
 	}
 }
 
@@ -242,6 +247,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Article.UpdatedAt(childComplexity), true
+
+	case "Article.userArticle":
+		if e.complexity.Article.UserArticle == nil {
+			break
+		}
+
+		return e.complexity.Article.UserArticle(childComplexity), true
 
 	case "ArticlesResponse.articles":
 		if e.complexity.ArticlesResponse.Articles == nil {
@@ -433,6 +445,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.UpdateResponse.ID(childComplexity), true
+
+	case "UserArticle.viewedAt":
+		if e.complexity.UserArticle.ViewedAt == nil {
+			break
+		}
+
+		return e.complexity.UserArticle.ViewedAt(childComplexity), true
 
 	}
 	return 0, false
@@ -1406,6 +1425,51 @@ func (ec *executionContext) fieldContext_Article_updatedAt(_ context.Context, fi
 	return fc, nil
 }
 
+func (ec *executionContext) _Article_userArticle(ctx context.Context, field graphql.CollectedField, obj *model.Article) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Article_userArticle(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UserArticle, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.UserArticle)
+	fc.Result = res
+	return ec.marshalOUserArticle2ᚖgithubᚗcomᚋericbuteraᚋamalgamᚋservicesᚋgraphᚋgraphᚋmodelᚐUserArticle(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Article_userArticle(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Article",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "viewedAt":
+				return ec.fieldContext_UserArticle_viewedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type UserArticle", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _ArticlesResponse_articles(ctx context.Context, field graphql.CollectedField, obj *model.ArticlesResponse) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_ArticlesResponse_articles(ctx, field)
 	if err != nil {
@@ -1469,6 +1533,8 @@ func (ec *executionContext) fieldContext_ArticlesResponse_articles(_ context.Con
 				return ec.fieldContext_Article_authorEmail(ctx, field)
 			case "updatedAt":
 				return ec.fieldContext_Article_updatedAt(ctx, field)
+			case "userArticle":
+				return ec.fieldContext_Article_userArticle(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Article", field.Name)
 		},
@@ -2528,6 +2594,8 @@ func (ec *executionContext) fieldContext_Query_article(ctx context.Context, fiel
 				return ec.fieldContext_Article_authorEmail(ctx, field)
 			case "updatedAt":
 				return ec.fieldContext_Article_updatedAt(ctx, field)
+			case "userArticle":
+				return ec.fieldContext_Article_userArticle(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Article", field.Name)
 		},
@@ -2714,6 +2782,50 @@ func (ec *executionContext) fieldContext_UpdateResponse_id(_ context.Context, fi
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserArticle_viewedAt(ctx context.Context, field graphql.CollectedField, obj *model.UserArticle) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserArticle_viewedAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ViewedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNDateTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserArticle_viewedAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserArticle",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type DateTime does not have child fields")
 		},
 	}
 	return fc, nil
@@ -4632,6 +4744,8 @@ func (ec *executionContext) _Article(ctx context.Context, sel ast.SelectionSet, 
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "userArticle":
+			out.Values[i] = ec._Article_userArticle(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -5176,6 +5290,45 @@ func (ec *executionContext) _UpdateResponse(ctx context.Context, sel ast.Selecti
 			out.Values[i] = graphql.MarshalString("UpdateResponse")
 		case "id":
 			out.Values[i] = ec._UpdateResponse_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var userArticleImplementors = []string{"UserArticle"}
+
+func (ec *executionContext) _UserArticle(ctx context.Context, sel ast.SelectionSet, obj *model.UserArticle) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, userArticleImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("UserArticle")
+		case "viewedAt":
+			out.Values[i] = ec._UserArticle_viewedAt(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -6132,6 +6285,13 @@ func (ec *executionContext) marshalOString2ᚖstring(ctx context.Context, sel as
 	}
 	res := graphql.MarshalString(*v)
 	return res
+}
+
+func (ec *executionContext) marshalOUserArticle2ᚖgithubᚗcomᚋericbuteraᚋamalgamᚋservicesᚋgraphᚋgraphᚋmodelᚐUserArticle(ctx context.Context, sel ast.SelectionSet, v *model.UserArticle) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._UserArticle(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalO__EnumValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐEnumValueᚄ(ctx context.Context, sel ast.SelectionSet, v []introspection.EnumValue) graphql.Marshaler {

@@ -34,3 +34,10 @@ type UserFeed struct {
 	UnreadStartAt time.Time `json:"unreadStartAt"`
 	UnreadCount   int32     `json:"unreadCount"`
 }
+
+type UserArticle struct {
+	FeedID    string    `json:"feed_id"`
+	UserID    string    `json:"user_id"`
+	ArticleID string    `json:"article_id"`
+	ViewedAt  time.Time `json:"viewed_at"`
+}

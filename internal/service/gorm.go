@@ -330,3 +330,17 @@ func (s *Gorm) UpdateFeedArticleCount(ctx context.Context, feedID string) error 
 	}
 	return nil
 }
+
+func (s *Gorm) GetUserArticles(ctx context.Context, userID string, articleIDs []string) ([]*svc_model.UserArticle, error) {
+	var userArticles []*svc_model.UserArticle
+	err := s.query(ctx).
+		Table("user_articles").
+		Select("article_id", "viewed_at").
+		Where("user_id=?", userID).
+		Where("article_id IN (?)", articleIDs).
+		Find(&userArticles).Error
+	if err != nil {
+		return nil, err
+	}
+	return userArticles, nil
+}

@@ -12,6 +12,7 @@ service FeedService {
   rpc GetUserFeed(GetUserFeedRequest) returns (GetUserFeedResponse);
   rpc ListFeeds(ListFeedsRequest) returns (ListFeedsResponse);
   rpc ListUserFeeds(ListUserFeedsRequest) returns (ListUserFeedsResponse);
+  rpc GetUserArticles(GetUserArticlesRequest) returns (GetUserArticlesResponse);
   rpc CreateFeed(CreateFeedRequest) returns (CreateFeedResponse);
   rpc UpdateFeed(UpdateFeedRequest) returns (UpdateFeedResponse);
   rpc ListArticles(ListArticlesRequest) returns (ListArticlesResponse);
@@ -103,6 +104,18 @@ message ListUserFeedsResponse {
   repeated UserFeed feeds = 1;
 }
 
+message GetUserArticlesRequest {
+  User user = 1 [(buf.validate.field).required = true];
+  repeated string article_ids = 2 [(buf.validate.field).repeated.min_items = 1];
+}
+
+message GetUserArticlesResponse {
+  message UserArticle {
+    google.protobuf.Timestamp viewed_at = 1;
+  }
+  map<string, UserArticle> articles = 1;
+}
+
 message CreateFeedRequest {
   message Feed {
     string url = 1 [(buf.validate.field).string.uri = true];
@@ -169,7 +182,10 @@ message UpdateStatsRequest {
     STAT_UNSPECIFIED = 0;
     STAT_FEED_ARTICLE_COUNT = 1;
   }
-  Stat stat = 1 [(buf.validate.field).enum.defined_only = true, (buf.validate.field).required = true];
+  Stat stat = 1 [
+    (buf.validate.field).enum.defined_only = true,
+    (buf.validate.field).required = true
+  ];
   string feed_id = 2 [(buf.validate.field).string.uuid = true];
 }
 

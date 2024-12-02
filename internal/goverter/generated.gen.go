@@ -103,6 +103,18 @@ func (c *ConverterImpl) GraphClientToApiFeedGet(source *graphql.GetFeedFeed) *mo
 	}
 	return pModelsFeed
 }
+func (c *ConverterImpl) GraphToProtoListOptions(source *model.ListOptions) *v1.ListOptions {
+	var pFeedsListOptions *v1.ListOptions
+	if source != nil {
+		var feedsListOptions v1.ListOptions
+		if (*source).Cursor != nil {
+			feedsListOptions.Cursor = *(*source).Cursor
+		}
+		feedsListOptions.Limit = IntPtrToInt32((*source).Limit)
+		pFeedsListOptions = &feedsListOptions
+	}
+	return pFeedsListOptions
+}
 func (c *ConverterImpl) ProtoCreateFeedToService(source *v1.CreateFeedRequest_Feed) *models1.Feed {
 	var pModelsFeed *models1.Feed
 	if source != nil {
@@ -136,6 +148,25 @@ func (c *ConverterImpl) ProtoToGraphArticle(source *v1.Article) *model.Article {
 		pModelArticle = &modelArticle
 	}
 	return pModelArticle
+}
+func (c *ConverterImpl) ProtoToGraphPagination(source *v1.Pagination) *model.Pagination {
+	var pModelPagination *model.Pagination
+	if source != nil {
+		var modelPagination model.Pagination
+		modelPagination.Next = (*source).Next
+		modelPagination.Previous = (*source).Previous
+		pModelPagination = &modelPagination
+	}
+	return pModelPagination
+}
+func (c *ConverterImpl) ProtoToGraphUserArticle(source *v1.GetUserArticlesResponse_UserArticle) *model.UserArticle {
+	var pModelUserArticle *model.UserArticle
+	if source != nil {
+		var modelUserArticle model.UserArticle
+		modelUserArticle.ViewedAt = ProtoTimestampToTime((*source).ViewedAt)
+		pModelUserArticle = &modelUserArticle
+	}
+	return pModelUserArticle
 }
 func (c *ConverterImpl) ProtoToServiceArticle(source *v1.Article) *models1.Article {
 	var pModelsArticle *models1.Article
@@ -307,6 +338,15 @@ func (c *ConverterImpl) ServiceToProtoFeed(source *models1.Feed) *v1.Feed {
 		pFeedsFeed = &feedsFeed
 	}
 	return pFeedsFeed
+}
+func (c *ConverterImpl) ServiceToProtoUserArticle(source *models1.UserArticle) *v1.GetUserArticlesResponse_UserArticle {
+	var pFeedsGetUserArticlesResponse_UserArticle *v1.GetUserArticlesResponse_UserArticle
+	if source != nil {
+		var feedsGetUserArticlesResponse_UserArticle v1.GetUserArticlesResponse_UserArticle
+		feedsGetUserArticlesResponse_UserArticle.ViewedAt = TimeToProtoTimestamp((*source).ViewedAt)
+		pFeedsGetUserArticlesResponse_UserArticle = &feedsGetUserArticlesResponse_UserArticle
+	}
+	return pFeedsGetUserArticlesResponse_UserArticle
 }
 func (c *ConverterImpl) ServiceToProtoUserFeed(source *models1.UserFeed) *v1.UserFeed {
 	var pFeedsUserFeed *v1.UserFeed

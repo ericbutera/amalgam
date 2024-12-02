@@ -10,6 +10,7 @@ import (
 
 	"github.com/ericbutera/amalgam/internal/tasks"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
+	"github.com/ericbutera/amalgam/services/graph/graph/dataloaders"
 	"github.com/ericbutera/amalgam/services/graph/graph/model"
 	errHelper "github.com/ericbutera/amalgam/services/graph/internal/errors"
 	"github.com/ericbutera/amalgam/services/graph/internal/middleware"
@@ -78,6 +79,7 @@ func (r *mutationResolver) FeedTask(ctx context.Context, task model.TaskType) (*
 
 // Feeds is the resolver for the feeds field.
 func (r *queryResolver) Feeds(ctx context.Context) (*model.FeedResponse, error) {
+	// TODO: dataloader for GetFeed + GetUserFeed
 	resp, err := r.rpcClient.ListUserFeeds(ctx, &pb.ListUserFeedsRequest{
 		User: &pb.User{Id: middleware.GetUserID(ctx)}, // TODO: r.auth.GetUserID(ctx)
 	})
@@ -107,46 +109,72 @@ func (r *queryResolver) Feed(ctx context.Context, id string) (*model.Feed, error
 
 // Articles is the resolver for the articles field.
 func (r *queryResolver) Articles(ctx context.Context, feedID string, options *model.ListOptions) (*model.ArticlesResponse, error) {
-	// TODO: refactor using validation library
-	cursor := ""
-	limit := int32(DefaultLimit)
-	if options != nil {
-		if options.Cursor != nil {
-			cursor = *options.Cursor
-		}
-		if options.Limit != nil {
-			attempt := int32(*options.Limit)
-			if attempt > 0 && attempt <= LimitMax {
-				limit = attempt
-			}
-		}
-	}
-
-	// TODO: dataloader for articles seen
+	// TODO: validation https://gqlgen.com/recipes/modelgen-hook/
 	resp, err := r.rpcClient.ListArticles(ctx, &pb.ListArticlesRequest{
-		FeedId: feedID,
-		Options: &pb.ListOptions{
-			Cursor: cursor,
-			Limit:  limit,
-		},
+		FeedId:  feedID,
+		Options: r.converter.GraphToProtoListOptions(options),
 	})
 	if err != nil {
 		return nil, errHelper.HandleGrpcErrors(ctx, err, "failed to list articles")
 	}
 
+	ids := lo.Map(resp.GetArticles(), func(article *pb.Article, _ int) string { return article.GetId() })
+
 	var articles []*model.Article
 	for _, article := range resp.GetArticles() {
 		articles = append(articles, r.converter.ProtoToGraphArticle(article))
 	}
-	pagination := model.Pagination{}
-	p := resp.GetPagination()
-	if p != nil {
-		pagination.Next = p.GetNext()
-		pagination.Previous = p.GetPrevious()
+
+	// TODO: i don't like how this is composed at the moment. i also am not sure a better way
+	// to handle this.
+	// concerns:
+	// - dataloader isn't injected
+	// - multiple loops over dataset (get ids, article conversion, loop articles to merge UserArticle)
+	// - unit test needs to mock RPC call inside NewUserArticleLoader which isn't ideal
+	// - general: too many lines of code
+
+	/*
+		it would be nice to have something like this example, where "it just works" instead of go's insistence on error & nil checks everywhere
+		const UserType = new GraphQLObjectType({
+		name: 'User',
+		fields: () => ({
+			name: { type: GraphQLString },
+			bestFriend: {
+			type: UserType,
+			resolve: user => userLoader.load(user.bestFriendID),
+			},
+			friends: {
+			args: {
+				first: { type: GraphQLInt },
+			},
+			type: new GraphQLList(UserType),
+			resolve: async (user, { first }) => {
+				const rows = await queryLoader.load([
+				'SELECT toID FROM friends WHERE fromID=? LIMIT ?',
+				user.id,
+				first,
+				]);
+				return rows.map(row => userLoader.load(row.toID));
+			},
+			},
+		}),
+		});
+	*/
+
+	userID := middleware.GetUserID(ctx) // TODO: r.auth.GetUserID(ctx)
+	res, errs := dataloaders.NewUserArticleLoader(r.rpcClient, userID).
+		LoadMany(ctx, ids)()
+	if errs != nil {
+		return nil, errHelper.HandleGrpcErrors(ctx, errs[0], "failed to load user article metadata")
 	}
+
+	for i, userArticle := range res {
+		articles[i].UserArticle = r.converter.ProtoToGraphUserArticle(userArticle)
+	}
+
 	return &model.ArticlesResponse{
 		Articles:   articles,
-		Pagination: &pagination,
+		Pagination: r.converter.ProtoToGraphPagination(resp.GetPagination()),
 	}, nil
 }
 
