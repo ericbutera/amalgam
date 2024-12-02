@@ -167,14 +167,22 @@ func Test_Articles(t *testing.T) {
 
 	r.client.EXPECT().
 		ListArticles(mock.Anything, &pb.ListArticlesRequest{
-			FeedId: feed.ID,
-			Options: &pb.ListOptions{
-				Cursor: "",
-				Limit:  graph.DefaultLimit,
-			},
+			FeedId:  feed.ID,
+			Options: &pb.ListOptions{Cursor: "", Limit: 0},
 		}).
 		Return(&pb.ListArticlesResponse{
 			Articles: []*pb.Article{rpcArticle},
+		}, nil)
+
+	r.client.EXPECT().
+		GetUserArticles(mock.Anything, &pb.GetUserArticlesRequest{
+			User:       &pb.User{Id: seed.UserID},
+			ArticleIds: []string{svcArticle.ID},
+		}).
+		Return(&pb.GetUserArticlesResponse{
+			Articles: map[string]*pb.GetUserArticlesResponse_UserArticle{
+				svcArticle.ID: nil,
+			},
 		}, nil)
 
 	resp, err := r.resolver.Query().Articles(newAuthCtx(), feed.ID, &graphModel.ListOptions{})

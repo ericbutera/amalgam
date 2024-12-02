@@ -40,10 +40,11 @@ type Service interface {
 	UpdateFeed(ctx context.Context, id string, feed *svc_model.Feed) error
 	UpdateFeedArticleCount(ctx context.Context, feedID string) error
 	GetFeed(ctx context.Context, id string) (*svc_model.Feed, error)
-	GetUserFeed(ctx context.Context, userID string, feedID string) (*svc_model.UserFeed, error)
 	GetArticlesByFeed(ctx context.Context, feedId string, options ListOptions) (*ArticlesByFeedResult, error)
 	GetArticle(ctx context.Context, id string) (*svc_model.Article, error)
 	SaveArticle(ctx context.Context, article *svc_model.Article) (SaveArticleResult, error)
+	GetUserFeed(ctx context.Context, userID string, feedID string) (*svc_model.UserFeed, error)
 	GetUserFeeds(ctx context.Context, userID string) (*GetUserFeedsResult, error) // Fetch by a specific user
 	SaveUserFeed(ctx context.Context, userFeed *svc_model.UserFeed) error         // Associate a feed with a user
+	GetUserArticles(ctx context.Context, userID string, articleIDs []string) ([]*svc_model.UserArticle, error)
 }

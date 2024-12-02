@@ -14,18 +14,19 @@ type AddResponse struct {
 }
 
 type Article struct {
-	ID          string    `json:"id"`
-	FeedID      string    `json:"feedId"`
-	URL         string    `json:"url"`
-	Title       string    `json:"title"`
-	ImageURL    *string   `json:"imageUrl,omitempty"`
-	Content     string    `json:"content"`
-	Description string    `json:"description"`
-	Preview     string    `json:"preview"`
-	GUID        *string   `json:"guid,omitempty"`
-	AuthorName  *string   `json:"authorName,omitempty"`
-	AuthorEmail *string   `json:"authorEmail,omitempty"`
-	UpdatedAt   time.Time `json:"updatedAt"`
+	ID          string       `json:"id"`
+	FeedID      string       `json:"feedId"`
+	URL         string       `json:"url"`
+	Title       string       `json:"title"`
+	ImageURL    *string      `json:"imageUrl,omitempty"`
+	Content     string       `json:"content"`
+	Description string       `json:"description"`
+	Preview     string       `json:"preview"`
+	GUID        *string      `json:"guid,omitempty"`
+	AuthorName  *string      `json:"authorName,omitempty"`
+	AuthorEmail *string      `json:"authorEmail,omitempty"`
+	UpdatedAt   time.Time    `json:"updatedAt"`
+	UserArticle *UserArticle `json:"userArticle,omitempty"`
 }
 
 type ArticlesResponse struct {
@@ -77,6 +78,10 @@ type Query struct {
 
 type UpdateResponse struct {
 	ID string `json:"id"`
+}
+
+type UserArticle struct {
+	ViewedAt time.Time `json:"viewedAt"`
 }
 
 type TaskType string

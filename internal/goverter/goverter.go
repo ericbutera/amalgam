@@ -45,6 +45,7 @@ type Converter interface {
 	// goverter:map UnreadStartAt UnreadStartAt | Time
 	// goverter:map UnreadCount UnreadCount | Int32ToInt
 	ServiceToGraphFeed(*svc_model.UserFeed) *gql_model.Feed
+	// goverter:ignoreMissing
 	// goverter:map UpdatedAt UpdatedAt | Time
 	ServiceToGraphArticle(*svc_model.Article) *gql_model.Article
 	// goverter:matchIgnoreCase
@@ -101,6 +102,22 @@ type Converter interface {
 	// goverter:ignoreMissing
 	// goverter:map UpdatedAt | ProtoTimestampToTime
 	ProtoToGraphArticle(*pb.Article) *gql_model.Article
+	// goverter:matchIgnoreCase
+	// goverter:ignoreMissing
+	// goverter:map ViewedAt | ProtoTimestampToTime
+	ProtoToGraphUserArticle(*pb.GetUserArticlesResponse_UserArticle) *gql_model.UserArticle
+	// goverter:matchIgnoreCase
+	// goverter:ignoreMissing
+	ProtoToGraphPagination(*pb.Pagination) *gql_model.Pagination
+	// goverter:useZeroValueOnPointerInconsistency
+	// goverter:matchIgnoreCase
+	// goverter:ignoreMissing
+	// goverter:ignore state sizeCache unknownFields
+	// goverter:map Limit Limit | IntPtrToInt32
+	GraphToProtoListOptions(*gql_model.ListOptions) *pb.ListOptions
+	// goverter:ignore state sizeCache unknownFields
+	// goverter:map ViewedAt | TimeToProtoTimestamp
+	ServiceToProtoUserArticle(*svc_model.UserArticle) *pb.GetUserArticlesResponse_UserArticle
 }
 
 func Time(t time.Time) time.Time {
@@ -120,4 +137,15 @@ func TimeToProtoTimestamp(t time.Time) *timestamppb.Timestamp {
 
 func Int32ToInt(i int32) int {
 	return int(i)
+}
+
+func IntToInt32(i int) int32 {
+	return int32(i)
+}
+
+func IntPtrToInt32(i *int) int32 {
+	if i == nil {
+		return 0 // Or provide a default value
+	}
+	return IntToInt32(*i)
 }

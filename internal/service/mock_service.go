@@ -315,6 +315,66 @@ func (_c *MockService_GetFeed_Call) RunAndReturn(run func(context.Context, strin
 	return _c
 }
 
+// GetUserArticles provides a mock function with given fields: ctx, userID, articleIDs
+func (_m *MockService) GetUserArticles(ctx context.Context, userID string, articleIDs []string) ([]*models.UserArticle, error) {
+	ret := _m.Called(ctx, userID, articleIDs)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetUserArticles")
+	}
+
+	var r0 []*models.UserArticle
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, []string) ([]*models.UserArticle, error)); ok {
+		return rf(ctx, userID, articleIDs)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, []string) []*models.UserArticle); ok {
+		r0 = rf(ctx, userID, articleIDs)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]*models.UserArticle)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, []string) error); ok {
+		r1 = rf(ctx, userID, articleIDs)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// MockService_GetUserArticles_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetUserArticles'
+type MockService_GetUserArticles_Call struct {
+	*mock.Call
+}
+
+// GetUserArticles is a helper method to define mock.On call
+//   - ctx context.Context
+//   - userID string
+//   - articleIDs []string
+func (_e *MockService_Expecter) GetUserArticles(ctx interface{}, userID interface{}, articleIDs interface{}) *MockService_GetUserArticles_Call {
+	return &MockService_GetUserArticles_Call{Call: _e.mock.On("GetUserArticles", ctx, userID, articleIDs)}
+}
+
+func (_c *MockService_GetUserArticles_Call) Run(run func(ctx context.Context, userID string, articleIDs []string)) *MockService_GetUserArticles_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(string), args[2].([]string))
+	})
+	return _c
+}
+
+func (_c *MockService_GetUserArticles_Call) Return(_a0 []*models.UserArticle, _a1 error) *MockService_GetUserArticles_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *MockService_GetUserArticles_Call) RunAndReturn(run func(context.Context, string, []string) ([]*models.UserArticle, error)) *MockService_GetUserArticles_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // GetUserFeed provides a mock function with given fields: ctx, userID, feedID
 func (_m *MockService) GetUserFeed(ctx context.Context, userID string, feedID string) (*models.UserFeed, error) {
 	ret := _m.Called(ctx, userID, feedID)

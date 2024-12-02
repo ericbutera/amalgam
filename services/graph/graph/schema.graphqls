@@ -24,6 +24,11 @@ type Article {
   authorName: String
   authorEmail: String
   updatedAt: DateTime!
+  userArticle: UserArticle
+}
+
+type UserArticle {
+  viewedAt: DateTime!
 }
 
 type FeedResponse {

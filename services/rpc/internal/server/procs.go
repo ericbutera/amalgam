@@ -63,6 +63,22 @@ func (s *Server) ListUserFeeds(ctx context.Context, in *pb.ListUserFeedsRequest)
 	return &pb.ListUserFeedsResponse{Feeds: feeds}, nil
 }
 
+func (s *Server) GetUserArticles(ctx context.Context, in *pb.GetUserArticlesRequest) (*pb.GetUserArticlesResponse, error) {
+	userID := in.GetUser().GetId()
+	articleIDs := in.GetArticleIds()
+	res, err := s.service.GetUserArticles(ctx, userID, articleIDs)
+	if err != nil {
+		return nil, serviceToProtoErr(err, nil)
+	}
+
+	articles := map[string]*pb.GetUserArticlesResponse_UserArticle{}
+	for _, article := range res {
+		articles[article.ArticleID] = s.converters.ServiceToProtoUserArticle(article)
+	}
+
+	return &pb.GetUserArticlesResponse{Articles: articles}, nil
+}
+
 func (s *Server) CreateFeed(ctx context.Context, in *pb.CreateFeedRequest) (*pb.CreateFeedResponse, error) {
 	feed := s.converters.ProtoCreateFeedToService(in.GetFeed())
 
