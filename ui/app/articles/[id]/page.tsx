@@ -15,7 +15,7 @@ export default function Page({ params }: PageProps) {
   const { loading, error, article } = useArticle(articleId);
 
   if (error) return <div>An error has occurred.</div>;
-  if (loading) <div>Loading...</div>;
+  if (loading) return <div>Loading...</div>;
   if (!article) return <div>Article not found.</div>;
 
   if (article && !article?.userArticle?.viewedAt) {
