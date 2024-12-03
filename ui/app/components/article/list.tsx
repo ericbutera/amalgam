@@ -5,10 +5,11 @@ import useArticles from "../../data/articles";
 
 interface ArticlesProps {
   feedId: string;
+  cursor?: string;
 }
 
-export default function Articles({ feedId }: ArticlesProps) {
-  const { loading, error, articles } = useArticles(feedId);
+export default function Articles({ feedId, cursor }: ArticlesProps) {
+  const { loading, error, articles } = useArticles(feedId, cursor);
 
   if (error) return <div>failed to load articles</div>;
   if (loading) return <div>loading...</div>;
@@ -22,7 +23,9 @@ export default function Articles({ feedId }: ArticlesProps) {
           <li
             key={article.id}
             className={`border-b border-base-300 last:border-0 ${
-              article.userArticle?.viewedAt ? "bg-base-200" : "bg-base-100"
+              article.userArticle?.viewedAt
+                ? "bg-article-read"
+                : "bg-article-new"
             } `}
           >
             <Link
@@ -34,10 +37,22 @@ export default function Articles({ feedId }: ArticlesProps) {
           </li>
         ))}
       </ul>
-      {/* TODO: fetch more button
+
+      {articles.pagination?.previous && (
+        <Link
+          href={`/feeds/${feedId}/articles?cursor=${articles.pagination.previous}`}
+        >
+          Previous
+        </Link>
+      )}
+
       {articles.pagination?.next && (
-        <button className="btn btn-primary mt-4">Load more</button>
-      )} */}
+        <Link
+          href={`/feeds/${feedId}/articles?cursor=${articles.pagination.next}`}
+        >
+          Next
+        </Link>
+      )}
     </div>
   );
 }

@@ -21,3 +21,11 @@ body {}
     text-wrap: balance;
   }
 }
+
+.bg-article-new {
+  @apply bg-base-100;
+}
+
+.bg-article-read {
+  @apply bg-base-200;
+}

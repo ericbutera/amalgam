@@ -40,8 +40,8 @@ query GetArticle($id: ID!) {
     }
 }
 
-query ListArticles($feedId: ID!) {
-  articles(feedId: $feedId) {
+query ListArticles($feedId: ID!, $cursor: String) {
+  articles(feedId: $feedId, options: { cursor: $cursor }) {
     articles {
         id
         feedId

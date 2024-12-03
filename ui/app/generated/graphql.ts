@@ -210,6 +210,7 @@ export type GetArticleQuery = { __typename?: 'Query', article?: { __typename?: '
 
 export type ListArticlesQueryVariables = Exact<{
   feedId: Scalars['ID']['input'];
+  cursor?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
@@ -290,8 +291,8 @@ export const GetArticleDocument = gql`
 }
     `;
 export const ListArticlesDocument = gql`
-    query ListArticles($feedId: ID!) {
-  articles(feedId: $feedId) {
+    query ListArticles($feedId: ID!, $cursor: String) {
+  articles(feedId: $feedId, options: {cursor: $cursor}) {
     articles {
       id
       feedId

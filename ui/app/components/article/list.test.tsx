@@ -60,4 +60,59 @@ describe("Articles Component", () => {
       "/articles/1"
     );
   });
+
+  test("applies 'bg-article-new' when article is not viewed", () => {
+    (useArticles as jest.Mock).mockImplementation(() => ({
+      loading: false,
+      error: null,
+      articles: {
+        articles: [{ id: "1", title: "Article 1", userArticle: { viewedAt: null } }],
+        pagination: {},
+      },
+    }));
+
+    render(<Articles feedId="test" />);
+
+    const articleRow = screen.getByRole("link", { name: "Article 1" }).closest("li");
+    expect(articleRow).toHaveClass("bg-article-new");
+  });
+
+  test("applies 'bg-article-read' when article is viewed", () => {
+    (useArticles as jest.Mock).mockImplementation(() => ({
+      loading: false,
+      error: null,
+      articles: {
+        articles: [{ id: "2", title: "Article 2", userArticle: { viewedAt: "2024-12-01" } }],
+        pagination: {},
+      },
+    }));
+
+    render(<Articles feedId="test" />);
+
+    const articleRow = screen.getByRole("link", { name: "Article 2" }).closest("li");
+    expect(articleRow).toHaveClass("bg-article-read");
+  });
+
+  test("renders both viewed and non-viewed articles with correct backgrounds", () => {
+    (useArticles as jest.Mock).mockImplementation(() => ({
+      loading: false,
+      error: null,
+      articles: {
+        articles: [
+          { id: "1", title: "Article 1", userArticle: { viewedAt: null } },
+          { id: "2", title: "Article 2", userArticle: { viewedAt: "2024-12-01" } }
+        ],
+        pagination: {},
+      },
+    }));
+
+    render(<Articles feedId="test" />);
+
+    const article1Row = screen.getByRole("link", { name: "Article 1" }).closest("li");
+    const article2Row = screen.getByRole("link", { name: "Article 2" }).closest("li");
+
+    expect(article1Row).toHaveClass("bg-article-new");
+    expect(article2Row).toHaveClass("bg-article-read");
+  });
+
 });
