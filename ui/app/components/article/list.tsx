@@ -21,7 +21,9 @@ export default function Articles({ feedId }: ArticlesProps) {
         {articles?.articles.map((article) => (
           <li
             key={article.id}
-            className="border-b border-base-300 last:border-0"
+            className={`border-b border-base-300 last:border-0 ${
+              article.userArticle?.viewedAt ? "bg-base-200" : "bg-base-100"
+            } `}
           >
             <Link
               href={`/articles/${article.id}`}

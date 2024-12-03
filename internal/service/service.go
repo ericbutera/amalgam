@@ -47,4 +47,5 @@ type Service interface {
 	GetUserFeeds(ctx context.Context, userID string) (*GetUserFeedsResult, error) // Fetch by a specific user
 	SaveUserFeed(ctx context.Context, userFeed *svc_model.UserFeed) error         // Associate a feed with a user
 	GetUserArticles(ctx context.Context, userID string, articleIDs []string) ([]*svc_model.UserArticle, error)
+	SaveUserArticle(ctx context.Context, userArticle *svc_model.UserArticle) error
 }

@@ -15,3 +15,9 @@ mutation FeedTask($task: TaskType!) {
         taskId
     }
 }
+
+mutation MarkArticleRead($id: ID!) {
+    markArticleRead(id: $id) {
+        id
+    }
+}

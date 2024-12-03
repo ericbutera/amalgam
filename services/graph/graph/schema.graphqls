@@ -90,4 +90,5 @@ type Mutation {
   addFeed(url: String!, name: String!): AddResponse!
   updateFeed(id: ID!, url: String, name: String): UpdateResponse!
   feedTask(task: TaskType!): FeedTaskResponse!
+  markArticleRead(id: ID!): UpdateResponse!
 }

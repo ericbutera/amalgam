@@ -19,19 +19,20 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	FeedService_GetFeed_FullMethodName         = "/feeds.v1.FeedService/GetFeed"
-	FeedService_GetUserFeed_FullMethodName     = "/feeds.v1.FeedService/GetUserFeed"
-	FeedService_ListFeeds_FullMethodName       = "/feeds.v1.FeedService/ListFeeds"
-	FeedService_ListUserFeeds_FullMethodName   = "/feeds.v1.FeedService/ListUserFeeds"
-	FeedService_GetUserArticles_FullMethodName = "/feeds.v1.FeedService/GetUserArticles"
-	FeedService_CreateFeed_FullMethodName      = "/feeds.v1.FeedService/CreateFeed"
-	FeedService_UpdateFeed_FullMethodName      = "/feeds.v1.FeedService/UpdateFeed"
-	FeedService_ListArticles_FullMethodName    = "/feeds.v1.FeedService/ListArticles"
-	FeedService_GetArticle_FullMethodName      = "/feeds.v1.FeedService/GetArticle"
-	FeedService_SaveArticle_FullMethodName     = "/feeds.v1.FeedService/SaveArticle"
-	FeedService_UpdateStats_FullMethodName     = "/feeds.v1.FeedService/UpdateStats"
-	FeedService_Ready_FullMethodName           = "/feeds.v1.FeedService/Ready"
-	FeedService_FeedTask_FullMethodName        = "/feeds.v1.FeedService/FeedTask"
+	FeedService_GetFeed_FullMethodName           = "/feeds.v1.FeedService/GetFeed"
+	FeedService_GetUserFeed_FullMethodName       = "/feeds.v1.FeedService/GetUserFeed"
+	FeedService_ListFeeds_FullMethodName         = "/feeds.v1.FeedService/ListFeeds"
+	FeedService_ListUserFeeds_FullMethodName     = "/feeds.v1.FeedService/ListUserFeeds"
+	FeedService_GetUserArticles_FullMethodName   = "/feeds.v1.FeedService/GetUserArticles"
+	FeedService_MarkArticleAsRead_FullMethodName = "/feeds.v1.FeedService/MarkArticleAsRead"
+	FeedService_CreateFeed_FullMethodName        = "/feeds.v1.FeedService/CreateFeed"
+	FeedService_UpdateFeed_FullMethodName        = "/feeds.v1.FeedService/UpdateFeed"
+	FeedService_ListArticles_FullMethodName      = "/feeds.v1.FeedService/ListArticles"
+	FeedService_GetArticle_FullMethodName        = "/feeds.v1.FeedService/GetArticle"
+	FeedService_SaveArticle_FullMethodName       = "/feeds.v1.FeedService/SaveArticle"
+	FeedService_UpdateStats_FullMethodName       = "/feeds.v1.FeedService/UpdateStats"
+	FeedService_Ready_FullMethodName             = "/feeds.v1.FeedService/Ready"
+	FeedService_FeedTask_FullMethodName          = "/feeds.v1.FeedService/FeedTask"
 )
 
 // FeedServiceClient is the client API for FeedService service.
@@ -43,6 +44,7 @@ type FeedServiceClient interface {
 	ListFeeds(ctx context.Context, in *ListFeedsRequest, opts ...grpc.CallOption) (*ListFeedsResponse, error)
 	ListUserFeeds(ctx context.Context, in *ListUserFeedsRequest, opts ...grpc.CallOption) (*ListUserFeedsResponse, error)
 	GetUserArticles(ctx context.Context, in *GetUserArticlesRequest, opts ...grpc.CallOption) (*GetUserArticlesResponse, error)
+	MarkArticleAsRead(ctx context.Context, in *MarkArticleAsReadRequest, opts ...grpc.CallOption) (*MarkArticleAsReadResponse, error)
 	CreateFeed(ctx context.Context, in *CreateFeedRequest, opts ...grpc.CallOption) (*CreateFeedResponse, error)
 	UpdateFeed(ctx context.Context, in *UpdateFeedRequest, opts ...grpc.CallOption) (*UpdateFeedResponse, error)
 	ListArticles(ctx context.Context, in *ListArticlesRequest, opts ...grpc.CallOption) (*ListArticlesResponse, error)
@@ -107,6 +109,16 @@ func (c *feedServiceClient) GetUserArticles(ctx context.Context, in *GetUserArti
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetUserArticlesResponse)
 	err := c.cc.Invoke(ctx, FeedService_GetUserArticles_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *feedServiceClient) MarkArticleAsRead(ctx context.Context, in *MarkArticleAsReadRequest, opts ...grpc.CallOption) (*MarkArticleAsReadResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MarkArticleAsReadResponse)
+	err := c.cc.Invoke(ctx, FeedService_MarkArticleAsRead_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -203,6 +215,7 @@ type FeedServiceServer interface {
 	ListFeeds(context.Context, *ListFeedsRequest) (*ListFeedsResponse, error)
 	ListUserFeeds(context.Context, *ListUserFeedsRequest) (*ListUserFeedsResponse, error)
 	GetUserArticles(context.Context, *GetUserArticlesRequest) (*GetUserArticlesResponse, error)
+	MarkArticleAsRead(context.Context, *MarkArticleAsReadRequest) (*MarkArticleAsReadResponse, error)
 	CreateFeed(context.Context, *CreateFeedRequest) (*CreateFeedResponse, error)
 	UpdateFeed(context.Context, *UpdateFeedRequest) (*UpdateFeedResponse, error)
 	ListArticles(context.Context, *ListArticlesRequest) (*ListArticlesResponse, error)
@@ -237,6 +250,9 @@ func (UnimplementedFeedServiceServer) ListUserFeeds(context.Context, *ListUserFe
 }
 func (UnimplementedFeedServiceServer) GetUserArticles(context.Context, *GetUserArticlesRequest) (*GetUserArticlesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserArticles not implemented")
+}
+func (UnimplementedFeedServiceServer) MarkArticleAsRead(context.Context, *MarkArticleAsReadRequest) (*MarkArticleAsReadResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MarkArticleAsRead not implemented")
 }
 func (UnimplementedFeedServiceServer) CreateFeed(context.Context, *CreateFeedRequest) (*CreateFeedResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateFeed not implemented")
@@ -369,6 +385,24 @@ func _FeedService_GetUserArticles_Handler(srv interface{}, ctx context.Context, 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(FeedServiceServer).GetUserArticles(ctx, req.(*GetUserArticlesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FeedService_MarkArticleAsRead_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MarkArticleAsReadRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FeedServiceServer).MarkArticleAsRead(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FeedService_MarkArticleAsRead_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FeedServiceServer).MarkArticleAsRead(ctx, req.(*MarkArticleAsReadRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -543,6 +577,10 @@ var FeedService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetUserArticles",
 			Handler:    _FeedService_GetUserArticles_Handler,
+		},
+		{
+			MethodName: "MarkArticleAsRead",
+			Handler:    _FeedService_MarkArticleAsRead_Handler,
 		},
 		{
 			MethodName: "CreateFeed",

@@ -41,6 +41,7 @@ type Article {
 	authorName: String
 	authorEmail: String
 	updatedAt: DateTime!
+	userArticle: UserArticle
 }
 
 type ArticlesResponse {
@@ -106,6 +107,9 @@ type Mutation {
 	feedTask(
 		task: TaskType!
 	): FeedTaskResponse!
+	markArticleRead(
+		id: ID!
+	): UpdateResponse!
 }
 
 type Pagination {
@@ -138,3 +142,8 @@ enum TaskType {
 type UpdateResponse {
 	id: ID!
 }
+
+type UserArticle {
+	viewedAt: DateTime!
+}
+

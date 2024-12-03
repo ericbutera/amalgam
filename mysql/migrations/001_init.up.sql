@@ -63,9 +63,8 @@ CREATE TABLE
 
 CREATE TABLE
   `user_articles` (
-    `feed_id` VARCHAR(36) NOT NULL,
     `user_id` VARCHAR(36) NOT NULL,
     `article_id` VARCHAR(36) NOT NULL,
-    `viewed_at` datetime (3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
-    PRIMARY KEY (`feed_id`, `user_id`, `article_id`)
+    `viewed_at` datetime (3) NULL,
+    PRIMARY KEY (`user_id`, `article_id`)
   ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb3;

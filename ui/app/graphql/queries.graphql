@@ -34,6 +34,9 @@ query GetArticle($id: ID!) {
         authorName
         authorEmail
         updatedAt
+        userArticle {
+            viewedAt
+        }
     }
 }
 
@@ -49,6 +52,9 @@ query ListArticles($feedId: ID!) {
         authorName
         authorEmail
         updatedAt
+        userArticle {
+            viewedAt
+        }
     }
     pagination {
       next

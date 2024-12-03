@@ -77,6 +77,18 @@ func (r *mutationResolver) FeedTask(ctx context.Context, task model.TaskType) (*
 	}, nil
 }
 
+// MarkArticleRead is the resolver for the markArticleRead field.
+func (r *mutationResolver) MarkArticleRead(ctx context.Context, id string) (*model.UpdateResponse, error) {
+	_, err := r.rpcClient.MarkArticleAsRead(ctx, &pb.MarkArticleAsReadRequest{
+		User:      &pb.User{Id: middleware.GetUserID(ctx)}, // TODO: r.auth.GetUserID(ctx)
+		ArticleId: id,
+	})
+	if err != nil {
+		return nil, errHelper.HandleGrpcErrors(ctx, err, "failed to mark article read")
+	}
+	return &model.UpdateResponse{}, nil
+}
+
 // Feeds is the resolver for the feeds field.
 func (r *queryResolver) Feeds(ctx context.Context) (*model.FeedResponse, error) {
 	// TODO: dataloader for GetFeed + GetUserFeed
@@ -184,8 +196,19 @@ func (r *queryResolver) Article(ctx context.Context, id string) (*model.Article,
 	if err != nil {
 		return nil, errHelper.HandleGrpcErrors(ctx, err, "failed to get article")
 	}
-	article := resp.GetArticle()
-	return r.converter.ProtoToGraphArticle(article), nil
+	article := r.converter.ProtoToGraphArticle(resp.GetArticle())
+
+	userID := middleware.GetUserID(ctx) // TODO: r.auth.GetUserID(ctx)
+	res, _ := dataloaders.NewUserArticleLoader(r.rpcClient, userID).
+		LoadMany(ctx, []string{article.ID})()
+
+	if res != nil {
+		if ua := res[0]; ua != nil {
+			article.UserArticle = r.converter.ProtoToGraphUserArticle(ua)
+		}
+	}
+
+	return article, nil
 }
 
 // Mutation returns MutationResolver implementation.
@@ -196,3 +219,15 @@ func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//    it when you're done.
+//  - You have helper methods in this file. Move them out to keep these resolver files clean.
+/*
+	func (r *mutationResolver) ReadArticle(ctx context.Context, id string) (*model.UpdateResponse, error) {
+	panic(fmt.Errorf("not implemented: ReadArticle - readArticle"))
+}
+*/
