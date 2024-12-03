@@ -23,6 +23,20 @@ func (c *ConverterImpl) ConvertBase(source struct {
 	modelsBase.UpdatedAt = Time(source.UpdatedAt)
 	return &modelsBase
 }
+func (c *ConverterImpl) ConvertListCursor(source *model.ListCursor) *v1.Cursor {
+	var pFeedsCursor *v1.Cursor
+	if source != nil {
+		var feedsCursor v1.Cursor
+		if (*source).Previous != nil {
+			feedsCursor.Previous = *(*source).Previous
+		}
+		if (*source).Next != nil {
+			feedsCursor.Next = *(*source).Next
+		}
+		pFeedsCursor = &feedsCursor
+	}
+	return pFeedsCursor
+}
 func (c *ConverterImpl) DbToServiceArticle(source *models.Article) *models1.Article {
 	var pModelsArticle *models1.Article
 	if source != nil {
@@ -107,9 +121,7 @@ func (c *ConverterImpl) GraphToProtoListOptions(source *model.ListOptions) *v1.L
 	var pFeedsListOptions *v1.ListOptions
 	if source != nil {
 		var feedsListOptions v1.ListOptions
-		if (*source).Cursor != nil {
-			feedsListOptions.Cursor = *(*source).Cursor
-		}
+		feedsListOptions.Cursor = c.ConvertListCursor((*source).Cursor)
 		feedsListOptions.Limit = IntPtrToInt32((*source).Limit)
 		pFeedsListOptions = &feedsListOptions
 	}
@@ -149,15 +161,15 @@ func (c *ConverterImpl) ProtoToGraphArticle(source *v1.Article) *model.Article {
 	}
 	return pModelArticle
 }
-func (c *ConverterImpl) ProtoToGraphPagination(source *v1.Pagination) *model.Pagination {
-	var pModelPagination *model.Pagination
+func (c *ConverterImpl) ProtoToGraphCursor(source *v1.Cursor) *model.ResponseCursor {
+	var pModelResponseCursor *model.ResponseCursor
 	if source != nil {
-		var modelPagination model.Pagination
-		modelPagination.Next = (*source).Next
-		modelPagination.Previous = (*source).Previous
-		pModelPagination = &modelPagination
+		var modelResponseCursor model.ResponseCursor
+		modelResponseCursor.Previous = (*source).Previous
+		modelResponseCursor.Next = (*source).Next
+		pModelResponseCursor = &modelResponseCursor
 	}
-	return pModelPagination
+	return pModelResponseCursor
 }
 func (c *ConverterImpl) ProtoToGraphUserArticle(source *v1.GetUserArticlesResponse_UserArticle) *model.UserArticle {
 	var pModelUserArticle *model.UserArticle

@@ -43,7 +43,7 @@ export type Article = {
 export type ArticlesResponse = {
   __typename?: 'ArticlesResponse';
   articles: Array<Article>;
-  pagination: Pagination;
+  cursor: ResponseCursor;
 };
 
 export type Feed = {
@@ -77,8 +77,13 @@ export type GenerateFeedsResponse = {
   id: Scalars['String']['output'];
 };
 
+export type ListCursor = {
+  next?: InputMaybe<Scalars['String']['input']>;
+  previous?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type ListOptions = {
-  cursor?: InputMaybe<Scalars['String']['input']>;
+  cursor?: InputMaybe<ListCursor>;
   limit?: InputMaybe<Scalars['Int']['input']>;
 };
 
@@ -113,12 +118,6 @@ export type MutationUpdateFeedArgs = {
   url?: InputMaybe<Scalars['String']['input']>;
 };
 
-export type Pagination = {
-  __typename?: 'Pagination';
-  next: Scalars['String']['output'];
-  previous: Scalars['String']['output'];
-};
-
 export type Query = {
   __typename?: 'Query';
   article?: Maybe<Article>;
@@ -141,6 +140,12 @@ export type QueryArticlesArgs = {
 
 export type QueryFeedArgs = {
   id: Scalars['ID']['input'];
+};
+
+export type ResponseCursor = {
+  __typename?: 'ResponseCursor';
+  next: Scalars['String']['output'];
+  previous: Scalars['String']['output'];
 };
 
 export enum TaskType {
@@ -210,11 +215,12 @@ export type GetArticleQuery = { __typename?: 'Query', article?: { __typename?: '
 
 export type ListArticlesQueryVariables = Exact<{
   feedId: Scalars['ID']['input'];
-  cursor?: InputMaybe<Scalars['String']['input']>;
+  previous?: InputMaybe<Scalars['String']['input']>;
+  next?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
-export type ListArticlesQuery = { __typename?: 'Query', articles: { __typename?: 'ArticlesResponse', articles: Array<{ __typename?: 'Article', id: string, feedId: string, url: string, title: string, imageUrl?: string | null, preview: string, authorName?: string | null, authorEmail?: string | null, updatedAt: any, userArticle?: { __typename?: 'UserArticle', viewedAt: any } | null }>, pagination: { __typename?: 'Pagination', next: string, previous: string } } };
+export type ListArticlesQuery = { __typename?: 'Query', articles: { __typename?: 'ArticlesResponse', articles: Array<{ __typename?: 'Article', id: string, feedId: string, url: string, title: string, imageUrl?: string | null, preview: string, authorName?: string | null, authorEmail?: string | null, updatedAt: any, userArticle?: { __typename?: 'UserArticle', viewedAt: any } | null }>, cursor: { __typename?: 'ResponseCursor', next: string, previous: string } } };
 
 
 export const AddFeedDocument = gql`
@@ -291,8 +297,8 @@ export const GetArticleDocument = gql`
 }
     `;
 export const ListArticlesDocument = gql`
-    query ListArticles($feedId: ID!, $cursor: String) {
-  articles(feedId: $feedId, options: {cursor: $cursor}) {
+    query ListArticles($feedId: ID!, $previous: String, $next: String) {
+  articles(feedId: $feedId, options: {cursor: {previous: $previous, next: $next}}) {
     articles {
       id
       feedId
@@ -307,7 +313,7 @@ export const ListArticlesDocument = gql`
         viewedAt
       }
     }
-    pagination {
+    cursor {
       next
       previous
     }
