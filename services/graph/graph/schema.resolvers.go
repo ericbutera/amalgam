@@ -196,8 +196,19 @@ func (r *queryResolver) Article(ctx context.Context, id string) (*model.Article,
 	if err != nil {
 		return nil, errHelper.HandleGrpcErrors(ctx, err, "failed to get article")
 	}
-	article := resp.GetArticle()
-	return r.converter.ProtoToGraphArticle(article), nil
+	article := r.converter.ProtoToGraphArticle(resp.GetArticle())
+
+	userID := middleware.GetUserID(ctx) // TODO: r.auth.GetUserID(ctx)
+	res, _ := dataloaders.NewUserArticleLoader(r.rpcClient, userID).
+		LoadMany(ctx, []string{article.ID})()
+
+	if res != nil {
+		if ua := res[0]; ua != nil {
+			article.UserArticle = r.converter.ProtoToGraphUserArticle(ua)
+		}
+	}
+
+	return article, nil
 }
 
 // Mutation returns MutationResolver implementation.

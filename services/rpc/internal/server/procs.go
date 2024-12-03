@@ -220,12 +220,27 @@ func (s *Server) Ready(_ context.Context, _ *pb.ReadyRequest) (*pb.ReadyResponse
 }
 
 func (s *Server) MarkArticleAsRead(ctx context.Context, in *pb.MarkArticleAsReadRequest) (*pb.MarkArticleAsReadResponse, error) {
+	// 1. mark article as read
+	user := in.GetUser()
+	userID := user.GetId()
+	articleID := in.GetArticleId()
 	err := s.service.SaveUserArticle(ctx, &models.UserArticle{
-		UserID:    in.GetUser().GetId(),
-		ArticleID: in.GetArticleId(),
+		UserID:    userID,
+		ArticleID: articleID,
 	})
 	if err != nil {
 		return nil, serviceToProtoErr(err, nil)
 	}
+
+	// 2. refresh user feed unread count
+	article, err := s.service.GetArticle(ctx, in.GetArticleId())
+	if err != nil {
+		return nil, serviceToProtoErr(err, nil)
+	}
+	err = s.service.UpdateFeedArticleCount(ctx, article.FeedID)
+	if err != nil {
+		return nil, serviceToProtoErr(err, nil)
+	}
+
 	return &pb.MarkArticleAsReadResponse{}, nil
 }

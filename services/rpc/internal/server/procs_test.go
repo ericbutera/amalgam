@@ -332,13 +332,24 @@ func TestReady(t *testing.T) {
 func TestMarkArticleAsRead(t *testing.T) {
 	t.Parallel()
 
-	articleID := "0e597e90-ece5-463e-8608-ff687bf286da"
+	feedID := "2e597e90-ece5-463e-8608-ff687bf286da"
+	articleID := "3e597e90-ece5-463e-8608-ff687bf286da"
 
 	svc := new(service.MockService)
-	svc.EXPECT().SaveUserArticle(mock.Anything, svcModel.UserArticle{
-		UserID:    seed.UserID,
-		ArticleID: articleID,
-	}).Return(nil)
+	svc.EXPECT().
+		SaveUserArticle(mock.Anything, &svcModel.UserArticle{
+			UserID:    seed.UserID,
+			ArticleID: articleID,
+		}).
+		Return(nil)
+	svc.EXPECT().
+		GetArticle(mock.Anything, articleID).
+		Return(&svcModel.Article{
+			FeedID: feedID,
+		}, nil)
+	svc.EXPECT().
+		UpdateFeedArticleCount(mock.Anything, feedID).
+		Return(nil)
 
 	s, err := server.New(
 		server.WithService(svc),

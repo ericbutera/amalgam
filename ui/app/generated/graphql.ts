@@ -213,7 +213,7 @@ export type ListArticlesQueryVariables = Exact<{
 }>;
 
 
-export type ListArticlesQuery = { __typename?: 'Query', articles: { __typename?: 'ArticlesResponse', articles: Array<{ __typename?: 'Article', id: string, feedId: string, url: string, title: string, imageUrl?: string | null, preview: string, authorName?: string | null, authorEmail?: string | null, updatedAt: any }>, pagination: { __typename?: 'Pagination', next: string, previous: string } } };
+export type ListArticlesQuery = { __typename?: 'Query', articles: { __typename?: 'ArticlesResponse', articles: Array<{ __typename?: 'Article', id: string, feedId: string, url: string, title: string, imageUrl?: string | null, preview: string, authorName?: string | null, authorEmail?: string | null, updatedAt: any, userArticle?: { __typename?: 'UserArticle', viewedAt: any } | null }>, pagination: { __typename?: 'Pagination', next: string, previous: string } } };
 
 
 export const AddFeedDocument = gql`
@@ -302,6 +302,9 @@ export const ListArticlesDocument = gql`
       authorName
       authorEmail
       updatedAt
+      userArticle {
+        viewedAt
+      }
     }
     pagination {
       next
