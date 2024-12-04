@@ -168,7 +168,7 @@ func Test_Articles(t *testing.T) {
 	r.client.EXPECT().
 		ListArticles(mock.Anything, &pb.ListArticlesRequest{
 			FeedId:  feed.ID,
-			Options: &pb.ListOptions{Cursor: "", Limit: 0},
+			Options: &pb.ListOptions{Limit: 0},
 		}).
 		Return(&pb.ListArticlesResponse{
 			Articles: []*pb.Article{rpcArticle},
@@ -199,7 +199,7 @@ func Test_Articles_Pagination(t *testing.T) {
 	id := uuid.New().String()
 	expectedCursor := "incoming-cursor"
 	expectedLimit := 42
-	expectedPagination := pb.Pagination{
+	expectedPagination := pb.Cursor{
 		Next:     "next",
 		Previous: "previous",
 	}
@@ -208,22 +208,24 @@ func Test_Articles_Pagination(t *testing.T) {
 		ListArticles(mock.Anything, &pb.ListArticlesRequest{
 			FeedId: id,
 			Options: &pb.ListOptions{
-				Cursor: expectedCursor,
+				Cursor: &pb.Cursor{Next: expectedCursor},
 				Limit:  int32(expectedLimit),
 			},
 		}).
 		Return(&pb.ListArticlesResponse{
-			Articles:   []*pb.Article{},
-			Pagination: &expectedPagination,
+			Articles: []*pb.Article{},
+			Cursor:   &expectedPagination,
 		}, nil)
 
 	resp, err := r.resolver.Query().Articles(newAuthCtx(), id, &graphModel.ListOptions{
-		Cursor: lo.ToPtr(expectedCursor),
-		Limit:  lo.ToPtr(expectedLimit),
+		Cursor: &graphModel.ListCursor{
+			Next: lo.ToPtr(expectedCursor),
+		},
+		Limit: lo.ToPtr(expectedLimit),
 	})
 	require.NoError(t, err)
-	assert.Equal(t, expectedPagination.GetNext(), resp.Pagination.Next)
-	assert.Equal(t, expectedPagination.GetPrevious(), resp.Pagination.Previous)
+	assert.Equal(t, expectedPagination.GetNext(), resp.Cursor.Next)
+	assert.Equal(t, expectedPagination.GetPrevious(), resp.Cursor.Previous)
 }
 
 func Test_Article(t *testing.T) {

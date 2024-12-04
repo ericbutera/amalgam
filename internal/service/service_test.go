@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/ericbutera/amalgam/internal/db/pagination"
 	"github.com/ericbutera/amalgam/internal/service"
 	svcModel "github.com/ericbutera/amalgam/internal/service/models"
 	"github.com/ericbutera/amalgam/internal/test"
@@ -18,16 +19,17 @@ import (
 	"gorm.io/gorm"
 )
 
-type TestHelper struct {
+type testHelper struct {
 	svc   service.Service
 	db    *gorm.DB
 	start time.Time
 }
 
-func newTestHelper(t *testing.T) *TestHelper {
+func newTestHelper(t *testing.T) *testHelper {
+	t.Helper()
 	db := test.NewDB(t)
 	svc := service.NewGorm(db)
-	return &TestHelper{
+	return &testHelper{
 		svc:   svc,
 		db:    db,
 		start: time.Now().UTC(),
@@ -123,7 +125,7 @@ func TestGetArticlesByFeed(t *testing.T) {
 	data, err := seed.FeedAndArticles(h.db, 1)
 	require.NoError(t, err)
 
-	res, err := h.svc.GetArticlesByFeed(context.Background(), data.Feed.ID, service.ListOptions{})
+	res, err := h.svc.GetArticlesByFeed(context.Background(), data.Feed.ID, pagination.ListOptions{})
 	require.NoError(t, err)
 
 	expected := data.Articles
@@ -139,15 +141,14 @@ func TestGetArticlesByFeed_Pagination(t *testing.T) {
 	data, err := seed.FeedAndArticles(h.db, 15)
 	require.NoError(t, err)
 
-	page1, err := h.svc.GetArticlesByFeed(context.Background(), data.Feed.ID, service.ListOptions{
-		Cursor: "",
-		Limit:  10,
+	page1, err := h.svc.GetArticlesByFeed(context.Background(), data.Feed.ID, pagination.ListOptions{
+		Limit: 10,
 	})
 	require.NoError(t, err)
 	assert.Len(t, page1.Articles, 10)
 
-	page2, err := h.svc.GetArticlesByFeed(context.Background(), data.Feed.ID, service.ListOptions{
-		Cursor: *page1.Cursor.After,
+	page2, err := h.svc.GetArticlesByFeed(context.Background(), data.Feed.ID, pagination.ListOptions{
+		Cursor: page1.Cursor,
 		Limit:  10,
 	})
 	require.NoError(t, err)

@@ -182,9 +182,10 @@ func TestListArticles_Pagination(t *testing.T) {
 		FeedId: fakes.Feed.ID,
 		Options: &pb.ListOptions{
 			Limit: 1,
+			// Test default cursor
 		},
 	})
-	cursor := resp.GetPagination().GetNext()
+	cursor := resp.GetCursor().GetNext()
 	require.NoError(t, err)
 	assert.Len(t, resp.GetArticles(), 1)
 	assert.NotEmpty(t, cursor)
@@ -193,8 +194,10 @@ func TestListArticles_Pagination(t *testing.T) {
 	resp, err = ts.Server.ListArticles(ctx, &pb.ListArticlesRequest{
 		FeedId: fakes.Feed.ID,
 		Options: &pb.ListOptions{
-			Limit:  1,
-			Cursor: cursor,
+			Limit: 1,
+			Cursor: &pb.Cursor{
+				Next: resp.GetCursor().GetNext(),
+			},
 		},
 	})
 	require.NoError(t, err)

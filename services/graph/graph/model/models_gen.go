@@ -30,8 +30,8 @@ type Article struct {
 }
 
 type ArticlesResponse struct {
-	Articles   []*Article  `json:"articles"`
-	Pagination *Pagination `json:"pagination"`
+	Articles []*Article      `json:"articles"`
+	Cursor   *ResponseCursor `json:"cursor"`
 }
 
 type Feed struct {
@@ -60,20 +60,25 @@ type GenerateFeedsResponse struct {
 	ID string `json:"id"`
 }
 
+type ListCursor struct {
+	Previous *string `json:"previous,omitempty"`
+	Next     *string `json:"next,omitempty"`
+}
+
 type ListOptions struct {
-	Cursor *string `json:"cursor,omitempty"`
-	Limit  *int    `json:"limit,omitempty"`
+	Limit  *int        `json:"limit,omitempty"`
+	Cursor *ListCursor `json:"cursor,omitempty"`
 }
 
 type Mutation struct {
 }
 
-type Pagination struct {
-	Next     string `json:"next"`
-	Previous string `json:"previous"`
+type Query struct {
 }
 
-type Query struct {
+type ResponseCursor struct {
+	Previous string `json:"previous"`
+	Next     string `json:"next"`
 }
 
 type UpdateResponse struct {

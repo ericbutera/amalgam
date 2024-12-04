@@ -40,8 +40,8 @@ query GetArticle($id: ID!) {
     }
 }
 
-query ListArticles($feedId: ID!) {
-  articles(feedId: $feedId) {
+query ListArticles($feedId: ID!, $previous: String, $next: String, $limit: Int) {
+  articles(feedId: $feedId, options: { cursor: { previous: $previous, next: $next }, limit: $limit }) {
     articles {
         id
         feedId
@@ -56,7 +56,7 @@ query ListArticles($feedId: ID!) {
             viewedAt
         }
     }
-    pagination {
+    cursor {
       next
       previous
     }

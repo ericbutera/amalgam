@@ -2,6 +2,7 @@
 
 import Articles from "@/app/components/article/list";
 import Header from "@/app/components/article/header";
+import { usePagination } from "@/app/hooks/usePagination";
 
 interface PageProps {
   params: {
@@ -11,11 +12,12 @@ interface PageProps {
 
 export default function Page({ params }: PageProps) {
   const feedId = params.id;
+  const pagination = usePagination();
 
   return (
     <div>
       <Header id={feedId} />
-      <Articles feedId={feedId} />
+      <Articles feedId={feedId} pagination={pagination} />
     </div>
   );
 }

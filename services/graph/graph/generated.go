@@ -69,8 +69,8 @@ type ComplexityRoot struct {
 	}
 
 	ArticlesResponse struct {
-		Articles   func(childComplexity int) int
-		Pagination func(childComplexity int) int
+		Articles func(childComplexity int) int
+		Cursor   func(childComplexity int) int
 	}
 
 	Feed struct {
@@ -106,16 +106,16 @@ type ComplexityRoot struct {
 		UpdateFeed      func(childComplexity int, id string, url *string, name *string) int
 	}
 
-	Pagination struct {
-		Next     func(childComplexity int) int
-		Previous func(childComplexity int) int
-	}
-
 	Query struct {
 		Article  func(childComplexity int, id string) int
 		Articles func(childComplexity int, feedID string, options *model.ListOptions) int
 		Feed     func(childComplexity int, id string) int
 		Feeds    func(childComplexity int) int
+	}
+
+	ResponseCursor struct {
+		Next     func(childComplexity int) int
+		Previous func(childComplexity int) int
 	}
 
 	UpdateResponse struct {
@@ -264,12 +264,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.ArticlesResponse.Articles(childComplexity), true
 
-	case "ArticlesResponse.pagination":
-		if e.complexity.ArticlesResponse.Pagination == nil {
+	case "ArticlesResponse.cursor":
+		if e.complexity.ArticlesResponse.Cursor == nil {
 			break
 		}
 
-		return e.complexity.ArticlesResponse.Pagination(childComplexity), true
+		return e.complexity.ArticlesResponse.Cursor(childComplexity), true
 
 	case "Feed.createdAt":
 		if e.complexity.Feed.CreatedAt == nil {
@@ -396,20 +396,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.UpdateFeed(childComplexity, args["id"].(string), args["url"].(*string), args["name"].(*string)), true
 
-	case "Pagination.next":
-		if e.complexity.Pagination.Next == nil {
-			break
-		}
-
-		return e.complexity.Pagination.Next(childComplexity), true
-
-	case "Pagination.previous":
-		if e.complexity.Pagination.Previous == nil {
-			break
-		}
-
-		return e.complexity.Pagination.Previous(childComplexity), true
-
 	case "Query.article":
 		if e.complexity.Query.Article == nil {
 			break
@@ -453,6 +439,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Feeds(childComplexity), true
 
+	case "ResponseCursor.next":
+		if e.complexity.ResponseCursor.Next == nil {
+			break
+		}
+
+		return e.complexity.ResponseCursor.Next(childComplexity), true
+
+	case "ResponseCursor.previous":
+		if e.complexity.ResponseCursor.Previous == nil {
+			break
+		}
+
+		return e.complexity.ResponseCursor.Previous(childComplexity), true
+
 	case "UpdateResponse.id":
 		if e.complexity.UpdateResponse.ID == nil {
 			break
@@ -475,6 +475,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	rc := graphql.GetOperationContext(ctx)
 	ec := executionContext{rc, e, 0, 0, make(chan graphql.DeferredResult)}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
+		ec.unmarshalInputListCursor,
 		ec.unmarshalInputListOptions,
 	)
 	first := true
@@ -1579,8 +1580,8 @@ func (ec *executionContext) fieldContext_ArticlesResponse_articles(_ context.Con
 	return fc, nil
 }
 
-func (ec *executionContext) _ArticlesResponse_pagination(ctx context.Context, field graphql.CollectedField, obj *model.ArticlesResponse) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_ArticlesResponse_pagination(ctx, field)
+func (ec *executionContext) _ArticlesResponse_cursor(ctx context.Context, field graphql.CollectedField, obj *model.ArticlesResponse) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ArticlesResponse_cursor(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -1593,7 +1594,7 @@ func (ec *executionContext) _ArticlesResponse_pagination(ctx context.Context, fi
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Pagination, nil
+		return obj.Cursor, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1605,12 +1606,12 @@ func (ec *executionContext) _ArticlesResponse_pagination(ctx context.Context, fi
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.Pagination)
+	res := resTmp.(*model.ResponseCursor)
 	fc.Result = res
-	return ec.marshalNPagination2ᚖgithubᚗcomᚋericbuteraᚋamalgamᚋservicesᚋgraphᚋgraphᚋmodelᚐPagination(ctx, field.Selections, res)
+	return ec.marshalNResponseCursor2ᚖgithubᚗcomᚋericbuteraᚋamalgamᚋservicesᚋgraphᚋgraphᚋmodelᚐResponseCursor(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_ArticlesResponse_pagination(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_ArticlesResponse_cursor(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "ArticlesResponse",
 		Field:      field,
@@ -1618,12 +1619,12 @@ func (ec *executionContext) fieldContext_ArticlesResponse_pagination(_ context.C
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "next":
-				return ec.fieldContext_Pagination_next(ctx, field)
 			case "previous":
-				return ec.fieldContext_Pagination_previous(ctx, field)
+				return ec.fieldContext_ResponseCursor_previous(ctx, field)
+			case "next":
+				return ec.fieldContext_ResponseCursor_next(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Pagination", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type ResponseCursor", field.Name)
 		},
 	}
 	return fc, nil
@@ -2365,94 +2366,6 @@ func (ec *executionContext) fieldContext_Mutation_markArticleRead(ctx context.Co
 	return fc, nil
 }
 
-func (ec *executionContext) _Pagination_next(ctx context.Context, field graphql.CollectedField, obj *model.Pagination) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Pagination_next(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Next, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Pagination_next(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Pagination",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Pagination_previous(ctx context.Context, field graphql.CollectedField, obj *model.Pagination) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Pagination_previous(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Previous, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Pagination_previous(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Pagination",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _Query_feeds(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Query_feeds(ctx, field)
 	if err != nil {
@@ -2610,8 +2523,8 @@ func (ec *executionContext) fieldContext_Query_articles(ctx context.Context, fie
 			switch field.Name {
 			case "articles":
 				return ec.fieldContext_ArticlesResponse_articles(ctx, field)
-			case "pagination":
-				return ec.fieldContext_ArticlesResponse_pagination(ctx, field)
+			case "cursor":
+				return ec.fieldContext_ArticlesResponse_cursor(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type ArticlesResponse", field.Name)
 		},
@@ -2834,6 +2747,94 @@ func (ec *executionContext) fieldContext_Query___schema(_ context.Context, field
 				return ec.fieldContext___Schema_directives(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type __Schema", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ResponseCursor_previous(ctx context.Context, field graphql.CollectedField, obj *model.ResponseCursor) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ResponseCursor_previous(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Previous, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ResponseCursor_previous(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ResponseCursor",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ResponseCursor_next(ctx context.Context, field graphql.CollectedField, obj *model.ResponseCursor) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ResponseCursor_next(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Next, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ResponseCursor_next(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ResponseCursor",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -4700,6 +4701,40 @@ func (ec *executionContext) fieldContext___Type_specifiedByURL(_ context.Context
 
 // region    **************************** input.gotpl *****************************
 
+func (ec *executionContext) unmarshalInputListCursor(ctx context.Context, obj interface{}) (model.ListCursor, error) {
+	var it model.ListCursor
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"previous", "next"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "previous":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("previous"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Previous = data
+		case "next":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("next"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Next = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputListOptions(ctx context.Context, obj interface{}) (model.ListOptions, error) {
 	var it model.ListOptions
 	asMap := map[string]interface{}{}
@@ -4707,20 +4742,13 @@ func (ec *executionContext) unmarshalInputListOptions(ctx context.Context, obj i
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"cursor", "limit"}
+	fieldsInOrder := [...]string{"limit", "cursor"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "cursor":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("cursor"))
-			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.Cursor = data
 		case "limit":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
 			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
@@ -4728,6 +4756,13 @@ func (ec *executionContext) unmarshalInputListOptions(ctx context.Context, obj i
 				return it, err
 			}
 			it.Limit = data
+		case "cursor":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("cursor"))
+			data, err := ec.unmarshalOListCursor2ᚖgithubᚗcomᚋericbuteraᚋamalgamᚋservicesᚋgraphᚋgraphᚋmodelᚐListCursor(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Cursor = data
 		}
 	}
 
@@ -4881,8 +4916,8 @@ func (ec *executionContext) _ArticlesResponse(ctx context.Context, sel ast.Selec
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
-		case "pagination":
-			out.Values[i] = ec._ArticlesResponse_pagination(ctx, field, obj)
+		case "cursor":
+			out.Values[i] = ec._ArticlesResponse_cursor(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -5204,50 +5239,6 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 	return out
 }
 
-var paginationImplementors = []string{"Pagination"}
-
-func (ec *executionContext) _Pagination(ctx context.Context, sel ast.SelectionSet, obj *model.Pagination) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, paginationImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	deferred := make(map[string]*graphql.FieldSet)
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("Pagination")
-		case "next":
-			out.Values[i] = ec._Pagination_next(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "previous":
-			out.Values[i] = ec._Pagination_previous(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch(ctx)
-	if out.Invalids > 0 {
-		return graphql.Null
-	}
-
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
-
-	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
-			Label:    label,
-			Path:     graphql.GetPath(ctx),
-			FieldSet: dfs,
-			Context:  ctx,
-		})
-	}
-
-	return out
-}
-
 var queryImplementors = []string{"Query"}
 
 func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) graphql.Marshaler {
@@ -5357,6 +5348,50 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Query___schema(ctx, field)
 			})
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var responseCursorImplementors = []string{"ResponseCursor"}
+
+func (ec *executionContext) _ResponseCursor(ctx context.Context, sel ast.SelectionSet, obj *model.ResponseCursor) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, responseCursorImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("ResponseCursor")
+		case "previous":
+			out.Values[i] = ec._ResponseCursor_previous(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "next":
+			out.Values[i] = ec._ResponseCursor_next(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -6008,14 +6043,14 @@ func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.Selecti
 	return res
 }
 
-func (ec *executionContext) marshalNPagination2ᚖgithubᚗcomᚋericbuteraᚋamalgamᚋservicesᚋgraphᚋgraphᚋmodelᚐPagination(ctx context.Context, sel ast.SelectionSet, v *model.Pagination) graphql.Marshaler {
+func (ec *executionContext) marshalNResponseCursor2ᚖgithubᚗcomᚋericbuteraᚋamalgamᚋservicesᚋgraphᚋgraphᚋmodelᚐResponseCursor(ctx context.Context, sel ast.SelectionSet, v *model.ResponseCursor) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
 		}
 		return graphql.Null
 	}
-	return ec._Pagination(ctx, sel, v)
+	return ec._ResponseCursor(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {
@@ -6364,6 +6399,14 @@ func (ec *executionContext) marshalOInt2ᚖint(ctx context.Context, sel ast.Sele
 	}
 	res := graphql.MarshalInt(*v)
 	return res
+}
+
+func (ec *executionContext) unmarshalOListCursor2ᚖgithubᚗcomᚋericbuteraᚋamalgamᚋservicesᚋgraphᚋgraphᚋmodelᚐListCursor(ctx context.Context, v interface{}) (*model.ListCursor, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputListCursor(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalOListOptions2ᚖgithubᚗcomᚋericbuteraᚋamalgamᚋservicesᚋgraphᚋgraphᚋmodelᚐListOptions(ctx context.Context, v interface{}) (*model.ListOptions, error) {

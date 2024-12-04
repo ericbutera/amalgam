@@ -26,7 +26,7 @@ func Test_ComplexityLimit_Exceeded(t *testing.T) {
 		query Articles {
 			articles(
 				feedId: "0e597e90-ece5-463e-8608-ff687bf286da",
-				options: { limit: 10, cursor: "0e597e90-ece5-463e-8608-ff687bf286da" }
+				options: { limit: 10, cursor: { next: "0e597e90-ece5-463e-8608-ff687bf286da" } }
 			) {
 				articles {
 					id

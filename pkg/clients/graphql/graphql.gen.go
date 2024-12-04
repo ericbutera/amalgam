@@ -111,8 +111,8 @@ func (v *GetFeedResponse) GetFeed() GetFeedFeed { return v.Feed }
 
 // ListArticlesArticlesArticlesResponse includes the requested fields of the GraphQL type ArticlesResponse.
 type ListArticlesArticlesArticlesResponse struct {
-	Articles   []ListArticlesArticlesArticlesResponseArticlesArticle `json:"articles"`
-	Pagination ListArticlesArticlesArticlesResponsePagination        `json:"pagination"`
+	Articles []ListArticlesArticlesArticlesResponseArticlesArticle `json:"articles"`
+	Cursor   ListArticlesArticlesArticlesResponseCursor            `json:"cursor"`
 }
 
 // GetArticles returns ListArticlesArticlesArticlesResponse.Articles, and is useful for accessing the field via an interface.
@@ -120,9 +120,9 @@ func (v *ListArticlesArticlesArticlesResponse) GetArticles() []ListArticlesArtic
 	return v.Articles
 }
 
-// GetPagination returns ListArticlesArticlesArticlesResponse.Pagination, and is useful for accessing the field via an interface.
-func (v *ListArticlesArticlesArticlesResponse) GetPagination() ListArticlesArticlesArticlesResponsePagination {
-	return v.Pagination
+// GetCursor returns ListArticlesArticlesArticlesResponse.Cursor, and is useful for accessing the field via an interface.
+func (v *ListArticlesArticlesArticlesResponse) GetCursor() ListArticlesArticlesArticlesResponseCursor {
+	return v.Cursor
 }
 
 // ListArticlesArticlesArticlesResponseArticlesArticle includes the requested fields of the GraphQL type Article.
@@ -171,17 +171,17 @@ func (v *ListArticlesArticlesArticlesResponseArticlesArticle) GetUpdatedAt() tim
 	return v.UpdatedAt
 }
 
-// ListArticlesArticlesArticlesResponsePagination includes the requested fields of the GraphQL type Pagination.
-type ListArticlesArticlesArticlesResponsePagination struct {
+// ListArticlesArticlesArticlesResponseCursor includes the requested fields of the GraphQL type ResponseCursor.
+type ListArticlesArticlesArticlesResponseCursor struct {
 	Next     string `json:"next"`
 	Previous string `json:"previous"`
 }
 
-// GetNext returns ListArticlesArticlesArticlesResponsePagination.Next, and is useful for accessing the field via an interface.
-func (v *ListArticlesArticlesArticlesResponsePagination) GetNext() string { return v.Next }
+// GetNext returns ListArticlesArticlesArticlesResponseCursor.Next, and is useful for accessing the field via an interface.
+func (v *ListArticlesArticlesArticlesResponseCursor) GetNext() string { return v.Next }
 
-// GetPrevious returns ListArticlesArticlesArticlesResponsePagination.Previous, and is useful for accessing the field via an interface.
-func (v *ListArticlesArticlesArticlesResponsePagination) GetPrevious() string { return v.Previous }
+// GetPrevious returns ListArticlesArticlesArticlesResponseCursor.Previous, and is useful for accessing the field via an interface.
+func (v *ListArticlesArticlesArticlesResponseCursor) GetPrevious() string { return v.Previous }
 
 // ListArticlesResponse is returned by ListArticles on success.
 type ListArticlesResponse struct {
@@ -442,7 +442,7 @@ query ListArticles ($feedId: ID!) {
 			authorEmail
 			updatedAt
 		}
-		pagination {
+		cursor {
 			next
 			previous
 		}

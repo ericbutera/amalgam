@@ -122,9 +122,7 @@ message MarkArticleAsReadRequest {
   string article_id = 2 [(buf.validate.field).string.uuid = true];
 }
 
-message MarkArticleAsReadResponse {
-}
-
+message MarkArticleAsReadResponse {}
 
 message CreateFeedRequest {
   message Feed {
@@ -150,15 +148,15 @@ message UpdateFeedRequest {
 
 message UpdateFeedResponse {}
 
-// List options contains pagination, filtering, sorting, etc.
-message ListOptions {
-  string cursor = 1; // Pagination cursor
-  int32 limit = 2; // Number of records to return
+message Cursor {
+  string previous = 1;
+  string next = 2;
 }
 
-message Pagination {
-  string next = 1; // Cursor for the next page
-  string previous = 2; // Cursor for the previous page
+// List options contains pagination, filtering, sorting, etc.
+message ListOptions {
+  Cursor cursor = 1; // Pagination cursor
+  int32 limit = 2; // Number of records to return
 }
 
 message ListArticlesRequest {
@@ -168,7 +166,7 @@ message ListArticlesRequest {
 
 message ListArticlesResponse {
   repeated Article articles = 1;
-  Pagination pagination = 2;
+  Cursor cursor = 2;
 }
 
 message GetArticleRequest {

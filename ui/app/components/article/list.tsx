@@ -2,13 +2,16 @@
 
 import Link from "next/link";
 import useArticles from "../../data/articles";
+import { Pagination } from "@/app/types/pagination";
+import queryString from "@/app/lib/queryBuilder";
 
 interface ArticlesProps {
   feedId: string;
+  pagination: Pagination;
 }
 
-export default function Articles({ feedId }: ArticlesProps) {
-  const { loading, error, articles } = useArticles(feedId);
+export default function Articles({ feedId, pagination }: ArticlesProps) {
+  const { loading, error, articles } = useArticles(feedId, pagination);
 
   if (error) return <div>failed to load articles</div>;
   if (loading) return <div>loading...</div>;
@@ -22,7 +25,9 @@ export default function Articles({ feedId }: ArticlesProps) {
           <li
             key={article.id}
             className={`border-b border-base-300 last:border-0 ${
-              article.userArticle?.viewedAt ? "bg-base-200" : "bg-base-100"
+              article.userArticle?.viewedAt
+                ? "bg-article-read"
+                : "bg-article-new"
             } `}
           >
             <Link
@@ -34,10 +39,18 @@ export default function Articles({ feedId }: ArticlesProps) {
           </li>
         ))}
       </ul>
-      {/* TODO: fetch more button
-      {articles.pagination?.next && (
-        <button className="btn btn-primary mt-4">Load more</button>
-      )} */}
+
+      {articles.cursor?.previous && (
+        <Link href={`/feeds/${feedId}/articles?${queryString(pagination, { previous: articles.cursor.previous })}`}>
+          Previous
+        </Link>
+      )}
+
+      {articles.cursor?.next && (
+        <Link href={`/feeds/${feedId}/articles?${queryString(pagination, { next: articles.cursor.next })}`}>
+          Next
+        </Link>
+      )}
     </div>
   );
 }

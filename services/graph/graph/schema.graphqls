@@ -51,19 +51,24 @@ type FetchFeedsResponse {
   id: String!
 }
 
-type Pagination {
-  next: String!
+type ResponseCursor {
   previous: String!
+  next: String!
 }
 
 type ArticlesResponse {
   articles: [Article!]!
-  pagination: Pagination!
+  cursor: ResponseCursor!
+}
+
+input ListCursor {
+  previous: String
+  next: String
 }
 
 input ListOptions {
-  cursor: String
   limit: Int
+  cursor: ListCursor
 }
 
 enum TaskType {

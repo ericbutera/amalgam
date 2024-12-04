@@ -108,16 +108,23 @@ type Converter interface {
 	ProtoToGraphUserArticle(*pb.GetUserArticlesResponse_UserArticle) *gql_model.UserArticle
 	// goverter:matchIgnoreCase
 	// goverter:ignoreMissing
-	ProtoToGraphPagination(*pb.Pagination) *gql_model.Pagination
+	ProtoToGraphCursor(*pb.Cursor) *gql_model.ResponseCursor
 	// goverter:useZeroValueOnPointerInconsistency
 	// goverter:matchIgnoreCase
 	// goverter:ignoreMissing
 	// goverter:ignore state sizeCache unknownFields
 	// goverter:map Limit Limit | IntPtrToInt32
 	GraphToProtoListOptions(*gql_model.ListOptions) *pb.ListOptions
+	// goverter:useZeroValueOnPointerInconsistency
+	// goverter:ignoreMissing
+	// goverter:ignore state sizeCache unknownFields
+	ConvertListCursor(*gql_model.ListCursor) *pb.Cursor
 	// goverter:ignore state sizeCache unknownFields
 	// goverter:map ViewedAt | NillableTimeToProtoTimestamp
 	ServiceToProtoUserArticle(*svc_model.UserArticle) *pb.GetUserArticlesResponse_UserArticle
+
+	// TODO:
+	// ProtoToServiceListOptions(*pb.ListOptions) *svc.ListOptions
 }
 
 func Time(t time.Time) time.Time {

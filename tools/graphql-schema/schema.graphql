@@ -46,7 +46,7 @@ type Article {
 
 type ArticlesResponse {
 	articles: [Article!]!
-	pagination: Pagination!
+	cursor: ResponseCursor!
 }
 
 """The `Boolean` scalar type represents `true` or `false`."""
@@ -89,9 +89,14 @@ scalar ID
 """The `Int` scalar type represents non-fractional signed whole numeric values. Int can represent values between -(2^31) and 2^31 - 1."""
 scalar Int
 
+input ListCursor {
+	previous: String
+	next: String
+}
+
 input ListOptions {
-	cursor: String
 	limit: Int
+	cursor: ListCursor
 }
 
 type Mutation {
@@ -112,11 +117,6 @@ type Mutation {
 	): UpdateResponse!
 }
 
-type Pagination {
-	next: String!
-	previous: String!
-}
-
 type Query {
 	feeds: FeedResponse!
 	feed(
@@ -129,6 +129,11 @@ type Query {
 	article(
 		id: ID!
 	): Article
+}
+
+type ResponseCursor {
+	previous: String!
+	next: String!
 }
 
 """The `String`scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text."""
@@ -146,4 +151,3 @@ type UpdateResponse {
 type UserArticle {
 	viewedAt: DateTime!
 }
-
