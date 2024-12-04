@@ -17,7 +17,7 @@ describe("Articles Component", () => {
       articles: { articles: [] },
     }));
 
-    render(<Articles feedId="test" />);
+    render(<Articles feedId="test" pagination={{}} />);
     expect(screen.getByText("loading...")).toBeInTheDocument();
   });
 
@@ -28,7 +28,7 @@ describe("Articles Component", () => {
       articles: { articles: [] },
     }));
 
-    render(<Articles feedId="test" />);
+    render(<Articles feedId="test" pagination={{}} />);
     expect(screen.getByText("failed to load articles")).toBeInTheDocument();
   });
 
@@ -39,7 +39,7 @@ describe("Articles Component", () => {
       articles: { articles: [] },
     }));
 
-    render(<Articles feedId="test" />);
+    render(<Articles feedId="test" pagination={{}} />);
     expect(screen.getByText("no articles found")).toBeInTheDocument();
   });
 
@@ -49,11 +49,11 @@ describe("Articles Component", () => {
       error: null,
       articles: {
         articles: [{ id: "1", title: "Article 1" }],
-        pagination: {},
+        cursor: {},
       },
     }));
 
-    render(<Articles feedId="test" />);
+    render(<Articles feedId="test" pagination={{}} />);
     expect(screen.getByText("Article 1")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Article 1" })).toHaveAttribute(
       "href",
@@ -67,12 +67,11 @@ describe("Articles Component", () => {
       error: null,
       articles: {
         articles: [{ id: "1", title: "Article 1", userArticle: { viewedAt: null } }],
-        pagination: {},
+        cursor: {},
       },
     }));
 
-    render(<Articles feedId="test" />);
-
+    render(<Articles feedId="test" pagination={{}} />);
     const articleRow = screen.getByRole("link", { name: "Article 1" }).closest("li");
     expect(articleRow).toHaveClass("bg-article-new");
   });
@@ -83,11 +82,11 @@ describe("Articles Component", () => {
       error: null,
       articles: {
         articles: [{ id: "2", title: "Article 2", userArticle: { viewedAt: "2024-12-01" } }],
-        pagination: {},
+        cursor: {},
       },
     }));
 
-    render(<Articles feedId="test" />);
+    render(<Articles feedId="test" pagination={{}} />);
 
     const articleRow = screen.getByRole("link", { name: "Article 2" }).closest("li");
     expect(articleRow).toHaveClass("bg-article-read");
@@ -102,11 +101,11 @@ describe("Articles Component", () => {
           { id: "1", title: "Article 1", userArticle: { viewedAt: null } },
           { id: "2", title: "Article 2", userArticle: { viewedAt: "2024-12-01" } }
         ],
-        pagination: {},
+        cursor: {},
       },
     }));
 
-    render(<Articles feedId="test" />);
+    render(<Articles feedId="test" pagination={{}} />);
 
     const article1Row = screen.getByRole("link", { name: "Article 1" }).closest("li");
     const article2Row = screen.getByRole("link", { name: "Article 2" }).closest("li");

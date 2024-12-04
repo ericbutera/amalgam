@@ -6,7 +6,7 @@ import (
 	"gorm.io/gorm"
 )
 
-const DefaultLimit = 100
+const DefaultLimit = 25
 
 type ListOptions struct {
 	Cursor Cursor

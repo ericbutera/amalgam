@@ -217,6 +217,7 @@ export type ListArticlesQueryVariables = Exact<{
   feedId: Scalars['ID']['input'];
   previous?: InputMaybe<Scalars['String']['input']>;
   next?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
 }>;
 
 
@@ -297,8 +298,11 @@ export const GetArticleDocument = gql`
 }
     `;
 export const ListArticlesDocument = gql`
-    query ListArticles($feedId: ID!, $previous: String, $next: String) {
-  articles(feedId: $feedId, options: {cursor: {previous: $previous, next: $next}}) {
+    query ListArticles($feedId: ID!, $previous: String, $next: String, $limit: Int) {
+  articles(
+    feedId: $feedId
+    options: {cursor: {previous: $previous, next: $next}, limit: $limit}
+  ) {
     articles {
       id
       feedId

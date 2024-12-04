@@ -2,14 +2,16 @@
 
 import Link from "next/link";
 import useArticles from "../../data/articles";
+import { Pagination } from "@/app/types/pagination";
+import queryString from "@/app/lib/queryBuilder";
 
 interface ArticlesProps {
   feedId: string;
-  cursor?: string;
+  pagination: Pagination;
 }
 
-export default function Articles({ feedId, cursor }: ArticlesProps) {
-  const { loading, error, articles } = useArticles(feedId, cursor);
+export default function Articles({ feedId, pagination }: ArticlesProps) {
+  const { loading, error, articles } = useArticles(feedId, pagination);
 
   if (error) return <div>failed to load articles</div>;
   if (loading) return <div>loading...</div>;
@@ -38,18 +40,14 @@ export default function Articles({ feedId, cursor }: ArticlesProps) {
         ))}
       </ul>
 
-      {articles.pagination?.previous && (
-        <Link
-          href={`/feeds/${feedId}/articles?cursor=${articles.pagination.previous}`}
-        >
+      {articles.cursor?.previous && (
+        <Link href={`/feeds/${feedId}/articles?${queryString(pagination, { previous: articles.cursor.previous })}`}>
           Previous
         </Link>
       )}
 
-      {articles.pagination?.next && (
-        <Link
-          href={`/feeds/${feedId}/articles?cursor=${articles.pagination.next}`}
-        >
+      {articles.cursor?.next && (
+        <Link href={`/feeds/${feedId}/articles?${queryString(pagination, { next: articles.cursor.next })}`}>
           Next
         </Link>
       )}
