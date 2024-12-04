@@ -3,7 +3,7 @@
 import Link from "next/link";
 import useArticles from "../../data/articles";
 import { Pagination } from "@/app/types/pagination";
-import queryString from "@/app/lib/queryBuilder";
+import Nav from "@/app/components/article/pagination";
 
 interface ArticlesProps {
   feedId: string;
@@ -40,17 +40,7 @@ export default function Articles({ feedId, pagination }: ArticlesProps) {
         ))}
       </ul>
 
-      {articles.cursor?.previous && (
-        <Link href={`/feeds/${feedId}/articles?${queryString(pagination, { previous: articles.cursor.previous })}`}>
-          Previous
-        </Link>
-      )}
-
-      {articles.cursor?.next && (
-        <Link href={`/feeds/${feedId}/articles?${queryString(pagination, { next: articles.cursor.next })}`}>
-          Next
-        </Link>
-      )}
+      <Nav base={`/feeds/${feedId}/articles`} cursor={articles.cursor} />
     </div>
   );
 }
