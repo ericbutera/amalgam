@@ -45,6 +45,7 @@ func seed(t *testing.T, db *gorm.DB, count int) {
 }
 
 func TestPager_ValidPagination(t *testing.T) {
+	t.Parallel()
 	db := newDB(t)
 	seed(t, db, 3)
 
@@ -82,6 +83,7 @@ func TestPager_ValidPagination(t *testing.T) {
 }
 
 func TestPager_LimitExceedsMax(t *testing.T) {
+	t.Parallel()
 	db := newDB(t)
 	seed(t, db, 3)
 
@@ -96,6 +98,7 @@ func TestPager_LimitExceedsMax(t *testing.T) {
 }
 
 func TestPager_InvalidCursor(t *testing.T) {
+	t.Parallel()
 	db := newDB(t)
 
 	options := pagination.ListOptions{
@@ -109,6 +112,7 @@ func TestPager_InvalidCursor(t *testing.T) {
 }
 
 func TestPager_NoRecords(t *testing.T) {
+	t.Parallel()
 	db := newDB(t)
 	query := db.Model(&TestModel{})
 	result, err := pagination.Pager[TestModel](query, options, rules)
@@ -119,6 +123,7 @@ func TestPager_NoRecords(t *testing.T) {
 }
 
 func TestPager_NegativeLimit(t *testing.T) {
+	t.Parallel()
 	db := newDB(t)
 	seed(t, db, 3)
 
