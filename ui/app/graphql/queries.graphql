@@ -1,60 +1,68 @@
 query ListFeeds {
+  feeds {
     feeds {
-        feeds {
-            id
-            url
-            name
-            createdAt
-            viewedAt
-            unreadStartAt
-            unreadCount
-        }
+      id
+      url
+      name
+      createdAt
+      viewedAt
+      unreadStartAt
+      unreadCount
     }
+  }
 }
 
 query GetFeed($id: ID!) {
-    feed(id: $id) {
-        id
-        url
-        name
-    }
+  feed(id: $id) {
+    id
+    url
+    name
+  }
 }
 
 query GetArticle($id: ID!) {
-    article(id: $id) {
-        id
-        feedId
-        url
-        title
-        imageUrl
-        content
-        preview
-        description
-        guid
-        authorName
-        authorEmail
-        updatedAt
-        userArticle {
-            viewedAt
-        }
+  article(id: $id) {
+    id
+    feedId
+    url
+    title
+    imageUrl
+    content
+    preview
+    description
+    guid
+    authorName
+    authorEmail
+    updatedAt
+    userArticle {
+      viewedAt
     }
+  }
 }
 
-query ListArticles($feedId: ID!, $previous: String, $next: String, $limit: Int) {
-  articles(feedId: $feedId, options: { cursor: { previous: $previous, next: $next }, limit: $limit }) {
+query ListArticles(
+  $feedId: ID!
+  $previous: String
+  $next: String
+  $limit: Int
+) {
+  articles(
+    feedId: $feedId
+    options: { cursor: { previous: $previous, next: $next }, limit: $limit }
+  ) {
     articles {
-        id
-        feedId
-        url
-        title
-        imageUrl
-        preview
-        authorName
-        authorEmail
-        updatedAt
-        userArticle {
-            viewedAt
-        }
+      id
+      feedId
+      url
+      title
+      imageUrl
+      preview
+      authorName
+      authorEmail
+      updatedAt
+      userArticle {
+        viewedAt
+      }
     }
     cursor {
       next

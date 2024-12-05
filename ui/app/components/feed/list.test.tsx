@@ -54,7 +54,7 @@ describe("Feeds Component", () => {
     expect(screen.getByText("Feed 1")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Feed 1" })).toHaveAttribute(
       "href",
-      "/feeds/1/articles"
+      "/feeds/1/articles",
     );
   });
 });

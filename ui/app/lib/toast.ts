@@ -11,7 +11,7 @@ const withToast = async (
   loadingMessage: string,
   successMessage: string,
   errorMessage: string,
-  operation: () => Promise<void>
+  operation: () => Promise<void>,
 ) => {
   const toastId = toast.loading(loadingMessage);
   try {

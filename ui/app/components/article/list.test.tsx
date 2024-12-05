@@ -57,7 +57,7 @@ describe("Articles Component", () => {
     expect(screen.getByText("Article 1")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Article 1" })).toHaveAttribute(
       "href",
-      "/articles/1"
+      "/articles/1",
     );
   });
 
@@ -66,13 +66,17 @@ describe("Articles Component", () => {
       loading: false,
       error: null,
       articles: {
-        articles: [{ id: "1", title: "Article 1", userArticle: { viewedAt: null } }],
+        articles: [
+          { id: "1", title: "Article 1", userArticle: { viewedAt: null } },
+        ],
         cursor: {},
       },
     }));
 
     render(<Articles feedId="test" pagination={{}} />);
-    const articleRow = screen.getByRole("link", { name: "Article 1" }).closest("li");
+    const articleRow = screen
+      .getByRole("link", { name: "Article 1" })
+      .closest("li");
     expect(articleRow).toHaveClass("bg-article-new");
   });
 
@@ -81,14 +85,22 @@ describe("Articles Component", () => {
       loading: false,
       error: null,
       articles: {
-        articles: [{ id: "2", title: "Article 2", userArticle: { viewedAt: "2024-12-01" } }],
+        articles: [
+          {
+            id: "2",
+            title: "Article 2",
+            userArticle: { viewedAt: "2024-12-01" },
+          },
+        ],
         cursor: {},
       },
     }));
 
     render(<Articles feedId="test" pagination={{}} />);
 
-    const articleRow = screen.getByRole("link", { name: "Article 2" }).closest("li");
+    const articleRow = screen
+      .getByRole("link", { name: "Article 2" })
+      .closest("li");
     expect(articleRow).toHaveClass("bg-article-read");
   });
 
@@ -99,7 +111,11 @@ describe("Articles Component", () => {
       articles: {
         articles: [
           { id: "1", title: "Article 1", userArticle: { viewedAt: null } },
-          { id: "2", title: "Article 2", userArticle: { viewedAt: "2024-12-01" } }
+          {
+            id: "2",
+            title: "Article 2",
+            userArticle: { viewedAt: "2024-12-01" },
+          },
         ],
         cursor: {},
       },
@@ -107,11 +123,14 @@ describe("Articles Component", () => {
 
     render(<Articles feedId="test" pagination={{}} />);
 
-    const article1Row = screen.getByRole("link", { name: "Article 1" }).closest("li");
-    const article2Row = screen.getByRole("link", { name: "Article 2" }).closest("li");
+    const article1Row = screen
+      .getByRole("link", { name: "Article 1" })
+      .closest("li");
+    const article2Row = screen
+      .getByRole("link", { name: "Article 2" })
+      .closest("li");
 
     expect(article1Row).toHaveClass("bg-article-new");
     expect(article2Row).toHaveClass("bg-article-read");
   });
-
 });
