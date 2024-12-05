@@ -2,7 +2,7 @@ import { Pagination } from "@/app/types/pagination";
 
 export default function queryString(
   pagination: Pagination,
-  overrides: Partial<Pagination> = {}
+  overrides: Partial<Pagination> = {},
 ): string {
   const q = new URLSearchParams();
   const p = { ...pagination, ...overrides };

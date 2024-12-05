@@ -14,7 +14,8 @@
   }
 }
 
-body {}
+body {
+}
 
 @layer utilities {
   .text-balance {

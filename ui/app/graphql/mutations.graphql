@@ -1,23 +1,23 @@
 mutation AddFeed($url: String!, $name: String!) {
-    addFeed(url: $url, name: $name) {
-        id
-    }
+  addFeed(url: $url, name: $name) {
+    id
+  }
 }
 
 mutation UpdateFeed($id: ID!, $url: String, $name: String) {
-    updateFeed(id: $id, url: $url, name: $name) {
-        id
-    }
+  updateFeed(id: $id, url: $url, name: $name) {
+    id
+  }
 }
 
 mutation FeedTask($task: TaskType!) {
-    feedTask(task: $task) {
-        taskId
-    }
+  feedTask(task: $task) {
+    taskId
+  }
 }
 
 mutation MarkArticleRead($id: ID!) {
-    markArticleRead(id: $id) {
-        id
-    }
+  markArticleRead(id: $id) {
+    id
+  }
 }

@@ -9,7 +9,7 @@ export default function FeedLayout({
   children: React.ReactNode;
 }) {
   const params = useParams();
-  const feedId = Array.isArray(params.id) ? params.id[0] : params.id ?? "";
+  const feedId = Array.isArray(params.id) ? params.id[0] : (params.id ?? "");
 
   return (
     <div className="drawer lg:drawer-open">

@@ -12,7 +12,7 @@ import { TaskType } from "../generated/graphql";
 
 const task = async (task: TaskType) => {
   return getGraph().FeedTask({ task });
-}
+};
 
 const generateFeeds = async () => {
   await withToast(
@@ -20,8 +20,8 @@ const generateFeeds = async () => {
     "Feeds generated successfully!",
     "Failed to generate feeds.",
     async () => {
-      await task(TaskType.GenerateFeeds)
-    }
+      await task(TaskType.GenerateFeeds);
+    },
   );
 };
 
@@ -31,8 +31,8 @@ const fetchFeeds = async () => {
     "Feeds fetched successfully!",
     "Failed to fetch feeds.",
     async () => {
-      await task(TaskType.RefreshFeeds)
-    }
+      await task(TaskType.RefreshFeeds);
+    },
   );
 };
 

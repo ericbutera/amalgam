@@ -15,7 +15,7 @@ export default function useArticles(feedId: string, pagination: Pagination) {
 
   const { data, mutate, error } = useSWR(
     `/feeds/${feedId}/articles?${queryString(pagination)}`,
-    fetcher
+    fetcher,
   );
 
   const loading = !data && !error;
