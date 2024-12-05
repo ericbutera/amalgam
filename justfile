@@ -42,7 +42,7 @@ go-test: install-go-tools
 
 ts-lint: install-ts-tools
 	@echo Linting typescript
-	cd ui && npm run lint
+	cd ui && npm run format
 
 ts-test: install-ts-tools
 	@echo Running typescript tests
