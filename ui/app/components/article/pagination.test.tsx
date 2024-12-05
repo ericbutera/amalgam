@@ -19,48 +19,48 @@ describe("Pagination Component", () => {
 
   test("renders 'Previous' and 'Next' links when both cursors are present", () => {
     (queryString as jest.Mock).mockImplementation((params) =>
-      new URLSearchParams(params).toString()
+      new URLSearchParams(params).toString(),
     );
 
     render(
       <Pagination
         base="/articles"
         cursor={{ previous: "prev_cursor", next: "next_cursor" }}
-      />
+      />,
     );
 
     expect(screen.getByText("Previous")).toBeInTheDocument();
     expect(screen.getByText("Next")).toBeInTheDocument();
     expect(screen.getByText("Previous").closest("a")).toHaveAttribute(
       "href",
-      "/articles?previous=prev_cursor"
+      "/articles?previous=prev_cursor",
     );
     expect(screen.getByText("Next").closest("a")).toHaveAttribute(
       "href",
-      "/articles?next=next_cursor"
+      "/articles?next=next_cursor",
     );
   });
 
   test("renders only 'Previous' link when only previous cursor is present", () => {
     (queryString as jest.Mock).mockImplementation((params) =>
-      new URLSearchParams(params).toString()
+      new URLSearchParams(params).toString(),
     );
 
     render(
-      <Pagination base="/articles" cursor={{ previous: "prev_cursor" }} />
+      <Pagination base="/articles" cursor={{ previous: "prev_cursor" }} />,
     );
 
     expect(screen.getByText("Previous")).toBeInTheDocument();
     expect(screen.queryByText("Next")).not.toBeInTheDocument();
     expect(screen.getByText("Previous").closest("a")).toHaveAttribute(
       "href",
-      "/articles?previous=prev_cursor"
+      "/articles?previous=prev_cursor",
     );
   });
 
   test("renders only 'Next' link when only next cursor is present", () => {
     (queryString as jest.Mock).mockImplementation((params) =>
-      new URLSearchParams(params).toString()
+      new URLSearchParams(params).toString(),
     );
 
     render(<Pagination base="/articles" cursor={{ next: "next_cursor" }} />);
@@ -69,7 +69,7 @@ describe("Pagination Component", () => {
     expect(screen.queryByText("Previous")).not.toBeInTheDocument();
     expect(screen.getByText("Next").closest("a")).toHaveAttribute(
       "href",
-      "/articles?next=next_cursor"
+      "/articles?next=next_cursor",
     );
   });
 
