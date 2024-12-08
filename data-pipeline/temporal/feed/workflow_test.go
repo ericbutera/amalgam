@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	app "github.com/ericbutera/amalgam/data-pipeline/temporal/feed"
+	"github.com/ericbutera/amalgam/data-pipeline/temporal/internal/feeds"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -42,5 +43,28 @@ func (s *UnitTestSuite) Test_FeedWorkflow() {
 	require.NoError(t, env.GetWorkflowError())
 	assert.True(t, env.IsWorkflowCompleted())
 
+	env.AssertExpectations(t)
+}
+
+func (s *UnitTestSuite) Test_FetchFeedsWorkflow() {
+	urls := []feeds.Feed{{ID: "213ddff2-e7cc-40cc-87eb-461118d57a58", Url: "http://faker:8080/feed/e568f1fa-a0e9-4545-bc5b-a167725a75bd"}}
+	env := s.NewTestWorkflowEnvironment()
+	env.SetWorkerOptions(worker.Options{
+		EnableSessionWorker: true,
+	})
+
+	var a *app.Activities
+
+	env.OnActivity(a.GetFeedsActivity, mock.Anything).
+		Return(urls, nil)
+
+	env.RegisterActivity(a)
+	env.OnWorkflow(app.FeedWorkflow, mock.Anything, mock.Anything, mock.Anything).Return(nil)
+	env.RegisterWorkflow(app.FetchFeedsWorkflow)
+	env.ExecuteWorkflow(app.FetchFeedsWorkflow)
+
+	t := s.T()
+	require.NoError(t, env.GetWorkflowError())
+	assert.True(t, env.IsWorkflowCompleted())
 	env.AssertExpectations(t)
 }
