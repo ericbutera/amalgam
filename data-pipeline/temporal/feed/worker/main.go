@@ -43,6 +43,8 @@ func main() {
 
 	w := worker.New(client, config.TaskQueue, worker.Options{
 		Interceptors: helper.NewInterceptors(otel.Tracer),
+		// MaxConcurrentActivityExecutionSize:     10,
+		// MaxConcurrentWorkflowTaskExecutionSize: 2,
 	})
 	w.RegisterWorkflow(app.FetchFeedsWorkflow)
 	w.RegisterWorkflow(app.FeedWorkflow)

@@ -172,3 +172,21 @@ func TestStatsActivity(t *testing.T) {
 	err := s.activities.StatsActivity(context.Background(), TestFeedID)
 	require.NoError(t, err)
 }
+
+func TestGetFeedsActivity(t *testing.T) {
+	t.Parallel()
+	s := setupActivities(t)
+
+	data := []feeds.Feed{
+		{ID: "feed-id-1", Url: "http://localhost/feed1.xml"},
+		{ID: "feed-id-2", Url: "http://localhost/feed2.xml"},
+	}
+
+	s.feeds.EXPECT().
+		GetFeeds(mock.Anything).
+		Return(data, nil)
+
+	urls, err := s.activities.GetFeedsActivity(context.Background())
+	require.NoError(t, err)
+	assert.Equal(t, data, urls)
+}
