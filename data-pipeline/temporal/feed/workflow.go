@@ -1,14 +1,23 @@
 package app
 
 import (
+	"errors"
+	"log/slog"
 	"time"
 
-	"github.com/ericbutera/amalgam/data-pipeline/temporal/feed/internal/config"
 	"github.com/ericbutera/amalgam/data-pipeline/temporal/internal/feeds"
-	"github.com/ericbutera/amalgam/pkg/config/env"
-	"github.com/samber/lo"
 	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/workflow"
+)
+
+const (
+	MaxConcurrentFeeds int = 10
+	Timeout                = 5 * time.Minute
+)
+
+var (
+	ErrTimeout = errors.New("workflow timeout")
+	ErrProcess = errors.New("error processing feeds")
 )
 
 var retryPolicy = temporal.RetryPolicy{
@@ -46,23 +55,49 @@ func FeedWorkflow(ctx workflow.Context, feedId string, url string) error {
 
 func FetchFeedsWorkflow(ctx workflow.Context) error {
 	ctx = workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
-		StartToCloseTimeout: 1 * time.Minute,
+		StartToCloseTimeout: Timeout,
 		RetryPolicy:         &retryPolicy,
 	})
 
-	// TODO: fetch feeds into an activity, save historical feed list to bucket
-	config := lo.Must(env.New[config.Config]())
-	feeds := lo.Must(feeds.NewFeeds(config.RpcHost, config.RpcInsecure))
-	defer feeds.Close()
-	urls := lo.Must(feeds.GetFeeds())
+	var a *Activities
+	var urls []feeds.Feed
+	if err := workflow.ExecuteActivity(ctx, a.GetFeedsActivity).Get(ctx, &urls); err != nil {
+		return err
+	}
+	semaphore := workflow.NewSemaphore(ctx, int64(MaxConcurrentFeeds))
 
-	for _, feed := range urls {
-		err := workflow.ExecuteChildWorkflow(ctx, FeedWorkflow, feed.ID, feed.Url).
-			Get(ctx, nil)
+	var hasError bool
+	done := 0
+	for i, feed := range urls {
+		// TODO: heartbeat url offset (resume on error)
+		err := semaphore.Acquire(ctx, 1)
 		if err != nil {
 			return err
 		}
+		workflow.Go(ctx, func(ctx workflow.Context) {
+			defer semaphore.Release(1)
+			future := workflow.ExecuteChildWorkflow(ctx, FeedWorkflow, feed.ID, feed.Url)
+			if err := future.Get(ctx, nil); err != nil {
+				slog.Error("Failed to process feed", "i", i, "feed_id", feed.ID, "error", err)
+				hasError = true
+			} else {
+				slog.Info("Processed feed", "i", i, "feed_id", feed.ID)
+			}
+			done++
+		})
 	}
 
+	ok, err := workflow.AwaitWithTimeout(ctx, Timeout, func() bool {
+		return hasError || len(urls) == done
+	})
+	if err != nil {
+		return err
+	}
+	if !ok {
+		return ErrTimeout
+	}
+	if hasError {
+		return ErrProcess
+	}
 	return nil
 }

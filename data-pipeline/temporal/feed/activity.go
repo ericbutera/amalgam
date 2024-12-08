@@ -20,7 +20,7 @@ import (
 
 const (
 	BucketName         = "feeds"
-	RssPathFormat      = "feeds/%s/raw.xml"
+	RssPathFormat      = "feeds/%s/raw.xml" // TODO: add a time value to filename to keep historical data
 	ArticlePathFormat  = "feeds/%s/articles.jsonl"
 	ArticleContentType = "application/json"
 )
@@ -172,4 +172,14 @@ func handleSaveError(err error, url string, entry *slog.Logger) {
 		return
 	}
 	entry.Error("save article", "article_url", url, "error", err)
+}
+
+func (a *Activities) GetFeedsActivity(ctx context.Context) ([]feeds.Feed, error) {
+	urls, err := a.feeds.GetFeeds(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	// TODO write urls to bucket, return file path
+	return urls, nil
 }

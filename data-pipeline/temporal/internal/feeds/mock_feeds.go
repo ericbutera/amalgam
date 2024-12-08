@@ -67,9 +67,9 @@ func (_c *MockFeeds_Close_Call) RunAndReturn(run func() error) *MockFeeds_Close_
 	return _c
 }
 
-// GetFeeds provides a mock function with given fields:
-func (_m *MockFeeds) GetFeeds() ([]Feed, error) {
-	ret := _m.Called()
+// GetFeeds provides a mock function with given fields: ctx
+func (_m *MockFeeds) GetFeeds(ctx context.Context) ([]Feed, error) {
+	ret := _m.Called(ctx)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetFeeds")
@@ -77,19 +77,19 @@ func (_m *MockFeeds) GetFeeds() ([]Feed, error) {
 
 	var r0 []Feed
 	var r1 error
-	if rf, ok := ret.Get(0).(func() ([]Feed, error)); ok {
-		return rf()
+	if rf, ok := ret.Get(0).(func(context.Context) ([]Feed, error)); ok {
+		return rf(ctx)
 	}
-	if rf, ok := ret.Get(0).(func() []Feed); ok {
-		r0 = rf()
+	if rf, ok := ret.Get(0).(func(context.Context) []Feed); ok {
+		r0 = rf(ctx)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]Feed)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func() error); ok {
-		r1 = rf()
+	if rf, ok := ret.Get(1).(func(context.Context) error); ok {
+		r1 = rf(ctx)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -103,13 +103,14 @@ type MockFeeds_GetFeeds_Call struct {
 }
 
 // GetFeeds is a helper method to define mock.On call
-func (_e *MockFeeds_Expecter) GetFeeds() *MockFeeds_GetFeeds_Call {
-	return &MockFeeds_GetFeeds_Call{Call: _e.mock.On("GetFeeds")}
+//   - ctx context.Context
+func (_e *MockFeeds_Expecter) GetFeeds(ctx interface{}) *MockFeeds_GetFeeds_Call {
+	return &MockFeeds_GetFeeds_Call{Call: _e.mock.On("GetFeeds", ctx)}
 }
 
-func (_c *MockFeeds_GetFeeds_Call) Run(run func()) *MockFeeds_GetFeeds_Call {
+func (_c *MockFeeds_GetFeeds_Call) Run(run func(ctx context.Context)) *MockFeeds_GetFeeds_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run()
+		run(args[0].(context.Context))
 	})
 	return _c
 }
@@ -119,7 +120,7 @@ func (_c *MockFeeds_GetFeeds_Call) Return(_a0 []Feed, _a1 error) *MockFeeds_GetF
 	return _c
 }
 
-func (_c *MockFeeds_GetFeeds_Call) RunAndReturn(run func() ([]Feed, error)) *MockFeeds_GetFeeds_Call {
+func (_c *MockFeeds_GetFeeds_Call) RunAndReturn(run func(context.Context) ([]Feed, error)) *MockFeeds_GetFeeds_Call {
 	_c.Call.Return(run)
 	return _c
 }

@@ -11,7 +11,7 @@ import (
 // helper to interact with feed rpc service
 type Feeds interface {
 	Close() error
-	GetFeeds() ([]Feed, error)
+	GetFeeds(ctx context.Context) ([]Feed, error)
 	SaveArticle(ctx context.Context, article rss.Article) (string, error)
 	UpdateStats(ctx context.Context, feedID string) error
 }
@@ -48,8 +48,8 @@ func (h *FeedHelper) Close() error {
 	return nil
 }
 
-func (h *FeedHelper) GetFeeds() ([]Feed, error) {
-	resp, err := h.client.ListFeeds(context.Background(), &pb.ListFeedsRequest{})
+func (h *FeedHelper) GetFeeds(ctx context.Context) ([]Feed, error) {
+	resp, err := h.client.ListFeeds(ctx, &pb.ListFeedsRequest{})
 	if err != nil {
 		return nil, err
 	}
