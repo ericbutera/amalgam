@@ -12,8 +12,6 @@ _Provide a concise summary of the changes included in this pull request._
 _Before submitting, ensure the following:_
 
 - [ ] Tests have been written and/or updated.
-- [ ] All tests pass locally.
-- [ ] Linter passes with no errors or warnings.
 - [ ] Changes are documented in the README or other relevant documentation.
 
 ## How to Test
