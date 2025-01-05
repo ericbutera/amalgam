@@ -17,10 +17,14 @@ import (
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
+	"google.golang.org/grpc/status"
 )
 
-const TestUserID = "e97f8e74-1183-4280-a48d-dd592e013ee1"
-const TestFeedID = "e97f8e74-1183-4280-a48d-dd592e013ee1"
+const (
+	TestUserID = "e97f8e74-1183-4280-a48d-dd592e013ee1"
+	TestFeedID = "e97f8e74-1183-4280-a48d-dd592e013ee1"
+)
 
 func TestRpcListFeeds(t *testing.T) {
 	t.Parallel()
@@ -59,31 +63,39 @@ func TestRpcAddFeed_InvalidURL(t *testing.T) {
 	client, closer := getRpcClient(t)
 	defer func() { require.NoError(t, closer()) }()
 
-	res, err := client.CreateFeed(context.Background(), &pb.CreateFeedRequest{
+	_, err := client.CreateFeed(context.Background(), &pb.CreateFeedRequest{
 		Feed: &pb.CreateFeedRequest_Feed{
 			Url:  "invalid-url",
 			Name: "name",
 		},
 		User: &pb.User{Id: TestUserID},
 	})
-	//URI" does not contain "rpc error: code = InvalidArgument desc = validation error:\n - feed.url: value must be a valid URI [string.uri]
+	// URI" does not contain "rpc error: code = InvalidArgument desc = validation error:\n - feed.url: value must be a valid URI [string.uri]
 	require.Error(t, err)
-	assert.Contains(t, err.Error(), "value must be a valid URI")
-	assert.NotEmpty(t, res.ValidationErrors)
+	assert.Contains(t, err.Error(), "validation failed")
+
+	s := status.Convert(err)
+	for _, detail := range s.Details() {
+		if br, ok := detail.(*errdetails.BadRequest); ok {
+			assert.Len(t, br.GetFieldViolations(), 1)
+			violations := br.GetFieldViolations()
+			assert.Equal(t, "feed.url", violations[0].GetField()) // error comes from protovalidate
+			return
+		}
+	}
+	assert.Fail(t, "validation error not found")
 }
 
 func getRpcClient(t *testing.T) (pb.FeedServiceClient, client.Closer) {
 	t.Helper()
 	target := os.Getenv("RPC_HOST")
 	useInsecure := lo.Ternary(os.Getenv("RPC_INSECURE") == "true", true, false)
-	require.NotEmpty(t, target, "RPC_HOST not set")
+	if target == "" {
+		t.Skip("skipping test; RPC_HOST not set")
+		return nil, nil
+	}
 
 	c, closer, err := client.New(target, useInsecure)
 	require.NoError(t, err)
 	return c, closer
-}
-
-type Config struct {
-	target      string
-	useInsecure bool
 }
