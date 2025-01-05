@@ -20,6 +20,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -60,16 +61,17 @@ func TestCreateFeedValidateError(t *testing.T) {
 	_, err := ts.Server.CreateFeed(ctx, &pb.CreateFeedRequest{
 		Feed: &pb.CreateFeedRequest_Feed{
 			Name: "a",
-			Url:  "b",
+			Url:  "invalid url",
 		},
 	})
 	require.Error(t, err)
 	s := status.Convert(err)
 	for _, detail := range s.Details() {
-		if v, ok := detail.(*pb.ValidationErrors); ok {
-			errors := v.GetErrors()
-			assert.Len(t, errors, 1)
-			assert.Contains(t, errors[0].GetField(), "URL")
+		if br, ok := detail.(*errdetails.BadRequest); ok {
+			assert.Len(t, br.GetFieldViolations(), 1)
+			violation := br.GetFieldViolations()[0]
+			assert.Equal(t, "URL", violation.GetField())
+			assert.Contains(t, violation.GetDescription(), "URL")
 			return
 		}
 	}
@@ -124,12 +126,14 @@ func TestSaveArticleValidateError(t *testing.T) {
 		Article: &pb.Article{},
 	})
 	require.Error(t, err)
+
 	s := status.Convert(err)
 	for _, detail := range s.Details() {
-		if v, ok := detail.(*pb.ValidationErrors); ok {
-			assert.Len(t, v.GetErrors(), 2)
-			assert.Equal(t, "The FeedID field is required.", v.GetErrors()[0].GetMessage())
-			assert.Equal(t, "The URL is required.", v.GetErrors()[1].GetMessage())
+		if br, ok := detail.(*errdetails.BadRequest); ok {
+			assert.Len(t, br.GetFieldViolations(), 2)
+			violations := br.GetFieldViolations()
+			assert.Equal(t, "FeedID", violations[0].GetField())
+			assert.Equal(t, "URL", violations[1].GetField())
 			return
 		}
 	}

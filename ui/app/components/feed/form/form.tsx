@@ -1,67 +1,65 @@
-"use client";
+import React, { useState } from "react";
+import useAddFeedMutation from "@/app/data/feed-add";
 
-import { useForm } from "react-hook-form";
-import { useFormStore } from "./store";
+const AddFeedForm = () => {
+  const [name, setName] = useState("");
+  const [url, setUrl] = useState("");
+  const { addFeed, loading, error, validationErrors } = useAddFeedMutation();
 
-import { getGraph } from "../../../lib/fetch";
-
-export default function FeedForm() {
-  // const { mutate } = useSWRConfig();
-  const { formData, setFormData, resetForm } = useFormStore();
-
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    formState: { errors },
-  } = useForm();
-
-  const onSubmit = async (data) => {
-    try {
-      const resp = await getGraph().AddFeed({
-        url: data.url,
-        name: data.name,
-      });
-
-      console.log("response id: %o", resp.addFeed.id);
-      alert("Feed created successfully!");
-      resetForm();
-    } catch (error) {
-      console.error(error);
-      alert("Failed to create feed");
-    }
-  };
-
-  const registerWithSync = (field) => {
-    // Sync Zustand's state through react-hook-form's onChange
-    return {
-      ...register(field),
-      onChange: (e) => {
-        setFormData(field, e.target.value); // Sync Zustand
-        setValue(field, e.target.value); // Update react-hook-form
-      },
-    };
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await addFeed(name, url);
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <div>
-        <label htmlFor="name">Name:</label>
-        <input id="name" value={formData.name} {...registerWithSync("name")} />
-      </div>
+    <div>
+      {error && (
+        <div role="alert" className="alert alert-error">
+          <p>{error}</p>
+        </div>
+      )}
 
-      <div>
-        <label htmlFor="url">URL (required):</label>
-        <input
-          type="url"
-          id="url"
-          value={formData.url}
-          {...registerWithSync("url", { required: "URL is required" })}
-        />
-        {errors.url && <p style={{ color: "red" }}>{errors.url.message}</p>}
-      </div>
+      {validationErrors.length > 0 && (
+        <div role="alert" className="alert alert-error">
+          {validationErrors.map((msg, idx) => (
+            <p key={idx}>{msg}</p>
+          ))}
+        </div>
+      )}
 
-      <button type="submit">Submit</button>
-    </form>
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label className="input input-bordered flex items-center gap-2">
+            Name
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              disabled={loading}
+              className="grow"
+            />
+          </label>
+        </div>
+        <div>
+          <label className="input input-bordered flex items-center gap-2">
+            URL
+            <input
+              type="text"
+              placeholder="https://example.com/rss"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              disabled={loading}
+              className="grow"
+            />
+          </label>
+        </div>
+
+        <button type="submit" disabled={loading} className="btn btn-primary">
+          Add Feed
+        </button>
+      </form>
+    </div>
   );
-}
+};
+
+export default AddFeedForm;
