@@ -41,14 +41,14 @@ func NewServer(srvMetrics *grpcprom.ServerMetrics, feedMetrics *observability.Fe
 			srvMetrics.UnaryServerInterceptor(grpcprom.WithExemplarFromContext(exemplarFromContext)),
 			logging.UnaryServerInterceptor(logger, logOpts...),
 			recovery.UnaryServerInterceptor(recovery.WithRecoveryHandler(recoveryHandler)),
-			protovalidate_middleware.UnaryServerInterceptor(validator),
+			interceptors.UnaryValidation(validator),
 			interceptors.UnaryMetricMiddlewareHandler(feedMetrics),
 		),
 		grpc.ChainStreamInterceptor(
 			srvMetrics.StreamServerInterceptor(grpcprom.WithExemplarFromContext(exemplarFromContext)),
 			logging.StreamServerInterceptor(logger, logOpts...),
 			recovery.StreamServerInterceptor(recovery.WithRecoveryHandler(recoveryHandler)),
-			protovalidate_middleware.StreamServerInterceptor(validator),
+			protovalidate_middleware.StreamServerInterceptor(validator), // TODO: interceptors.StreamValidation(validator),
 			interceptors.StreamMetricMiddlewareHandler(feedMetrics),
 		),
 	)

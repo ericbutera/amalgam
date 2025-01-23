@@ -9,6 +9,7 @@ import (
 	"github.com/ericbutera/amalgam/internal/service/models"
 	"github.com/ericbutera/amalgam/internal/validate"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -29,11 +30,24 @@ func serviceToProtoErr(err error, validationErrs []validate.ValidationError) err
 
 func validationErr(errors []validate.ValidationError) error {
 	st := status.New(codes.InvalidArgument, "validation error")
-	ds, err := st.WithDetails(&pb.ValidationErrors{
-		Errors: validationErrToPb(errors),
-	})
+
+	// TODO: research error handling https://github.com/googleapis/googleapis/blob/master/google/rpc/error_details.proto#L169
+	// field violation vs business rule; use error codes
+	//
+	// TODO: map failure reason to FieldViolation.Reason (must be a constant)
+	// required tag -> "required"
+	// invalid data -> "invalid"
+	br := &errdetails.BadRequest{}
+	for _, err := range errors {
+		br.FieldViolations = append(br.FieldViolations, &errdetails.BadRequest_FieldViolation{
+			Field:       err.Field,
+			Description: err.RawMessage,
+		})
+	}
+
+	ds, err := st.WithDetails(br)
 	if err != nil {
-		return err
+		return st.Err()
 	}
 	return ds.Err()
 }
@@ -178,19 +192,6 @@ func (s *Server) SaveArticle(ctx context.Context, in *pb.SaveArticleRequest) (*p
 	return &pb.SaveArticleResponse{
 		Id: res.ID,
 	}, nil
-}
-
-func validationErrToPb(errs []validate.ValidationError) []*pb.ValidationError {
-	protoErrs := []*pb.ValidationError{}
-	for _, err := range errs {
-		protoErrs = append(protoErrs, &pb.ValidationError{
-			Field:      err.Field,
-			Tag:        err.Tag,
-			RawMessage: err.RawMessage,
-			Message:    err.FriendlyMessage,
-		})
-	}
-	return protoErrs
 }
 
 func (*Server) FeedTask(_ context.Context, _ *pb.FeedTaskRequest) (*pb.FeedTaskResponse, error) { //nolint

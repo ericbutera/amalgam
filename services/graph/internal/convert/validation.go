@@ -1,14 +1,11 @@
-//nolint:err113
 package convert
 
 import (
 	"context"
-	"errors"
-	"strings"
 
 	"github.com/99designs/gqlgen/graphql"
-	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
 	"github.com/vektah/gqlparser/gqlerror"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/status"
 )
 
@@ -18,18 +15,22 @@ var (
 )
 
 func ValidationToGraphErr(ctx context.Context, s *status.Status) error {
+	counter := 0
 	for _, detail := range s.Details() {
-		if v, ok := detail.(*pb.ValidationErrors); ok {
-			for _, err := range v.GetErrors() {
-				graphql.AddError(ctx, errors.New(err.GetMessage()))
+		if br, ok := detail.(*errdetails.BadRequest); ok {
+			for _, violation := range br.GetFieldViolations() {
+				graphql.AddError(ctx, &gqlerror.Error{
+					Message: violation.GetDescription(),
+					Extensions: map[string]any{
+						"field": violation.GetField(),
+					},
+				})
+				counter++
 			}
-			return &ErrValidation
 		}
 	}
-	if strings.Contains(s.Message(), "validation") {
-		// TODO: modify middleware to use validation errors proto
-		// these errors are not friendly
-		return errors.New(s.Message())
+	if counter > 0 {
+		return &ErrValidation
 	}
 	return &ErrInvalidRequest
 }

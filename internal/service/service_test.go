@@ -82,6 +82,40 @@ func TestCreateFeed(t *testing.T) {
 	helpers.Diff(t, *expected, *actual, "ID")
 }
 
+func TestCreateFeed_Duplicate(t *testing.T) {
+	t.Parallel()
+	h := newTestHelper(t)
+
+	feed := fixtures.NewFeed()
+	require.NoError(t, h.db.Create(&feed).Error)
+
+	_, err := h.svc.CreateFeed(context.Background(), feed)
+	assert.ErrorIs(t, err, service.ErrDuplicate)
+}
+
+func TestCreateFeed_Validation(t *testing.T) {
+	t.Parallel()
+	h := newTestHelper(t)
+
+	feed := fixtures.NewFeed(fixtures.WithFeedURL("invalid-url"))
+	result, err := h.svc.CreateFeed(context.Background(), feed)
+	require.ErrorIs(t, err, service.ErrValidation)
+	/*
+		validate.ValidationError {
+			Field: "URL",
+			Tag: "url",
+			RawMessage: "Key: 'Feed.URL' Error:Field validation for 'URL' failed on the 'url' tag",
+			FriendlyMessage: "The URL must be valid."
+		}
+	*/
+	e := result.ValidationErrors[0]
+	assert.NotEmpty(t, result.ValidationErrors)
+	assert.Equal(t, "URL", e.Field)
+	assert.Equal(t, "url", e.Tag)
+	assert.Contains(t, e.RawMessage, "Feed.URL")
+	assert.Contains(t, e.FriendlyMessage, "URL")
+}
+
 func TestUpdateFeed(t *testing.T) {
 	t.Parallel()
 	h := newTestHelper(t)

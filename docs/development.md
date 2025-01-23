@@ -76,15 +76,19 @@ example `.vscode/launch.json`:
       "envFile": "${workspaceFolder}/.env"
     },
     {
-      "name": "ui - firefox",
+      "name": "ui: debug client-side (Firefox)",
       "type": "firefox",
       "request": "launch",
       "url": "http://localhost:3000",
       "reAttach": true,
       "pathMappings": [
         {
-          "url": "webpack://_n_e/app",
-          "path": "${workspaceFolder}/ui/app"
+          "url": "webpack://_n_e",
+          "path": "${workspaceFolder}/ui"
+        },
+        {
+          "url": "webpack://_n_e/node_modules/",
+          "path": "${workspaceFolder}/ui/node_modules"
         }
       ]
     }
