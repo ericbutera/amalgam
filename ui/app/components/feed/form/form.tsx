@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import useAddFeedMutation from "@/app/data/feed-add";
+import { LinkIcon } from "@heroicons/react/24/solid";
 
 const AddFeedForm = () => {
-  const [name, setName] = useState("");
   const [url, setUrl] = useState("");
   const { addFeed, loading, error, validationErrors } = useAddFeedMutation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await addFeed(name, url);
+    await addFeed(url);
   };
 
   return (
@@ -22,34 +22,25 @@ const AddFeedForm = () => {
       {validationErrors.length > 0 && (
         <div role="alert" className="alert alert-error">
           {validationErrors.map((msg, idx) => (
-            <p key={idx}>{msg}</p>
+            <div key={idx}>{msg}</div>
           ))}
         </div>
       )}
 
-      <form onSubmit={handleSubmit}>
-        <div>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="items-center ">
           <label className="input input-bordered flex items-center gap-2">
-            Name
+            <LinkIcon className="w-6 h-6 text-default-500" title="Feed URL" />
             <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              disabled={loading}
+              type="url"
               className="grow"
-            />
-          </label>
-        </div>
-        <div>
-          <label className="input input-bordered flex items-center gap-2">
-            URL
-            <input
-              type="text"
               placeholder="https://example.com/rss"
+              title="Field must be a valid secure URL"
+              pattern="https://.*"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               disabled={loading}
-              className="grow"
+              required
             />
           </label>
         </div>

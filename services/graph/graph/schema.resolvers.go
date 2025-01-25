@@ -21,6 +21,7 @@ import (
 
 // AddFeed is the resolver for the addFeed field.
 func (r *mutationResolver) AddFeed(ctx context.Context, url string, name string) (*model.AddResponse, error) {
+	// Note: this should use a Feed Task instead of performing the verification directly. ref: https://www.oreilly.com/library/view/designing-data-intensive-applications/9781491903063/ch08.html
 	resp, err := r.rpcClient.CreateFeed(ctx, &pb.CreateFeedRequest{
 		Feed: &pb.CreateFeedRequest_Feed{
 			Url:  url,
