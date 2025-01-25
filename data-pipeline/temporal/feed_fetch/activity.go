@@ -9,7 +9,7 @@ import (
 	"io"
 	"log/slog"
 
-	"github.com/ericbutera/amalgam/data-pipeline/temporal/feed/internal/transforms"
+	"github.com/ericbutera/amalgam/data-pipeline/temporal/feed_fetch/internal/transforms"
 	"github.com/ericbutera/amalgam/data-pipeline/temporal/internal/bucket"
 	"github.com/ericbutera/amalgam/data-pipeline/temporal/internal/feeds"
 	"github.com/ericbutera/amalgam/internal/http/fetch"

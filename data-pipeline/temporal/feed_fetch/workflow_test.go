@@ -3,7 +3,7 @@ package app_test
 import (
 	"testing"
 
-	app "github.com/ericbutera/amalgam/data-pipeline/temporal/feed"
+	app "github.com/ericbutera/amalgam/data-pipeline/temporal/feed_fetch"
 	"github.com/ericbutera/amalgam/data-pipeline/temporal/internal/feeds"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

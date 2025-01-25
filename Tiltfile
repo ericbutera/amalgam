@@ -95,12 +95,8 @@ k8s_yaml(secret_from_dict("data-pipeline-auth", inputs={
   "MINIO_ACCESS_KEY": "minio",
   "MINIO_SECRET_ACCESS_KEY": "minio-password",
 }))
-# go_compile('feed-start-compile', './data-pipeline/temporal/feed/start', ['./data-pipeline/temporal'])
-# go_image('feed-start', './data-pipeline/temporal/feed/start')
-# k8s_resource("feed-start", resource_deps=["temporal","rpc"], labels=["data-pipeline"], auto_init=(not IS_CI))
-
-go_compile('feed-worker-compile', './data-pipeline/temporal/feed/worker', ['./data-pipeline/temporal'])
-go_image('feed-worker', './data-pipeline/temporal/feed/worker')
+go_compile('feed-worker-compile', './data-pipeline/temporal/feed_fetch/worker', ['./data-pipeline/temporal'])
+go_image('feed-worker', './data-pipeline/temporal/feed_fetch/worker')
 k8s_resource("feed-worker", resource_deps=["temporal","rpc"], labels=["data-pipeline"], auto_init=(not IS_CI),
   port_forwards=[port_forward(9096, 9090, "metrics")],
 )
@@ -110,7 +106,7 @@ k8s_resource("feed-tasks-worker", resource_deps=["temporal","rpc"], labels=["dat
   port_forwards=[port_forward(9097, 9090, "metrics")],
 )
 
-cmd_button('fetch feeds', argv=['sh', '-c', 'cd data-pipeline/temporal/feed && go run start/main.go'],
+cmd_button('fetch feeds', argv=['sh', '-c', 'cd data-pipeline/temporal/feed_fetch && go run start/main.go'],
   resource='temporal', icon_name='add_to_queue', text='fetch feeds',
 )
 cmd_button('generate feeds', argv=['sh', '-c', 'cd data-pipeline/temporal/feed_tasks && go run start/main.go'],

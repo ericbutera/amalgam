@@ -7,8 +7,8 @@ import (
 	"io"
 	"testing"
 
-	app "github.com/ericbutera/amalgam/data-pipeline/temporal/feed"
-	"github.com/ericbutera/amalgam/data-pipeline/temporal/feed/internal/transforms"
+	app "github.com/ericbutera/amalgam/data-pipeline/temporal/feed_fetch"
+	"github.com/ericbutera/amalgam/data-pipeline/temporal/feed_fetch/internal/transforms"
 	"github.com/ericbutera/amalgam/data-pipeline/temporal/internal/bucket"
 	"github.com/ericbutera/amalgam/data-pipeline/temporal/internal/feeds"
 	"github.com/ericbutera/amalgam/internal/http/fetch"
