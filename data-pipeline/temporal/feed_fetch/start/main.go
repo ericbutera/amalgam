@@ -9,8 +9,8 @@ import (
 	"os"
 	"time"
 
-	app "github.com/ericbutera/amalgam/data-pipeline/temporal/feed"
-	"github.com/ericbutera/amalgam/data-pipeline/temporal/feed/internal/config"
+	app "github.com/ericbutera/amalgam/data-pipeline/temporal/feed_fetch"
+	"github.com/ericbutera/amalgam/data-pipeline/temporal/feed_fetch/internal/config"
 	"github.com/ericbutera/amalgam/data-pipeline/temporal/internal/client"
 	"github.com/ericbutera/amalgam/pkg/config/env"
 	"github.com/samber/lo"

@@ -64,7 +64,7 @@ example `.vscode/launch.json`:
       "type": "go",
       "request": "launch",
       "mode": "debug",
-      "program": "data-pipeline/temporal/feed/worker/main.go",
+      "program": "data-pipeline/temporal/feed_fetch/worker/main.go",
       "envFile": "${workspaceFolder}/.env"
     },
     {
