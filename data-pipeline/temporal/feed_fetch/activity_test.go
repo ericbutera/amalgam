@@ -1,4 +1,4 @@
-package app_test
+package feed_fetch_test
 
 import (
 	"bytes"
@@ -8,7 +8,6 @@ import (
 	"testing"
 
 	app "github.com/ericbutera/amalgam/data-pipeline/temporal/feed_fetch"
-	"github.com/ericbutera/amalgam/data-pipeline/temporal/feed_fetch/internal/transforms"
 	"github.com/ericbutera/amalgam/data-pipeline/temporal/internal/bucket"
 	"github.com/ericbutera/amalgam/data-pipeline/temporal/internal/feeds"
 	"github.com/ericbutera/amalgam/internal/http/fetch"
@@ -27,8 +26,6 @@ func newReader(s string) io.ReadCloser {
 }
 
 type activitySetup struct {
-	// transforms *transforms.MockTransforms // transforms.Transforms
-	transforms transforms.Transforms
 	fetcher    *fetch.MockFetch
 	bucket     *bucket.MockBucket
 	feeds      *feeds.MockFeeds
@@ -36,17 +33,14 @@ type activitySetup struct {
 }
 
 func setupActivities(t *testing.T) *activitySetup {
-	transforms := transforms.New()
 	fetcher := fetch.NewMockFetch(t)
 	bucketClient := bucket.NewMockBucket(t)
 	feeds := feeds.NewMockFeeds(t)
-
 	return &activitySetup{
-		transforms: transforms,
 		fetcher:    fetcher,
 		bucket:     bucketClient,
 		feeds:      feeds,
-		activities: app.NewActivities(transforms, fetcher, bucketClient, feeds),
+		activities: app.NewActivities(fetcher, bucketClient, feeds),
 	}
 }
 
@@ -64,7 +58,7 @@ func TestDownloadActivity(t *testing.T) {
 		return lo.Ternary(err == nil, true, false)
 	})
 	s.fetcher.EXPECT().
-		Url(mock.Anything, url, matcher).
+		Url(mock.Anything, url, matcher, mock.Anything). // TODO: use etag
 		Return(nil)
 
 	s.bucket.EXPECT().

@@ -10,6 +10,8 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/testing/protocmp"
 )
 
 var ErrInvalidPath = errors.New("invalid path")
@@ -38,5 +40,13 @@ func Diff(t *testing.T, expected any, actual any, ignoredFields ...string) {
 	ignored := cmpopts.IgnoreFields(expected, ignoredFields...)
 	if d := cmp.Diff(expected, actual, ignored); d != "" {
 		t.Errorf("mismatch (-want +got):\n%s", d)
+	}
+}
+
+func DiffProto(t *testing.T, expected proto.Message, actual proto.Message) {
+	t.Helper()
+	diff := cmp.Diff(expected, actual, protocmp.Transform())
+	if diff != "" {
+		t.Errorf("unexpected diff: %s", diff)
 	}
 }

@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/ericbutera/amalgam/internal/logger"
+	"github.com/ericbutera/amalgam/pkg/config/env"
 	prom "github.com/prometheus/client_golang/prometheus"
 	"github.com/uber-go/tally/v4"
 	"github.com/uber-go/tally/v4/prometheus"
@@ -27,6 +28,22 @@ func NewTemporalClient(host string) (client.Client, error) {
 		MetricsHandler: sdktally.NewMetricsHandler(scope),
 	}
 	c, err := client.Dial(opts)
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
+}
+
+type Config struct {
+	TemporalHost string `mapstructure:"temporal_host"`
+}
+
+func NewTemporalClientFromEnv() (client.Client, error) {
+	config, err := env.New[Config]()
+	if err != nil {
+		return nil, err
+	}
+	c, err := NewTemporalClient(config.TemporalHost)
 	if err != nil {
 		return nil, err
 	}

@@ -81,6 +81,124 @@ func (_c *MockService_CreateFeed_Call) RunAndReturn(run func(context.Context, *m
 	return _c
 }
 
+// CreateFeedVerification provides a mock function with given fields: ctx, verification
+func (_m *MockService) CreateFeedVerification(ctx context.Context, verification *models.FeedVerification) (*models.FeedVerification, error) {
+	ret := _m.Called(ctx, verification)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CreateFeedVerification")
+	}
+
+	var r0 *models.FeedVerification
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, *models.FeedVerification) (*models.FeedVerification, error)); ok {
+		return rf(ctx, verification)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, *models.FeedVerification) *models.FeedVerification); ok {
+		r0 = rf(ctx, verification)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*models.FeedVerification)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, *models.FeedVerification) error); ok {
+		r1 = rf(ctx, verification)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// MockService_CreateFeedVerification_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CreateFeedVerification'
+type MockService_CreateFeedVerification_Call struct {
+	*mock.Call
+}
+
+// CreateFeedVerification is a helper method to define mock.On call
+//   - ctx context.Context
+//   - verification *models.FeedVerification
+func (_e *MockService_Expecter) CreateFeedVerification(ctx interface{}, verification interface{}) *MockService_CreateFeedVerification_Call {
+	return &MockService_CreateFeedVerification_Call{Call: _e.mock.On("CreateFeedVerification", ctx, verification)}
+}
+
+func (_c *MockService_CreateFeedVerification_Call) Run(run func(ctx context.Context, verification *models.FeedVerification)) *MockService_CreateFeedVerification_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(*models.FeedVerification))
+	})
+	return _c
+}
+
+func (_c *MockService_CreateFeedVerification_Call) Return(_a0 *models.FeedVerification, _a1 error) *MockService_CreateFeedVerification_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *MockService_CreateFeedVerification_Call) RunAndReturn(run func(context.Context, *models.FeedVerification) (*models.FeedVerification, error)) *MockService_CreateFeedVerification_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// CreateFetchHistory provides a mock function with given fields: ctx, history
+func (_m *MockService) CreateFetchHistory(ctx context.Context, history *models.FetchHistory) (*models.FetchHistory, error) {
+	ret := _m.Called(ctx, history)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CreateFetchHistory")
+	}
+
+	var r0 *models.FetchHistory
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, *models.FetchHistory) (*models.FetchHistory, error)); ok {
+		return rf(ctx, history)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, *models.FetchHistory) *models.FetchHistory); ok {
+		r0 = rf(ctx, history)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*models.FetchHistory)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, *models.FetchHistory) error); ok {
+		r1 = rf(ctx, history)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// MockService_CreateFetchHistory_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CreateFetchHistory'
+type MockService_CreateFetchHistory_Call struct {
+	*mock.Call
+}
+
+// CreateFetchHistory is a helper method to define mock.On call
+//   - ctx context.Context
+//   - history *models.FetchHistory
+func (_e *MockService_Expecter) CreateFetchHistory(ctx interface{}, history interface{}) *MockService_CreateFetchHistory_Call {
+	return &MockService_CreateFetchHistory_Call{Call: _e.mock.On("CreateFetchHistory", ctx, history)}
+}
+
+func (_c *MockService_CreateFetchHistory_Call) Run(run func(ctx context.Context, history *models.FetchHistory)) *MockService_CreateFetchHistory_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(*models.FetchHistory))
+	})
+	return _c
+}
+
+func (_c *MockService_CreateFetchHistory_Call) Return(_a0 *models.FetchHistory, _a1 error) *MockService_CreateFetchHistory_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *MockService_CreateFetchHistory_Call) RunAndReturn(run func(context.Context, *models.FetchHistory) (*models.FetchHistory, error)) *MockService_CreateFetchHistory_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // Feeds provides a mock function with given fields: ctx
 func (_m *MockService) Feeds(ctx context.Context) ([]models.Feed, error) {
 	ret := _m.Called(ctx)

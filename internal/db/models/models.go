@@ -61,6 +61,39 @@ type UserArticles struct {
 	ViewedAt  *time.Time `gorm:"column:viewed_at;autoUpdateTime"`
 }
 
+type FeedVerificationStatus string
+
+const (
+	FeedVerificationStatusPending FeedVerificationStatus = "pending"
+	FeedVerificationStatusSuccess FeedVerificationStatus = "success"
+	FeedVerificationStatusFailed  FeedVerificationStatus = "failed"
+)
+
+type FeedVerification struct {
+	ID         int64                  `gorm:"column:id;primaryKey"`
+	URL        string                 `gorm:"column:url"`
+	UserID     string                 `gorm:"column:user_id"`
+	WorkflowID string                 `gorm:"column:workflow_id"`
+	Status     FeedVerificationStatus `gorm:"column:status"`
+	Message    string                 `gorm:"column:message"`
+	CreatedAt  time.Time              `gorm:"column:created_at;autoCreateTime"`
+	UpdatedAt  time.Time              `gorm:"column:updated_at;autoUpdateTime"`
+}
+
+// FetchHistory is a record of a fetch attempt.
+// Append only!
+type FetchHistory struct {
+	ID                 int64     `gorm:"column:id;primaryKey"`
+	FeedID             string    `gorm:"column:feed_id"`
+	FeedVerificationID string    `gorm:"column:feed_verification_id"`
+	ResponseCode       int       `gorm:"column:response_code"`
+	ETag               string    `gorm:"column:e_tag"`
+	WorkflowID         string    `gorm:"column:workflow_id"`
+	Bucket             string    `gorm:"column:bucket"`
+	Message            string    `gorm:"column:message"`
+	CreatedAt          time.Time `gorm:"column:created_at;autoCreateTime"`
+}
+
 // Credit to https://medium.com/@amrilsyaifa_21001/how-to-use-uuid-in-gorm-golang-74be997d7087
 // BeforeCreate will set a UUID rather than numeric ID.
 func (b *Base) BeforeCreate(_ *gorm.DB) error {

@@ -78,6 +78,15 @@ type Converter interface {
 	// goverter:map UnreadStartAt | ProtoTimestampToTime
 	ProtoToServiceUserFeed(*pb.UserFeed) *svc_model.UserFeed
 	// goverter:matchIgnoreCase
+	// goverter:ignoreMissing
+	// goverter:map CreatedAt | ProtoTimestampToTime
+	// goverter:map UpdatedAt | ProtoTimestampToTime
+	ProtoToServiceFeedVerification(*pb.FeedVerification) *svc_model.FeedVerification
+	// goverter:matchIgnoreCase
+	// goverter:ignoreMissing
+	// goverter:map CreatedAt | ProtoTimestampToTime
+	ProtoToServiceFetchHistory(*pb.FetchHistory) *svc_model.FetchHistory
+	// goverter:matchIgnoreCase
 	// goverter:ignore state sizeCache unknownFields
 	// goverter:map CreatedAt | TimeToProtoTimestamp
 	// goverter:map UnreadStartAt | TimeToProtoTimestamp
@@ -122,6 +131,17 @@ type Converter interface {
 	// goverter:ignore state sizeCache unknownFields
 	// goverter:map ViewedAt | NillableTimeToProtoTimestamp
 	ServiceToProtoUserArticle(*svc_model.UserArticle) *pb.GetUserArticlesResponse_UserArticle
+	// goverter:matchIgnoreCase
+	// goverter:ignoreMissing
+	// goverter:ignore state sizeCache unknownFields
+	// goverter:map CreatedAt | TimeToProtoTimestamp
+	// goverter:map UpdatedAt | TimeToProtoTimestamp
+	ServiceToProtoFeedVerification(*svc_model.FeedVerification) *pb.FeedVerification
+	// goverter:matchIgnoreCase
+	// goverter:ignoreMissing
+	// goverter:ignore state sizeCache unknownFields
+	// goverter:map CreatedAt | TimeToProtoTimestamp
+	ServiceToProtoFetchHistory(*svc_model.FetchHistory) *pb.FetchHistory
 
 	// TODO:
 	// ProtoToServiceListOptions(*pb.ListOptions) *svc.ListOptions

@@ -19,20 +19,22 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	FeedService_GetFeed_FullMethodName           = "/feeds.v1.FeedService/GetFeed"
-	FeedService_GetUserFeed_FullMethodName       = "/feeds.v1.FeedService/GetUserFeed"
-	FeedService_ListFeeds_FullMethodName         = "/feeds.v1.FeedService/ListFeeds"
-	FeedService_ListUserFeeds_FullMethodName     = "/feeds.v1.FeedService/ListUserFeeds"
-	FeedService_GetUserArticles_FullMethodName   = "/feeds.v1.FeedService/GetUserArticles"
-	FeedService_MarkArticleAsRead_FullMethodName = "/feeds.v1.FeedService/MarkArticleAsRead"
-	FeedService_CreateFeed_FullMethodName        = "/feeds.v1.FeedService/CreateFeed"
-	FeedService_UpdateFeed_FullMethodName        = "/feeds.v1.FeedService/UpdateFeed"
-	FeedService_ListArticles_FullMethodName      = "/feeds.v1.FeedService/ListArticles"
-	FeedService_GetArticle_FullMethodName        = "/feeds.v1.FeedService/GetArticle"
-	FeedService_SaveArticle_FullMethodName       = "/feeds.v1.FeedService/SaveArticle"
-	FeedService_UpdateStats_FullMethodName       = "/feeds.v1.FeedService/UpdateStats"
-	FeedService_Ready_FullMethodName             = "/feeds.v1.FeedService/Ready"
-	FeedService_FeedTask_FullMethodName          = "/feeds.v1.FeedService/FeedTask"
+	FeedService_GetFeed_FullMethodName                = "/feeds.v1.FeedService/GetFeed"
+	FeedService_GetUserFeed_FullMethodName            = "/feeds.v1.FeedService/GetUserFeed"
+	FeedService_ListFeeds_FullMethodName              = "/feeds.v1.FeedService/ListFeeds"
+	FeedService_ListUserFeeds_FullMethodName          = "/feeds.v1.FeedService/ListUserFeeds"
+	FeedService_GetUserArticles_FullMethodName        = "/feeds.v1.FeedService/GetUserArticles"
+	FeedService_MarkArticleAsRead_FullMethodName      = "/feeds.v1.FeedService/MarkArticleAsRead"
+	FeedService_CreateFeed_FullMethodName             = "/feeds.v1.FeedService/CreateFeed"
+	FeedService_UpdateFeed_FullMethodName             = "/feeds.v1.FeedService/UpdateFeed"
+	FeedService_ListArticles_FullMethodName           = "/feeds.v1.FeedService/ListArticles"
+	FeedService_GetArticle_FullMethodName             = "/feeds.v1.FeedService/GetArticle"
+	FeedService_SaveArticle_FullMethodName            = "/feeds.v1.FeedService/SaveArticle"
+	FeedService_UpdateStats_FullMethodName            = "/feeds.v1.FeedService/UpdateStats"
+	FeedService_CreateFeedVerification_FullMethodName = "/feeds.v1.FeedService/CreateFeedVerification"
+	FeedService_CreateFetchHistory_FullMethodName     = "/feeds.v1.FeedService/CreateFetchHistory"
+	FeedService_Ready_FullMethodName                  = "/feeds.v1.FeedService/Ready"
+	FeedService_FeedTask_FullMethodName               = "/feeds.v1.FeedService/FeedTask"
 )
 
 // FeedServiceClient is the client API for FeedService service.
@@ -51,6 +53,8 @@ type FeedServiceClient interface {
 	GetArticle(ctx context.Context, in *GetArticleRequest, opts ...grpc.CallOption) (*GetArticleResponse, error)
 	SaveArticle(ctx context.Context, in *SaveArticleRequest, opts ...grpc.CallOption) (*SaveArticleResponse, error)
 	UpdateStats(ctx context.Context, in *UpdateStatsRequest, opts ...grpc.CallOption) (*UpdateStatsResponse, error)
+	CreateFeedVerification(ctx context.Context, in *CreateFeedVerificationRequest, opts ...grpc.CallOption) (*CreateFeedVerificationResponse, error)
+	CreateFetchHistory(ctx context.Context, in *CreateFetchHistoryRequest, opts ...grpc.CallOption) (*CreateFetchHistoryResponse, error)
 	Ready(ctx context.Context, in *ReadyRequest, opts ...grpc.CallOption) (*ReadyResponse, error)
 	// Deprecated: Do not use.
 	// Deprecated: use graph service
@@ -185,6 +189,26 @@ func (c *feedServiceClient) UpdateStats(ctx context.Context, in *UpdateStatsRequ
 	return out, nil
 }
 
+func (c *feedServiceClient) CreateFeedVerification(ctx context.Context, in *CreateFeedVerificationRequest, opts ...grpc.CallOption) (*CreateFeedVerificationResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateFeedVerificationResponse)
+	err := c.cc.Invoke(ctx, FeedService_CreateFeedVerification_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *feedServiceClient) CreateFetchHistory(ctx context.Context, in *CreateFetchHistoryRequest, opts ...grpc.CallOption) (*CreateFetchHistoryResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateFetchHistoryResponse)
+	err := c.cc.Invoke(ctx, FeedService_CreateFetchHistory_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *feedServiceClient) Ready(ctx context.Context, in *ReadyRequest, opts ...grpc.CallOption) (*ReadyResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ReadyResponse)
@@ -222,6 +246,8 @@ type FeedServiceServer interface {
 	GetArticle(context.Context, *GetArticleRequest) (*GetArticleResponse, error)
 	SaveArticle(context.Context, *SaveArticleRequest) (*SaveArticleResponse, error)
 	UpdateStats(context.Context, *UpdateStatsRequest) (*UpdateStatsResponse, error)
+	CreateFeedVerification(context.Context, *CreateFeedVerificationRequest) (*CreateFeedVerificationResponse, error)
+	CreateFetchHistory(context.Context, *CreateFetchHistoryRequest) (*CreateFetchHistoryResponse, error)
 	Ready(context.Context, *ReadyRequest) (*ReadyResponse, error)
 	// Deprecated: Do not use.
 	// Deprecated: use graph service
@@ -271,6 +297,12 @@ func (UnimplementedFeedServiceServer) SaveArticle(context.Context, *SaveArticleR
 }
 func (UnimplementedFeedServiceServer) UpdateStats(context.Context, *UpdateStatsRequest) (*UpdateStatsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateStats not implemented")
+}
+func (UnimplementedFeedServiceServer) CreateFeedVerification(context.Context, *CreateFeedVerificationRequest) (*CreateFeedVerificationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateFeedVerification not implemented")
+}
+func (UnimplementedFeedServiceServer) CreateFetchHistory(context.Context, *CreateFetchHistoryRequest) (*CreateFetchHistoryResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateFetchHistory not implemented")
 }
 func (UnimplementedFeedServiceServer) Ready(context.Context, *ReadyRequest) (*ReadyResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Ready not implemented")
@@ -515,6 +547,42 @@ func _FeedService_UpdateStats_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _FeedService_CreateFeedVerification_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateFeedVerificationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FeedServiceServer).CreateFeedVerification(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FeedService_CreateFeedVerification_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FeedServiceServer).CreateFeedVerification(ctx, req.(*CreateFeedVerificationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FeedService_CreateFetchHistory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateFetchHistoryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FeedServiceServer).CreateFetchHistory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FeedService_CreateFetchHistory_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FeedServiceServer).CreateFetchHistory(ctx, req.(*CreateFetchHistoryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _FeedService_Ready_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ReadyRequest)
 	if err := dec(in); err != nil {
@@ -605,6 +673,14 @@ var FeedService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateStats",
 			Handler:    _FeedService_UpdateStats_Handler,
+		},
+		{
+			MethodName: "CreateFeedVerification",
+			Handler:    _FeedService_CreateFeedVerification_Handler,
+		},
+		{
+			MethodName: "CreateFetchHistory",
+			Handler:    _FeedService_CreateFetchHistory_Handler,
 		},
 		{
 			MethodName: "Ready",

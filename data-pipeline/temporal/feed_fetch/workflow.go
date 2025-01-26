@@ -1,4 +1,4 @@
-package app
+package feed_fetch
 
 import (
 	"errors"
@@ -16,13 +16,12 @@ const (
 )
 
 var (
-	ErrTimeout = errors.New("workflow timeout")
-	ErrProcess = errors.New("error processing feeds")
+	ErrTimeout  = errors.New("workflow timeout")
+	ErrProcess  = errors.New("error processing feeds")
+	retryPolicy = temporal.RetryPolicy{
+		MaximumAttempts: 1,
+	}
 )
-
-var retryPolicy = temporal.RetryPolicy{
-	MaximumAttempts: 1,
-}
 
 func FeedWorkflow(ctx workflow.Context, feedId string, url string) error {
 	ctx = workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
@@ -35,6 +34,10 @@ func FeedWorkflow(ctx workflow.Context, feedId string, url string) error {
 	var rssFile string
 	err := workflow.ExecuteActivity(ctx, a.DownloadActivity, feedId, url).Get(ctx, &rssFile)
 	if err != nil {
+		if errors.Is(err, ErrContentNotChanged) {
+			workflow.GetLogger(ctx).Debug("content not changed", "feed_id", feedId)
+			return nil
+		}
 		return err
 	}
 	var articlesFile string

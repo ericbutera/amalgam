@@ -3,6 +3,7 @@ package feeds
 import (
 	"context"
 
+	"github.com/ericbutera/amalgam/pkg/config/env"
 	rss "github.com/ericbutera/amalgam/pkg/feed/parse"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
 	rpc "github.com/ericbutera/amalgam/services/rpc/pkg/client"
@@ -26,6 +27,7 @@ type FeedHelper struct {
 	closers []func() error
 }
 
+// TODO: possibly remove this- not worth the abstraction
 func NewFeeds(host string, insecure bool) (Feeds, error) {
 	c, closer, err := rpc.New(host, insecure)
 	if err != nil {
@@ -37,6 +39,19 @@ func NewFeeds(host string, insecure bool) (Feeds, error) {
 			closer,
 		},
 	}, nil
+}
+
+type Config struct {
+	RpcHost     string `mapstructure:"rpc_host"`
+	RpcInsecure bool   `mapstructure:"rpc_insecure"`
+}
+
+func NewFeedsFromEnv() (Feeds, error) {
+	config, err := env.New[Config]()
+	if err != nil {
+		return nil, err
+	}
+	return NewFeeds(config.RpcHost, config.RpcInsecure)
 }
 
 func (h *FeedHelper) Close() error {

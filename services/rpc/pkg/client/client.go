@@ -8,6 +8,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/ericbutera/amalgam/pkg/config/env"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/timeout"
@@ -20,14 +21,25 @@ import (
 const Timeout = 10 * time.Second
 
 func New(target string, useInsecure bool) (pb.FeedServiceClient, Closer, error) {
-	// TODO: Option pattern
-
 	conn, err := NewConnection(target, useInsecure)
 	if err != nil {
 		return nil, nil, err
 	}
 
 	return pb.NewFeedServiceClient(conn), newCloser(conn), nil
+}
+
+type Config struct {
+	RpcHost     string `mapstructure:"rpc_host"`
+	RpcInsecure bool   `mapstructure:"rpc_insecure"`
+}
+
+func NewFromEnv() (pb.FeedServiceClient, Closer, error) {
+	config, err := env.New[Config]()
+	if err != nil {
+		return nil, nil, err
+	}
+	return New(config.RpcHost, config.RpcInsecure)
 }
 
 func NewConnection(target string, useInsecure bool) (*grpc.ClientConn, error) {

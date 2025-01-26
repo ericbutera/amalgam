@@ -14,6 +14,7 @@ import (
 )
 
 func main() {
+	// TODO: use worker helper for observability
 	config := lo.Must(env.New[feed_tasks.Config]())
 	graphClient := graphql.NewClient(config.GraphHost, &http.Client{})
 

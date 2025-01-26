@@ -1,4 +1,4 @@
-package app_test
+package feed_fetch_test
 
 import (
 	"testing"
@@ -13,16 +13,16 @@ import (
 	"go.temporal.io/sdk/worker"
 )
 
-type UnitTestSuite struct {
+type FeedFetchTestSuite struct {
 	suite.Suite
 	testsuite.WorkflowTestSuite
 }
 
-func TestUnitTestSuite(t *testing.T) {
-	suite.Run(t, new(UnitTestSuite))
+func TestFeedFetchTestSuite(t *testing.T) {
+	suite.Run(t, new(FeedFetchTestSuite))
 }
 
-func (s *UnitTestSuite) Test_FeedWorkflow() {
+func (s *FeedFetchTestSuite) Test_FeedWorkflow() {
 	env := s.NewTestWorkflowEnvironment()
 	env.SetWorkerOptions(worker.Options{
 		EnableSessionWorker: true, // Important for a worker to participate in the session
@@ -42,11 +42,10 @@ func (s *UnitTestSuite) Test_FeedWorkflow() {
 	t := s.T()
 	require.NoError(t, env.GetWorkflowError())
 	assert.True(t, env.IsWorkflowCompleted())
-
 	env.AssertExpectations(t)
 }
 
-func (s *UnitTestSuite) Test_FetchFeedsWorkflow() {
+func (s *FeedFetchTestSuite) Test_FetchFeedsWorkflow() {
 	urls := []feeds.Feed{{ID: "213ddff2-e7cc-40cc-87eb-461118d57a58", Url: "http://faker:8080/feed/e568f1fa-a0e9-4545-bc5b-a167725a75bd"}}
 	env := s.NewTestWorkflowEnvironment()
 	env.SetWorkerOptions(worker.Options{
