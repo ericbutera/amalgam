@@ -22,18 +22,21 @@ import (
 // AddFeed is the resolver for the addFeed field.
 func (r *mutationResolver) AddFeed(ctx context.Context, url string, name string) (*model.AddResponse, error) {
 	// Note: this should use a Feed Task instead of performing the verification directly. ref: https://www.oreilly.com/library/view/designing-data-intensive-applications/9781491903063/ch08.html
-	resp, err := r.rpcClient.CreateFeed(ctx, &pb.CreateFeedRequest{
-		Feed: &pb.CreateFeedRequest_Feed{
-			Url:  url,
-			Name: name,
-		},
-		User: &pb.User{Id: middleware.GetUserID(ctx)}, // TODO: r.auth.GetUserID(ctx)
-	})
-	if err != nil {
-		return nil, errHelper.HandleGrpcErrors(ctx, err, "failed to create feed")
+
+	args := []any{
+		url,
+		middleware.GetUserID(ctx), // TODO: r.auth.GetUserID(ctx)
 	}
+	result, err := r.tasks.Workflow(ctx, tasks.TaskFetchFeeds, args /*middleware.GetUserID(ctx)*/) // TODO: r.auth.GetUserID(ctx)
+	if err != nil {
+		slog.ErrorContext(ctx, "failed to start feed task", "error", err)
+		return nil, status.Errorf(codes.Internal, "failed to start feed task")
+	}
+	// return &model.FeedTaskResponse{
+	// 	TaskID: result.ID,
+	// }, nil
 	return &model.AddResponse{
-		ID: resp.GetId(),
+		JobID: result.ID,
 	}, nil
 }
 
@@ -68,7 +71,8 @@ func (r *mutationResolver) FeedTask(ctx context.Context, task model.TaskType) (*
 		return nil, status.Errorf(codes.InvalidArgument, "invalid task type")
 	}
 
-	result, err := r.tasks.Workflow(ctx, t /*middleware.GetUserID(ctx)*/) // TODO: r.auth.GetUserID(ctx)
+	var args []any
+	result, err := r.tasks.Workflow(ctx, t, args /*middleware.GetUserID(ctx)*/) // TODO: r.auth.GetUserID(ctx)
 	if err != nil {
 		slog.ErrorContext(ctx, "failed to start feed task", "error", err)
 		return nil, status.Errorf(codes.Internal, "failed to start feed task")

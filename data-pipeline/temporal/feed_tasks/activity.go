@@ -23,7 +23,7 @@ type Activities struct {
 }
 
 func NewActivities(graphClient graphql.Client, feedClient sdk.Client) *Activities {
-	// note: tClient only talks to another external worker which could be on a different host.
+	// note: feedClient only talks to another external worker which could be on a different host.
 	// do not use it to enqueue items in feed_task.
 	return &Activities{
 		graphClient: graphClient,
@@ -55,8 +55,18 @@ func (a *Activities) RefreshFeeds(ctx context.Context) error {
 	}
 	args := []any{}
 	_, err := a.feedClient.ExecuteWorkflow(ctx, opts, "FetchFeedsWorkflow", args...)
-	if err != nil {
-		return fmt.Errorf("failed to execute workflow: %w", err)
+	return err
+}
+
+func (a *Activities) AddFeed(ctx context.Context, url string, userID string) error {
+	config := lo.Must(env.New[Config]())
+
+	opts := sdk.StartWorkflowOptions{
+		TaskQueue: config.FeedTaskQueue,
+		RetryPolicy: &temporal.RetryPolicy{
+			MaximumAttempts: 1,
+		},
 	}
-	return nil
+	_, err := a.feedClient.ExecuteWorkflow(ctx, opts, "AddFeedWorkflow", url, userID)
+	return err
 }
