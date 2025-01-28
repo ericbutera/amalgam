@@ -1,6 +1,8 @@
 package fixtures
 
 import (
+	"net/http"
+
 	"github.com/ericbutera/amalgam/internal/service/models"
 	"github.com/google/uuid"
 )
@@ -116,5 +118,46 @@ func WithArticleDescription(description string) ArticleOption {
 func WithArticleGUID(guid string) ArticleOption {
 	return func(a *models.Article) {
 		a.GUID = guid
+	}
+}
+
+func NewFeedVerification() *models.FeedVerification {
+	return &models.FeedVerification{
+		ID:         1,
+		URL:        "https://example.com/test-feed",
+		UserID:     "test-user-id",
+		WorkflowID: "test-workflow-id",
+	}
+}
+
+func NewFetchHistory(opts ...FetchHistoryOpt) *models.FetchHistory {
+	h := &models.FetchHistory{
+		ID:                 0,
+		FeedID:             "test-feed-id",
+		FeedVerificationID: 1,
+		ResponseCode:       http.StatusOK,
+		ETag:               "test-etag",
+		WorkflowID:         "test-workflow-id",
+		Bucket:             "test-bucket",
+	}
+
+	for _, opt := range opts {
+		opt(h)
+	}
+
+	return h
+}
+
+type FetchHistoryOpt func(*models.FetchHistory)
+
+func WithFetchHistoryID(id int64) FetchHistoryOpt {
+	return func(h *models.FetchHistory) {
+		h.ID = id
+	}
+}
+
+func WithFetchHistoryFeedID(feedID string) FetchHistoryOpt {
+	return func(h *models.FetchHistory) {
+		h.FeedID = feedID
 	}
 }

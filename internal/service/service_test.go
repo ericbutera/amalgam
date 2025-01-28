@@ -330,3 +330,37 @@ func TestUpdateFeedArticleCount(t *testing.T) {
 
 	assert.Equal(t, int32(2), actual.UnreadCount)
 }
+
+func TestCreateFeedVerification(t *testing.T) {
+	t.Parallel()
+	h := newTestHelper(t)
+
+	verification := fixtures.NewFeedVerification()
+	result, err := h.svc.CreateFeedVerification(context.Background(), verification)
+	require.NoError(t, err)
+
+	actual := &svcModel.FeedVerification{}
+	res := h.db.First(actual, "id=?", result.ID)
+	require.NoError(t, res.Error)
+
+	require.NoError(t, err)
+	helpers.Diff(t, *verification, *actual, "CreatedAt")
+}
+
+// TODO: test url normalization
+// TODO: test prevent duplicate URL
+
+func TestCreateFetchHistory(t *testing.T) {
+	t.Parallel()
+	h := newTestHelper(t)
+
+	expected := fixtures.NewFetchHistory()
+	history, err := h.svc.CreateFetchHistory(context.Background(), expected)
+	require.NoError(t, err)
+
+	actual := &svcModel.FetchHistory{}
+	res := h.db.First(actual, "id=?", history.ID)
+	require.NoError(t, res.Error)
+
+	helpers.Diff(t, *expected, *actual, "ID", "CreatedAt")
+}

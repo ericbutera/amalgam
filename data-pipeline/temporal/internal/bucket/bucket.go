@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/ericbutera/amalgam/pkg/config/env"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/minio/minio-go/v7/pkg/lifecycle"
@@ -88,6 +89,14 @@ func NewMinio(config *Config) (Bucket, error) {
 	}
 	bucket.client = client
 	return bucket, nil
+}
+
+func NewMinioFromEnv() (Bucket, error) {
+	config, err := env.New[Config]()
+	if err != nil {
+		return nil, err
+	}
+	return NewMinio(config)
 }
 
 func (b *Minio) Create(ctx context.Context, bucketName string) error {

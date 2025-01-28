@@ -97,6 +97,154 @@ func (_c *MockFeedServiceClient_CreateFeed_Call) RunAndReturn(run func(context.C
 	return _c
 }
 
+// CreateFeedVerification provides a mock function with given fields: ctx, in, opts
+func (_m *MockFeedServiceClient) CreateFeedVerification(ctx context.Context, in *CreateFeedVerificationRequest, opts ...grpc.CallOption) (*CreateFeedVerificationResponse, error) {
+	_va := make([]interface{}, len(opts))
+	for _i := range opts {
+		_va[_i] = opts[_i]
+	}
+	var _ca []interface{}
+	_ca = append(_ca, ctx, in)
+	_ca = append(_ca, _va...)
+	ret := _m.Called(_ca...)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CreateFeedVerification")
+	}
+
+	var r0 *CreateFeedVerificationResponse
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, *CreateFeedVerificationRequest, ...grpc.CallOption) (*CreateFeedVerificationResponse, error)); ok {
+		return rf(ctx, in, opts...)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, *CreateFeedVerificationRequest, ...grpc.CallOption) *CreateFeedVerificationResponse); ok {
+		r0 = rf(ctx, in, opts...)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*CreateFeedVerificationResponse)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, *CreateFeedVerificationRequest, ...grpc.CallOption) error); ok {
+		r1 = rf(ctx, in, opts...)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// MockFeedServiceClient_CreateFeedVerification_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CreateFeedVerification'
+type MockFeedServiceClient_CreateFeedVerification_Call struct {
+	*mock.Call
+}
+
+// CreateFeedVerification is a helper method to define mock.On call
+//   - ctx context.Context
+//   - in *CreateFeedVerificationRequest
+//   - opts ...grpc.CallOption
+func (_e *MockFeedServiceClient_Expecter) CreateFeedVerification(ctx interface{}, in interface{}, opts ...interface{}) *MockFeedServiceClient_CreateFeedVerification_Call {
+	return &MockFeedServiceClient_CreateFeedVerification_Call{Call: _e.mock.On("CreateFeedVerification",
+		append([]interface{}{ctx, in}, opts...)...)}
+}
+
+func (_c *MockFeedServiceClient_CreateFeedVerification_Call) Run(run func(ctx context.Context, in *CreateFeedVerificationRequest, opts ...grpc.CallOption)) *MockFeedServiceClient_CreateFeedVerification_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		variadicArgs := make([]grpc.CallOption, len(args)-2)
+		for i, a := range args[2:] {
+			if a != nil {
+				variadicArgs[i] = a.(grpc.CallOption)
+			}
+		}
+		run(args[0].(context.Context), args[1].(*CreateFeedVerificationRequest), variadicArgs...)
+	})
+	return _c
+}
+
+func (_c *MockFeedServiceClient_CreateFeedVerification_Call) Return(_a0 *CreateFeedVerificationResponse, _a1 error) *MockFeedServiceClient_CreateFeedVerification_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *MockFeedServiceClient_CreateFeedVerification_Call) RunAndReturn(run func(context.Context, *CreateFeedVerificationRequest, ...grpc.CallOption) (*CreateFeedVerificationResponse, error)) *MockFeedServiceClient_CreateFeedVerification_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// CreateFetchHistory provides a mock function with given fields: ctx, in, opts
+func (_m *MockFeedServiceClient) CreateFetchHistory(ctx context.Context, in *CreateFetchHistoryRequest, opts ...grpc.CallOption) (*CreateFetchHistoryResponse, error) {
+	_va := make([]interface{}, len(opts))
+	for _i := range opts {
+		_va[_i] = opts[_i]
+	}
+	var _ca []interface{}
+	_ca = append(_ca, ctx, in)
+	_ca = append(_ca, _va...)
+	ret := _m.Called(_ca...)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CreateFetchHistory")
+	}
+
+	var r0 *CreateFetchHistoryResponse
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, *CreateFetchHistoryRequest, ...grpc.CallOption) (*CreateFetchHistoryResponse, error)); ok {
+		return rf(ctx, in, opts...)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, *CreateFetchHistoryRequest, ...grpc.CallOption) *CreateFetchHistoryResponse); ok {
+		r0 = rf(ctx, in, opts...)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*CreateFetchHistoryResponse)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, *CreateFetchHistoryRequest, ...grpc.CallOption) error); ok {
+		r1 = rf(ctx, in, opts...)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// MockFeedServiceClient_CreateFetchHistory_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'CreateFetchHistory'
+type MockFeedServiceClient_CreateFetchHistory_Call struct {
+	*mock.Call
+}
+
+// CreateFetchHistory is a helper method to define mock.On call
+//   - ctx context.Context
+//   - in *CreateFetchHistoryRequest
+//   - opts ...grpc.CallOption
+func (_e *MockFeedServiceClient_Expecter) CreateFetchHistory(ctx interface{}, in interface{}, opts ...interface{}) *MockFeedServiceClient_CreateFetchHistory_Call {
+	return &MockFeedServiceClient_CreateFetchHistory_Call{Call: _e.mock.On("CreateFetchHistory",
+		append([]interface{}{ctx, in}, opts...)...)}
+}
+
+func (_c *MockFeedServiceClient_CreateFetchHistory_Call) Run(run func(ctx context.Context, in *CreateFetchHistoryRequest, opts ...grpc.CallOption)) *MockFeedServiceClient_CreateFetchHistory_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		variadicArgs := make([]grpc.CallOption, len(args)-2)
+		for i, a := range args[2:] {
+			if a != nil {
+				variadicArgs[i] = a.(grpc.CallOption)
+			}
+		}
+		run(args[0].(context.Context), args[1].(*CreateFetchHistoryRequest), variadicArgs...)
+	})
+	return _c
+}
+
+func (_c *MockFeedServiceClient_CreateFetchHistory_Call) Return(_a0 *CreateFetchHistoryResponse, _a1 error) *MockFeedServiceClient_CreateFetchHistory_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *MockFeedServiceClient_CreateFetchHistory_Call) RunAndReturn(run func(context.Context, *CreateFetchHistoryRequest, ...grpc.CallOption) (*CreateFetchHistoryResponse, error)) *MockFeedServiceClient_CreateFetchHistory_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // FeedTask provides a mock function with given fields: ctx, in, opts
 func (_m *MockFeedServiceClient) FeedTask(ctx context.Context, in *FeedTaskRequest, opts ...grpc.CallOption) (*FeedTaskResponse, error) {
 	_va := make([]interface{}, len(opts))

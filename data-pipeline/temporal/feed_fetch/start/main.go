@@ -10,8 +10,7 @@ import (
 	"time"
 
 	app "github.com/ericbutera/amalgam/data-pipeline/temporal/feed_fetch"
-	"github.com/ericbutera/amalgam/data-pipeline/temporal/feed_fetch/internal/config"
-	"github.com/ericbutera/amalgam/data-pipeline/temporal/internal/client"
+	clientHelper "github.com/ericbutera/amalgam/data-pipeline/temporal/internal/client"
 	"github.com/ericbutera/amalgam/pkg/config/env"
 	"github.com/samber/lo"
 	sdk "go.temporal.io/sdk/client"
@@ -29,19 +28,24 @@ func main() {
 	}
 }
 
+type Config struct {
+	UseSchedule bool   `mapstructure:"use_schedule"`
+	ScheduleID  string `mapstructure:"schedule_id"`
+	WorkflowID  string `mapstructure:"workflow_id"`
+	TaskQueue   string `mapstructure:"task_queue"`
+}
+
 func runWorker() error {
 	ctx := context.Background()
-	config := lo.Must(env.New[config.Config]())
-	client := lo.Must(client.NewTemporalClient(config.TemporalHost))
-	defer client.Close()
-
+	config := lo.Must(env.New[Config]())
+	client := lo.Must(clientHelper.NewTemporalClientFromEnv())
 	if config.UseSchedule {
 		return runSchedule(ctx, config, client)
 	}
 	return runExecute(ctx, config, client)
 }
 
-func runSchedule(ctx context.Context, config *config.Config, client sdk.Client) error {
+func runSchedule(ctx context.Context, config *Config, client sdk.Client) error {
 	// docs: https://docs.temporal.io/develop/go/schedules
 	handle := client.ScheduleClient().GetHandle(ctx, config.ScheduleID)
 	if err := handle.Delete(ctx); err != nil {
@@ -68,7 +72,7 @@ func runSchedule(ctx context.Context, config *config.Config, client sdk.Client) 
 	return nil
 }
 
-func runExecute(ctx context.Context, config *config.Config, client sdk.Client) error {
+func runExecute(ctx context.Context, config *Config, client sdk.Client) error {
 	opts := sdk.StartWorkflowOptions{
 		TaskQueue:   config.TaskQueue,
 		RetryPolicy: retryPolicy,

@@ -51,7 +51,9 @@ func TestUrl_Success(t *testing.T) {
 		require.NoError(t, err)
 		assert.Equal(t, "test data", string(body))
 		return nil
-	})
+	}, nil)
 
 	require.NoError(t, err)
 }
+
+// TODO: test etag

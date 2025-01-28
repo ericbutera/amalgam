@@ -21,17 +21,17 @@ func (_m *MockFetch) EXPECT() *MockFetch_Expecter {
 	return &MockFetch_Expecter{mock: &_m.Mock}
 }
 
-// Url provides a mock function with given fields: ctx, url, fetchCb
-func (_m *MockFetch) Url(ctx context.Context, url string, fetchCb Callback) error {
-	ret := _m.Called(ctx, url, fetchCb)
+// Url provides a mock function with given fields: ctx, url, fetchCb, extra
+func (_m *MockFetch) Url(ctx context.Context, url string, fetchCb Callback, extra *ExtraParams) error {
+	ret := _m.Called(ctx, url, fetchCb, extra)
 
 	if len(ret) == 0 {
 		panic("no return value specified for Url")
 	}
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, string, Callback) error); ok {
-		r0 = rf(ctx, url, fetchCb)
+	if rf, ok := ret.Get(0).(func(context.Context, string, Callback, *ExtraParams) error); ok {
+		r0 = rf(ctx, url, fetchCb, extra)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -48,13 +48,14 @@ type MockFetch_Url_Call struct {
 //   - ctx context.Context
 //   - url string
 //   - fetchCb Callback
-func (_e *MockFetch_Expecter) Url(ctx interface{}, url interface{}, fetchCb interface{}) *MockFetch_Url_Call {
-	return &MockFetch_Url_Call{Call: _e.mock.On("Url", ctx, url, fetchCb)}
+//   - extra *ExtraParams
+func (_e *MockFetch_Expecter) Url(ctx interface{}, url interface{}, fetchCb interface{}, extra interface{}) *MockFetch_Url_Call {
+	return &MockFetch_Url_Call{Call: _e.mock.On("Url", ctx, url, fetchCb, extra)}
 }
 
-func (_c *MockFetch_Url_Call) Run(run func(ctx context.Context, url string, fetchCb Callback)) *MockFetch_Url_Call {
+func (_c *MockFetch_Url_Call) Run(run func(ctx context.Context, url string, fetchCb Callback, extra *ExtraParams)) *MockFetch_Url_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(string), args[2].(Callback))
+		run(args[0].(context.Context), args[1].(string), args[2].(Callback), args[3].(*ExtraParams))
 	})
 	return _c
 }
@@ -64,7 +65,7 @@ func (_c *MockFetch_Url_Call) Return(_a0 error) *MockFetch_Url_Call {
 	return _c
 }
 
-func (_c *MockFetch_Url_Call) RunAndReturn(run func(context.Context, string, Callback) error) *MockFetch_Url_Call {
+func (_c *MockFetch_Url_Call) RunAndReturn(run func(context.Context, string, Callback, *ExtraParams) error) *MockFetch_Url_Call {
 	_c.Call.Return(run)
 	return _c
 }

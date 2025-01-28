@@ -1,19 +1,22 @@
-package app
+package feed_fetch
 
 // TODO: https://docs.temporal.io/develop/go/testing-suite
 
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log/slog"
+	"net/http"
 
-	"github.com/ericbutera/amalgam/data-pipeline/temporal/feed_fetch/internal/transforms"
 	"github.com/ericbutera/amalgam/data-pipeline/temporal/internal/bucket"
 	"github.com/ericbutera/amalgam/data-pipeline/temporal/internal/feeds"
+	"github.com/ericbutera/amalgam/data-pipeline/temporal/internal/transforms"
 	"github.com/ericbutera/amalgam/internal/http/fetch"
 	"github.com/ericbutera/amalgam/pkg/feed/parse"
+	"github.com/samber/lo"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -25,20 +28,35 @@ const (
 	ArticleContentType = "application/json"
 )
 
+var ErrContentNotChanged = errors.New("content not changed")
+
 type Activities struct {
 	transforms transforms.Transforms
 	fetch      fetch.Fetch
 	bucket     bucket.Bucket
 	feeds      feeds.Feeds
+	Closers    func()
 }
 
-func NewActivities(transforms transforms.Transforms, fetch fetch.Fetch, bucket bucket.Bucket, feeds feeds.Feeds) *Activities {
+func NewActivities(fetch fetch.Fetch, bucket bucket.Bucket, feeds feeds.Feeds) *Activities {
 	return &Activities{
-		transforms: transforms,
+		transforms: transforms.New(),
 		fetch:      fetch,
 		bucket:     bucket,
 		feeds:      feeds,
+		Closers:    func() {},
 	}
+}
+
+func NewActivitiesFromEnv() *Activities {
+	feeds := lo.Must(feeds.NewFeedsFromEnv())
+	a := NewActivities(
+		lo.Must(fetch.New()),
+		lo.Must(bucket.NewMinioFromEnv()),
+		feeds,
+	)
+	a.Closers = func() { feeds.Close() }
+	return a
 }
 
 func RssPath(feedId string) string {
@@ -47,21 +65,29 @@ func RssPath(feedId string) string {
 
 // Download RSS feeds.
 func (a *Activities) DownloadActivity(ctx context.Context, feedId string, url string) (string, error) {
+	// TODO: check if we have a newly verified feed that needs to be processed (but not downloaded)
+	// TODO: check fetch_history to see last time this feed was fetched (cooldown)
 	// TODO: research temporal metrics to see if there is a built in way to view how long "downloads" are taking
 	// TODO: also research to get counts of how many downloads are happening
 	rssFile := RssPath(feedId)
 	entry := slog.Default().With(
 		"feed_id", feedId,
-		"rss_file", rssFile,
+		"file", rssFile,
 		"url", url,
 	)
+	// TODO: ensure fetch.Url makes a fetch_history entry
 	err := a.fetch.Url(ctx, url, func(params fetch.CallbackParams) error {
+		if params.StatusCode == http.StatusNotModified {
+			return ErrContentNotChanged
+		}
 		upload, err := a.bucket.WriteStream(ctx, BucketName, rssFile, params.Reader, params.ContentType)
 		if err != nil {
 			return err
 		}
 		entry.Debug("downloaded activity", "key", upload.Key, "bucket", upload.Bucket, "size", upload.Size)
 		return nil
+	}, &fetch.ExtraParams{
+		// TODO: Etag: "select etag from fetch_history where feed_id = ? order by created_at desc limit 1",
 	})
 	if err != nil {
 		return "", err

@@ -120,6 +120,8 @@ func WithAutoMigrate() Options {
 			&models.User{},
 			&models.UserFeeds{},
 			&models.UserArticles{},
+			&models.FeedVerification{},
+			&models.FetchHistory{},
 		)
 	}
 }

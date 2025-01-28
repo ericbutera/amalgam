@@ -20,6 +20,8 @@ service FeedService {
   rpc GetArticle(GetArticleRequest) returns (GetArticleResponse);
   rpc SaveArticle(SaveArticleRequest) returns (SaveArticleResponse);
   rpc UpdateStats(UpdateStatsRequest) returns (UpdateStatsResponse);
+  rpc CreateFeedVerification(CreateFeedVerificationRequest) returns (CreateFeedVerificationResponse);
+  rpc CreateFetchHistory(CreateFetchHistoryRequest) returns (CreateFetchHistoryResponse);
   rpc Ready(ReadyRequest) returns (ReadyResponse);
 
   // Deprecated: use graph service
@@ -199,9 +201,49 @@ message UpdateStatsRequest {
 
 message UpdateStatsResponse {}
 
+message FeedVerification {
+  int64 id = 1;
+  string url = 2 [(buf.validate.field).string.uri = true];
+  string status = 3;
+  string message = 4;
+  string user_id = 5;
+  string workflow_id = 6;
+  google.protobuf.Timestamp created_at = 7;
+  google.protobuf.Timestamp updated_at = 8;
+}
+
+message CreateFeedVerificationRequest{
+  FeedVerification verification = 1;
+}
+
+message CreateFeedVerificationResponse{
+  FeedVerification verification = 1;
+}
+
+message FetchHistory {
+  int64 id = 1;
+  string feed_id = 2;
+  int64 feed_verification_id = 3;
+  int32 response_code = 4;
+  string etag = 5;
+  string workflow_id = 6;
+  string bucket = 7;
+  string message = 8;
+  google.protobuf.Timestamp created_at = 9;
+}
+
+message CreateFetchHistoryRequest{
+  FetchHistory history = 1;
+}
+
+message CreateFetchHistoryResponse{
+  FetchHistory history = 1;
+}
+
 message ValidationErrors {
   repeated ValidationError errors = 1;
 }
+
 message ValidationError {
   string field = 1;
   string tag = 2;

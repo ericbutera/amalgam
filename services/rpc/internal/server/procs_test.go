@@ -8,6 +8,7 @@ import (
 	"github.com/ericbutera/amalgam/internal/service"
 	svcModel "github.com/ericbutera/amalgam/internal/service/models"
 	"github.com/ericbutera/amalgam/internal/test"
+	"github.com/ericbutera/amalgam/internal/test/fixtures"
 	"github.com/ericbutera/amalgam/internal/test/seed"
 	"github.com/ericbutera/amalgam/pkg/config/env"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
@@ -49,6 +50,26 @@ func newServer(t *testing.T) *TestServer {
 		Server:  server,
 		Service: svc,
 		DB:      db,
+	}
+}
+
+type testMockServer struct {
+	svc        *service.MockService
+	server     *server.Server
+	converters converters.Converter
+}
+
+func newMockServer(t *testing.T) *testMockServer {
+	t.Helper()
+
+	svc := new(service.MockService)
+	s, err := server.New(server.WithService(svc))
+	require.NoError(t, err)
+
+	return &testMockServer{
+		svc:        svc,
+		server:     s,
+		converters: converters.New(),
 	}
 }
 
@@ -312,15 +333,10 @@ func TestUpdateStats(t *testing.T) {
 
 	feedID := "0e597e90-ece5-463e-8608-ff687bf286da"
 
-	svc := new(service.MockService)
-	svc.EXPECT().UpdateFeedArticleCount(mock.Anything, feedID).Return(nil)
+	s := newMockServer(t)
+	s.svc.EXPECT().UpdateFeedArticleCount(mock.Anything, feedID).Return(nil)
 
-	s, err := server.New(
-		server.WithService(svc),
-	)
-	require.NoError(t, err)
-
-	resp, err := s.UpdateStats(context.Background(), &pb.UpdateStatsRequest{
+	resp, err := s.server.UpdateStats(context.Background(), &pb.UpdateStatsRequest{
 		Stat:   pb.UpdateStatsRequest_STAT_FEED_ARTICLE_COUNT,
 		FeedId: feedID,
 	})
@@ -338,34 +354,63 @@ func TestReady(t *testing.T) {
 
 func TestMarkArticleAsRead(t *testing.T) {
 	t.Parallel()
+	s := newMockServer(t)
 
 	feedID := "2e597e90-ece5-463e-8608-ff687bf286da"
 	articleID := "3e597e90-ece5-463e-8608-ff687bf286da"
 
-	svc := new(service.MockService)
-	svc.EXPECT().
+	s.svc.EXPECT().
 		SaveUserArticle(mock.Anything, &svcModel.UserArticle{
 			UserID:    seed.UserID,
 			ArticleID: articleID,
 		}).
 		Return(nil)
-	svc.EXPECT().
+	s.svc.EXPECT().
 		GetArticle(mock.Anything, articleID).
-		Return(&svcModel.Article{
-			FeedID: feedID,
-		}, nil)
-	svc.EXPECT().
+		Return(&svcModel.Article{FeedID: feedID}, nil)
+	s.svc.EXPECT().
 		UpdateFeedArticleCount(mock.Anything, feedID).
 		Return(nil)
 
-	s, err := server.New(
-		server.WithService(svc),
-	)
-	require.NoError(t, err)
-
-	_, err = s.MarkArticleAsRead(context.Background(), &pb.MarkArticleAsReadRequest{
+	_, err := s.server.MarkArticleAsRead(context.Background(), &pb.MarkArticleAsReadRequest{
 		User:      &pb.User{Id: seed.UserID},
 		ArticleId: articleID,
 	})
 	require.NoError(t, err)
+}
+
+func TestCreateFeedVerification(t *testing.T) {
+	t.Parallel()
+	s := newMockServer(t)
+
+	data := fixtures.NewFeedVerification()
+	expected := s.converters.ServiceToProtoFeedVerification(data)
+
+	s.svc.EXPECT().
+		CreateFeedVerification(mock.Anything, data).
+		Return(data, nil)
+
+	resp, err := s.server.CreateFeedVerification(context.Background(), &pb.CreateFeedVerificationRequest{
+		Verification: expected,
+	})
+	require.NoError(t, err)
+	helpers.DiffProto(t, expected, resp.GetVerification())
+}
+
+func TestCreateFetchHistory(t *testing.T) {
+	t.Parallel()
+	s := newMockServer(t)
+
+	data := fixtures.NewFetchHistory()
+	expected := s.converters.ServiceToProtoFetchHistory(data)
+
+	s.svc.EXPECT().
+		CreateFetchHistory(mock.Anything, data).
+		Return(data, nil)
+
+	resp, err := s.server.CreateFetchHistory(context.Background(), &pb.CreateFetchHistoryRequest{
+		History: expected,
+	})
+	require.NoError(t, err)
+	helpers.DiffProto(t, expected, resp.GetHistory())
 }

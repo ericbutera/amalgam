@@ -211,6 +211,37 @@ func (c *ConverterImpl) ProtoToServiceFeed(source *v1.Feed) *models1.Feed {
 	}
 	return pModelsFeed
 }
+func (c *ConverterImpl) ProtoToServiceFeedVerification(source *v1.FeedVerification) *models1.FeedVerification {
+	var pModelsFeedVerification *models1.FeedVerification
+	if source != nil {
+		var modelsFeedVerification models1.FeedVerification
+		modelsFeedVerification.ID = (*source).Id
+		modelsFeedVerification.URL = (*source).Url
+		modelsFeedVerification.UserID = (*source).UserId
+		modelsFeedVerification.WorkflowID = (*source).WorkflowId
+		modelsFeedVerification.CreatedAt = ProtoTimestampToTime((*source).CreatedAt)
+		modelsFeedVerification.UpdatedAt = ProtoTimestampToTime((*source).UpdatedAt)
+		pModelsFeedVerification = &modelsFeedVerification
+	}
+	return pModelsFeedVerification
+}
+func (c *ConverterImpl) ProtoToServiceFetchHistory(source *v1.FetchHistory) *models1.FetchHistory {
+	var pModelsFetchHistory *models1.FetchHistory
+	if source != nil {
+		var modelsFetchHistory models1.FetchHistory
+		modelsFetchHistory.ID = (*source).Id
+		modelsFetchHistory.FeedID = (*source).FeedId
+		modelsFetchHistory.FeedVerificationID = (*source).FeedVerificationId
+		modelsFetchHistory.ResponseCode = (*source).ResponseCode
+		modelsFetchHistory.ETag = (*source).Etag
+		modelsFetchHistory.WorkflowID = (*source).WorkflowId
+		modelsFetchHistory.Bucket = (*source).Bucket
+		modelsFetchHistory.Message = (*source).Message
+		modelsFetchHistory.CreatedAt = ProtoTimestampToTime((*source).CreatedAt)
+		pModelsFetchHistory = &modelsFetchHistory
+	}
+	return pModelsFetchHistory
+}
 func (c *ConverterImpl) ProtoToServiceUserFeed(source *v1.UserFeed) *models1.UserFeed {
 	var pModelsUserFeed *models1.UserFeed
 	if source != nil {
@@ -350,6 +381,37 @@ func (c *ConverterImpl) ServiceToProtoFeed(source *models1.Feed) *v1.Feed {
 		pFeedsFeed = &feedsFeed
 	}
 	return pFeedsFeed
+}
+func (c *ConverterImpl) ServiceToProtoFeedVerification(source *models1.FeedVerification) *v1.FeedVerification {
+	var pFeedsFeedVerification *v1.FeedVerification
+	if source != nil {
+		var feedsFeedVerification v1.FeedVerification
+		feedsFeedVerification.Id = (*source).ID
+		feedsFeedVerification.Url = (*source).URL
+		feedsFeedVerification.UserId = (*source).UserID
+		feedsFeedVerification.WorkflowId = (*source).WorkflowID
+		feedsFeedVerification.CreatedAt = TimeToProtoTimestamp((*source).CreatedAt)
+		feedsFeedVerification.UpdatedAt = TimeToProtoTimestamp((*source).UpdatedAt)
+		pFeedsFeedVerification = &feedsFeedVerification
+	}
+	return pFeedsFeedVerification
+}
+func (c *ConverterImpl) ServiceToProtoFetchHistory(source *models1.FetchHistory) *v1.FetchHistory {
+	var pFeedsFetchHistory *v1.FetchHistory
+	if source != nil {
+		var feedsFetchHistory v1.FetchHistory
+		feedsFetchHistory.Id = (*source).ID
+		feedsFetchHistory.FeedId = (*source).FeedID
+		feedsFetchHistory.FeedVerificationId = (*source).FeedVerificationID
+		feedsFetchHistory.ResponseCode = (*source).ResponseCode
+		feedsFetchHistory.Etag = (*source).ETag
+		feedsFetchHistory.WorkflowId = (*source).WorkflowID
+		feedsFetchHistory.Bucket = (*source).Bucket
+		feedsFetchHistory.Message = (*source).Message
+		feedsFetchHistory.CreatedAt = TimeToProtoTimestamp((*source).CreatedAt)
+		pFeedsFetchHistory = &feedsFetchHistory
+	}
+	return pFeedsFetchHistory
 }
 func (c *ConverterImpl) ServiceToProtoUserArticle(source *models1.UserArticle) *v1.GetUserArticlesResponse_UserArticle {
 	var pFeedsGetUserArticlesResponse_UserArticle *v1.GetUserArticlesResponse_UserArticle

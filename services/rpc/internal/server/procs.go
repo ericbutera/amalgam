@@ -23,7 +23,7 @@ func serviceToProtoErr(err error, validationErrs []validate.ValidationError) err
 	case errors.Is(err, service.ErrDuplicate):
 		return status.Error(codes.AlreadyExists, "already exists")
 	case errors.Is(err, service.ErrValidation):
-		return validationErr(validationErrs)
+		return validationErr(validationErrs) // TODO: make a custom error type that contains the validation errors; remove validationErrs as a param!
 	}
 	return status.Errorf(codes.Internal, "failed to perform action: %v", err)
 }
@@ -249,4 +249,28 @@ func (s *Server) MarkArticleAsRead(ctx context.Context, in *pb.MarkArticleAsRead
 	}
 
 	return &pb.MarkArticleAsReadResponse{}, nil
+}
+
+func (s *Server) CreateFeedVerification(ctx context.Context, in *pb.CreateFeedVerificationRequest) (*pb.CreateFeedVerificationResponse, error) {
+	res, err := s.service.CreateFeedVerification(ctx,
+		s.converters.ProtoToServiceFeedVerification(in.GetVerification()),
+	)
+	if err != nil {
+		return nil, serviceToProtoErr(err, nil)
+	}
+	return &pb.CreateFeedVerificationResponse{
+		Verification: s.converters.ServiceToProtoFeedVerification(res),
+	}, nil
+}
+
+func (s *Server) CreateFetchHistory(ctx context.Context, in *pb.CreateFetchHistoryRequest) (*pb.CreateFetchHistoryResponse, error) {
+	res, err := s.service.CreateFetchHistory(ctx,
+		s.converters.ProtoToServiceFetchHistory(in.GetHistory()),
+	)
+	if err != nil {
+		return nil, serviceToProtoErr(err, nil)
+	}
+	return &pb.CreateFetchHistoryResponse{
+		History: s.converters.ServiceToProtoFetchHistory(res),
+	}, nil
 }

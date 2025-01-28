@@ -6,6 +6,7 @@ import (
 
 	"github.com/ericbutera/amalgam/internal/db/pagination"
 	svc_model "github.com/ericbutera/amalgam/internal/service/models"
+	"github.com/ericbutera/amalgam/internal/validate"
 )
 
 var (
@@ -25,6 +26,16 @@ type GetUserFeedsResult struct {
 	Feeds []svc_model.UserFeed
 }
 
+type CreateFeedResult struct {
+	ID               string
+	ValidationErrors []validate.ValidationError // TODO: these should be in the error object
+}
+
+type SaveArticleResult struct {
+	ID               string
+	ValidationErrors []validate.ValidationError // TODO: these should be in the error object
+}
+
 // domain logic for feeds & articles
 type Service interface {
 	Feeds(ctx context.Context /*, options *FeedsOptions*/) ([]svc_model.Feed, error) // Fetch all feeds in system (not intended for public use)
@@ -40,4 +51,6 @@ type Service interface {
 	SaveUserFeed(ctx context.Context, userFeed *svc_model.UserFeed) error         // Associate a feed with a user
 	GetUserArticles(ctx context.Context, userID string, articleIDs []string) ([]*svc_model.UserArticle, error)
 	SaveUserArticle(ctx context.Context, userArticle *svc_model.UserArticle) error
+	CreateFeedVerification(ctx context.Context, verification *svc_model.FeedVerification) (*svc_model.FeedVerification, error)
+	CreateFetchHistory(ctx context.Context, history *svc_model.FetchHistory) (*svc_model.FetchHistory, error)
 }

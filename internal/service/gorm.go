@@ -83,11 +83,6 @@ func feedUrlExists(tx *gorm.DB, url string) error {
 	return nil
 }
 
-type CreateFeedResult struct {
-	ID               string
-	ValidationErrors []validate.ValidationError
-}
-
 func (s *Gorm) CreateFeed(ctx context.Context, data *svc_model.Feed) (CreateFeedResult, error) {
 	res := CreateFeedResult{}
 
@@ -184,11 +179,6 @@ func (s *Gorm) GetArticle(ctx context.Context, id string) (*svc_model.Article, e
 		return nil, result.Error
 	}
 	return &article, nil
-}
-
-type SaveArticleResult struct {
-	ID               string
-	ValidationErrors []validate.ValidationError
 }
 
 func (s *Gorm) SaveArticle(ctx context.Context, data *svc_model.Article) (SaveArticleResult, error) {
@@ -347,4 +337,44 @@ func (s *Gorm) GetUserArticles(ctx context.Context, userID string, articleIDs []
 		return nil, err
 	}
 	return userArticles, nil
+}
+
+func (s *Gorm) CreateFeedVerification(ctx context.Context, verification *svc_model.FeedVerification) (*svc_model.FeedVerification, error) {
+	// TODO: keep record of user_id to prevent excessive verification requests (rate limit)
+	// TODO: validate URL
+	// TODO: normalize url to prevent duplicates: FlagRemoveFragment, FlagRemoveFragment
+	/*
+		feed, err := sanitize.Struct(lo.FromPtr(data))
+		if err != nil {
+			return res, fmt.Errorf("unable to create feed: %w", err)
+		}
+		res.ValidationErrors = validate.Struct(feed, validateFeedCreate).Errors
+		if len(res.ValidationErrors) > 0 {
+			return res, ErrValidation
+		}
+	*/
+	// Note: duplicates will be stopped by the database
+	err := s.query(ctx).Create(verification).Error
+	if err != nil {
+		return nil, err
+	}
+
+	// This needs to return the ID and URL. It's possible the normalization process changed the input URL.
+	return verification, nil
+}
+
+/*
+func (s *Gorm) UpdateFeedVerification(ctx context.Context, id string, verification *svc_model.FeedVerification) error {
+	// TODO: handle case where multiple verifications are submitted for same url (user_id)
+	// TODO: ensure feed validations don't get stuck (url + workflow_id)
+	panic("not implemented")
+}
+*/
+
+func (s *Gorm) CreateFetchHistory(ctx context.Context, history *svc_model.FetchHistory) (*svc_model.FetchHistory, error) {
+	err := s.query(ctx).Create(history).Error
+	if err != nil {
+		return nil, err
+	}
+	return history, nil
 }

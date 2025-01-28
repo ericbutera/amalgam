@@ -25,8 +25,8 @@ type Article struct {
 }
 
 type UserFeed struct {
-	FeedID        string    `json:"feed_id"`
-	UserID        string    `json:"user_id,omitempty"`
+	FeedID        string    `json:"feedId"`
+	UserID        string    `json:"userId,omitempty"`
 	Name          string    `json:"name"`
 	URL           string    `json:"url"`
 	CreatedAt     time.Time `json:"createdAt"`
@@ -36,7 +36,28 @@ type UserFeed struct {
 }
 
 type UserArticle struct {
-	UserID    string     `json:"user_id"`
-	ArticleID string     `json:"article_id"`
-	ViewedAt  *time.Time `json:"viewed_at"`
+	UserID    string     `json:"userId"`
+	ArticleID string     `json:"articleId"`
+	ViewedAt  *time.Time `json:"viewedAt"`
+}
+
+type FeedVerification struct {
+	ID         int64  `json:"id"`
+	URL        string `json:"url" san:"trim,url" validate:"required,url"`
+	UserID     string
+	WorkflowID string
+	CreatedAt  time.Time `json:"createdAt"`
+	UpdatedAt  time.Time `json:"updatedAt"`
+}
+
+type FetchHistory struct {
+	ID                 int64  `json:"id"`
+	FeedID             string `json:"feedId"`
+	FeedVerificationID int64  `json:"feedVerificationId"`
+	ResponseCode       int32  `json:"responseCode"`
+	ETag               string `json:"eTag"`
+	WorkflowID         string `json:"workflowId"`
+	Bucket             string `json:"bucket"`
+	Message            string `json:"message"`
+	CreatedAt          time.Time
 }
