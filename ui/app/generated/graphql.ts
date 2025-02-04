@@ -20,7 +20,9 @@ export type Scalars = {
 
 export type AddResponse = {
   __typename?: 'AddResponse';
+  /** @deprecated add feed returns a jobId */
   id: Scalars['ID']['output'];
+  jobId: Scalars['ID']['output'];
 };
 
 export type Article = {
@@ -169,7 +171,7 @@ export type AddFeedMutationVariables = Exact<{
 }>;
 
 
-export type AddFeedMutation = { __typename?: 'Mutation', addFeed: { __typename?: 'AddResponse', id: string } };
+export type AddFeedMutation = { __typename?: 'Mutation', addFeed: { __typename?: 'AddResponse', jobId: string } };
 
 export type UpdateFeedMutationVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -227,7 +229,7 @@ export type ListArticlesQuery = { __typename?: 'Query', articles: { __typename?:
 export const AddFeedDocument = gql`
     mutation AddFeed($url: String!, $name: String!) {
   addFeed(url: $url, name: $name) {
-    id
+    jobId
   }
 }
     `;

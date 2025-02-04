@@ -26,6 +26,7 @@ func main() {
 	w := worker.New(client, config.TaskQueue, worker.Options{})
 	w.RegisterWorkflow(feed_tasks.GenerateFeedsWorkflow)
 	w.RegisterWorkflow(feed_tasks.RefreshFeedsWorkflow)
+	w.RegisterWorkflow(feed_tasks.AddFeedWorkflow)
 	w.RegisterActivity(activities)
 
 	err := w.Run(worker.InterruptCh())
