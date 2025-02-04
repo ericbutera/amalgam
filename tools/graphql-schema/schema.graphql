@@ -26,6 +26,7 @@ directive @specifiedBy(
 
 type AddResponse {
 	id: ID!
+	jobId: ID!
 }
 
 type Article {
@@ -151,3 +152,4 @@ type UpdateResponse {
 type UserArticle {
 	viewedAt: DateTime!
 }
+

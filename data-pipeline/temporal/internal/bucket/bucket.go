@@ -16,12 +16,12 @@ import (
 )
 
 type Config struct {
-	MinioEndpoint        string `mapstructure:"minio_endpoint"`
-	MinioAccessKey       string `mapstructure:"minio_access_key"`
-	MinioSecretAccessKey string `mapstructure:"minio_secret_access_key"`
-	MinioRegion          string `mapstructure:"minio_region"`
-	MinioUseSsl          bool   `mapstructure:"minio_use_ssl"`
-	MinioTrace           bool   `mapstructure:"minio_trace"`
+	MinioEndpoint        string `env:"MINIO_ENDPOINT"`
+	MinioAccessKey       string `env:"MINIO_ACCESS_KEY"`
+	MinioSecretAccessKey string `env:"MINIO_SECRET_ACCESS_KEY"`
+	MinioRegion          string `env:"MINIO_REGION" envDefault:"us-east-1"`
+	MinioUseSsl          bool   `env:"MINIO_USE_SSL"`
+	MinioTrace           bool   `env:"MINIO_TRACE"`
 }
 
 const DefaultWriteSize int64 = -1

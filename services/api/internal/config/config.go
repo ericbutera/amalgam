@@ -1,23 +1,12 @@
 package config
 
-import "github.com/spf13/viper"
-
 type Config struct {
-	OtelEnable        bool     `mapstructure:"otel_enable"`
-	CorsAllowOrigins  []string `mapstructure:"cors_allow_origins"`
-	CorsAllowMethods  []string `mapstructure:"cors_allow_methods"`
-	CorsAllowHeaders  []string `mapstructure:"cors_allow_headers"`
-	CorsExposeHeaders []string `mapstructure:"cors_expose_headers"`
-	GraphHost         string   `mapstructure:"graph_host"`
+	OtelEnable        bool   `env:"OTEL_ENABLE" envDefault:"false"`
+	CorsAllowOrigins  string `env:"CORS_ALLOW_ORIGINS"`
+	CorsAllowMethods  string `env:"CORS_ALLOW_METHODS"`
+	CorsAllowHeaders  string `env:"CORS_ALLOW_HEADERS"`
+	CorsExposeHeaders string `env:"CORS_EXPOSE_HEADERS"`
+	GraphHost         string `env:"GRAPH_HOST"`
 	// TODO:
 	// log level
-}
-
-func init() { //nolint:gochecknoinits
-	viper.SetDefault("otel_enable", false)
-	viper.SetDefault("cors_allow_origins", []string{})
-	viper.SetDefault("cors_allow_methods", []string{})
-	viper.SetDefault("cors_allow_headers", []string{})
-	viper.SetDefault("cors_expose_headers", []string{})
-	viper.SetDefault("graph_host", "")
 }
