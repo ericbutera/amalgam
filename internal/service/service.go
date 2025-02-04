@@ -10,9 +10,10 @@ import (
 )
 
 var (
-	ErrNotFound   = errors.New("not found")
-	ErrDuplicate  = errors.New("duplicate entry")
-	ErrValidation = errors.New("validation error")
+	ErrNotFound    = errors.New("not found")
+	ErrDuplicate   = errors.New("duplicate entry")
+	ErrValidation  = errors.New("validation error")
+	ErrQueryFailed = errors.New("query failed")
 )
 
 // type ListOptions = pagination.ListOptions

@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 
 	"github.com/ericbutera/amalgam/internal/logger"
@@ -33,7 +34,7 @@ func run(slog *slog.Logger) error {
 	config := lo.Must(env.New[config.Config]())
 
 	if config.OtelEnable {
-		shutdown := lo.Must(otel.Setup(ctx, config.IgnoredSpanNames))
+		shutdown := lo.Must(otel.Setup(ctx, strings.Split(config.IgnoredSpanNames, ",")))
 		defer func() { lo.Must0(shutdown(ctx)) }()
 	}
 

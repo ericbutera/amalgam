@@ -7,7 +7,6 @@ import (
 	"github.com/ericbutera/amalgam/internal/test/seed"
 	"github.com/ericbutera/amalgam/pkg/config/env"
 	slog "github.com/orandin/slog-gorm"
-	"github.com/spf13/viper"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -29,15 +28,9 @@ var (
 )
 
 type Config struct {
-	DbAdapter    Adapters `mapstructure:"db_adapter"`
-	DbMysqlDsn   string   `mapstructure:"db_mysql_dsn"`
-	DbSqliteName string   `mapstructure:"db_sqlite_name"`
-}
-
-func init() { //nolint:gochecknoinits
-	viper.SetDefault("db_adapter", SqliteAdapter)
-	viper.SetDefault("db_sqlite_name", "file::memory:?cache=shared")
-	viper.SetDefault("db_mysql_dsn", "user:pass@tcp(127.0.0.1:3306)/dbname?charset=utf8mb4&parseTime=True&loc=Local")
+	DbAdapter    Adapters `env:"DB_ADAPTER" envDefault:"sqlite"`
+	DbMysqlDsn   string   `env:"DB_MYSQL_DSN" example:"user:pass@tcp(127.0.0.1:3306)/dbname?charset=utf8mb4&parseTime=True&loc=Local"`
+	DbSqliteName string   `env:"DB_SQLITE_NAME" example:"file::memory:?cache=shared"`
 }
 
 // Convenience function to create a connection using Config.

@@ -35,7 +35,7 @@ func NewTemporalClient(host string) (client.Client, error) {
 }
 
 type Config struct {
-	TemporalHost string `mapstructure:"temporal_host"`
+	TemporalHost string `env:"TEMPORAL_HOST"`
 }
 
 func NewTemporalClientFromEnv() (client.Client, error) {

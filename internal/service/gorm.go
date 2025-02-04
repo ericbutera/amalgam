@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"strings"
 	"time"
 
 	"github.com/ericbutera/amalgam/internal/converters"
@@ -20,8 +21,6 @@ import (
 )
 
 const DefaultLimit = 100
-
-var ErrQueryFailed = errors.New("query failed")
 
 var (
 	validateFeedCreate = validate.CustomMessages{
@@ -50,7 +49,9 @@ type Gorm struct {
 }
 
 func NewGorm(db *gorm.DB) Service {
-	return &Gorm{db: db}
+	return &Gorm{
+		db: db,
+	}
 }
 
 // query returns a new query builder with the given context. required for otel
@@ -136,10 +137,7 @@ func (s *Gorm) GetFeed(ctx context.Context, id string) (*svc_model.Feed, error) 
 	var feed svc_model.Feed
 	result := s.query(ctx).First(&feed, "id=?", id)
 	if result.Error != nil {
-		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			return nil, ErrNotFound
-		}
-		return nil, result.Error
+		return nil, gormToServiceError(result.Error)
 	}
 	return &feed, nil
 }
@@ -173,10 +171,7 @@ func (s *Gorm) GetArticle(ctx context.Context, id string) (*svc_model.Article, e
 	var article svc_model.Article
 	result := s.query(ctx).First(&article, "id=?", id)
 	if result.Error != nil {
-		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			return nil, ErrNotFound
-		}
-		return nil, result.Error
+		return nil, gormToServiceError(result.Error)
 	}
 	return &article, nil
 }
@@ -226,10 +221,7 @@ func (s *Gorm) GetUserFeed(ctx context.Context, userID string, feedID string) (*
 	var feed svc_model.UserFeed
 	result := s.userFeeds(ctx, userID).Where("uf.feed_id=?", feedID).First(&feed)
 	if result.Error != nil {
-		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			return nil, ErrNotFound
-		}
-		return nil, result.Error
+		return nil, gormToServiceError(result.Error)
 	}
 	return &feed, nil
 }
@@ -356,7 +348,7 @@ func (s *Gorm) CreateFeedVerification(ctx context.Context, verification *svc_mod
 	// Note: duplicates will be stopped by the database
 	err := s.query(ctx).Create(verification).Error
 	if err != nil {
-		return nil, err
+		return nil, gormToServiceError(err)
 	}
 
 	// This needs to return the ID and URL. It's possible the normalization process changed the input URL.
@@ -377,4 +369,16 @@ func (s *Gorm) CreateFetchHistory(ctx context.Context, history *svc_model.FetchH
 		return nil, err
 	}
 	return history, nil
+}
+
+func gormToServiceError(err error) error {
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return ErrNotFound
+	} else if errors.Is(err, gorm.ErrDuplicatedKey) {
+		return ErrDuplicate
+	} else if strings.Contains(err.Error(), "Error 1062 (23000): Duplicate entry") {
+		return ErrDuplicate // TODO: revisit this workaround
+	}
+	return err
+
 }

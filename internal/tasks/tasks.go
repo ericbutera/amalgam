@@ -24,7 +24,8 @@ type Tasks interface {
 }
 
 type TaskResult struct {
-	ID string
+	ID    string
+	RunID string
 }
 
 func taskTypeToWorkflow(taskType TaskType) (any, error) {

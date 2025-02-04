@@ -3,6 +3,7 @@ package server
 import (
 	"log/slog"
 	"net/http"
+	"strings"
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/handler/extension"
@@ -24,7 +25,7 @@ import (
 func New(config *config.Config, rpcClient pb.FeedServiceClient, tasks tasks.Tasks) (*http.Server, error) {
 	srv := newServer(rpcClient, tasks)
 
-	router := newRouter(config.CorsAllowOrigins)
+	router := newRouter(strings.Split(config.CorsAllowOrigins, ","))
 	router.Handle("/query", middleware.Auth(srv))
 	router.Handle("/healthz", newHealthzHandler())
 	router.Handle("/readyz", newReadyzHandler(rpcClient))
