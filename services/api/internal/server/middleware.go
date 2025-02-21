@@ -3,6 +3,7 @@ package server
 import (
 	"log/slog"
 	"slices"
+	"strings"
 	"time"
 
 	"github.com/ericbutera/amalgam/services/api/internal/config"
@@ -41,10 +42,10 @@ func otelMiddleware() gin.HandlerFunc {
 
 func corsMiddleware(cfg *config.Config) gin.HandlerFunc {
 	return cors.New(cors.Config{
-		AllowOrigins:     cfg.CorsAllowOrigins,
-		AllowMethods:     cfg.CorsAllowMethods,
-		AllowHeaders:     cfg.CorsAllowHeaders,
-		ExposeHeaders:    cfg.CorsExposeHeaders,
+		AllowOrigins:     strings.Split(cfg.CorsAllowOrigins, ","),
+		AllowMethods:     strings.Split(cfg.CorsAllowMethods, ","),
+		AllowHeaders:     strings.Split(cfg.CorsAllowHeaders, ","),
+		ExposeHeaders:    strings.Split(cfg.CorsExposeHeaders, ","),
 		AllowCredentials: true,
 		MaxAge:           MaxAge,
 	})

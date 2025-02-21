@@ -45,13 +45,12 @@ func NewTemporalFromEnv() (*Temporal, error) {
 	return NewTemporal(config, &client)
 }
 
-func (t *Temporal) Workflow(ctx context.Context, task TaskType) (*TaskResult, error) {
+func (t *Temporal) Workflow(ctx context.Context, task TaskType, args []any) (*TaskResult, error) {
 	workflow, err := taskTypeToWorkflow(task)
 	if err != nil {
 		return nil, err
 	}
 
-	var args []any
 	if task == TaskGenerateFeeds {
 		args = []any{
 			t.config.FakeHost,
@@ -74,5 +73,17 @@ func (t *Temporal) Workflow(ctx context.Context, task TaskType) (*TaskResult, er
 	if err != nil {
 		return nil, err
 	}
-	return &TaskResult{ID: we.GetID()}, nil
+	return &TaskResult{
+		ID:    we.GetID(),
+		RunID: we.GetRunID(),
+	}, nil
 }
+
+// func (t *Temporal) JobStatus(ctx context.Context, workflowID string, runID string) (*TaskResult, error) {
+// 	run := t.client.GetWorkflow(ctx, workflowID, runID)
+// 	var feedID string
+// 	err := run.Get(ctx, feedID)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// }

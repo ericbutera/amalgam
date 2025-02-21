@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: feed-worker
+  name: feed-fetch-worker
 spec:
   selector:
-    app: feed-worker
+    app: feed-fetch-worker
   ports:
     - name: metrics
       protocol: TCP
@@ -14,24 +14,26 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: feed-worker
+  name: feed-fetch-worker
   labels:
-    app: feed-worker
+    app: feed-fetch-worker
 spec:
   selector:
     matchLabels:
-      app: feed-worker
+      app: feed-fetch-worker
   template:
     metadata:
       labels:
-        app: feed-worker
+        app: feed-fetch-worker
     spec:
       containers:
-        - name: feed-worker
-          image: feed-worker-image
+        - name: feed-fetch-worker
+          image: feed-fetch-worker-image
           ports:
             - containerPort: 9090
           env:
+            - name: TASK_QUEUE
+              value: "feed-fetch-queue"
             - name: TEMPORAL_HOST
               value: "temporal:7233"
             - name: RPC_HOST
@@ -55,7 +57,7 @@ spec:
             - name: OTEL_ENABLE
               value: {{ .Values.otel | quote }}
             - name: OTEL_SERVICE_NAME
-              value: "feed-worker"
+              value: "feed-fetch-worker"
             - name: OTEL_EXPORTER_OTLP_INSECURE
               value: "true"
             - name: OTEL_EXPORTER_OTLP_ENDPOINT
