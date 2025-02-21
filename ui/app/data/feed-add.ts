@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { getGraph } from "../lib/fetch";
-import { useRouter } from "next/navigation";
+//import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { handle } from "../lib/graphErrors";
 
@@ -9,7 +9,7 @@ export default function useAddFeedMutation() {
   const [error, setError] = useState<string | null>(null);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
 
-  const router = useRouter();
+  //const router = useRouter();
 
   const addFeed = async (url: string) => {
     setLoading(true);
@@ -19,9 +19,10 @@ export default function useAddFeedMutation() {
     try {
       const name = "";
       const resp = await getGraph().AddFeed({ name, url });
-      if (resp.addFeed.id) {
+      if (resp.addFeed.jobId) {
         toast.success("Feed added");
-        router.push(`/feeds/${resp.addFeed.id}/articles`);
+        // TODO: must wait for jobID to finish before getting feedID
+        //router.push(`/feeds/${resp.addFeed.id}/articles`);
         return;
       }
       throw new Error("Failed to add feed");

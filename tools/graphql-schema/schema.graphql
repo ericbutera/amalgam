@@ -152,3 +152,4 @@ type UpdateResponse {
 type UserArticle {
 	viewedAt: DateTime!
 }
+
