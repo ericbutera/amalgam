@@ -274,3 +274,18 @@ func (s *Server) CreateFetchHistory(ctx context.Context, in *pb.CreateFetchHisto
 		History: s.converters.ServiceToProtoFetchHistory(res),
 	}, nil
 }
+
+func (s *Server) SubscribeUserToUrl(ctx context.Context, in *pb.SubscribeUserToUrlRequest) (*pb.SubscribeUserToUrlResponse, error) {
+	userID := in.GetUser().GetId()
+	url := in.GetUrl()
+	if url == "" || userID == "" {
+		return nil, status.Error(codes.InvalidArgument, "feed_id is required")
+	}
+	uf, err := s.service.SubscribeUserToUrl(ctx, userID, url)
+	if err != nil {
+		return nil, serviceToProtoErr(err, nil)
+	}
+	return &pb.SubscribeUserToUrlResponse{
+		FeedId: uf.FeedID,
+	}, nil
+}

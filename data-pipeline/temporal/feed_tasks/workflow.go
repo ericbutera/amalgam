@@ -34,4 +34,11 @@ func RefreshFeedsWorkflow(ctx workflow.Context) error {
 	return nil
 }
 
-// TODO: TaskAddFeedWorkflow (UI -> TaskAddFeedWorkflow -> FeedAddWorkflow)
+func AddFeedWorkflow(ctx workflow.Context, url string, userID string) error {
+	ctx = workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
+		StartToCloseTimeout: time.Minute,
+	})
+	var a *Activities
+	err := workflow.ExecuteActivity(ctx, a.AddFeed, url, userID).Get(ctx, nil)
+	return err
+}
