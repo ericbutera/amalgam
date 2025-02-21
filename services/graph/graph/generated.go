@@ -49,7 +49,8 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	AddResponse struct {
-		ID func(childComplexity int) int
+		ID    func(childComplexity int) int
+		JobID func(childComplexity int) int
 	}
 
 	Article struct {
@@ -165,6 +166,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.AddResponse.ID(childComplexity), true
+
+	case "AddResponse.jobId":
+		if e.complexity.AddResponse.JobID == nil {
+			break
+		}
+
+		return e.complexity.AddResponse.JobID(childComplexity), true
 
 	case "Article.authorEmail":
 		if e.complexity.Article.AuthorEmail == nil {
@@ -935,6 +943,50 @@ func (ec *executionContext) _AddResponse_id(ctx context.Context, field graphql.C
 }
 
 func (ec *executionContext) fieldContext_AddResponse_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AddResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AddResponse_jobId(ctx context.Context, field graphql.CollectedField, obj *model.AddResponse) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AddResponse_jobId(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.JobID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AddResponse_jobId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "AddResponse",
 		Field:      field,
@@ -2171,6 +2223,8 @@ func (ec *executionContext) fieldContext_Mutation_addFeed(ctx context.Context, f
 			switch field.Name {
 			case "id":
 				return ec.fieldContext_AddResponse_id(ctx, field)
+			case "jobId":
+				return ec.fieldContext_AddResponse_jobId(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type AddResponse", field.Name)
 		},
@@ -4790,6 +4844,11 @@ func (ec *executionContext) _AddResponse(ctx context.Context, sel ast.SelectionS
 			out.Values[i] = graphql.MarshalString("AddResponse")
 		case "id":
 			out.Values[i] = ec._AddResponse_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "jobId":
+			out.Values[i] = ec._AddResponse_jobId(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}

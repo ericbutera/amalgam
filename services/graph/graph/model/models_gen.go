@@ -10,7 +10,8 @@ import (
 )
 
 type AddResponse struct {
-	ID string `json:"id"`
+	ID    string `json:"id"`
+	JobID string `json:"jobId"`
 }
 
 type Article struct {

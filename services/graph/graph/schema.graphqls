@@ -36,7 +36,8 @@ type FeedResponse {
 }
 
 type AddResponse {
-  id: ID!
+  id: ID! @deprecated(reason: "add feed returns a jobId")
+  jobId: ID!
 }
 
 type UpdateResponse {

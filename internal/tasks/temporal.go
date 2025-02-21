@@ -48,13 +48,12 @@ func (t *Temporal) Close() {
 	t.client.Close()
 }
 
-func (t *Temporal) Workflow(ctx context.Context, task TaskType) (*TaskResult, error) {
+func (t *Temporal) Workflow(ctx context.Context, task TaskType, args []any) (*TaskResult, error) {
 	workflow, err := taskTypeToWorkflow(task)
 	if err != nil {
 		return nil, err
 	}
 
-	var args []any
 	if task == TaskGenerateFeeds {
 		args = []any{
 			t.config.FakeHost,

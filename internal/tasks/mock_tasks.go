@@ -21,9 +21,9 @@ func (_m *MockTasks) EXPECT() *MockTasks_Expecter {
 	return &MockTasks_Expecter{mock: &_m.Mock}
 }
 
-// Workflow provides a mock function with given fields: ctx, task
-func (_m *MockTasks) Workflow(ctx context.Context, task TaskType) (*TaskResult, error) {
-	ret := _m.Called(ctx, task)
+// Workflow provides a mock function with given fields: ctx, task, args
+func (_m *MockTasks) Workflow(ctx context.Context, task TaskType, args []any) (*TaskResult, error) {
+	ret := _m.Called(ctx, task, args)
 
 	if len(ret) == 0 {
 		panic("no return value specified for Workflow")
@@ -31,19 +31,19 @@ func (_m *MockTasks) Workflow(ctx context.Context, task TaskType) (*TaskResult, 
 
 	var r0 *TaskResult
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, TaskType) (*TaskResult, error)); ok {
-		return rf(ctx, task)
+	if rf, ok := ret.Get(0).(func(context.Context, TaskType, []any) (*TaskResult, error)); ok {
+		return rf(ctx, task, args)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, TaskType) *TaskResult); ok {
-		r0 = rf(ctx, task)
+	if rf, ok := ret.Get(0).(func(context.Context, TaskType, []any) *TaskResult); ok {
+		r0 = rf(ctx, task, args)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*TaskResult)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, TaskType) error); ok {
-		r1 = rf(ctx, task)
+	if rf, ok := ret.Get(1).(func(context.Context, TaskType, []any) error); ok {
+		r1 = rf(ctx, task, args)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -59,13 +59,14 @@ type MockTasks_Workflow_Call struct {
 // Workflow is a helper method to define mock.On call
 //   - ctx context.Context
 //   - task TaskType
-func (_e *MockTasks_Expecter) Workflow(ctx interface{}, task interface{}) *MockTasks_Workflow_Call {
-	return &MockTasks_Workflow_Call{Call: _e.mock.On("Workflow", ctx, task)}
+//   - args []any
+func (_e *MockTasks_Expecter) Workflow(ctx interface{}, task interface{}, args interface{}) *MockTasks_Workflow_Call {
+	return &MockTasks_Workflow_Call{Call: _e.mock.On("Workflow", ctx, task, args)}
 }
 
-func (_c *MockTasks_Workflow_Call) Run(run func(ctx context.Context, task TaskType)) *MockTasks_Workflow_Call {
+func (_c *MockTasks_Workflow_Call) Run(run func(ctx context.Context, task TaskType, args []any)) *MockTasks_Workflow_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(TaskType))
+		run(args[0].(context.Context), args[1].(TaskType), args[2].([]any))
 	})
 	return _c
 }
@@ -75,7 +76,7 @@ func (_c *MockTasks_Workflow_Call) Return(_a0 *TaskResult, _a1 error) *MockTasks
 	return _c
 }
 
-func (_c *MockTasks_Workflow_Call) RunAndReturn(run func(context.Context, TaskType) (*TaskResult, error)) *MockTasks_Workflow_Call {
+func (_c *MockTasks_Workflow_Call) RunAndReturn(run func(context.Context, TaskType, []any) (*TaskResult, error)) *MockTasks_Workflow_Call {
 	_c.Call.Return(run)
 	return _c
 }
