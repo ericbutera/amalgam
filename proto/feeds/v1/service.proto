@@ -12,6 +12,8 @@ service FeedService {
   rpc GetUserFeed(GetUserFeedRequest) returns (GetUserFeedResponse);
   rpc ListFeeds(ListFeedsRequest) returns (ListFeedsResponse);
   rpc ListUserFeeds(ListUserFeedsRequest) returns (ListUserFeedsResponse);
+  rpc SaveUserFeed(SaveUserFeedRequest) returns (SaveUserFeedResponse);
+  rpc SubscribeUserToUrl(SubscribeUserToUrlRequest) returns (SubscribeUserToUrlResponse);
   rpc GetUserArticles(GetUserArticlesRequest) returns (GetUserArticlesResponse);
   rpc MarkArticleAsRead(MarkArticleAsReadRequest) returns (MarkArticleAsReadResponse);
   rpc CreateFeed(CreateFeedRequest) returns (CreateFeedResponse);
@@ -92,6 +94,22 @@ message ListFeedsResponse {
 message ListUserFeedsRequest {
   User user = 1 [(buf.validate.field).required = true];
 }
+
+message SaveUserFeedRequest {
+  User user = 1 [(buf.validate.field).required = true];
+  string feed_id = 2 [(buf.validate.field).string.uuid = true];
+}
+
+message SubscribeUserToUrlRequest {
+  User user = 1 [(buf.validate.field).required = true];
+  string url = 2 [(buf.validate.field).string.uri = true];
+}
+
+message SubscribeUserToUrlResponse {
+  string feed_id = 1;
+}
+
+message SaveUserFeedResponse {}
 
 message UserFeed {
   string feed_id = 1;

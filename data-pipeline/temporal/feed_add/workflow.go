@@ -1,6 +1,7 @@
 package feed_add
 
 import (
+	"errors"
 	"time"
 
 	"go.temporal.io/sdk/temporal"
@@ -12,6 +13,8 @@ var (
 	retryPolicy = temporal.RetryPolicy{
 		MaximumAttempts: 1,
 	}
+
+	ErrDuplicateFeed = errors.New("duplicate feed")
 )
 
 type FeedVerification struct {
@@ -27,21 +30,27 @@ func AddFeedWorkflow(ctx workflow.Context, url string, userID string) error {
 		RetryPolicy:         &retryPolicy,
 	})
 
+	var err error
 	var a *Activities
+	var feedID string
 
 	workflowID := workflow.GetInfo(ctx).WorkflowExecution.ID
 
-	var verification FeedVerification
+	err = workflow.ExecuteActivity(ctx, a.SubscribeUserToUrl, url, userID).Get(ctx, &feedID)
+	if err != nil {
+		return err
+	}
+	if feedID != "" {
+		return nil // feed exists and user is associated, exit!
+	}
 
-	err := workflow.ExecuteActivity(ctx, a.CreateVerifyRecord, FeedVerification{
+	var verification FeedVerification
+	err = workflow.ExecuteActivity(ctx, a.CreateVerifyRecord, FeedVerification{
 		URL:        url,
 		UserID:     userID,
 		WorkflowID: workflowID,
 	}).Get(ctx, &verification)
 	if err != nil {
-		// if feed already exists do not retry
-		// if feed response is stop, do not retry
-		// https://rachelbythebay.com/w/2024/05/27/feed/
 		return err
 	}
 
