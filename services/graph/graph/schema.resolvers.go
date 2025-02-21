@@ -22,16 +22,15 @@ import (
 // AddFeed is the resolver for the addFeed field.
 func (r *mutationResolver) AddFeed(ctx context.Context, url string, name string) (*model.AddResponse, error) {
 	// Note: this should use a Feed Task instead of performing the verification directly. ref: https://www.oreilly.com/library/view/designing-data-intensive-applications/9781491903063/ch08.html
-	resp, err := r.rpcClient.CreateFeed(ctx, &pb.CreateFeedRequest{
-		Feed: &pb.CreateFeedRequest_Feed{
-			Url:  url,
-			Name: name,
-		},
-		User: &pb.User{Id: middleware.GetUserID(ctx)}, // TODO: r.auth.GetUserID(ctx)
-	})
+	args := []any{
+		url,
+		middleware.GetUserID(ctx),
+	}
+	result, err := r.tasks.Workflow(ctx, tasks.TaskAddFeed, args)
 	if err != nil {
 		return nil, errHelper.HandleGrpcErrors(ctx, err, "failed to create feed")
 	}
+	// TODO: how to check job status? (need mechanism to push/poll feed add result)
 	return &model.AddResponse{
 		ID: resp.GetId(),
 	}, nil
