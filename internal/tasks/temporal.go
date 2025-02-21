@@ -73,5 +73,17 @@ func (t *Temporal) Workflow(ctx context.Context, task TaskType, args []any) (*Ta
 	if err != nil {
 		return nil, err
 	}
-	return &TaskResult{ID: we.GetID()}, nil
+	return &TaskResult{
+		ID:    we.GetID(),
+		RunID: we.GetRunID(),
+	}, nil
 }
+
+// func (t *Temporal) JobStatus(ctx context.Context, workflowID string, runID string) (*TaskResult, error) {
+// 	run := t.client.GetWorkflow(ctx, workflowID, runID)
+// 	var feedID string
+// 	err := run.Get(ctx, feedID)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// }

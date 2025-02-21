@@ -355,20 +355,29 @@ func (s *Gorm) CreateFeedVerification(ctx context.Context, verification *svc_mod
 	return verification, nil
 }
 
-/*
-func (s *Gorm) UpdateFeedVerification(ctx context.Context, id string, verification *svc_model.FeedVerification) error {
-	// TODO: handle case where multiple verifications are submitted for same url (user_id)
-	// TODO: ensure feed validations don't get stuck (url + workflow_id)
-	panic("not implemented")
-}
-*/
-
 func (s *Gorm) CreateFetchHistory(ctx context.Context, history *svc_model.FetchHistory) (*svc_model.FetchHistory, error) {
 	err := s.query(ctx).Create(history).Error
 	if err != nil {
 		return nil, err
 	}
 	return history, nil
+}
+
+func (s *Gorm) SubscribeUserToUrl(ctx context.Context, userID string, url string) (*svc_model.UserFeed, error) {
+	var feed svc_model.Feed
+	res := s.query(ctx).First(&feed, "url=?", url)
+	if res.Error != nil {
+		return nil, gormToServiceError(res.Error)
+	}
+
+	uf := &svc_model.UserFeed{
+		UserID: userID,
+		FeedID: feed.ID,
+	}
+	if err := s.SaveUserFeed(ctx, uf); err != nil {
+		return nil, err
+	}
+	return uf, nil
 }
 
 func gormToServiceError(err error) error {

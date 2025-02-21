@@ -38,12 +38,7 @@ func AddFeedWorkflow(ctx workflow.Context, url string, userID string) error {
 	ctx = workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
 		StartToCloseTimeout: time.Minute,
 	})
-
 	var a *Activities
-
 	err := workflow.ExecuteActivity(ctx, a.AddFeed, url, userID).Get(ctx, nil)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }

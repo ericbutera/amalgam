@@ -20,6 +20,8 @@ type Activities struct {
 	graphClient graphql.Client
 	logger      *slog.Logger
 	feedClient  sdk.Client // separate temporal instance for feed worker
+	RetryPolicy temporal.RetryPolicy
+	Config      *Config
 }
 
 func NewActivities(graphClient graphql.Client, feedClient sdk.Client) *Activities {
@@ -29,6 +31,10 @@ func NewActivities(graphClient graphql.Client, feedClient sdk.Client) *Activitie
 		graphClient: graphClient,
 		logger:      slog.Default(),
 		feedClient:  feedClient,
+		Config:      lo.Must(env.New[Config]()),
+		RetryPolicy: temporal.RetryPolicy{
+			MaximumAttempts: 1,
+		},
 	}
 }
 
@@ -45,28 +51,28 @@ func (a *Activities) GenerateFeeds(ctx context.Context, host string, count int /
 }
 
 func (a *Activities) RefreshFeeds(ctx context.Context) error {
-	config := lo.Must(env.New[Config]())
-
 	opts := sdk.StartWorkflowOptions{
-		TaskQueue: config.FeedTaskQueue,
-		RetryPolicy: &temporal.RetryPolicy{
-			MaximumAttempts: 1,
-		},
+		TaskQueue:   a.Config.FeedFetchQueue,
+		RetryPolicy: &a.RetryPolicy,
 	}
 	args := []any{}
 	_, err := a.feedClient.ExecuteWorkflow(ctx, opts, "FetchFeedsWorkflow", args...)
 	return err
 }
 
-func (a *Activities) AddFeed(ctx context.Context, url string, userID string) error {
-	config := lo.Must(env.New[Config]())
-
+func (a *Activities) AddFeed(ctx context.Context, url string, userID string) (string, error) {
 	opts := sdk.StartWorkflowOptions{
-		TaskQueue: config.FeedTaskQueue,
-		RetryPolicy: &temporal.RetryPolicy{
-			MaximumAttempts: 1,
-		},
+		TaskQueue:   a.Config.FeedAddQueue,
+		RetryPolicy: &a.RetryPolicy,
 	}
-	_, err := a.feedClient.ExecuteWorkflow(ctx, opts, "AddFeedWorkflow", url, userID)
-	return err
+	var feedID string
+	run, err := a.feedClient.ExecuteWorkflow(ctx, opts, "AddFeedWorkflow", url, userID)
+	if err != nil {
+		return "", err
+	}
+	err = run.Get(ctx, &feedID)
+	if err != nil {
+		return "", err
+	}
+	return feedID, nil
 }
