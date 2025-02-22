@@ -6,6 +6,7 @@ import (
 
 	"github.com/ericbutera/amalgam/data-pipeline/temporal/feed_tasks"
 	"github.com/ericbutera/amalgam/pkg/config/env"
+	"go.temporal.io/api/enums/v1"
 	sdk "go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/temporal"
 )
@@ -77,17 +78,32 @@ func (t *Temporal) Workflow(ctx context.Context, task TaskType, args []any) (*Ta
 	if err != nil {
 		return nil, err
 	}
+	var result any
+	_ = we.Get(ctx, result)
 	return &TaskResult{
-		ID:    we.GetID(),
-		RunID: we.GetRunID(),
+		ID:     we.GetID(),
+		RunID:  we.GetRunID(),
+		Result: result,
 	}, nil
 }
 
-// func (t *Temporal) JobStatus(ctx context.Context, workflowID string, runID string) (*TaskResult, error) {
-// 	run := t.client.GetWorkflow(ctx, workflowID, runID)
-// 	var feedID string
-// 	err := run.Get(ctx, feedID)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// }
+func (t *Temporal) Status(ctx context.Context, taskID string) (*TaskStatusResult, error) {
+	// TODO: support all workflows
+	workflowID := "AddFeedWorkflow"
+	data := ""
+	history := t.client.GetWorkflowHistory(ctx, taskID, "", false, enums.HISTORY_EVENT_FILTER_TYPE_CLOSE_EVENT)
+	for {
+		if !history.HasNext() {
+			break
+		}
+		event, err := history.Next()
+		if err != nil {
+			break
+		}
+		data = event.EventType.String()
+	}
+
+	return &TaskStatusResult{
+		Status: data,
+	}, nil
+}

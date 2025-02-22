@@ -212,6 +212,17 @@ func (r *queryResolver) Article(ctx context.Context, id string) (*model.Article,
 	return article, nil
 }
 
+// FeedTaskStatus is the resolver for the feedTaskStatus field.
+func (r *queryResolver) FeedTaskStatus(ctx context.Context, id string) (*model.FeedTaskStatusResponse, error) {
+	result, err := r.tasks.Status(ctx, id)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get feed task")
+	}
+	return &model.FeedTaskStatusResponse{
+		Status: result.Status.(string),
+	}, nil
+}
+
 // Mutation returns MutationResolver implementation.
 func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 

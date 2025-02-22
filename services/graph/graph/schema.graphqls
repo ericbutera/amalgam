@@ -81,11 +81,17 @@ type FeedTaskResponse {
   taskId: ID!
 }
 
+type FeedTaskStatusResponse {
+  taskId: ID!
+  status: String!
+}
+
 type Query {
   feeds: FeedResponse! # fetch a users feeds
   feed(id: ID!): Feed
   articles(feedId: ID!, options: ListOptions): ArticlesResponse!
   article(id: ID!): Article
+  feedTaskStatus(id: ID!): FeedTaskStatusResponse!
 }
 
 type Mutation {

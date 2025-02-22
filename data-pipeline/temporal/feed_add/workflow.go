@@ -24,7 +24,7 @@ type FeedVerification struct {
 	UserID     string
 }
 
-func AddFeedWorkflow(ctx workflow.Context, url string, userID string) error {
+func AddFeedWorkflow(ctx workflow.Context, url string, userID string) (string, error) {
 	ctx = workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
 		StartToCloseTimeout: Timeout,
 		RetryPolicy:         &retryPolicy,
@@ -38,10 +38,10 @@ func AddFeedWorkflow(ctx workflow.Context, url string, userID string) error {
 
 	err = workflow.ExecuteActivity(ctx, a.SubscribeUserToUrl, url, userID).Get(ctx, &feedID)
 	if err != nil {
-		return err
+		return feedID, err
 	}
 	if feedID != "" {
-		return nil // feed exists and user is associated, exit!
+		return feedID, nil // feed exists and user is associated, exit!
 	}
 
 	var verification FeedVerification
@@ -51,20 +51,20 @@ func AddFeedWorkflow(ctx workflow.Context, url string, userID string) error {
 		WorkflowID: workflowID,
 	}).Get(ctx, &verification)
 	if err != nil {
-		return err
+		return feedID, err
 	}
 
 	var blob string // TODO: write to bucket and pass reference
 
 	err = workflow.ExecuteActivity(ctx, a.Fetch, verification).Get(ctx, &blob)
 	if err != nil {
-		return err
+		return feedID, err
 	}
 
-	err = workflow.ExecuteActivity(ctx, a.CreateFeed, verification).Get(ctx, nil)
+	err = workflow.ExecuteActivity(ctx, a.CreateFeed, verification).Get(ctx, feedID)
 	if err != nil {
-		return err
+		return feedID, err
 	}
 
-	return nil
+	return feedID, nil
 }

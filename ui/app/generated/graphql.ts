@@ -69,6 +69,12 @@ export type FeedTaskResponse = {
   taskId: Scalars['ID']['output'];
 };
 
+export type FeedTaskStatusResponse = {
+  __typename?: 'FeedTaskStatusResponse';
+  status: Scalars['String']['output'];
+  taskId: Scalars['ID']['output'];
+};
+
 export type FetchFeedsResponse = {
   __typename?: 'FetchFeedsResponse';
   id: Scalars['String']['output'];
@@ -125,6 +131,7 @@ export type Query = {
   article?: Maybe<Article>;
   articles: ArticlesResponse;
   feed?: Maybe<Feed>;
+  feedTaskStatus: FeedTaskStatusResponse;
   feeds: FeedResponse;
 };
 
@@ -141,6 +148,11 @@ export type QueryArticlesArgs = {
 
 
 export type QueryFeedArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryFeedTaskStatusArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -200,6 +212,13 @@ export type ListFeedsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type ListFeedsQuery = { __typename?: 'Query', feeds: { __typename?: 'FeedResponse', feeds: Array<{ __typename?: 'Feed', id: string, url: string, name: string, createdAt: any, viewedAt: any, unreadStartAt: any, unreadCount: number }> } };
+
+export type GetFeedTaskStatusQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type GetFeedTaskStatusQuery = { __typename?: 'Query', feedTaskStatus: { __typename?: 'FeedTaskStatusResponse', status: string } };
 
 export type GetFeedQueryVariables = Exact<{
   id: Scalars['ID']['input'];
@@ -266,6 +285,13 @@ export const ListFeedsDocument = gql`
       unreadStartAt
       unreadCount
     }
+  }
+}
+    `;
+export const GetFeedTaskStatusDocument = gql`
+    query GetFeedTaskStatus($id: ID!) {
+  feedTaskStatus(id: $id) {
+    status
   }
 }
     `;
@@ -348,6 +374,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     ListFeeds(variables?: ListFeedsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<ListFeedsQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<ListFeedsQuery>(ListFeedsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'ListFeeds', 'query', variables);
+    },
+    GetFeedTaskStatus(variables: GetFeedTaskStatusQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetFeedTaskStatusQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetFeedTaskStatusQuery>(GetFeedTaskStatusDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'GetFeedTaskStatus', 'query', variables);
     },
     GetFeed(variables: GetFeedQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetFeedQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetFeedQuery>(GetFeedDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'GetFeed', 'query', variables);

@@ -21,11 +21,18 @@ const (
 type Tasks interface {
 	// Args will be passed as parameters to the workflow.
 	Workflow(ctx context.Context, task TaskType, args []any) (*TaskResult, error)
+	Status(ctx context.Context, taskID string) (*TaskStatusResult, error)
 }
 
 type TaskResult struct {
-	ID    string
-	RunID string
+	ID     string
+	RunID  string
+	Result any
+}
+
+type TaskStatusResult struct {
+	ID     string
+	Status any
 }
 
 func taskTypeToWorkflow(taskType TaskType) (any, error) {

@@ -123,7 +123,7 @@ func (a *Activities) Fetch(ctx context.Context, verification FeedVerification) (
 	return "", err
 }
 
-func (a *Activities) CreateFeed(ctx context.Context, verification FeedVerification) error {
+func (a *Activities) CreateFeed(ctx context.Context, verification FeedVerification) (string, error) {
 	resp, err := a.rpc.CreateFeed(ctx, &pb.CreateFeedRequest{
 		Feed: &pb.CreateFeedRequest_Feed{
 			Url: verification.URL,
@@ -131,12 +131,10 @@ func (a *Activities) CreateFeed(ctx context.Context, verification FeedVerificati
 		User: &pb.User{Id: verification.UserID},
 	})
 	if err != nil {
-		return err
+		return "", err
 	}
-
 	slog.Debug("created feed", "feed_id", resp.GetId(), "verification_id", verification.ID)
-
-	return nil
+	return resp.Id, nil
 }
 
 // Attempts to associate an existing feed with a user.

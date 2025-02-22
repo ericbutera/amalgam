@@ -53,6 +53,11 @@ type FeedTaskResponse struct {
 	TaskID string `json:"taskId"`
 }
 
+type FeedTaskStatusResponse struct {
+	TaskID string `json:"taskId"`
+	Status string `json:"status"`
+}
+
 type FetchFeedsResponse struct {
 	ID string `json:"id"`
 }
