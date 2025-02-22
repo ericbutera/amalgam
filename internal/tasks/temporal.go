@@ -88,7 +88,7 @@ func (t *Temporal) Workflow(ctx context.Context, task TaskType, args []any) (*Ta
 }
 
 func (t *Temporal) Status(ctx context.Context, taskID string) (*TaskStatusResult, error) {
-	data := ""
+	var data string
 	history := t.client.GetWorkflowHistory(ctx, taskID, "", false, enums.HISTORY_EVENT_FILTER_TYPE_CLOSE_EVENT)
 	for {
 		if !history.HasNext() {
@@ -96,9 +96,9 @@ func (t *Temporal) Status(ctx context.Context, taskID string) (*TaskStatusResult
 		}
 		event, err := history.Next()
 		if err != nil {
-			break
+			return nil, err
 		}
-		data = event.EventType.String()
+		data = event.GetEventType().String()
 	}
 
 	return &TaskStatusResult{

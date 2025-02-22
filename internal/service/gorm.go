@@ -413,13 +413,14 @@ func (s *Gorm) updateArticleCount(ctx context.Context, userID string, feedID str
 }
 
 func gormToServiceError(err error) error {
-	if errors.Is(err, gorm.ErrRecordNotFound) {
+	switch {
+	case errors.Is(err, gorm.ErrRecordNotFound):
 		return ErrNotFound
-	} else if errors.Is(err, gorm.ErrDuplicatedKey) {
+	case errors.Is(err, gorm.ErrDuplicatedKey):
 		return ErrDuplicate
-	} else if strings.Contains(err.Error(), "Error 1062 (23000): Duplicate entry") {
+	case strings.Contains(err.Error(), "Error 1062 (23000): Duplicate entry"):
 		return ErrDuplicate // TODO: revisit this workaround
+	default:
+		return err
 	}
-	return err
-
 }

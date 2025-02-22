@@ -73,7 +73,6 @@ func (a *Activities) CreateVerifyRecord(ctx context.Context, verification FeedVe
 		st, ok := status.FromError(err)
 		if ok && st.Code() == codes.AlreadyExists {
 			return nil, temporal.NewNonRetryableApplicationError("duplicate feed", "ErrDuplicateFeed", nil, nil)
-
 		}
 		return nil, err
 	}
@@ -133,8 +132,7 @@ func (a *Activities) CreateFeed(ctx context.Context, verification FeedVerificati
 	if err != nil {
 		return "", err
 	}
-	slog.Debug("created feed", "feed_id", resp.GetId(), "verification_id", verification.ID)
-	return resp.Id, nil
+	return resp.GetId(), nil
 }
 
 // Attempts to associate an existing feed with a user.
@@ -150,5 +148,5 @@ func (a *Activities) SubscribeUserToUrl(ctx context.Context, url string, userID 
 		}
 		return "", err
 	}
-	return res.FeedId, nil
+	return res.GetFeedId(), nil
 }

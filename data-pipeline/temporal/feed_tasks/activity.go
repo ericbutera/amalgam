@@ -55,7 +55,7 @@ func (a *Activities) GenerateFeeds(ctx context.Context, host string, count int /
 
 func (a *Activities) RefreshFeeds(ctx context.Context) error {
 	opts := sdk.StartWorkflowOptions{
-		TaskQueue: config.FeedFetchQueue,
+		TaskQueue: a.Config.FeedFetchQueue,
 		RetryPolicy: &temporal.RetryPolicy{
 			MaximumAttempts: 1,
 		},
