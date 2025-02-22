@@ -88,8 +88,6 @@ func (t *Temporal) Workflow(ctx context.Context, task TaskType, args []any) (*Ta
 }
 
 func (t *Temporal) Status(ctx context.Context, taskID string) (*TaskStatusResult, error) {
-	// TODO: support all workflows
-	workflowID := "AddFeedWorkflow"
 	data := ""
 	history := t.client.GetWorkflowHistory(ctx, taskID, "", false, enums.HISTORY_EVENT_FILTER_TYPE_CLOSE_EVENT)
 	for {

@@ -88,8 +88,9 @@ func (a *Activities) CreateVerifyRecord(ctx context.Context, verification FeedVe
 	}, nil
 }
 
+// fetch the remote feed to verify it is a real site & contains rss content
+// intent is to return blob storage location
 func (a *Activities) Fetch(ctx context.Context, verification FeedVerification) (string, error) {
-
 	err := a.fetch.Url(ctx, verification.URL, func(params fetch.CallbackParams) error {
 		// retry on 500
 		// expo backoff on 429
@@ -119,7 +120,6 @@ func (a *Activities) Fetch(ctx context.Context, verification FeedVerification) (
 		slog.Info("unable to fetch feed", "error", err, "url", verification.URL)
 		return "", err
 	}
-
 	return "", err
 }
 
@@ -150,6 +150,5 @@ func (a *Activities) SubscribeUserToUrl(ctx context.Context, url string, userID 
 		}
 		return "", err
 	}
-	slog.Debug("subscribed user to feed", "feed_id", res.FeedId, "url", url, "user_id", userID)
 	return res.FeedId, nil
 }

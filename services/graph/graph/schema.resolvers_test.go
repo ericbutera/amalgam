@@ -80,7 +80,7 @@ func Test_AddFeed(t *testing.T) {
 		seed.UserID,
 	}
 	r.task.EXPECT().
-		Workflow(mock.Anything, tasks.TaskFetchFeeds, args).
+		Workflow(mock.Anything, tasks.TaskAddFeed, args).
 		Return(&tasks.TaskResult{ID: jobID}, nil)
 
 	actual, err := r.resolver.Mutation().

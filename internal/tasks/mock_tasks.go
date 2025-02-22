@@ -21,6 +21,65 @@ func (_m *MockTasks) EXPECT() *MockTasks_Expecter {
 	return &MockTasks_Expecter{mock: &_m.Mock}
 }
 
+// Status provides a mock function with given fields: ctx, taskID
+func (_m *MockTasks) Status(ctx context.Context, taskID string) (*TaskStatusResult, error) {
+	ret := _m.Called(ctx, taskID)
+
+	if len(ret) == 0 {
+		panic("no return value specified for Status")
+	}
+
+	var r0 *TaskStatusResult
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string) (*TaskStatusResult, error)); ok {
+		return rf(ctx, taskID)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string) *TaskStatusResult); ok {
+		r0 = rf(ctx, taskID)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*TaskStatusResult)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = rf(ctx, taskID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// MockTasks_Status_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Status'
+type MockTasks_Status_Call struct {
+	*mock.Call
+}
+
+// Status is a helper method to define mock.On call
+//   - ctx context.Context
+//   - taskID string
+func (_e *MockTasks_Expecter) Status(ctx interface{}, taskID interface{}) *MockTasks_Status_Call {
+	return &MockTasks_Status_Call{Call: _e.mock.On("Status", ctx, taskID)}
+}
+
+func (_c *MockTasks_Status_Call) Run(run func(ctx context.Context, taskID string)) *MockTasks_Status_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(string))
+	})
+	return _c
+}
+
+func (_c *MockTasks_Status_Call) Return(_a0 *TaskStatusResult, _a1 error) *MockTasks_Status_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *MockTasks_Status_Call) RunAndReturn(run func(context.Context, string) (*TaskStatusResult, error)) *MockTasks_Status_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // Workflow provides a mock function with given fields: ctx, task, args
 func (_m *MockTasks) Workflow(ctx context.Context, task TaskType, args []any) (*TaskResult, error) {
 	ret := _m.Called(ctx, task, args)

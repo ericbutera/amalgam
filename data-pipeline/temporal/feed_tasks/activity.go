@@ -66,19 +66,19 @@ func (a *Activities) RefreshFeeds(ctx context.Context) error {
 	return err
 }
 
-func (a *Activities) AddFeed(ctx context.Context, url string, userID string) error {
+func (a *Activities) AddFeed(ctx context.Context, url string, userID string) (string, error) {
 	opts := sdk.StartWorkflowOptions{
 		TaskQueue:   a.Config.FeedAddQueue,
 		RetryPolicy: &a.RetryPolicy,
 	}
-	_, err := a.feedClient.ExecuteWorkflow(ctx, opts, "AddFeedWorkflow", url, userID)
+	var feedID string
+	run, err := a.feedClient.ExecuteWorkflow(ctx, opts, "AddFeedWorkflow", url, userID)
 	if err != nil {
-		return err
+		return "", err
 	}
-
+	err = run.Get(ctx, &feedID)
 	if err != nil {
-		return err
+		return feedID, err
 	}
-
-	return nil
+	return feedID, nil
 }

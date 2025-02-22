@@ -43,9 +43,10 @@ func (s *FeedAddWorkflowTestSuite) Test_FeedAddWorkflow() {
 		WorkflowID: workflowID,
 	}
 
-	env.OnActivity(a.CreateVerifyRecord, mock.Anything, verification /*verification.URL, verification.UserID, workflowID*/).Return(&verification, nil)
+	env.OnActivity(a.SubscribeUserToUrl, mock.Anything, verification.URL, verification.UserID).Return("", nil)
+	env.OnActivity(a.CreateVerifyRecord, mock.Anything, verification).Return(&verification, nil)
 	env.OnActivity(a.Fetch, mock.Anything, verification).Return("rss_file", nil)
-	env.OnActivity(a.CreateFeed, mock.Anything, verification).Return(nil)
+	env.OnActivity(a.CreateFeed, mock.Anything, verification).Return("test-feed-id", nil)
 	env.RegisterActivity(a)
 	env.ExecuteWorkflow(app.AddFeedWorkflow, verification.URL, verification.UserID)
 

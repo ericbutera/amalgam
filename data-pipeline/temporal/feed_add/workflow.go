@@ -61,7 +61,7 @@ func AddFeedWorkflow(ctx workflow.Context, url string, userID string) (string, e
 		return feedID, err
 	}
 
-	err = workflow.ExecuteActivity(ctx, a.CreateFeed, verification).Get(ctx, feedID)
+	err = workflow.ExecuteActivity(ctx, a.CreateFeed, verification).Get(ctx, &feedID)
 	if err != nil {
 		return feedID, err
 	}
