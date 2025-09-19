@@ -25,6 +25,6 @@ func HandleGrpcErrors(ctx context.Context, err error, msg string) error {
 	case codes.InvalidArgument:
 		return convert.ValidationToGraphErr(ctx, s)
 	default:
-		return gqlerror.Errorf(lo.CoalesceOrEmpty(msg, "could not perform action"))
+		return gqlerror.Errorf("%s", lo.CoalesceOrEmpty(msg, "could not perform action"))
 	}
 }

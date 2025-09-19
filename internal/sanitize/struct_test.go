@@ -11,7 +11,7 @@ import (
 type TestStruct struct {
 	Url     string `san:"url"`
 	Content string `san:"html"`
-	Title   string
+	Title   string `validate:"trim"`
 }
 
 func TestHappyPath(t *testing.T) {

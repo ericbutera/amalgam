@@ -14,7 +14,7 @@ type Article struct {
 	FeedID      string    `json:"feedId"      validate:"required,uuid4"`
 	URL         string    `json:"url"         san:"trim,url"            validate:"required,url"`
 	Title       string    `json:"title"`
-	ImageURL    string    `json:"imageUrl"    validate:"url"`
+	ImageURL    string    `json:"imageUrl"    validate:"omitempty,url"`
 	Preview     string    `json:"preview"     san:"html"`
 	Content     string    `json:"content"     san:"html"`
 	Description string    `json:"description" san:"html"`

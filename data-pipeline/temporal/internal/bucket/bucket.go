@@ -9,10 +9,10 @@ import (
 	"time"
 
 	"github.com/ericbutera/amalgam/pkg/config/env"
+	"github.com/go-viper/mapstructure/v2"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/minio/minio-go/v7/pkg/lifecycle"
-	"github.com/mitchellh/mapstructure"
 )
 
 type Config struct {

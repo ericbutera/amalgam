@@ -1,11 +1,11 @@
 module github.com/ericbutera/amalgam
 
-go 1.23.4
+go 1.25.1
 
 require (
 	buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.31.0-20230802163732-1c33ebd9ecfa.1
-	github.com/99designs/gqlgen v0.17.55
-	github.com/Khan/genqlient v0.7.0
+	github.com/99designs/gqlgen v0.17.57
+	github.com/Khan/genqlient v0.8.1
 	github.com/PuerkitoBio/purell v1.1.1
 	github.com/brianvoe/gofakeit/v6 v6.28.0
 	github.com/bufbuild/protovalidate-go v0.2.1
@@ -16,6 +16,7 @@ require (
 	github.com/go-chi/httplog/v2 v2.1.1
 	github.com/go-playground/validator/v10 v10.22.1
 	github.com/go-sanitize/sanitize v1.1.0
+	github.com/go-viper/mapstructure/v2 v2.4.0
 	github.com/golang/protobuf v1.5.4
 	github.com/google/go-cmp v0.6.0
 	github.com/google/uuid v1.6.0
@@ -24,7 +25,6 @@ require (
 	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.1.0
 	github.com/microcosm-cc/bluemonday v1.0.27
 	github.com/minio/minio-go/v7 v7.0.79
-	github.com/mitchellh/mapstructure v1.5.0
 	github.com/mmcdole/gofeed v1.3.0
 	github.com/oklog/run v1.1.0
 	github.com/orandin/slog-gorm v1.4.0
@@ -43,7 +43,7 @@ require (
 	github.com/swaggo/swag v1.16.4
 	github.com/uber-go/tally/v4 v4.1.16
 	github.com/vektah/gqlparser v1.3.1
-	github.com/vektah/gqlparser/v2 v2.5.17
+	github.com/vektah/gqlparser/v2 v2.5.19
 	go.opentelemetry.io/contrib/bridges/otelslog v0.6.0
 	go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin v0.56.0
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.54.0
@@ -61,7 +61,7 @@ require (
 	go.temporal.io/sdk v1.29.1
 	go.temporal.io/sdk/contrib/opentelemetry v0.6.0
 	go.temporal.io/sdk/contrib/tally v0.2.0
-	golang.org/x/net v0.33.0
+	golang.org/x/net v0.44.0
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250102185135-69823020774d
 	google.golang.org/grpc v1.67.1
 	google.golang.org/protobuf v1.36.1
@@ -83,6 +83,7 @@ require (
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bits-and-blooms/bitset v1.2.0 // indirect
+	github.com/bmatcuk/doublestar/v4 v4.6.1 // indirect
 	github.com/bytedance/sonic v1.12.3 // indirect
 	github.com/bytedance/sonic/loader v0.2.0 // indirect
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
@@ -155,14 +156,14 @@ require (
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/goleak v1.3.0 // indirect
 	golang.org/x/arch v0.11.0 // indirect
-	golang.org/x/crypto v0.31.0 // indirect
+	golang.org/x/crypto v0.42.0 // indirect
 	golang.org/x/exp v0.0.0-20240904232852-e7e105dedf7e // indirect
-	golang.org/x/mod v0.21.0 // indirect
-	golang.org/x/sync v0.10.0 // indirect
-	golang.org/x/sys v0.28.0 // indirect
-	golang.org/x/text v0.21.0 // indirect
+	golang.org/x/mod v0.28.0 // indirect
+	golang.org/x/sync v0.17.0 // indirect
+	golang.org/x/sys v0.36.0 // indirect
+	golang.org/x/text v0.29.0 // indirect
 	golang.org/x/time v0.6.0 // indirect
-	golang.org/x/tools v0.24.0 // indirect
+	golang.org/x/tools v0.36.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20241007155032-5fefd90f89a9 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect

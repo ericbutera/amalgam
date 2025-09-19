@@ -54,6 +54,8 @@ linters:
         disabled: true
       - name: cognitive-complexity
         disabled: true
+      - name: struct-tag
+        disabled: true
     tagalign:
       align: true
       sort: false
