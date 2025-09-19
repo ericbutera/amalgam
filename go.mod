@@ -1,6 +1,6 @@
 module github.com/ericbutera/amalgam
 
-go 1.23.2
+go 1.23.4
 
 require (
 	buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.31.0-20230802163732-1c33ebd9ecfa.1
