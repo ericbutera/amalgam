@@ -1,20 +1,17 @@
 package env
 
 import (
-	"fmt"
-
-	"github.com/spf13/viper"
+	"github.com/caarlos0/env/v11"
 )
 
-// NewFromEnv unmarshals the environment into a struct.
-// Make sure to include an init() function to set defaults.
+// Unmarshal environment into a struct using caarlos0/env.
+// Does not require an init() function to set defaults.
 func New[T any]() (*T, error) {
-	viper.AutomaticEnv()
-
-	var value T
-
-	if err := viper.Unmarshal(&value); err != nil {
-		return nil, fmt.Errorf("unable to unmarshal config: %w", err)
+	var config T
+	if err := env.Parse(&config); err != nil {
+		return nil, err
 	}
-	return &value, nil
+
+	cfg, err := env.ParseAs[T]()
+	return &cfg, err
 }

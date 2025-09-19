@@ -42,8 +42,8 @@ func NewFeeds(host string, insecure bool) (Feeds, error) {
 }
 
 type Config struct {
-	RpcHost     string `mapstructure:"rpc_host"`
-	RpcInsecure bool   `mapstructure:"rpc_insecure"`
+	RpcHost     string `env:"RPC_HOST"`
+	RpcInsecure bool   `env:"RPC_INSECURE" envDefault:"false"`
 }
 
 func NewFeedsFromEnv() (Feeds, error) {

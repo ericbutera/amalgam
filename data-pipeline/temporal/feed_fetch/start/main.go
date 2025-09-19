@@ -29,10 +29,10 @@ func main() {
 }
 
 type Config struct {
-	UseSchedule bool   `mapstructure:"use_schedule"`
-	ScheduleID  string `mapstructure:"schedule_id"`
-	WorkflowID  string `mapstructure:"workflow_id"`
-	TaskQueue   string `mapstructure:"task_queue"`
+	UseSchedule bool   `env:"USE_SCHEDULE" envDefault:"false"`
+	ScheduleID  string `env:"SCHEDULE_ID" envDefault:"feed-fetch-schedule-id"`
+	WorkflowID  string `env:"WORKFLOW_ID" envDefault:"fetch-feeds-workflow-id"`
+	TaskQueue   string `env:"TASK_QUEUE"`
 }
 
 func runWorker() error {
