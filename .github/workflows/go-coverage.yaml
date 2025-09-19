@@ -5,6 +5,7 @@
 name: golang-coverage
 on:
   workflow_call: # reusable
+  workflow_dispatch:
 
 jobs:
   unit-tests:
