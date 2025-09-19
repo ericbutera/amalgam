@@ -20,8 +20,14 @@ Tech demo of a modern web application stack.
 
 ## Prerequisites
 
-1. [docker](https://docs.docker.com/get-docker/)
-2. [tilt.dev](https://tilt.dev/)
+Install the required prerequisites:
+
+1. [docker](https://docs.docker.com/get-docker/) or [orbstack](https://www.orbstack.com/)
+2. [asdf-vm](https://asdf-vm.com/)
+
+Run `asdf install` to install additional required tools.
+
+One caveat is that you may need to add individual asdf [plugins](https://asdf-vm.com/manage/plugins.html). Due to security reasons, asdf doesn't provide a native way to automatically add missing plugins during install. If you are comfortable with the tools listed in [.tool-versions](./.tool-versions), you can run the following command: `cut -d' ' -f1 .tool-versions | xargs -I {} asdf plugin add {}`, then `asdf install`. You can verify the plugins are installed by running `asdf plugin list`.
 
 ## Run
 
