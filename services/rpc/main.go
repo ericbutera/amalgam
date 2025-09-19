@@ -4,6 +4,7 @@ import (
 	"context"
 	"log/slog"
 	"os"
+	"strings"
 
 	"github.com/ericbutera/amalgam/internal/db"
 	"github.com/ericbutera/amalgam/internal/service"
@@ -33,7 +34,7 @@ func run() error {
 	}
 
 	if config.OtelEnable {
-		opts = append(opts, server.WithOtel(ctx, config.IgnoredSpanNames))
+		opts = append(opts, server.WithOtel(ctx, strings.Split(config.IgnoredSpanNames, ",")))
 	}
 
 	srv, err := server.New(opts...)

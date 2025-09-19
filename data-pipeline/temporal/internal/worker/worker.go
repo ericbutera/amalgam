@@ -12,7 +12,7 @@ import (
 )
 
 type Config struct {
-	TaskQueue string `mapstructure:"task_queue"`
+	TaskQueue string `env:"TASK_QUEUE"`
 }
 
 func NewFromEnv(client client.Client) (worker.Worker, error) {

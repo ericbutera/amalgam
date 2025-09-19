@@ -48,7 +48,7 @@ func (a *Activities) RefreshFeeds(ctx context.Context) error {
 	config := lo.Must(env.New[Config]())
 
 	opts := sdk.StartWorkflowOptions{
-		TaskQueue: config.FeedTaskQueue,
+		TaskQueue: config.TaskQueue,
 		RetryPolicy: &temporal.RetryPolicy{
 			MaximumAttempts: 1,
 		},
