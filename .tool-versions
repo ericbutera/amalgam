@@ -5,7 +5,7 @@ just 1.36.0
 grpcurl 1.9.1
 buf 1.47.2
 act 0.2.69
-golangci-lint 1.62.0
+golangci-lint 2.4.0
 protoc-gen-go 1.35.2
 protoc-gen-go-grpc 1.5.1
 mockery 2.47.0
