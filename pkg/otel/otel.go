@@ -85,7 +85,9 @@ func createShutdownFunc(shutdownFuncs *[]func(context.Context) error) func(conte
 		for _, fn := range *shutdownFuncs {
 			err = errors.Join(err, fn(ctx))
 		}
+
 		*shutdownFuncs = nil
+
 		return err
 	}
 }
@@ -115,6 +117,7 @@ func setupTracing(ctx context.Context, ignoredSpans []string, shutdownFuncs *[]f
 	provider := trace.NewTracerProvider(opts...)
 	*shutdownFuncs = append(*shutdownFuncs, provider.Shutdown)
 	otel.SetTracerProvider(provider)
+
 	return nil
 }
 
@@ -127,6 +130,7 @@ func setupMetrics(ctx context.Context, shutdownFuncs *[]func(context.Context) er
 	provider := metric.NewMeterProvider(metric.WithReader(metric.NewPeriodicReader(exporter)))
 	*shutdownFuncs = append(*shutdownFuncs, provider.Shutdown)
 	otel.SetMeterProvider(provider)
+
 	return nil
 }
 
@@ -139,6 +143,7 @@ func setupLogging(ctx context.Context, shutdownFuncs *[]func(context.Context) er
 	provider := log.NewLoggerProvider(log.WithProcessor(log.NewBatchProcessor(exporter)))
 	*shutdownFuncs = append(*shutdownFuncs, provider.Shutdown)
 	global.SetLoggerProvider(provider)
+
 	return nil
 }
 

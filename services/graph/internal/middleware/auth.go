@@ -34,5 +34,6 @@ func GetUserID(ctx context.Context) string {
 	if !ok {
 		panic("user ID not set")
 	}
+
 	return user
 }

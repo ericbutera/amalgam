@@ -27,13 +27,16 @@ func (*transforms) RssToArticles(rss io.ReadCloser) (parse.Articles, error) {
 func (*transforms) ArticleToJsonl(feedId string, articles parse.Articles) (bytes.Buffer, []error) {
 	// TODO: research returning a reader instead of a buffer. io.Pipe?
 	var buf bytes.Buffer
+
 	encoder := json.NewEncoder(&buf)
 
 	var errs []error
 
 	for _, article := range articles {
 		article.FeedId = feedId
-		if err := encoder.Encode(article); err != nil {
+
+		err := encoder.Encode(article)
+		if err != nil {
 			errs = append(errs, err)
 			continue // next article
 		}

@@ -56,6 +56,7 @@ func NewActivitiesFromEnv() *Activities {
 		feeds,
 	)
 	a.Closers = func() { feeds.Close() }
+
 	return a
 }
 
@@ -80,11 +81,14 @@ func (a *Activities) DownloadActivity(ctx context.Context, feedId string, url st
 		if params.StatusCode == http.StatusNotModified {
 			return ErrContentNotChanged
 		}
+
 		upload, err := a.bucket.WriteStream(ctx, BucketName, rssFile, params.Reader, params.ContentType)
 		if err != nil {
 			return err
 		}
+
 		entry.Debug("downloaded activity", "key", upload.Key, "bucket", upload.Bucket, "size", upload.Size)
+
 		return nil
 	}, &fetch.ExtraParams{
 		// TODO: Etag: "select etag from fetch_history where feed_id = ? order by created_at desc limit 1",
@@ -92,6 +96,7 @@ func (a *Activities) DownloadActivity(ctx context.Context, feedId string, url st
 	if err != nil {
 		return "", err
 	}
+
 	return rssFile, nil
 }
 
@@ -130,7 +135,9 @@ func (a *Activities) ParseActivity(ctx context.Context, feedId string, rssFile s
 	if err != nil {
 		return articlesFile, err
 	}
+
 	entry.Debug("parse activity: upload info", "key", upload.Key, "bucket", upload.Bucket, "size", upload.Size)
+
 	return articlesFile, nil
 }
 
@@ -152,6 +159,7 @@ func (a *Activities) SaveActivity(ctx context.Context, feedId string, articlesPa
 	}
 
 	defer articleReader.Close()
+
 	decoder := json.NewDecoder(articleReader)
 
 	for {
@@ -162,18 +170,23 @@ func (a *Activities) SaveActivity(ctx context.Context, feedId string, articlesPa
 			}
 
 			results.Failed++
+
 			entry.Error("save: decode error", "error", err)
+
 			continue
 		}
 
 		id, err := a.feeds.SaveArticle(ctx, article)
 		if err != nil {
 			handleSaveError(err, article.Url, entry)
+
 			results.Failed++
+
 			continue
 		}
 
 		results.Succeeded++
+
 		entry.Debug("saved article", "article_url", article.Url, "article_id", id)
 	}
 
@@ -195,8 +208,10 @@ func handleSaveError(err error, url string, entry *slog.Logger) {
 		for _, detail := range status.Convert(err).Details() {
 			entry.Error("save article", "article_url", url, "error", detail)
 		}
+
 		return
 	}
+
 	entry.Error("save article", "article_url", url, "error", err)
 }
 

@@ -37,18 +37,22 @@ func Pager[T any](query *gorm.DB, options ListOptions, rules []paginator.Rule) (
 	if options.Cursor.Previous != "" {
 		p.SetBeforeCursor(options.Cursor.Previous)
 	}
+
 	if options.Cursor.Next != "" {
 		p.SetAfterCursor(options.Cursor.Next)
 	}
 
 	var dest []T
+
 	result, cursor, err := p.Paginate(query, &dest)
 	if err != nil {
 		return nil, err
 	}
+
 	if result.Error != nil {
 		return nil, result.Error
 	}
+
 	return &Result[T]{
 		Cursor: Cursor{
 			Previous: lo.FromPtr(cursor.Before),

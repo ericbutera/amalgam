@@ -36,6 +36,7 @@ func setupActivities(t *testing.T) *activitySetup {
 	fetcher := fetch.NewMockFetch(t)
 	bucketClient := bucket.NewMockBucket(t)
 	feeds := feeds.NewMockFeeds(t)
+
 	return &activitySetup{
 		fetcher:    fetcher,
 		bucket:     bucketClient,
@@ -46,6 +47,7 @@ func setupActivities(t *testing.T) *activitySetup {
 
 func TestDownloadActivity(t *testing.T) {
 	t.Parallel()
+
 	url := "http://localhost/feed.xml"
 	rssFile := app.RssPath(TestFeedID)
 	reader := newReader("test data")
@@ -72,17 +74,20 @@ func TestDownloadActivity(t *testing.T) {
 
 func dataToArticles(t *testing.T, data io.Reader) parse.Articles {
 	decoder := json.NewDecoder(data)
+
 	articles := parse.Articles{}
 	for decoder.More() {
 		var a parse.Article
 		require.NoError(t, decoder.Decode(&a))
 		articles = append(articles, &a)
 	}
+
 	return articles
 }
 
 func compareArticles(t *testing.T, expected parse.Articles, actual parse.Articles) {
-	require.Equal(t, len(expected), len(actual))
+	require.Len(t, actual, len(expected))
+
 	for x := 0; x < len(expected); x++ {
 		a := expected[x]
 		b := actual[x]
@@ -93,11 +98,13 @@ func compareArticles(t *testing.T, expected parse.Articles, actual parse.Article
 func getRssData(t *testing.T) io.ReadCloser {
 	d, err := test.FileToReadCloser("feeds/minimal.xml") // reader is single use
 	require.NoError(t, err)
+
 	return d
 }
 
 func TestParseActivity(t *testing.T) {
 	t.Parallel()
+
 	rssFile := app.RssPath(TestFeedID)
 	articlesFile := app.ArticlePath(TestFeedID)
 
@@ -106,6 +113,7 @@ func TestParseActivity(t *testing.T) {
 	matcher := mock.MatchedBy(func(data any) bool {
 		reader := getRssData(t)
 		defer reader.Close()
+
 		expected, err := parse.Parse(reader)
 		require.NoError(t, err)
 
@@ -113,6 +121,7 @@ func TestParseActivity(t *testing.T) {
 		require.True(t, ok)
 		actual := dataToArticles(t, r)
 		compareArticles(t, expected, actual)
+
 		return true
 	})
 

@@ -15,5 +15,6 @@ func NewWithLevel(level slog.Leveler) *slog.Logger {
 	})
 	logger := slog.New(handler)
 	slog.SetDefault(logger)
+
 	return logger
 }

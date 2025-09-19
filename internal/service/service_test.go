@@ -29,6 +29,7 @@ func newTestHelper(t *testing.T) *testHelper {
 	t.Helper()
 	db := test.NewDB(t)
 	svc := service.NewGorm(db)
+
 	return &testHelper{
 		svc:   svc,
 		db:    db,
@@ -42,6 +43,7 @@ func TestFeeds(t *testing.T) {
 
 	data, err := seed.FeedAndArticles(h.db, 1)
 	require.NoError(t, err)
+
 	feed := data.Feed
 
 	feeds, err := h.svc.Feeds(context.Background())
@@ -122,6 +124,7 @@ func TestUpdateFeed(t *testing.T) {
 
 	data, err := seed.FeedAndArticles(h.db, 1)
 	require.NoError(t, err)
+
 	feed := data.Feed
 
 	expected := &svcModel.Feed{
@@ -195,6 +198,7 @@ func TestGetArticle(t *testing.T) {
 
 	data, err := seed.FeedAndArticles(h.db, 1)
 	require.NoError(t, err)
+
 	article := data.Articles[0]
 
 	actual, err := h.svc.GetArticle(context.Background(), article.ID)

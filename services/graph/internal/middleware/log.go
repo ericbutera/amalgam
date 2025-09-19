@@ -26,5 +26,6 @@ func (ErrorLogging) InterceptField(ctx context.Context, next graphql.Resolver) (
 	if err != nil {
 		slog.Error("graph error", "error", err)
 	}
+
 	return res, err
 }

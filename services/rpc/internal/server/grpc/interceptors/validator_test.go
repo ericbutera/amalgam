@@ -21,6 +21,7 @@ import (
 func TestUnaryValidation(t *testing.T) {
 	validator, err := protovalidate.New()
 	require.NoError(t, err)
+
 	interceptor := interceptors.UnaryValidation(validator)
 	req := &empty.Empty{}
 	ctx := context.Background()
@@ -46,6 +47,7 @@ func (m *MockValidator) Validate(msg proto.Message) error {
 func TestUnaryValidationError(t *testing.T) {
 	validator, err := protovalidate.New()
 	require.NoError(t, err)
+
 	interceptor := interceptors.UnaryValidation(validator)
 	resp, err := interceptor(
 		context.Background(),
@@ -70,8 +72,10 @@ func TestUnaryValidationError(t *testing.T) {
 			violations := v.GetFieldViolations()
 			assert.Len(t, violations, 1)
 			assert.Equal(t, "feed.url", violations[0].GetField())
+
 			return
 		}
 	}
+
 	assert.Fail(t, "validation error not found")
 }

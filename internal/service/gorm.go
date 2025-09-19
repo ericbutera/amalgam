@@ -53,13 +53,9 @@ func NewGorm(db *gorm.DB) Service {
 	return &Gorm{db: db}
 }
 
-// query returns a new query builder with the given context. required for otel
-func (s *Gorm) query(ctx context.Context) *gorm.DB {
-	return s.db.WithContext(ctx)
-}
-
 func (s *Gorm) Feeds(ctx context.Context) ([]svc_model.Feed, error) {
 	var feeds []svc_model.Feed
+
 	result := s.query(ctx).
 		Where("is_active=?", true).
 		Order("name").       // TODO index name
@@ -69,6 +65,7 @@ func (s *Gorm) Feeds(ctx context.Context) ([]svc_model.Feed, error) {
 	if result.Error != nil {
 		return nil, ErrQueryFailed
 	}
+
 	return feeds, nil
 }
 
@@ -77,9 +74,11 @@ func feedUrlExists(tx *gorm.DB, url string) error {
 	if res.Error != nil {
 		return res.Error
 	}
+
 	if res.RowsAffected > 0 {
 		return ErrDuplicate
 	}
+
 	return nil
 }
 
@@ -90,6 +89,7 @@ func (s *Gorm) CreateFeed(ctx context.Context, data *svc_model.Feed) (CreateFeed
 	if err != nil {
 		return res, fmt.Errorf("unable to create feed: %w", err)
 	}
+
 	res.ValidationErrors = validate.Struct(feed, validateFeedCreate).Errors
 	if len(res.ValidationErrors) > 0 {
 		return res, ErrValidation
@@ -99,13 +99,18 @@ func (s *Gorm) CreateFeed(ctx context.Context, data *svc_model.Feed) (CreateFeed
 	dbFeed.IsActive = true
 
 	err = s.query(ctx).Transaction(func(tx *gorm.DB) error {
-		if err := feedUrlExists(tx, feed.URL); err != nil {
+		err := feedUrlExists(tx, feed.URL)
+		if err != nil {
 			return err
 		}
-		if err := tx.Create(&dbFeed).Error; err != nil {
+
+		err = tx.Create(&dbFeed).Error
+		if err != nil {
 			return err
 		}
+
 		res.ID = dbFeed.ID
+
 		return nil
 	})
 
@@ -126,21 +131,26 @@ func (s *Gorm) UpdateFeed(ctx context.Context, id string, feed *svc_model.Feed) 
 	if result.Error != nil {
 		return result.Error
 	}
+
 	if result.RowsAffected == 0 {
 		return ErrNotFound
 	}
+
 	return nil
 }
 
 func (s *Gorm) GetFeed(ctx context.Context, id string) (*svc_model.Feed, error) {
 	var feed svc_model.Feed
+
 	result := s.query(ctx).First(&feed, "id=?", id)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			return nil, ErrNotFound
 		}
+
 		return nil, result.Error
 	}
+
 	return &feed, nil
 }
 
@@ -160,6 +170,7 @@ func (s *Gorm) GetArticlesByFeed(ctx context.Context, feedId string, options pag
 	if err != nil {
 		return nil, err
 	}
+
 	return &ArticlesByFeedResult{
 		Articles: res.Results,
 		Cursor: pagination.Cursor{
@@ -171,13 +182,16 @@ func (s *Gorm) GetArticlesByFeed(ctx context.Context, feedId string, options pag
 
 func (s *Gorm) GetArticle(ctx context.Context, id string) (*svc_model.Article, error) {
 	var article svc_model.Article
+
 	result := s.query(ctx).First(&article, "id=?", id)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			return nil, ErrNotFound
 		}
+
 		return nil, result.Error
 	}
+
 	return &article, nil
 }
 
@@ -188,6 +202,7 @@ func (s *Gorm) SaveArticle(ctx context.Context, data *svc_model.Article) (SaveAr
 	if err != nil {
 		return res, err
 	}
+
 	res.ValidationErrors = validate.Struct(article, validateArticleSave).Errors
 
 	if len(res.ValidationErrors) > 0 {
@@ -206,40 +221,33 @@ func (s *Gorm) SaveArticle(ctx context.Context, data *svc_model.Article) (SaveAr
 	}
 
 	res.ID = dbArticle.ID
-	return res, err
-}
 
-func (s *Gorm) userFeeds(ctx context.Context, userID string) *gorm.DB {
-	return s.query(ctx).
-		Table("user_feeds uf").
-		Select(
-			"f.id feed_id", "f.name", "f.url",
-			"uf.created_at", "uf.viewed_at", "uf.unread_start_at", "uf.unread_count",
-		).
-		Joins("JOIN feeds f ON uf.feed_id = f.id").
-		Where("uf.user_id=?", userID).
-		Order("f.name").
-		Limit(DefaultLimit)
+	return res, err
 }
 
 func (s *Gorm) GetUserFeed(ctx context.Context, userID string, feedID string) (*svc_model.UserFeed, error) {
 	var feed svc_model.UserFeed
+
 	result := s.userFeeds(ctx, userID).Where("uf.feed_id=?", feedID).First(&feed)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			return nil, ErrNotFound
 		}
+
 		return nil, result.Error
 	}
+
 	return &feed, nil
 }
 
 func (s *Gorm) GetUserFeeds(ctx context.Context, userID string) (*GetUserFeedsResult, error) {
 	result := &GetUserFeedsResult{}
+
 	query := s.userFeeds(ctx, userID).Find(&result.Feeds)
 	if query.Error != nil {
 		return nil, query.Error
 	}
+
 	return result, nil
 }
 
@@ -278,32 +286,6 @@ func (s *Gorm) SaveUserArticle(ctx context.Context, ua *svc_model.UserArticle) e
 		}).Error
 }
 
-func (s *Gorm) findFeedUserIDs(ctx context.Context, feedID string) ([]string, error) {
-	var userIds []string
-	res := s.query(ctx).
-		Model(&db_model.UserFeeds{}).
-		Select("user_id").
-		Find(&userIds, "feed_id=?", feedID)
-	return userIds, res.Error
-}
-
-func (s *Gorm) updateArticleCount(ctx context.Context, userID string, feedID string) error {
-	sql := `
-	UPDATE user_feeds
-	SET unread_count = (
-		SELECT
-			count(a.id)
-		FROM articles a
-		LEFT JOIN user_articles ua ON a.id = ua.article_id
-		WHERE
-			a.feed_id = ? AND
-			ua.viewed_at IS NULL
-	)
-	WHERE user_id = ? AND feed_id = ?
-	`
-	return s.query(ctx).Exec(sql, feedID, userID, feedID).Error
-}
-
 func (s *Gorm) UpdateFeedArticleCount(ctx context.Context, feedID string) error {
 	userIDs, err := s.findFeedUserIDs(ctx, feedID)
 	if err != nil {
@@ -311,22 +293,28 @@ func (s *Gorm) UpdateFeedArticleCount(ctx context.Context, feedID string) error 
 	}
 
 	hasError := false
+
 	for _, userID := range userIDs {
-		if err := s.updateArticleCount(ctx, userID, feedID); err != nil {
+		err := s.updateArticleCount(ctx, userID, feedID)
+		if err != nil {
 			if !hasError {
 				slog.Error("update user feed article count", "error", err) // TODO: rate limit
+
 				hasError = true
 			}
 		}
 	}
+
 	if hasError {
 		return ErrQueryFailed
 	}
+
 	return nil
 }
 
 func (s *Gorm) GetUserArticles(ctx context.Context, userID string, articleIDs []string) ([]*svc_model.UserArticle, error) {
 	var userArticles []*svc_model.UserArticle
+
 	err := s.query(ctx).
 		Table("user_articles").
 		Select("article_id", "viewed_at").
@@ -336,6 +324,7 @@ func (s *Gorm) GetUserArticles(ctx context.Context, userID string, articleIDs []
 	if err != nil {
 		return nil, err
 	}
+
 	return userArticles, nil
 }
 
@@ -376,5 +365,53 @@ func (s *Gorm) CreateFetchHistory(ctx context.Context, history *svc_model.FetchH
 	if err != nil {
 		return nil, err
 	}
+
 	return history, nil
+}
+
+// query returns a new query builder with the given context. required for otel
+func (s *Gorm) query(ctx context.Context) *gorm.DB {
+	return s.db.WithContext(ctx)
+}
+
+func (s *Gorm) userFeeds(ctx context.Context, userID string) *gorm.DB {
+	return s.query(ctx).
+		Table("user_feeds uf").
+		Select(
+			"f.id feed_id", "f.name", "f.url",
+			"uf.created_at", "uf.viewed_at", "uf.unread_start_at", "uf.unread_count",
+		).
+		Joins("JOIN feeds f ON uf.feed_id = f.id").
+		Where("uf.user_id=?", userID).
+		Order("f.name").
+		Limit(DefaultLimit)
+}
+
+func (s *Gorm) findFeedUserIDs(ctx context.Context, feedID string) ([]string, error) {
+	var userIds []string
+
+	res := s.query(ctx).
+		Model(&db_model.UserFeeds{}).
+		Select("user_id").
+		Find(&userIds, "feed_id=?", feedID)
+
+	return userIds, res.Error
+}
+
+func (s *Gorm) updateArticleCount(ctx context.Context, userID string, feedID string) error {
+	sql := `
+	UPDATE user_feeds
+	SET unread_count = (
+		SELECT
+			count(a.id)
+		FROM articles a
+		LEFT JOIN user_articles ua ON a.id = ua.article_id
+		WHERE
+			a.feed_id = ? AND
+			ua.viewed_at IS NULL
+	)
+	WHERE user_id = ? AND feed_id = ?
+	`
+
+	return s.query(ctx).Exec(sql, feedID, userID, feedID).Error
 }

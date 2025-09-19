@@ -24,25 +24,28 @@ func NewTemporal(config *feed_tasks.Config, client *sdk.Client) (*Temporal, erro
 	}, nil
 }
 
-func (t *Temporal) Close() {
-	t.client.Close()
-}
-
 func NewTemporalFromEnv() (*Temporal, error) {
 	config, err := env.New[feed_tasks.Config]()
 	if err != nil {
 		return nil, err
 	}
+
 	if config.TemporalHost == "" {
 		return nil, ErrHostRequired
 	}
+
 	client, err := sdk.Dial(sdk.Options{
 		HostPort: config.TemporalHost,
 	})
 	if err != nil {
 		return nil, err
 	}
+
 	return NewTemporal(config, &client)
+}
+
+func (t *Temporal) Close() {
+	t.client.Close()
 }
 
 func (t *Temporal) Workflow(ctx context.Context, task TaskType) (*TaskResult, error) {
@@ -65,6 +68,7 @@ func (t *Temporal) Workflow(ctx context.Context, task TaskType) (*TaskResult, er
 			MaximumAttempts: 1, // TODO: configurable
 		},
 	}
+
 	we, err := t.client.ExecuteWorkflow(
 		ctx,
 		opts,
@@ -74,5 +78,6 @@ func (t *Temporal) Workflow(ctx context.Context, task TaskType) (*TaskResult, er
 	if err != nil {
 		return nil, err
 	}
+
 	return &TaskResult{ID: we.GetID()}, nil
 }

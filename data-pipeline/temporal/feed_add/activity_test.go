@@ -23,6 +23,7 @@ func setupActivities(t *testing.T) *activitySetup {
 	fetcher := fetch.NewMockFetch(t)
 	bucketClient := bucket.NewMockBucket(t)
 	rpcClient := new(pb.MockFeedServiceClient)
+
 	return &activitySetup{
 		fetcher:    fetcher,
 		bucket:     bucketClient,

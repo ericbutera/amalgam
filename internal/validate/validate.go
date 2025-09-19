@@ -27,10 +27,14 @@ func Struct(data any, customMessages CustomMessages) ValidationResult {
 	}
 
 	validate := validator.New()
+
 	err := validate.Struct(data)
 	if err != nil {
-		var errs []ValidationError
-		var validationErrors validator.ValidationErrors
+		var (
+			errs             []ValidationError
+			validationErrors validator.ValidationErrors
+		)
+
 		if errors.As(err, &validationErrors) {
 			for _, err := range validationErrors {
 				fieldTag := fmt.Sprintf("%s.%s", err.StructField(), err.Tag())
@@ -42,8 +46,10 @@ func Struct(data any, customMessages CustomMessages) ValidationResult {
 				})
 			}
 		}
+
 		result.Errors = errs
 		result.Ok = false
 	}
+
 	return result
 }

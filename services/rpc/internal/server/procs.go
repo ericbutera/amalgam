@@ -24,8 +24,9 @@ func serviceToProtoErr(err error, validationErrs []validate.ValidationError) err
 		return status.Error(codes.AlreadyExists, "already exists")
 	case errors.Is(err, service.ErrValidation):
 		return validationErr(validationErrs) // TODO: make a custom error type that contains the validation errors; remove validationErrs as a param!
+	default:
+		return status.Errorf(codes.Internal, "failed to perform action: %v", err)
 	}
-	return status.Errorf(codes.Internal, "failed to perform action: %v", err)
 }
 
 func validationErr(errors []validate.ValidationError) error {
@@ -49,6 +50,7 @@ func validationErr(errors []validate.ValidationError) error {
 	if err != nil {
 		return st.Err()
 	}
+
 	return ds.Err()
 }
 
@@ -57,29 +59,35 @@ func (s *Server) ListFeeds(ctx context.Context, _ *pb.ListFeedsRequest) (*pb.Lis
 	if err != nil {
 		return nil, serviceToProtoErr(err, nil)
 	}
+
 	pbFeeds := []*pb.Feed{}
 	for _, feed := range feeds {
 		pbFeeds = append(pbFeeds, s.converters.ServiceToProtoFeed(&feed))
 	}
+
 	return &pb.ListFeedsResponse{Feeds: pbFeeds}, nil
 }
 
 func (s *Server) ListUserFeeds(ctx context.Context, in *pb.ListUserFeedsRequest) (*pb.ListUserFeedsResponse, error) {
 	userID := in.GetUser().GetId()
+
 	res, err := s.service.GetUserFeeds(ctx, userID)
 	if err != nil {
 		return nil, serviceToProtoErr(err, nil)
 	}
+
 	feeds := []*pb.UserFeed{}
 	for _, feed := range res.Feeds {
 		feeds = append(feeds, s.converters.ServiceToProtoUserFeed(&feed))
 	}
+
 	return &pb.ListUserFeedsResponse{Feeds: feeds}, nil
 }
 
 func (s *Server) GetUserArticles(ctx context.Context, in *pb.GetUserArticlesRequest) (*pb.GetUserArticlesResponse, error) {
 	userID := in.GetUser().GetId()
 	articleIDs := in.GetArticleIds()
+
 	res, err := s.service.GetUserArticles(ctx, userID, articleIDs)
 	if err != nil {
 		return nil, serviceToProtoErr(err, nil)
@@ -108,7 +116,9 @@ func (s *Server) CreateFeed(ctx context.Context, in *pb.CreateFeedRequest) (*pb.
 			UserID: in.GetUser().GetId(),
 			FeedID: res.ID,
 		}
-		if err := s.service.SaveUserFeed(ctx, uf); err != nil {
+
+		err := s.service.SaveUserFeed(ctx, uf)
+		if err != nil {
 			return nil, serviceToProtoErr(err, nil)
 		}
 	}
@@ -120,9 +130,12 @@ func (s *Server) CreateFeed(ctx context.Context, in *pb.CreateFeedRequest) (*pb.
 
 func (s *Server) UpdateFeed(ctx context.Context, in *pb.UpdateFeedRequest) (*pb.UpdateFeedResponse, error) {
 	feed := s.converters.ProtoUpdateFeedToService(in.GetFeed())
-	if err := s.service.UpdateFeed(ctx, feed.ID, feed); err != nil {
+
+	err := s.service.UpdateFeed(ctx, feed.ID, feed)
+	if err != nil {
 		return nil, serviceToProtoErr(err, nil)
 	}
+
 	return &pb.UpdateFeedResponse{}, nil
 }
 
@@ -131,6 +144,7 @@ func (s *Server) GetFeed(ctx context.Context, in *pb.GetFeedRequest) (*pb.GetFee
 	if err != nil {
 		return nil, serviceToProtoErr(err, nil)
 	}
+
 	return &pb.GetFeedResponse{
 		Feed: s.converters.ServiceToProtoFeed(feed),
 	}, nil
@@ -141,6 +155,7 @@ func (s *Server) GetUserFeed(ctx context.Context, in *pb.GetUserFeedRequest) (*p
 	if err != nil {
 		return nil, serviceToProtoErr(err, nil)
 	}
+
 	return &pb.GetUserFeedResponse{
 		Feed: s.converters.ServiceToProtoUserFeed(feed),
 	}, nil
@@ -150,6 +165,7 @@ func (s *Server) ListArticles(ctx context.Context, in *pb.ListArticlesRequest) (
 	// TODO: ProtoToServiceListOptions
 	options := in.GetOptions()
 	cursor := options.GetCursor()
+
 	result, err := s.service.GetArticlesByFeed(ctx, in.GetFeedId(), pagination.ListOptions{
 		Cursor: pagination.Cursor{
 			Previous: cursor.GetPrevious(),
@@ -160,10 +176,12 @@ func (s *Server) ListArticles(ctx context.Context, in *pb.ListArticlesRequest) (
 	if err != nil {
 		return nil, serviceToProtoErr(err, nil)
 	}
+
 	articles := []*pb.Article{}
 	for _, article := range result.Articles {
 		articles = append(articles, s.converters.ServiceToProtoArticle(&article))
 	}
+
 	return &pb.ListArticlesResponse{
 		Articles: articles,
 		Cursor: &pb.Cursor{ // TODO: ServiceToProtoCursor
@@ -178,6 +196,7 @@ func (s *Server) GetArticle(ctx context.Context, in *pb.GetArticleRequest) (*pb.
 	if err != nil {
 		return nil, serviceToProtoErr(err, nil)
 	}
+
 	return &pb.GetArticleResponse{
 		Article: s.converters.ServiceToProtoArticle(article),
 	}, nil
@@ -185,10 +204,12 @@ func (s *Server) GetArticle(ctx context.Context, in *pb.GetArticleRequest) (*pb.
 
 func (s *Server) SaveArticle(ctx context.Context, in *pb.SaveArticleRequest) (*pb.SaveArticleResponse, error) {
 	article := s.converters.ProtoToServiceArticle(in.GetArticle())
+
 	res, err := s.service.SaveArticle(ctx, article)
 	if err != nil {
 		return nil, serviceToProtoErr(err, res.ValidationErrors)
 	}
+
 	return &pb.SaveArticleResponse{
 		Id: res.ID,
 	}, nil
@@ -206,6 +227,7 @@ func (s *Server) UpdateStats(ctx context.Context, in *pb.UpdateStatsRequest) (*p
 		if feedID == "" {
 			return nil, status.Error(codes.InvalidArgument, "feed_id is required")
 		}
+
 		err = s.service.UpdateFeedArticleCount(ctx, feedID)
 	}
 
@@ -222,6 +244,7 @@ func (s *Server) Ready(_ context.Context, _ *pb.ReadyRequest) (*pb.ReadyResponse
 	if res.Error != nil {
 		return nil, status.Error(codes.Internal, "database not ready")
 	}
+
 	return &pb.ReadyResponse{}, nil
 }
 
@@ -230,6 +253,7 @@ func (s *Server) MarkArticleAsRead(ctx context.Context, in *pb.MarkArticleAsRead
 	user := in.GetUser()
 	userID := user.GetId()
 	articleID := in.GetArticleId()
+
 	err := s.service.SaveUserArticle(ctx, &models.UserArticle{
 		UserID:    userID,
 		ArticleID: articleID,
@@ -243,6 +267,7 @@ func (s *Server) MarkArticleAsRead(ctx context.Context, in *pb.MarkArticleAsRead
 	if err != nil {
 		return nil, serviceToProtoErr(err, nil)
 	}
+
 	err = s.service.UpdateFeedArticleCount(ctx, article.FeedID)
 	if err != nil {
 		return nil, serviceToProtoErr(err, nil)
@@ -258,6 +283,7 @@ func (s *Server) CreateFeedVerification(ctx context.Context, in *pb.CreateFeedVe
 	if err != nil {
 		return nil, serviceToProtoErr(err, nil)
 	}
+
 	return &pb.CreateFeedVerificationResponse{
 		Verification: s.converters.ServiceToProtoFeedVerification(res),
 	}, nil
@@ -270,6 +296,7 @@ func (s *Server) CreateFetchHistory(ctx context.Context, in *pb.CreateFetchHisto
 	if err != nil {
 		return nil, serviceToProtoErr(err, nil)
 	}
+
 	return &pb.CreateFetchHistoryResponse{
 		History: s.converters.ServiceToProtoFetchHistory(res),
 	}, nil

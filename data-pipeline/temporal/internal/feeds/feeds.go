@@ -33,6 +33,7 @@ func NewFeeds(host string, insecure bool) (Feeds, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return &FeedHelper{
 		client: c,
 		closers: []func() error{
@@ -51,15 +52,18 @@ func NewFeedsFromEnv() (Feeds, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return NewFeeds(config.RpcHost, config.RpcInsecure)
 }
 
 func (h *FeedHelper) Close() error {
 	for _, closer := range h.closers {
-		if err := closer(); err != nil {
+		err := closer()
+		if err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -68,6 +72,7 @@ func (h *FeedHelper) GetFeeds(ctx context.Context) ([]Feed, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	feeds := []Feed{}
 	for _, feed := range resp.GetFeeds() {
 		feeds = append(feeds, Feed{
@@ -75,6 +80,7 @@ func (h *FeedHelper) GetFeeds(ctx context.Context) ([]Feed, error) {
 			Url: feed.GetUrl(),
 		})
 	}
+
 	return feeds, nil
 }
 
@@ -97,6 +103,7 @@ func (h *FeedHelper) SaveArticle(ctx context.Context, article rss.Article) (stri
 	if err != nil {
 		return "", err
 	}
+
 	return res.GetId(), nil
 }
 
@@ -106,5 +113,6 @@ func (h *FeedHelper) UpdateStats(ctx context.Context, feedID string) error {
 		FeedId: feedID,
 		Stat:   pb.UpdateStatsRequest_STAT_FEED_ARTICLE_COUNT,
 	})
+
 	return err
 }

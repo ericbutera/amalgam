@@ -39,6 +39,7 @@ func NewFromEnv() (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return NewFromConfig(config)
 }
 
@@ -54,16 +55,19 @@ func NewFromConfig(config *Config) (*gorm.DB, error) {
 			WithMiddleware(),
 			WithTraceAll(),
 		)
+	default:
+		return nil, ErrInvalidAdapter
 	}
-	return nil, ErrInvalidAdapter
 }
 
 func setOpts(db *gorm.DB, opts ...Options) error {
 	for _, opt := range opts {
-		if err := opt(db); err != nil {
+		err := opt(db)
+		if err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -72,9 +76,11 @@ func newDb(d gorm.Dialector, opts ...Options) (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	if err := setOpts(db, opts...); err != nil {
 		return nil, err
 	}
+
 	return db, nil
 }
 
@@ -82,6 +88,7 @@ func NewMysql(dsn string, opts ...Options) (*gorm.DB, error) {
 	if dsn == "" {
 		return nil, ErrDsnNotSet
 	}
+
 	return newDb(mysql.Open(dsn), opts...)
 }
 
@@ -91,6 +98,7 @@ func NewSqlite(name string, opts ...Options) (*gorm.DB, error) {
 	if name == "" {
 		return nil, ErrNameNotSet
 	}
+
 	return newDb(sqlite.Open(name), opts...)
 }
 
@@ -127,6 +135,7 @@ func WithSeedData() Options {
 			if _, err := seed.FeedAndArticles(tx, 1); err != nil {
 				return err
 			}
+
 			return nil
 		})
 	}

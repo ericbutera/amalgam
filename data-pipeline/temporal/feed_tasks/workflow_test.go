@@ -24,6 +24,7 @@ func TestUnitTestSuite(t *testing.T) {
 func (s *UnitTestSuite) Test_GenerateFeedsWorkflow() {
 	env := s.NewTestWorkflowEnvironment()
 	env.SetWorkerOptions(worker.Options{EnableSessionWorker: true})
+
 	var a *feed_tasks.Activities
 
 	host := "faker:8080"
@@ -43,6 +44,7 @@ func (s *UnitTestSuite) Test_GenerateFeedsWorkflow() {
 func (s *UnitTestSuite) Test_RefreshFeedsWorkflow() {
 	env := s.NewTestWorkflowEnvironment()
 	env.SetWorkerOptions(worker.Options{EnableSessionWorker: true})
+
 	var a *feed_tasks.Activities
 
 	env.OnActivity(a.RefreshFeeds, mock.Anything).Return(nil)

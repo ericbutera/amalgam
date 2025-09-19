@@ -21,6 +21,7 @@ func newFile(t *testing.T, path string) parse.Articles {
 	require.NoError(t, err)
 	articles, err := parse.Path(path)
 	require.NoError(t, err)
+
 	return articles
 }
 
@@ -39,6 +40,7 @@ func Test_Parse_Article(t *testing.T) {
 
 func Test_ItemToArticle(t *testing.T) {
 	t.Parallel()
+
 	expected := &parse.Article{
 		Title:         "title",
 		Url:           "https://example.com",
@@ -50,7 +52,7 @@ func Test_ItemToArticle(t *testing.T) {
 		AuthorEmail:   "author@example.com",
 		ImageUrl:      "https://example.com/image.jpg",
 		DateAdded:     time.Now().UTC(),
-		DatePublished: time.Date(2024, 0o1, 0o1, 8, 5, 0, 0, time.UTC),
+		DatePublished: time.Date(2024, 1, 1, 8, 5, 0, 0, time.UTC),
 		DateUpdated:   time.Date(2024, 10, 18, 8, 5, 0, 0, time.UTC),
 	}
 
@@ -74,6 +76,7 @@ func Test_ItemToArticle(t *testing.T) {
 
 func TestArticleSanitization(t *testing.T) {
 	t.Parallel()
+
 	cases := []struct {
 		name                string
 		input               string
@@ -108,6 +111,7 @@ func TestArticleSanitization(t *testing.T) {
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
+
 			item := &gofeed.Item{
 				Description: tc.input,
 				Content:     tc.input,

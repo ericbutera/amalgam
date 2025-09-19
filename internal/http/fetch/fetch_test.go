@@ -24,6 +24,7 @@ func (m *mockTransport) RoundTrip(_ *http.Request) (*http.Response, error) {
 
 func TestUrl_Success(t *testing.T) {
 	t.Parallel()
+
 	resp := &http.Response{
 		StatusCode:    http.StatusOK,
 		Body:          io.NopCloser(bytes.NewBufferString("test data")),
@@ -50,6 +51,7 @@ func TestUrl_Success(t *testing.T) {
 		body, err := io.ReadAll(params.Reader)
 		require.NoError(t, err)
 		assert.Equal(t, "test data", string(body))
+
 		return nil
 	}, nil)
 

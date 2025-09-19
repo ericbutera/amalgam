@@ -38,6 +38,7 @@ func Url(ctx context.Context, url string, fetchCb Callback, extra *ExtraParams) 
 	if err != nil {
 		return err
 	}
+
 	return f.Url(ctx, url, fetchCb, extra)
 }
 
@@ -50,10 +51,12 @@ type Option func(*Http) error
 func New(opts ...Option) (*Http, error) {
 	f := &Http{}
 	for _, opt := range opts {
-		if err := opt(f); err != nil {
+		err := opt(f)
+		if err != nil {
 			return nil, err
 		}
 	}
+
 	if f.client == nil {
 		f.client = &http.Client{
 			Transport: transport.NewLoggingTransport(
@@ -62,6 +65,7 @@ func New(opts ...Option) (*Http, error) {
 			Timeout: FetchTimeout,
 		}
 	}
+
 	return f, nil
 }
 
@@ -84,6 +88,7 @@ func (f *Http) Url(ctx context.Context, url string, fetchCb Callback, extra *Ext
 	if err != nil {
 		return err
 	}
+
 	req.Header.Set("User-Agent", "amalgam/1.4") // TODO: inject version
 
 	if extra != nil && extra.Etag != "" {

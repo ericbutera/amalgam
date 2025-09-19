@@ -86,6 +86,7 @@ func (h *handlers) feedGet(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: "unable to get feed"})
 		return
 	}
+
 	feed := converters.New().GraphClientToApiFeedGet(&resp.Feed)
 	c.JSON(http.StatusOK, FeedResponse{
 		Feed: feed,
@@ -111,12 +112,14 @@ func (h *handlers) feedCreate(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, ErrorResponse{Error: err.Error()})
 		return
 	}
+
 	resp, err := graph_client.AddFeed(c.Request.Context(), h.graphClient, req.Feed.Url, req.Feed.Name)
 	if err != nil {
 		// TODO show validation errs
 		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: "unable to create feed"})
 		return
 	}
+
 	c.JSON(http.StatusOK, CreateResponse{
 		Id: resp.AddFeed.Id,
 	})
@@ -151,11 +154,13 @@ func (h *handlers) feedUpdate(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "unable to update feed"})
 		return
 	}
+
 	_, err := graph_client.UpdateFeed(c.Request.Context(), h.graphClient, c.Param("id"), req.Feed.Name, req.Feed.Url)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: "unable to update feed"})
 		return
 	}
+
 	c.JSON(http.StatusOK, UpdateResponse{
 		Id: c.Param("id"),
 	})
@@ -198,6 +203,7 @@ func (h *handlers) feedsList(c *gin.Context) {
 			Url:  feed.Url,
 		})
 	}
+
 	c.JSON(http.StatusOK, FeedsResponse{
 		Feeds: feeds,
 	})
@@ -228,6 +234,7 @@ func (h *handlers) article(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: "unable to fetch article"})
 		return
 	}
+
 	article := converters.New().GraphClientToApiArticle(&resp.Article)
 	c.JSON(http.StatusOK, ArticleResponse{
 		Article: article,
@@ -253,11 +260,14 @@ func (h *handlers) articles(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: "unable to fetch articles"})
 		return
 	}
+
 	articles := []models.Article{}
+
 	for _, g_article := range resp.Articles.Articles {
 		m_article := converters.New().GraphClientToApiArticleList(&g_article)
 		articles = append(articles, *m_article)
 	}
+
 	c.JSON(http.StatusOK, FeedArticlesResponse{
 		Articles: articles,
 	})

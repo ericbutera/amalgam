@@ -10,6 +10,7 @@ import (
 
 func TestFeedMetrics(t *testing.T) {
 	t.Parallel()
+
 	o := observability.New()
 	feedMetrics := o.FeedMetrics
 	assert.NotNil(t, feedMetrics.ArticlesCreated)
@@ -19,6 +20,7 @@ func TestFeedMetrics(t *testing.T) {
 
 func TestFeedMetrics_ArticlesCreated(t *testing.T) {
 	t.Parallel()
+
 	o := observability.New()
 	feedMetrics := o.FeedMetrics
 

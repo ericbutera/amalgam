@@ -39,6 +39,7 @@ func NewFromEnv() (pb.FeedServiceClient, Closer, error) {
 	if err != nil {
 		return nil, nil, err
 	}
+
 	return New(config.RpcHost, config.RpcInsecure)
 }
 
@@ -68,6 +69,7 @@ func newCloser(conn *grpc.ClientConn) Closer {
 
 func defaultDialOpts() []grpc.DialOption {
 	logger, logOpts := newLogger()
+
 	return []grpc.DialOption{
 		grpc.WithStatsHandler(otelgrpc.NewClientHandler()),
 		grpc.WithChainUnaryInterceptor(
@@ -85,6 +87,7 @@ func newLogger() (logging.Logger, []logging.Option) {
 		if span := trace.SpanContextFromContext(ctx); span.IsSampled() {
 			return logging.Fields{"traceID", span.TraceID().String()}
 		}
+
 		return nil
 	}
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil)) // TODO: why does go insist on using stderr?
@@ -92,6 +95,7 @@ func newLogger() (logging.Logger, []logging.Option) {
 		logging.WithLogOnEvents(logging.StartCall, logging.FinishCall),
 		logging.WithFieldsFromContext(logTraceID),
 	}
+
 	return interceptorLogger(logger), opts
 }
 

@@ -9,6 +9,7 @@ import (
 
 type Feed struct {
 	Base
+
 	URL      string `json:"url"      gorm:"uniqueIndex" binding:"required,url" example:"https://example.com/"`
 	Name     string `json:"name"     example:"Example"`
 	IsActive bool   `json:"isActive" example:"true"`
@@ -16,6 +17,7 @@ type Feed struct {
 
 type Article struct {
 	Base
+
 	FeedID      string `json:"feedId"            binding:"required"                                    example:"1"`
 	Feed        Feed   `gorm:"foreignKey:FeedID"`
 	URL         string `json:"url"               binding:"required"                                    example:"https://example.com/"`
@@ -31,6 +33,7 @@ type Article struct {
 
 type User struct {
 	Base
+
 	UserUUID       string `json:"userUuid"       example:"aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"`
 	ProviderUserID string `json:"providerUserId" example:"eric"`
 	Username       string `json:"username"       binding:"required"                             example:"eric"`

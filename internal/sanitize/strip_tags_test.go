@@ -56,6 +56,7 @@ func TestStripTags(t *testing.T) {
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
+
 			res, ok := sanitize.StripTags(tc.input)
 			require.True(t, ok)
 			assert.Equal(t, tc.expected, res)

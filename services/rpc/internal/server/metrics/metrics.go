@@ -18,6 +18,7 @@ func NewServer(registry *prometheus.Registry, address string) *http.Server {
 			EnableOpenMetrics: true, // Opt into OpenMetrics e.g. to support exemplars.
 		},
 	))
+
 	return &http.Server{
 		Addr:              address,
 		Handler:           m,

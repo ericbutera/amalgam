@@ -32,6 +32,7 @@ func newTestResolver() *testResolver {
 	client := new(pb.MockFeedServiceClient)
 	tasks := new(tasks.MockTasks)
 	resolver := graph.NewResolver(client, tasks)
+
 	return &testResolver{
 		client:   client,
 		task:     tasks,
@@ -54,6 +55,7 @@ func newArticle() *svcModel.Article {
 func newUserFeed() *svcModel.UserFeed {
 	now := time.Now().UTC()
 	id := uuid.New().String()
+
 	return &svcModel.UserFeed{
 		FeedID:        id,
 		Name:          "Feed Name",
@@ -67,6 +69,7 @@ func newUserFeed() *svcModel.UserFeed {
 
 func Test_AddFeed(t *testing.T) {
 	t.Parallel()
+
 	r := newTestResolver()
 
 	svcFeed := newFeed()
@@ -92,6 +95,7 @@ func Test_AddFeed(t *testing.T) {
 
 func Test_UpdateFeed(t *testing.T) {
 	t.Parallel()
+
 	r := newTestResolver()
 
 	svcFeed := newFeed()
@@ -114,6 +118,7 @@ func Test_UpdateFeed(t *testing.T) {
 
 func Test_Feeds(t *testing.T) {
 	t.Parallel()
+
 	r := newTestResolver()
 
 	userFeed := newUserFeed()
@@ -121,6 +126,7 @@ func Test_Feeds(t *testing.T) {
 	graphFeed := c.ServiceToGraphFeed(userFeed)
 	pbFeed := c.ServiceToProtoUserFeed(userFeed)
 	expected := []*graphModel.Feed{graphFeed}
+
 	r.client.EXPECT().
 		ListUserFeeds(mock.Anything, &pb.ListUserFeedsRequest{
 			User: &pb.User{Id: seed.UserID},
@@ -137,6 +143,7 @@ func Test_Feeds(t *testing.T) {
 
 func Test_Feed(t *testing.T) {
 	t.Parallel()
+
 	r := newTestResolver()
 
 	feed := newUserFeed()
@@ -144,6 +151,7 @@ func Test_Feed(t *testing.T) {
 	graphFeed := c.ServiceToGraphFeed(feed)
 	pbFeed := c.ServiceToProtoUserFeed(feed)
 	expected := graphFeed
+
 	r.client.EXPECT().
 		GetUserFeed(mock.Anything, &pb.GetUserFeedRequest{FeedId: feed.FeedID, UserId: seed.UserID}).
 		Return(&pb.GetUserFeedResponse{Feed: pbFeed}, nil)
@@ -155,6 +163,7 @@ func Test_Feed(t *testing.T) {
 
 func Test_Articles(t *testing.T) {
 	t.Parallel()
+
 	r := newTestResolver()
 
 	feed := newFeed()
@@ -187,6 +196,7 @@ func Test_Articles(t *testing.T) {
 
 	resp, err := r.resolver.Query().Articles(newAuthCtx(), feed.ID, &graphModel.ListOptions{})
 	actual := resp.Articles
+
 	require.NoError(t, err)
 	assert.Len(t, actual, 1)
 	helpers.Diff(t, *expected[0], *actual[0], "FeedID", "ImageURL")
@@ -194,6 +204,7 @@ func Test_Articles(t *testing.T) {
 
 func Test_Articles_Pagination(t *testing.T) {
 	t.Parallel()
+
 	r := newTestResolver()
 
 	id := uuid.New().String()
@@ -230,6 +241,7 @@ func Test_Articles_Pagination(t *testing.T) {
 
 func Test_Article(t *testing.T) {
 	t.Parallel()
+
 	r := newTestResolver()
 
 	c := converters.New()
@@ -264,6 +276,7 @@ func TestFeedTasks(t *testing.T) {
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
+
 			expectedID := "super-id"
 
 			r := newTestResolver()

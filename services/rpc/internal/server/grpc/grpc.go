@@ -64,6 +64,7 @@ func newLogger() (logging.Logger, []logging.Option) {
 		if span := trace.SpanContextFromContext(ctx); span.IsSampled() {
 			return logging.Fields{"traceID", span.TraceID().String()}
 		}
+
 		return nil
 	}
 
@@ -71,6 +72,7 @@ func newLogger() (logging.Logger, []logging.Option) {
 		logging.WithLogOnEvents(logging.StartCall, logging.FinishCall),
 		logging.WithFieldsFromContext(logTraceID),
 	}
+
 	return interceptorLogger(logger.New()), opts
 }
 
@@ -82,6 +84,7 @@ func interceptorLogger(l *slog.Logger) logging.Logger {
 			shouldIgnoreLog(fields, "grpc.method", "Ready") {
 			return
 		}
+
 		l.Log(ctx, slog.Level(lvl), msg, fields...)
 	})
 }
@@ -94,6 +97,7 @@ func shouldIgnoreLog(fields []any, key, value string) bool {
 			}
 		}
 	}
+
 	return false
 }
 
@@ -101,6 +105,7 @@ func exemplarFromContext(ctx context.Context) prometheus.Labels {
 	if span := trace.SpanContextFromContext(ctx); span.IsSampled() {
 		return prometheus.Labels{"traceID": span.TraceID().String()}
 	}
+
 	return nil
 }
 
@@ -114,7 +119,9 @@ func grpcPanicRecoveryHandler(feedMetrics *observability.FeedMetrics) recovery.R
 		if panicsTotal != nil {
 			panicsTotal.Inc()
 		}
+
 		slog.Error("recovered from panic", "panic", p, "stack", debug.Stack())
+
 		return status.Errorf(codes.Internal, "%s", p)
 	}
 }

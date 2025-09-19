@@ -16,6 +16,7 @@ func UnaryMetricMiddlewareHandler(feedMetrics *observability.FeedMetrics) grpc.U
 		}
 
 		ProcessMetrics(info.FullMethod, feedMetrics)
+
 		return resp, err
 	}
 }
@@ -28,6 +29,7 @@ func StreamMetricMiddlewareHandler(feedMetrics *observability.FeedMetrics) grpc.
 		}
 
 		ProcessMetrics(info.FullMethod, feedMetrics)
+
 		return err
 	}
 }
@@ -38,5 +40,6 @@ func ProcessMetrics(fullMethod string, metrics *observability.FeedMetrics) {
 		metrics.FeedsCreated.Inc()
 	case pb.FeedService_SaveArticle_FullMethodName:
 		metrics.ArticlesCreated.Inc()
+	default:
 	}
 }

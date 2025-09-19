@@ -11,9 +11,12 @@ func StripTags(s string) (string, bool) {
 	if err != nil {
 		return s, false
 	}
+
 	var b strings.Builder
+
 	_, ok := appendNode(&b, doc)
 	text := b.String()
+
 	return strings.Trim(text, " "), ok
 }
 
@@ -26,6 +29,7 @@ func appendNode(b *strings.Builder, node *html.Node) (int, bool) {
 		if err != nil {
 			ok = false
 		}
+
 		written += i
 	}
 
@@ -34,6 +38,7 @@ func appendNode(b *strings.Builder, node *html.Node) (int, bool) {
 		if !attempt {
 			ok = false
 		}
+
 		written += w
 	}
 

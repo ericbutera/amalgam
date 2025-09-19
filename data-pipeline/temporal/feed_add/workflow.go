@@ -32,6 +32,7 @@ func AddFeedWorkflow(ctx workflow.Context, url string, userID string) error {
 	workflowID := workflow.GetInfo(ctx).WorkflowExecution.ID
 
 	var verification FeedVerification
+
 	err := workflow.ExecuteActivity(ctx, a.CreateVerifyRecord, FeedVerification{
 		URL:        url,
 		UserID:     userID,
@@ -45,6 +46,7 @@ func AddFeedWorkflow(ctx workflow.Context, url string, userID string) error {
 	}
 
 	var blob string // TODO: write to bucket and pass reference
+
 	err = workflow.ExecuteActivity(ctx, a.Fetch, verification).Get(ctx, &blob)
 	if err != nil {
 		return err

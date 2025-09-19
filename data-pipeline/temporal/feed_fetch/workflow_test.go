@@ -27,6 +27,7 @@ func (s *FeedFetchTestSuite) Test_FeedWorkflow() {
 	env.SetWorkerOptions(worker.Options{
 		EnableSessionWorker: true, // Important for a worker to participate in the session
 	})
+
 	var a *app.Activities
 
 	feedID := "213ddff2-e7cc-40cc-87eb-461118d57a58"

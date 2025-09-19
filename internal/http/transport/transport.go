@@ -12,13 +12,6 @@ type LoggingTransport struct {
 	detailedTiming bool
 }
 
-func (t *LoggingTransport) RoundTrip(r *http.Request) (*http.Response, error) {
-	// do before request is sent, ex. start timer, log request
-	resp, err := t.rt.RoundTrip(r)
-	// do after the response is received, ex. end timer, log response
-	return resp, err
-}
-
 type Option func(transport *LoggingTransport)
 
 func NewLoggingTransport(options ...Option) *LoggingTransport {
@@ -45,4 +38,11 @@ func WithLogger(logger *slog.Logger) Option {
 	return func(t *LoggingTransport) {
 		t.logger = logger
 	}
+}
+
+func (t *LoggingTransport) RoundTrip(r *http.Request) (*http.Response, error) {
+	// do before request is sent, ex. start timer, log request
+	resp, err := t.rt.RoundTrip(r)
+	// do after the response is received, ex. end timer, log response
+	return resp, err
 }

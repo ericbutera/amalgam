@@ -26,6 +26,7 @@ func FeedAndArticles(db *gorm.DB, articleCount int) (*Result, error) {
 	c := converters.New()
 
 	uuid := uuid.New().String()
+
 	r, err := rss.Generate(uuid, articleCount)
 	if err != nil {
 		return nil, err
@@ -39,6 +40,7 @@ func FeedAndArticles(db *gorm.DB, articleCount int) (*Result, error) {
 	if err := db.Create(&feed).Error; err != nil {
 		return nil, err
 	}
+
 	res.Feed = c.DbToServiceFeed(feed)
 
 	for _, item := range r.Channel.Items {
@@ -50,9 +52,12 @@ func FeedAndArticles(db *gorm.DB, articleCount int) (*Result, error) {
 			fixtures.WithArticleTitle(item.Title),
 			fixtures.WithArticleURL(item.Link),
 		))
-		if err := db.Create(&article).Error; err != nil {
+
+		err := db.Create(&article).Error
+		if err != nil {
 			return nil, err
 		}
+
 		res.Articles = append(res.Articles, c.DbToServiceArticle(article))
 	}
 
@@ -64,6 +69,7 @@ func FeedAndArticles(db *gorm.DB, articleCount int) (*Result, error) {
 	if err := db.Create(&uf).Error; err != nil {
 		return nil, err
 	}
+
 	res.UserFeed = &uf
 
 	return res, nil

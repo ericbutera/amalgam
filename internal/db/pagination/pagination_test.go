@@ -31,11 +31,13 @@ func newDB(t *testing.T) *gorm.DB {
 	t.Helper()
 	db := test.NewDB(t)
 	lo.Must0(db.AutoMigrate(&TestModel{}))
+
 	return db
 }
 
 func seed(t *testing.T, db *gorm.DB, count int) {
 	t.Helper()
+
 	for i := 1; i <= count; i++ {
 		require.NoError(t, db.Create(&TestModel{
 			ID:   i,
@@ -118,8 +120,8 @@ func TestPager_NoRecords(t *testing.T) {
 	result, err := pagination.Pager[TestModel](query, options, rules)
 	require.NoError(t, err)
 	assert.Empty(t, result.Results)
-	assert.Equal(t, "", result.Cursor.Next)
-	assert.Equal(t, "", result.Cursor.Previous)
+	assert.Empty(t, result.Cursor.Next)
+	assert.Empty(t, result.Cursor.Previous)
 }
 
 func TestPager_NegativeLimit(t *testing.T) {

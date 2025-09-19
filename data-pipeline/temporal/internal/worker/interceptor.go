@@ -14,6 +14,7 @@ func NewInterceptors(tracer trace.Tracer) []interceptor.WorkerInterceptor {
 	traceInterceptor := lo.Must(opentelemetry.NewTracer(opentelemetry.TracerOptions{
 		Tracer: tracer,
 	}))
+
 	return []interceptor.WorkerInterceptor{
 		interceptor.NewTracingInterceptor(traceInterceptor),
 	}
@@ -21,7 +22,9 @@ func NewInterceptors(tracer trace.Tracer) []interceptor.WorkerInterceptor {
 
 func HandleShutdown(ctx context.Context, shutdown func(context.Context) error) {
 	slog.Info("shutting down otel")
-	if err := shutdown(ctx); err != nil {
+
+	err := shutdown(ctx)
+	if err != nil {
 		slog.Error("failed to shutdown OpenTelemetry", "error", err)
 	}
 }

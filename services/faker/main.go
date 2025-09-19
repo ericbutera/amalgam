@@ -16,6 +16,7 @@ const DefaultItemCount int = 25
 
 func main() {
 	http.HandleFunc("/feed/", rssHandler)
+
 	server := lo.Must(server.New())
 	log.Fatal(server.ListenAndServe())
 }

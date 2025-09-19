@@ -49,6 +49,7 @@ func (c *customRoundTripper) RoundTrip(req *http.Request) (*http.Response, error
 	}
 
 	slog.Debug("round-trip response", "status", resp.Status, "duration", time.Since(start), "url", req.URL)
+
 	return resp, err
 }
 
@@ -62,9 +63,12 @@ type Minio struct {
 // example: convert a temporal workflow config to a minio config
 func NewConfig(data any) (*Config, error) {
 	config := &Config{}
-	if err := mapstructure.Decode(data, config); err != nil {
+
+	err := mapstructure.Decode(data, config)
+	if err != nil {
 		return nil, fmt.Errorf("failed to decode config: %w", err)
 	}
+
 	return config, nil
 }
 
@@ -72,10 +76,12 @@ func NewMinio(config *Config) (Bucket, error) {
 	bucket := &Minio{
 		Region: config.MinioRegion,
 	}
+
 	transport, err := minio.DefaultTransport(config.MinioUseSsl)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create transport: %w", err)
 	}
+
 	client, err := minio.New(config.MinioEndpoint, &minio.Options{
 		Creds:     credentials.NewStaticV4(config.MinioAccessKey, config.MinioSecretAccessKey, ""),
 		Secure:    config.MinioUseSsl,
@@ -84,10 +90,13 @@ func NewMinio(config *Config) (Bucket, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	if config.MinioTrace {
 		client.TraceOn(nil)
 	}
+
 	bucket.client = client
+
 	return bucket, nil
 }
 
@@ -96,6 +105,7 @@ func NewMinioFromEnv() (Bucket, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return NewMinio(config)
 }
 
@@ -103,20 +113,16 @@ func (b *Minio) Create(ctx context.Context, bucketName string) error {
 	opts := minio.MakeBucketOptions{
 		Region: b.Region,
 	}
-	if err := b.client.MakeBucket(ctx, bucketName, opts); err != nil {
-		if err := b.handleBucketExists(ctx, bucketName, err); err != nil {
+
+	err := b.client.MakeBucket(ctx, bucketName, opts)
+	if err != nil {
+		err := b.handleBucketExists(ctx, bucketName, err)
+		if err != nil {
 			return err
 		}
 	}
-	return nil
-}
 
-func (b *Minio) handleBucketExists(ctx context.Context, bucketName string, err error) error {
-	exists, errBucketExists := b.client.BucketExists(ctx, bucketName)
-	if errBucketExists == nil && exists {
-		return nil
-	}
-	return err
+	return nil
 }
 
 func (b *Minio) SetBucketExpiry(ctx context.Context, bucketName string) error {
@@ -128,9 +134,11 @@ func (b *Minio) Exists(ctx context.Context, bucketName string, fileName string) 
 	if err != nil {
 		return false, fmt.Errorf("failed to stat object: %w", err)
 	}
+
 	if info.Key == fileName {
 		return true, nil
 	}
+
 	return false, nil
 }
 
@@ -145,6 +153,7 @@ func (b *Minio) Expiry(ctx context.Context, bucketName string) error {
 			},
 		},
 	}
+
 	return b.client.SetBucketLifecycle(ctx, bucketName, config)
 }
 
@@ -163,10 +172,12 @@ func (b *Minio) WriteStream(
 		// Less frequently accessed objects should go in cheaper storage classes (e.g. Glacier/archive)
 		// Mode, RetainUntilDate, Expires, StorageClass
 	}
+
 	upload, err := b.client.PutObject(ctx, bucketName, fileName, reader, DefaultWriteSize, opts)
 	if err != nil {
 		return nil, fmt.Errorf("failed to put object: %w", err)
 	}
+
 	return &upload, nil
 }
 
@@ -175,5 +186,15 @@ func (b *Minio) Read(ctx context.Context, bucketName string, fileName string) (i
 	if err != nil {
 		return nil, fmt.Errorf("failed to get object: %w", err)
 	}
+
 	return obj, nil
+}
+
+func (b *Minio) handleBucketExists(ctx context.Context, bucketName string, err error) error {
+	exists, errBucketExists := b.client.BucketExists(ctx, bucketName)
+	if errBucketExists == nil && exists {
+		return nil
+	}
+
+	return err
 }
