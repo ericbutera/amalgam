@@ -2,57 +2,58 @@ version: "2"
 linters:
   default: all
   disable:
-    - depguard
-    - exhaustruct
-    - gochecknoglobals
-    - godot
-    - godox
-    - gomoddirectives
-    - interfacebloat
-    - intrange
-    - ireturn
-    - lll
-    - nilnil
-    - nlreturn
-    - nonamedreturns
-    - paralleltest
-    - perfsprint
-    - tagliatelle
-    - thelper
-    - varnamelen
-    - wrapcheck
-    - wsl
+  - noinlineerr
+  - depguard
+  - exhaustruct
+  - gochecknoglobals
+  - godot
+  - godox
+  - gomoddirectives
+  - interfacebloat
+  - intrange
+  - ireturn
+  - lll
+  - nilnil
+  - nlreturn
+  - nonamedreturns
+  - paralleltest
+  - perfsprint
+  - tagliatelle
+  - thelper
+  - varnamelen
+  - wrapcheck
+  - wsl
   settings:
     revive:
       enable-all-rules: true
       rules:
-        - name: add-constant
-          disabled: true
-        - name: flag-parameter
-          exclude:
-            - rpc/pkg/client/client.go
-        - name: import-shadowing
-          disabled: true
-        - name: import-alias-naming
-          disabled: true
-        - name: line-length-limit
-          disabled: true
-        - name: unchecked-type-assertion
-          exclude:
-            - _test\\.go$
-        - name: unused-receiver
-          exclude:
-            - graph/extensions/prometheus/prometheus.go
-        - name: max-public-structs
-          disabled: true
-        - name: comment-spacings
-          disabled: true
-        - name: var-naming
-          disabled: true
-        - name: flag-parameter
-          disabled: true
-        - name: cognitive-complexity
-          disabled: true
+      - name: add-constant
+        disabled: true
+      - name: flag-parameter
+        exclude:
+        - rpc/pkg/client/client.go
+      - name: import-shadowing
+        disabled: true
+      - name: import-alias-naming
+        disabled: true
+      - name: line-length-limit
+        disabled: true
+      - name: unchecked-type-assertion
+        exclude:
+        - _test\\.go$
+      - name: unused-receiver
+        exclude:
+        - graph/extensions/prometheus/prometheus.go
+      - name: max-public-structs
+        disabled: true
+      - name: comment-spacings
+        disabled: true
+      - name: var-naming
+        disabled: true
+      - name: flag-parameter
+        disabled: true
+      - name: cognitive-complexity
+        disabled: true
     tagalign:
       align: true
       sort: false
@@ -60,45 +61,45 @@ linters:
   exclusions:
     generated: lax
     presets:
-      - comments
-      - common-false-positives
-      - legacy
-      - std-error-handling
+    - comments
+    - common-false-positives
+    - legacy
+    - std-error-handling
     rules:
-      - linters:
-          - depguard
-          - revive
-        path: api/
-      - linters:
-          - revive
-        path: cli/
-      - linters:
-          - revive
-        path: services/graph/graph/schema.resolvers_test.go
+    - linters:
+      - depguard
+      - revive
+      path: api/
+    - linters:
+      - revive
+      path: cli/
+    - linters:
+      - revive
+      path: services/graph/graph/schema.resolvers_test.go
     paths:
-      - .*\.pb\.go$
-      - pkg/feeds/v1/service_grpc.pb.go
-      - services/graph/extensions/prometheus/prometheus.go
-      - internal/goverter/goverter.go
-      - third_party$
-      - builtin$
-      - examples$
+    - .*\.pb\.go$
+    - pkg/feeds/v1/service_grpc.pb.go
+    - services/graph/extensions/prometheus/prometheus.go
+    - internal/goverter/goverter.go
+    - third_party$
+    - builtin$
+    - examples$
 issues:
   whole-files: true
   fix: true
 formatters:
   enable:
-    - gci
-    - gofmt
-    - gofumpt
-    - goimports
+  - gci
+  - gofmt
+  - gofumpt
+  - goimports
   exclusions:
     generated: lax
     paths:
-      - .*\.pb\.go$
-      - pkg/feeds/v1/service_grpc.pb.go
-      - services/graph/extensions/prometheus/prometheus.go
-      - internal/goverter/goverter.go
-      - third_party$
-      - builtin$
-      - examples$
+    - .*\.pb\.go$
+    - pkg/feeds/v1/service_grpc.pb.go
+    - services/graph/extensions/prometheus/prometheus.go
+    - internal/goverter/goverter.go
+    - third_party$
+    - builtin$
+    - examples$
