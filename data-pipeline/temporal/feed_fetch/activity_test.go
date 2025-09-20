@@ -62,7 +62,9 @@ func TestDownloadActivity(t *testing.T) {
 	s.fetcher.EXPECT().
 		Url(mock.Anything, url, matcher, mock.Anything). // TODO: use etag
 		Return(nil)
-
+	s.bucket.EXPECT().
+		Create(mock.Anything, app.BucketName).
+		Return(nil)
 	s.bucket.EXPECT().
 		WriteStream(mock.Anything, app.BucketName, rssFile, reader, contentType).
 		Return(&bucket.UploadInfo{Key: rssFile, Bucket: app.BucketName}, nil)
