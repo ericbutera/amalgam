@@ -82,6 +82,10 @@ func (a *Activities) DownloadActivity(ctx context.Context, feedId string, url st
 			return ErrContentNotChanged
 		}
 
+		if err := a.bucket.Create(ctx, BucketName); err != nil {
+			return err
+		}
+
 		upload, err := a.bucket.WriteStream(ctx, BucketName, rssFile, params.Reader, params.ContentType)
 		if err != nil {
 			return err
