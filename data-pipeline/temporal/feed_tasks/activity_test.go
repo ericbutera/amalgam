@@ -21,10 +21,12 @@ type MockFeedServiceClient struct {
 
 func (m *MockFeedServiceClient) CreateFeed(ctx context.Context, req *pb.CreateFeedRequest, opts ...grpc.CallOption) (*pb.CreateFeedResponse, error) {
 	args := m.Called(ctx, req, opts)
+
 	response, ok := args.Get(0).(*pb.CreateFeedResponse)
 	if !ok {
 		return nil, args.Error(1)
 	}
+
 	return response, args.Error(1)
 }
 
@@ -40,6 +42,7 @@ func (m *MockGraphClient) MakeRequest(ctx context.Context, req *graphql.Request,
 
 func TestGenerateFeedsActivity(t *testing.T) {
 	t.Parallel()
+
 	host := "faker:8080"
 	count := 2
 

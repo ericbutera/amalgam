@@ -41,6 +41,7 @@ func Path(path string) (Articles, error) {
 		return nil, err
 	}
 	defer reader.Close()
+
 	return Parse(reader)
 }
 
@@ -58,8 +59,10 @@ func Parse(reader io.Reader) (Articles, error) {
 			slog.Error("parse: failed to convert item to article", "error", err)
 			continue
 		}
+
 		articles = append(articles, article)
 	}
+
 	return articles, nil
 }
 
@@ -96,6 +99,7 @@ func getImageUrl(item *parser.Item) (s string) {
 	if item.Image != nil && item.Image.URL != "" {
 		s = item.Image.URL
 	}
+
 	return s
 }
 
@@ -103,6 +107,7 @@ func getAuthorName(item *parser.Item) (s string) {
 	if item.Author != nil && item.Author.Name != "" {
 		s = item.Author.Name
 	}
+
 	return s
 }
 
@@ -110,6 +115,7 @@ func getAuthorEmail(item *parser.Item) (s string) {
 	if item.Author != nil && item.Author.Email != "" {
 		s = item.Author.Email
 	}
+
 	return s
 }
 
@@ -117,6 +123,7 @@ func getDateUpdated(item *parser.Item) time.Time {
 	if item.UpdatedParsed != nil {
 		return *item.UpdatedParsed
 	}
+
 	return time.Now().UTC()
 }
 
@@ -124,5 +131,6 @@ func getDatePublished(item *parser.Item) time.Time {
 	if item.PublishedParsed != nil {
 		return *item.PublishedParsed
 	}
+
 	return time.Now().UTC()
 }

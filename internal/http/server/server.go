@@ -24,13 +24,16 @@ func New(opts ...Option) (*http.Server, error) {
 	}
 
 	for _, opt := range opts {
-		if err := opt(server); err != nil {
+		err := opt(server)
+		if err != nil {
 			return nil, err
 		}
 	}
+
 	if server.Addr == "" {
 		server.Addr = ":8080"
 	}
+
 	return server, nil
 }
 

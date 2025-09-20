@@ -22,7 +22,8 @@ var retryPolicy = &temporal.RetryPolicy{
 }
 
 func main() {
-	if err := runWorker(); err != nil {
+	err := runWorker()
+	if err != nil {
 		slog.Error("unable to start worker", "error", err)
 		os.Exit(1)
 	}
@@ -38,10 +39,12 @@ type Config struct {
 func runWorker() error {
 	ctx := context.Background()
 	config := lo.Must(env.New[Config]())
+
 	client := lo.Must(clientHelper.NewTemporalClientFromEnv())
 	if config.UseSchedule {
 		return runSchedule(ctx, config, client)
 	}
+
 	return runExecute(ctx, config, client)
 }
 
@@ -51,6 +54,7 @@ func runSchedule(ctx context.Context, config *Config, client sdk.Client) error {
 	if err := handle.Delete(ctx); err != nil {
 		return fmt.Errorf("failed to delete schedule: %w", err)
 	}
+
 	schedule, err := client.ScheduleClient().Create(ctx, sdk.ScheduleOptions{
 		ID: config.ScheduleID,
 		Spec: sdk.ScheduleSpec{
@@ -68,7 +72,9 @@ func runSchedule(ctx context.Context, config *Config, client sdk.Client) error {
 	if err != nil {
 		return fmt.Errorf("failed to schedule workflow: %w", err)
 	}
+
 	slog.Info("started workflow", "schedule", schedule.GetID())
+
 	return nil
 }
 
@@ -77,10 +83,13 @@ func runExecute(ctx context.Context, config *Config, client sdk.Client) error {
 		TaskQueue:   config.TaskQueue,
 		RetryPolicy: retryPolicy,
 	}
+
 	we, err := client.ExecuteWorkflow(ctx, opts, app.FetchFeedsWorkflow)
 	if err != nil {
 		return fmt.Errorf("failed to execute workflow: %w", err)
 	}
+
 	slog.Info("started workflow", "workflow_id", we.GetID())
+
 	return nil
 }

@@ -26,6 +26,8 @@ import (
 )
 
 type Server struct {
+	pb.UnimplementedFeedServiceServer
+
 	config     *config.Config
 	grpcSrv    *grpc.Server
 	metricSrv  *http.Server
@@ -33,7 +35,6 @@ type Server struct {
 	service    service.Service
 	converters converters.Converter
 	shutdowns  []func(context.Context) error
-	pb.UnimplementedFeedServiceServer
 }
 
 func (s *Server) Serve(ctx context.Context) error {
@@ -41,11 +42,16 @@ func (s *Server) Serve(ctx context.Context) error {
 
 	g.Add(func() error {
 		slog.Info("launching server", "port", s.config.Port)
-		listener, err := net.Listen("tcp", fmt.Sprintf(":%s", s.config.Port))
+
+		var lc net.ListenConfig
+
+		listener, err := lc.Listen(ctx, "tcp", fmt.Sprintf(":%s", s.config.Port))
 		if err != nil {
 			return err
 		}
+
 		defer listener.Close()
+
 		return s.grpcSrv.Serve(listener)
 	}, func(err error) {
 		slog.Error("shutting down server", "err", err)
@@ -53,7 +59,8 @@ func (s *Server) Serve(ctx context.Context) error {
 		s.grpcSrv.Stop()
 
 		for _, shutdown := range s.shutdowns {
-			if err := shutdown(ctx); err != nil {
+			err := shutdown(ctx)
+			if err != nil {
 				slog.Error("failed to shutdown", "err", err)
 			}
 		}
@@ -64,7 +71,8 @@ func (s *Server) Serve(ctx context.Context) error {
 			slog.Info("serving metrics", "addr", s.metricSrv.Addr)
 			return s.metricSrv.ListenAndServe()
 		}, func(error) {
-			if err := s.metricSrv.Close(); err != nil {
+			err := s.metricSrv.Close()
+			if err != nil {
 				slog.Error("failed to stop web server", "err", err)
 			}
 		})
@@ -81,6 +89,7 @@ func WithDb(db *gorm.DB) Option {
 	return func(s *Server) error {
 		s.service = service.NewGorm(db)
 		s.db = db
+
 		return nil
 	}
 }
@@ -91,6 +100,7 @@ func WithDbFromEnv() Option {
 		if err != nil {
 			return err
 		}
+
 		return WithDb(db)(s)
 	}
 }
@@ -115,7 +125,9 @@ func WithOtel(ctx context.Context, ignored []string) Option {
 		if err != nil {
 			return err
 		}
+
 		s.shutdowns = append(s.shutdowns, shutdown)
+
 		return nil
 	}
 }
@@ -141,7 +153,8 @@ func New(opts ...Option) (*Server, error) {
 	}
 
 	for _, opt := range opts {
-		if err := opt(&server); err != nil {
+		err := opt(&server)
+		if err != nil {
 			return nil, err
 		}
 	}
@@ -151,13 +164,16 @@ func New(opts ...Option) (*Server, error) {
 		if err != nil {
 			return nil, err
 		}
+
 		server.config = config
 	}
+
 	if server.service == nil {
 		db, err := db.NewFromEnv()
 		if err != nil {
 			return nil, err
 		}
+
 		server.service = service.NewGorm(db)
 	}
 
@@ -165,11 +181,13 @@ func New(opts ...Option) (*Server, error) {
 	if server.metricSrv == nil {
 		server.metricSrv = metrics_server.NewServer(o.Registry, server.config.MetricAddress)
 	}
+
 	if server.grpcSrv == nil {
 		grpcSrv, err := grpc_server.NewServer(o.ServerMetrics, o.FeedMetrics)
 		if err != nil {
 			return nil, err
 		}
+
 		server.grpcSrv = grpcSrv
 	}
 

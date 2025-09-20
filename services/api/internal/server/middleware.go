@@ -25,6 +25,7 @@ func (s *server) middleware() {
 	s.router.Use(gin.Recovery())
 	s.router.Use(logMiddleware())
 	s.router.Use(corsMiddleware(s.config))
+
 	if s.config.OtelEnable {
 		s.router.Use(otelMiddleware())
 	}

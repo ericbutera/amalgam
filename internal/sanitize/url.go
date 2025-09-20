@@ -11,5 +11,6 @@ func Url(rawUrl string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
 	return p.NormalizeURL(u, p.FlagsSafe|p.FlagRemoveDuplicateSlashes), nil
 }

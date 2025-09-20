@@ -24,6 +24,7 @@ func NewFeedCmd() *cobra.Command {
 
 func newGraphClient() graphql.Client {
 	httpClient := http.Client{}
+
 	return graphql.NewClient(
 		"http://localhost:8082/query", // TODO: make this configurable
 		&httpClient,

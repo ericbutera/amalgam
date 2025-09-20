@@ -23,6 +23,7 @@ func main() {
 	if url == "" {
 		url = serviceURL
 	}
+
 	slog.Info("generating golang graphql schema", "serviceURL", url)
 
 	schema, err := gqlfetch.BuildClientSchema(context.Background(), url, false)

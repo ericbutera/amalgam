@@ -54,6 +54,7 @@ func NewActivitiesFromEnv() *Activities {
 	a.Closers = func() {
 		closer() //nolint:errcheck
 	} // TODO: revisit this pattern
+
 	return a
 }
 
@@ -71,7 +72,9 @@ func (a *Activities) CreateVerifyRecord(ctx context.Context, verification FeedVe
 	if err != nil {
 		return nil, err
 	}
+
 	v := resp.GetVerification()
+
 	return &FeedVerification{
 		ID:         v.GetId(),
 		WorkflowID: v.GetWorkflowId(),
@@ -107,6 +110,7 @@ func (a *Activities) Fetch(ctx context.Context, verification FeedVerification) (
 
 		// Hack to validate RSS. In the future this work won't get thrown away.
 		_, err := a.transforms.RssToArticles(params.Reader)
+
 		return err
 	}, nil)
 
@@ -123,6 +127,8 @@ func (a *Activities) CreateFeed(ctx context.Context, verification FeedVerificati
 	if err != nil {
 		return err
 	}
+
 	slog.Debug("created feed", "feed_id", resp.GetId(), "verification_id", verification.ID)
+
 	return nil
 }

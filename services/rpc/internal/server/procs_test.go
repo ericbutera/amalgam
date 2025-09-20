@@ -36,6 +36,7 @@ type TestServer struct {
 
 func newServer(t *testing.T) *TestServer {
 	t.Helper()
+
 	config := lo.Must(env.New[config.Config]())
 	db := test.NewDB(t)
 	svc := service.NewGorm(db)
@@ -46,6 +47,7 @@ func newServer(t *testing.T) *TestServer {
 	))
 	s := grpc.NewServer()
 	pb.RegisterFeedServiceServer(s, server)
+
 	return &TestServer{
 		Server:  server,
 		Service: svc,
@@ -86,6 +88,7 @@ func TestCreateFeedValidateError(t *testing.T) {
 		},
 	})
 	require.Error(t, err)
+
 	s := status.Convert(err)
 	for _, detail := range s.Details() {
 		if br, ok := detail.(*errdetails.BadRequest); ok {
@@ -93,9 +96,11 @@ func TestCreateFeedValidateError(t *testing.T) {
 			violation := br.GetFieldViolations()[0]
 			assert.Equal(t, "URL", violation.GetField())
 			assert.Contains(t, violation.GetDescription(), "URL")
+
 			return
 		}
 	}
+
 	assert.Fail(t, "validation error not found")
 }
 
@@ -155,14 +160,17 @@ func TestSaveArticleValidateError(t *testing.T) {
 			violations := br.GetFieldViolations()
 			assert.Equal(t, "FeedID", violations[0].GetField())
 			assert.Equal(t, "URL", violations[1].GetField())
+
 			return
 		}
 	}
+
 	assert.Fail(t, "validation error not found")
 }
 
 func TestSaveArticleFeed(t *testing.T) {
 	t.Parallel()
+
 	ctx := context.Background()
 	ts := newServer(t)
 	resp, err := ts.Server.SaveArticle(ctx, &pb.SaveArticleRequest{
@@ -187,8 +195,10 @@ func TestListArticles(t *testing.T) {
 		FeedId: fakes.Feed.ID,
 	})
 	articles := resp.GetArticles()
+
 	require.NoError(t, err)
 	assert.Len(t, articles, 1)
+
 	c := converters.New()
 	helpers.Diff(t, *fakes.Articles[0], *c.ProtoToServiceArticle(articles[0]))
 }
@@ -200,6 +210,7 @@ func TestListArticles_Pagination(t *testing.T) {
 	ts := newServer(t)
 	fakes, err := seed.FeedAndArticles(ts.DB, 2)
 	require.NoError(t, err)
+
 	ctx := context.Background()
 
 	// page 1
@@ -211,6 +222,7 @@ func TestListArticles_Pagination(t *testing.T) {
 		},
 	})
 	cursor := resp.GetCursor().GetNext()
+
 	require.NoError(t, err)
 	assert.Len(t, resp.GetArticles(), 1)
 	assert.NotEmpty(t, cursor)
@@ -270,6 +282,7 @@ func TestGetFeed(t *testing.T) {
 		Id: fakes.Feed.ID,
 	})
 	require.NoError(t, err)
+
 	c := converters.New()
 	helpers.Diff(t, *fakes.Feed, *c.ProtoToServiceFeed(resp.GetFeed()), "IsActive")
 }
@@ -316,6 +329,7 @@ func TestGetArticle(t *testing.T) {
 		Id: fakes.Articles[0].ID,
 	})
 	require.NoError(t, err)
+
 	c := converters.New()
 	helpers.Diff(t, *fakes.Articles[0], *c.ProtoToServiceArticle(resp.GetArticle()))
 }

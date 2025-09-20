@@ -14,6 +14,7 @@ func NewSpanName(ignored []string) trace.Sampler {
 		BaseSampler:  trace.TraceIDRatioBased(DefaultTraceRatio), // TODO: configurable
 		IgnoredNames: ignored,
 	}
+
 	return trace.ParentBased(s)
 }
 
@@ -28,6 +29,7 @@ func (cs *SpanName) ShouldSample(p trace.SamplingParameters) trace.SamplingResul
 			return trace.SamplingResult{Decision: trace.Drop}
 		}
 	}
+
 	return cs.BaseSampler.ShouldSample(p)
 }
 

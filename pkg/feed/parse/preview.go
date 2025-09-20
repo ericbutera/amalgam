@@ -33,9 +33,11 @@ func truncateWithoutBreakingWords(s string, maxLength int) string {
 	if len(s) <= maxLength {
 		return s
 	}
+
 	words := strings.Fields(s[:maxLength+1])
 	if len(words) > 1 && len(strings.Join(words[:len(words)-1], " ")) <= maxLength {
 		return strings.Join(words[:len(words)-1], " ")
 	}
+
 	return strings.Join(words, " ")
 }

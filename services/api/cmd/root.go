@@ -13,7 +13,8 @@ var rootCmd = &cobra.Command{
 }
 
 func Execute() {
-	if err := rootCmd.Execute(); err != nil {
+	err := rootCmd.Execute()
+	if err != nil {
 		slog.ErrorContext(rootCmd.Context(), "error running root command")
 	}
 }

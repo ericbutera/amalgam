@@ -49,6 +49,7 @@ func Test_ComplexityLimit_Exceeded(t *testing.T) {
 
 	req := httptest.NewRequest(http.MethodPost, "/query", bytes.NewBufferString(complexQuery))
 	req.Header.Set("Content-Type", "application/json")
+
 	rec := httptest.NewRecorder()
 	srv.Handler.ServeHTTP(rec, req)
 

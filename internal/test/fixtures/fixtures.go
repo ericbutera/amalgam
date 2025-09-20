@@ -24,6 +24,7 @@ func NewFeed(opts ...FeedOption) *models.Feed {
 	for _, opt := range opts {
 		opt(f)
 	}
+
 	return f
 }
 
@@ -68,6 +69,7 @@ func NewArticle(opts ...ArticleOption) *models.Article {
 	for _, opt := range opts {
 		opt(a)
 	}
+
 	return a
 }
 

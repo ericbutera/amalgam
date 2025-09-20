@@ -21,6 +21,7 @@ type (
 func NewUserArticleLoader(rpcClient pb.FeedServiceClient, userID string) *dataloader.Loader[ArticleID, *PbUserArticle] {
 	batchFunc := func(ctx context.Context, articleIDs []ArticleID) []*ArticleRes {
 		var articles map[ArticleID]*PbUserArticle
+
 		resp, err := rpcClient.GetUserArticles(ctx, &pb.GetUserArticlesRequest{
 			User:       &pb.User{Id: userID},
 			ArticleIds: articleIDs,
@@ -37,9 +38,11 @@ func NewUserArticleLoader(rpcClient pb.FeedServiceClient, userID string) *datalo
 				results[i] = &ArticleRes{Data: nil}
 			}
 		}
+
 		return results
 	}
 
 	cache := &dataloader.NoCache[ArticleID, *PbUserArticle]{}
+
 	return dataloader.NewBatchedLoader(batchFunc, dataloader.WithCache(cache))
 }

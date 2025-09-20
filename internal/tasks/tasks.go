@@ -31,6 +31,7 @@ func taskTypeToWorkflow(taskType TaskType) (any, error) {
 		return feed_tasks.GenerateFeedsWorkflow, nil
 	case TaskFetchFeeds:
 		return feed_tasks.RefreshFeedsWorkflow, nil
+	default:
+		return nil, ErrInvalidTaskType
 	}
-	return nil, ErrInvalidTaskType
 }

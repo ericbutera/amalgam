@@ -17,5 +17,6 @@ func NewDB(t *testing.T) *gorm.DB {
 		// db.WithTraceAll(),
 	)
 	require.NoError(t, err)
+
 	return d
 }

@@ -32,6 +32,7 @@ func newServerMetrics(r *prometheus.Registry) *grpcprom.ServerMetrics {
 		),
 	)
 	r.MustRegister(m)
+
 	return m
 }
 

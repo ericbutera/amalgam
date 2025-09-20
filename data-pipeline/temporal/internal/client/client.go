@@ -27,10 +27,12 @@ func NewTemporalClient(host string) (client.Client, error) {
 		HostPort:       host,
 		MetricsHandler: sdktally.NewMetricsHandler(scope),
 	}
+
 	c, err := client.Dial(opts)
 	if err != nil {
 		return nil, err
 	}
+
 	return c, nil
 }
 
@@ -43,10 +45,12 @@ func NewTemporalClientFromEnv() (client.Client, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	c, err := NewTemporalClient(config.TemporalHost)
 	if err != nil {
 		return nil, err
 	}
+
 	return c, nil
 }
 
@@ -63,6 +67,7 @@ func newPrometheusScope(c prometheus.Configuration) (tally.Scope, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	scopeOpts := tally.ScopeOptions{
 		CachedReporter:  reporter,
 		Separator:       prometheus.DefaultSeparator,

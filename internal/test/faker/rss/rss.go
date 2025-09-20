@@ -51,6 +51,7 @@ func uuidToSeed(id string) (int64, error) {
 	if err != nil {
 		return seed, err
 	}
+
 	hash := sha256.Sum256(uuid[:])
 
 	// note: this is a test helper so it doesn't matter. in production, this would be a bad idea.
@@ -70,11 +71,13 @@ func generateChannel(seed int64, id string, itemCount int) Channel {
 		Description: gofakeit.Sentence(SentenceCount),
 		Items:       generateItems(itemCount),
 	}
+
 	return channel
 }
 
 func generateItems(itemCount int) []Item {
 	gofakeit.Seed(Seed)
+
 	items := make([]Item, itemCount)
 	for i := range items {
 		items[i] = Item{
@@ -84,6 +87,7 @@ func generateItems(itemCount int) []Item {
 			PubDate:     time.Now().Add(time.Duration(-i) * time.Hour).Format(time.RFC1123),
 		}
 	}
+
 	return items
 }
 

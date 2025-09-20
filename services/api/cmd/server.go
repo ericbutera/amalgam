@@ -28,6 +28,7 @@ func NewServerCmd() *cobra.Command {
 		Long:  "Run api server",
 		Run:   runServer,
 	}
+
 	return cmd
 }
 
@@ -52,6 +53,7 @@ func runServer(cmd *cobra.Command, args []string) {
 		if err != nil {
 			quit(ctx, err)
 		}
+
 		defer func() {
 			err = errors.Join(err, shutdown(context.Background()))
 		}()
@@ -71,6 +73,7 @@ func runServer(cmd *cobra.Command, args []string) {
 	}
 
 	srvErr := make(chan error, 1)
+
 	go func() {
 		srvErr <- srv.Run()
 	}()
@@ -82,6 +85,7 @@ func runServer(cmd *cobra.Command, args []string) {
 		slog.Info("shutting down")
 		stop()
 	}
+
 	quit(ctx, err)
 }
 
@@ -89,6 +93,7 @@ func newGraphClient(host string, logger *slog.Logger) (graphql.Client, error) {
 	if host == "" {
 		return nil, ErrHostNotSet
 	}
+
 	httpClient := http.Client{
 		Transport: transport.NewLoggingTransport(
 			transport.WithLogger(logger),

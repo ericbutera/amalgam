@@ -21,7 +21,8 @@ import (
 func main() {
 	slog := logger.New()
 
-	if err := run(slog); err != nil {
+	err := run(slog)
+	if err != nil {
 		slog.Error("graph server error", "error", err)
 		os.Exit(1)
 	}
@@ -39,6 +40,7 @@ func run(slog *slog.Logger) error {
 	}
 
 	client, closer := lo.Must2(rpc.New(config.RpcHost, config.RpcInsecure))
+
 	defer func() { lo.Must0(closer()) }()
 
 	tasks := lo.Must(tasks.NewTemporalFromEnv())
@@ -55,7 +57,8 @@ func run(slog *slog.Logger) error {
 		<-ctx.Done()
 		slog.Info("shutting down server")
 
-		if err := srv.Shutdown(ctx); err != nil {
+		err := srv.Shutdown(ctx)
+		if err != nil {
 			slog.Error("server shutdown failed", "error", err)
 		}
 	}()

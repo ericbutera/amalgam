@@ -16,6 +16,7 @@ var (
 
 func ValidationToGraphErr(ctx context.Context, s *status.Status) error {
 	counter := 0
+
 	for _, detail := range s.Details() {
 		if br, ok := detail.(*errdetails.BadRequest); ok {
 			for _, violation := range br.GetFieldViolations() {
@@ -25,12 +26,15 @@ func ValidationToGraphErr(ctx context.Context, s *status.Status) error {
 						"field": violation.GetField(),
 					},
 				})
+
 				counter++
 			}
 		}
 	}
+
 	if counter > 0 {
 		return &ErrValidation
 	}
+
 	return &ErrInvalidRequest
 }

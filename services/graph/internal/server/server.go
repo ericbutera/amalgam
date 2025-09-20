@@ -61,6 +61,7 @@ func newReadyzHandler(client pb.FeedServiceClient) http.HandlerFunc {
 			w.WriteHeader(http.StatusServiceUnavailable)
 			return
 		}
+
 		w.WriteHeader(http.StatusOK)
 	}
 }

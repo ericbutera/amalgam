@@ -15,7 +15,8 @@ import (
 )
 
 func main() {
-	if err := run(); err != nil {
+	err := run()
+	if err != nil {
 		slog.Error("run error", "error", err)
 		os.Exit(1)
 	}
@@ -41,5 +42,6 @@ func run() error {
 	if err != nil {
 		return err
 	}
+
 	return srv.Serve(ctx)
 }

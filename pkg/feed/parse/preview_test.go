@@ -9,6 +9,7 @@ import (
 
 func TestPreview(t *testing.T) {
 	t.Parallel()
+
 	cases := []struct {
 		name     string
 		input    string
@@ -38,6 +39,7 @@ func TestPreview(t *testing.T) {
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
+
 			actual := parse.PreviewWithLength(tc.input, tc.length)
 			assert.Equal(t, tc.expected, actual)
 		})

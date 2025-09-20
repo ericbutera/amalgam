@@ -24,7 +24,8 @@ func New(options ...ServerOption) (*server, error) {
 	}
 
 	for _, o := range options {
-		if err := o(s); err != nil {
+		err := o(s)
+		if err != nil {
 			return nil, err
 		}
 	}

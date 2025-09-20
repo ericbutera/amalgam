@@ -17,6 +17,7 @@ func GenerateFeedsWorkflow(ctx workflow.Context, host string, count int /*, user
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -31,6 +32,7 @@ func RefreshFeedsWorkflow(ctx workflow.Context) error {
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 

@@ -131,12 +131,16 @@ deploy_lgtm(
   auto_init=(not IS_CI),
 )
 
+# TODO: combine with data-pipeline-auth above
+k8s_yaml(secret_from_dict("minio-auth", inputs={
+  "MINIO_ACCESS_KEY": "minio",
+  "MINIO_SECRET_ACCESS_KEY": "minio-password",
+}))
 load('./containers/tilt/extensions/minio/Tiltfile', 'deploy_minio')
 deploy_minio(
-  secret_name="feed-minio-auth",
-  root_user="minio",
-  root_password="minio-password",
+  secret_name="minio-auth",
   # auto_init=(not IS_CI),
 )
+
 
 include('Tiltfile.tests')

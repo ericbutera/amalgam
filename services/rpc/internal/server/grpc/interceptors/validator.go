@@ -21,7 +21,8 @@ func UnaryValidation(validator *protovalidate.Validator) grpc.UnaryServerInterce
 	) (resp any, err error) {
 		switch msg := req.(type) {
 		case proto.Message:
-			if err = validator.Validate(msg); err != nil {
+			err = validator.Validate(msg)
+			if err != nil {
 				st := status.New(codes.InvalidArgument, "validation failed")
 				br := &errdetails.BadRequest{}
 
@@ -33,6 +34,7 @@ func UnaryValidation(validator *protovalidate.Validator) grpc.UnaryServerInterce
 				}
 
 				st, _ = st.WithDetails(br)
+
 				return nil, st.Err()
 			}
 		default:
