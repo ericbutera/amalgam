@@ -31,8 +31,8 @@ func main() {
 
 type Config struct {
 	UseSchedule bool   `env:"USE_SCHEDULE" envDefault:"false"`
-	ScheduleID  string `env:"SCHEDULE_ID" envDefault:"feed-fetch-schedule-id"`
-	WorkflowID  string `env:"WORKFLOW_ID" envDefault:"fetch-feeds-workflow-id"`
+	ScheduleID  string `env:"SCHEDULE_ID"  envDefault:"feed-fetch-schedule-id"`
+	WorkflowID  string `env:"WORKFLOW_ID"  envDefault:"fetch-feeds-workflow-id"`
 	TaskQueue   string `env:"TASK_QUEUE"`
 }
 

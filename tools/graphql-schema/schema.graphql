@@ -26,6 +26,7 @@ directive @specifiedBy(
 
 type AddResponse {
 	id: ID!
+	jobId: ID!
 }
 
 type Article {
@@ -70,6 +71,11 @@ type FeedResponse {
 
 type FeedTaskResponse {
 	taskId: ID!
+}
+
+type FeedTaskStatusResponse {
+	taskId: ID!
+	status: String!
 }
 
 type FetchFeedsResponse {
@@ -129,6 +135,9 @@ type Query {
 	article(
 		id: ID!
 	): Article
+	feedTaskStatus(
+		id: ID!
+	): FeedTaskStatusResponse!
 }
 
 type ResponseCursor {
@@ -151,3 +160,4 @@ type UpdateResponse {
 type UserArticle {
 	viewedAt: DateTime!
 }
+

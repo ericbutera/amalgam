@@ -12,6 +12,9 @@ import (
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
 	rpc "github.com/ericbutera/amalgam/services/rpc/pkg/client"
 	"github.com/samber/lo"
+	"go.temporal.io/sdk/temporal"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 const (
@@ -59,9 +62,6 @@ func NewActivitiesFromEnv() *Activities {
 }
 
 func (a *Activities) CreateVerifyRecord(ctx context.Context, verification FeedVerification) (*FeedVerification, error) {
-	// verification
-	// - will fail if the URL is invalid
-	// - normalizes the URL (imagine ?p=1&x=1 vs ?x=1&p=1)
 	resp, err := a.rpc.CreateFeedVerification(ctx, &pb.CreateFeedVerificationRequest{
 		Verification: &pb.FeedVerification{
 			Url:        verification.URL,
@@ -70,6 +70,10 @@ func (a *Activities) CreateVerifyRecord(ctx context.Context, verification FeedVe
 		},
 	})
 	if err != nil {
+		st, ok := status.FromError(err)
+		if ok && st.Code() == codes.AlreadyExists {
+			return nil, temporal.NewNonRetryableApplicationError("duplicate feed", "ErrDuplicateFeed", nil, nil)
+		}
 		return nil, err
 	}
 
@@ -83,11 +87,9 @@ func (a *Activities) CreateVerifyRecord(ctx context.Context, verification FeedVe
 	}, nil
 }
 
+// fetch the remote feed to verify it is a real site & contains rss content
+// intent is to return blob storage location
 func (a *Activities) Fetch(ctx context.Context, verification FeedVerification) (string, error) {
-	// blob := fmt.Sprintf(RssPathFormat, workflowID)
-	// entry := slog.Default().With( "file", blob, "url", verification.URL,)
-
-	// TODO: ensure fetch.Url makes a fetch_history entry
 	err := a.fetch.Url(ctx, verification.URL, func(params fetch.CallbackParams) error {
 		// retry on 500
 		// expo backoff on 429
@@ -113,11 +115,14 @@ func (a *Activities) Fetch(ctx context.Context, verification FeedVerification) (
 
 		return err
 	}, nil)
-
-	return "", err // TODO: return blob filename
+	if err != nil {
+		slog.Info("unable to fetch feed", "error", err, "url", verification.URL)
+		return "", err
+	}
+	return "", err
 }
 
-func (a *Activities) CreateFeed(ctx context.Context, verification FeedVerification) error {
+func (a *Activities) CreateFeed(ctx context.Context, verification FeedVerification) (string, error) {
 	resp, err := a.rpc.CreateFeed(ctx, &pb.CreateFeedRequest{
 		Feed: &pb.CreateFeedRequest_Feed{
 			Url: verification.URL,
@@ -125,10 +130,23 @@ func (a *Activities) CreateFeed(ctx context.Context, verification FeedVerificati
 		User: &pb.User{Id: verification.UserID},
 	})
 	if err != nil {
-		return err
+		return "", err
 	}
+	return resp.GetId(), nil
+}
 
-	slog.Debug("created feed", "feed_id", resp.GetId(), "verification_id", verification.ID)
-
-	return nil
+// Attempts to associate an existing feed with a user.
+func (a *Activities) SubscribeUserToUrl(ctx context.Context, url string, userID string) (string, error) {
+	res, err := a.rpc.SubscribeUserToUrl(ctx, &pb.SubscribeUserToUrlRequest{
+		Url:  url,
+		User: &pb.User{Id: userID},
+	})
+	if err != nil {
+		st, ok := status.FromError(err)
+		if ok && st.Code() == codes.NotFound {
+			return "", nil // feed doesn't exist, continue with workflow
+		}
+		return "", err
+	}
+	return res.GetFeedId(), nil
 }

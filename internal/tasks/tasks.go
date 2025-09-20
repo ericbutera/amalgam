@@ -15,14 +15,24 @@ const (
 	TaskUnspecified   TaskType = ""
 	TaskGenerateFeeds TaskType = "generate_feeds"
 	TaskFetchFeeds    TaskType = "fetch_feeds"
+	TaskAddFeed       TaskType = "add_feed"
 )
 
 type Tasks interface {
-	Workflow(ctx context.Context, task TaskType) (*TaskResult, error)
+	// Args will be passed as parameters to the workflow.
+	Workflow(ctx context.Context, task TaskType, args []any) (*TaskResult, error)
+	Status(ctx context.Context, taskID string) (*TaskStatusResult, error)
 }
 
 type TaskResult struct {
-	ID string
+	ID     string
+	RunID  string
+	Result any
+}
+
+type TaskStatusResult struct {
+	ID     string
+	Status any
 }
 
 func taskTypeToWorkflow(taskType TaskType) (any, error) {
@@ -31,6 +41,8 @@ func taskTypeToWorkflow(taskType TaskType) (any, error) {
 		return feed_tasks.GenerateFeedsWorkflow, nil
 	case TaskFetchFeeds:
 		return feed_tasks.RefreshFeedsWorkflow, nil
+	case TaskAddFeed:
+		return feed_tasks.AddFeedWorkflow, nil
 	default:
 		return nil, ErrInvalidTaskType
 	}

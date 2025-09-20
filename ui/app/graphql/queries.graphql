@@ -12,6 +12,12 @@ query ListFeeds {
   }
 }
 
+query GetFeedTaskStatus($id: ID!) {
+  feedTaskStatus(id: $id) {
+    status
+  }
+}
+
 query GetFeed($id: ID!) {
   feed(id: $id) {
     id

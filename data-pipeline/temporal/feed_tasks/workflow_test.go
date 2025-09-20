@@ -57,3 +57,22 @@ func (s *UnitTestSuite) Test_RefreshFeedsWorkflow() {
 
 	env.AssertExpectations(t)
 }
+
+func (s *UnitTestSuite) Test_AddFeedWorkflow() {
+	env := s.NewTestWorkflowEnvironment()
+	env.SetWorkerOptions(worker.Options{EnableSessionWorker: true})
+	var a *feed_tasks.Activities
+
+	url := "http://localhost/feed.xml"
+	userID := "test-user-id"
+
+	env.OnActivity(a.AddFeed, mock.Anything, url, userID).Return("feed-id-123", nil)
+	env.RegisterActivity(a)
+	env.ExecuteWorkflow(feed_tasks.AddFeedWorkflow, url, userID)
+
+	t := s.T()
+	assert.True(t, env.IsWorkflowCompleted())
+	require.NoError(t, env.GetWorkflowError())
+
+	env.AssertExpectations(t)
+}

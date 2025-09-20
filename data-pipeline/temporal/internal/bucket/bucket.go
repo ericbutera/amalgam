@@ -19,7 +19,7 @@ type Config struct {
 	MinioEndpoint        string `env:"MINIO_ENDPOINT"`
 	MinioAccessKey       string `env:"MINIO_ACCESS_KEY"`
 	MinioSecretAccessKey string `env:"MINIO_SECRET_ACCESS_KEY"`
-	MinioRegion          string `env:"MINIO_REGION" envDefault:"us-east-1"`
+	MinioRegion          string `env:"MINIO_REGION"            envDefault:"us-east-1"`
 	MinioUseSsl          bool   `env:"MINIO_USE_SSL"`
 	MinioTrace           bool   `env:"MINIO_TRACE"`
 }

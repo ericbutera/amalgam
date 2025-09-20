@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"strings"
 	"time"
 
 	"github.com/ericbutera/amalgam/internal/converters"
@@ -20,8 +21,6 @@ import (
 )
 
 const DefaultLimit = 100
-
-var ErrQueryFailed = errors.New("query failed")
 
 var (
 	validateFeedCreate = validate.CustomMessages{
@@ -144,11 +143,7 @@ func (s *Gorm) GetFeed(ctx context.Context, id string) (*svc_model.Feed, error) 
 
 	result := s.query(ctx).First(&feed, "id=?", id)
 	if result.Error != nil {
-		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			return nil, ErrNotFound
-		}
-
-		return nil, result.Error
+		return nil, gormToServiceError(result.Error)
 	}
 
 	return &feed, nil
@@ -185,11 +180,7 @@ func (s *Gorm) GetArticle(ctx context.Context, id string) (*svc_model.Article, e
 
 	result := s.query(ctx).First(&article, "id=?", id)
 	if result.Error != nil {
-		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			return nil, ErrNotFound
-		}
-
-		return nil, result.Error
+		return nil, gormToServiceError(result.Error)
 	}
 
 	return &article, nil
@@ -230,11 +221,7 @@ func (s *Gorm) GetUserFeed(ctx context.Context, userID string, feedID string) (*
 
 	result := s.userFeeds(ctx, userID).Where("uf.feed_id=?", feedID).First(&feed)
 	if result.Error != nil {
-		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			return nil, ErrNotFound
-		}
-
-		return nil, result.Error
+		return nil, gormToServiceError(result.Error)
 	}
 
 	return &feed, nil
@@ -345,20 +332,12 @@ func (s *Gorm) CreateFeedVerification(ctx context.Context, verification *svc_mod
 	// Note: duplicates will be stopped by the database
 	err := s.query(ctx).Create(verification).Error
 	if err != nil {
-		return nil, err
+		return nil, gormToServiceError(err)
 	}
 
 	// This needs to return the ID and URL. It's possible the normalization process changed the input URL.
 	return verification, nil
 }
-
-/*
-func (s *Gorm) UpdateFeedVerification(ctx context.Context, id string, verification *svc_model.FeedVerification) error {
-	// TODO: handle case where multiple verifications are submitted for same url (user_id)
-	// TODO: ensure feed validations don't get stuck (url + workflow_id)
-	panic("not implemented")
-}
-*/
 
 func (s *Gorm) CreateFetchHistory(ctx context.Context, history *svc_model.FetchHistory) (*svc_model.FetchHistory, error) {
 	err := s.query(ctx).Create(history).Error
@@ -367,6 +346,23 @@ func (s *Gorm) CreateFetchHistory(ctx context.Context, history *svc_model.FetchH
 	}
 
 	return history, nil
+}
+
+func (s *Gorm) SubscribeUserToUrl(ctx context.Context, userID string, url string) (*svc_model.UserFeed, error) {
+	var feed svc_model.Feed
+	res := s.query(ctx).First(&feed, "url=?", url)
+	if res.Error != nil {
+		return nil, gormToServiceError(res.Error)
+	}
+
+	uf := &svc_model.UserFeed{
+		UserID: userID,
+		FeedID: feed.ID,
+	}
+	if err := s.SaveUserFeed(ctx, uf); err != nil {
+		return nil, err
+	}
+	return uf, nil
 }
 
 // query returns a new query builder with the given context. required for otel
@@ -414,4 +410,17 @@ func (s *Gorm) updateArticleCount(ctx context.Context, userID string, feedID str
 	`
 
 	return s.query(ctx).Exec(sql, feedID, userID, feedID).Error
+}
+
+func gormToServiceError(err error) error {
+	switch {
+	case errors.Is(err, gorm.ErrRecordNotFound):
+		return ErrNotFound
+	case errors.Is(err, gorm.ErrDuplicatedKey):
+		return ErrDuplicate
+	case strings.Contains(err.Error(), "Error 1062 (23000): Duplicate entry"):
+		return ErrDuplicate // TODO: revisit this workaround
+	default:
+		return err
+	}
 }

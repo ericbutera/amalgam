@@ -93,7 +93,7 @@ func TestCreateFeed(t *testing.T) {
 		}).
 		Return(&pb.CreateFeedResponse{}, nil)
 
-	err := s.activities.CreateFeed(context.Background(), data)
+	_, err := s.activities.CreateFeed(context.Background(), data)
 
 	require.NoError(t, err)
 }

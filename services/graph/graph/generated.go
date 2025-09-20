@@ -49,7 +49,8 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	AddResponse struct {
-		ID func(childComplexity int) int
+		ID    func(childComplexity int) int
+		JobID func(childComplexity int) int
 	}
 
 	Article struct {
@@ -91,6 +92,11 @@ type ComplexityRoot struct {
 		TaskID func(childComplexity int) int
 	}
 
+	FeedTaskStatusResponse struct {
+		Status func(childComplexity int) int
+		TaskID func(childComplexity int) int
+	}
+
 	FetchFeedsResponse struct {
 		ID func(childComplexity int) int
 	}
@@ -107,10 +113,11 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Article  func(childComplexity int, id string) int
-		Articles func(childComplexity int, feedID string, options *model.ListOptions) int
-		Feed     func(childComplexity int, id string) int
-		Feeds    func(childComplexity int) int
+		Article        func(childComplexity int, id string) int
+		Articles       func(childComplexity int, feedID string, options *model.ListOptions) int
+		Feed           func(childComplexity int, id string) int
+		FeedTaskStatus func(childComplexity int, id string) int
+		Feeds          func(childComplexity int) int
 	}
 
 	ResponseCursor struct {
@@ -138,6 +145,7 @@ type QueryResolver interface {
 	Feed(ctx context.Context, id string) (*model.Feed, error)
 	Articles(ctx context.Context, feedID string, options *model.ListOptions) (*model.ArticlesResponse, error)
 	Article(ctx context.Context, id string) (*model.Article, error)
+	FeedTaskStatus(ctx context.Context, id string) (*model.FeedTaskStatusResponse, error)
 }
 
 type executableSchema struct {
@@ -165,6 +173,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.AddResponse.ID(childComplexity), true
+
+	case "AddResponse.jobId":
+		if e.complexity.AddResponse.JobID == nil {
+			break
+		}
+
+		return e.complexity.AddResponse.JobID(childComplexity), true
 
 	case "Article.authorEmail":
 		if e.complexity.Article.AuthorEmail == nil {
@@ -334,6 +349,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.FeedTaskResponse.TaskID(childComplexity), true
 
+	case "FeedTaskStatusResponse.status":
+		if e.complexity.FeedTaskStatusResponse.Status == nil {
+			break
+		}
+
+		return e.complexity.FeedTaskStatusResponse.Status(childComplexity), true
+
+	case "FeedTaskStatusResponse.taskId":
+		if e.complexity.FeedTaskStatusResponse.TaskID == nil {
+			break
+		}
+
+		return e.complexity.FeedTaskStatusResponse.TaskID(childComplexity), true
+
 	case "FetchFeedsResponse.id":
 		if e.complexity.FetchFeedsResponse.ID == nil {
 			break
@@ -431,6 +460,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.Feed(childComplexity, args["id"].(string)), true
+
+	case "Query.feedTaskStatus":
+		if e.complexity.Query.FeedTaskStatus == nil {
+			break
+		}
+
+		args, err := ec.field_Query_feedTaskStatus_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.FeedTaskStatus(childComplexity, args["id"].(string)), true
 
 	case "Query.feeds":
 		if e.complexity.Query.Feeds == nil {
@@ -826,6 +867,29 @@ func (ec *executionContext) field_Query_articles_argsOptions(
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_Query_feedTaskStatus_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	arg0, err := ec.field_Query_feedTaskStatus_argsID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["id"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field_Query_feedTaskStatus_argsID(
+	ctx context.Context,
+	rawArgs map[string]interface{},
+) (string, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+	if tmp, ok := rawArgs["id"]; ok {
+		return ec.unmarshalNID2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_Query_feed_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -935,6 +999,50 @@ func (ec *executionContext) _AddResponse_id(ctx context.Context, field graphql.C
 }
 
 func (ec *executionContext) fieldContext_AddResponse_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AddResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AddResponse_jobId(ctx context.Context, field graphql.CollectedField, obj *model.AddResponse) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AddResponse_jobId(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.JobID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AddResponse_jobId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "AddResponse",
 		Field:      field,
@@ -2042,6 +2150,94 @@ func (ec *executionContext) fieldContext_FeedTaskResponse_taskId(_ context.Conte
 	return fc, nil
 }
 
+func (ec *executionContext) _FeedTaskStatusResponse_taskId(ctx context.Context, field graphql.CollectedField, obj *model.FeedTaskStatusResponse) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_FeedTaskStatusResponse_taskId(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TaskID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_FeedTaskStatusResponse_taskId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "FeedTaskStatusResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _FeedTaskStatusResponse_status(ctx context.Context, field graphql.CollectedField, obj *model.FeedTaskStatusResponse) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_FeedTaskStatusResponse_status(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Status, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_FeedTaskStatusResponse_status(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "FeedTaskStatusResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _FetchFeedsResponse_id(ctx context.Context, field graphql.CollectedField, obj *model.FetchFeedsResponse) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_FetchFeedsResponse_id(ctx, field)
 	if err != nil {
@@ -2171,6 +2367,8 @@ func (ec *executionContext) fieldContext_Mutation_addFeed(ctx context.Context, f
 			switch field.Name {
 			case "id":
 				return ec.fieldContext_AddResponse_id(ctx, field)
+			case "jobId":
+				return ec.fieldContext_AddResponse_jobId(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type AddResponse", field.Name)
 		},
@@ -2617,6 +2815,67 @@ func (ec *executionContext) fieldContext_Query_article(ctx context.Context, fiel
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_article_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_feedTaskStatus(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_feedTaskStatus(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().FeedTaskStatus(rctx, fc.Args["id"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.FeedTaskStatusResponse)
+	fc.Result = res
+	return ec.marshalNFeedTaskStatusResponse2ᚖgithubᚗcomᚋericbuteraᚋamalgamᚋservicesᚋgraphᚋgraphᚋmodelᚐFeedTaskStatusResponse(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_feedTaskStatus(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "taskId":
+				return ec.fieldContext_FeedTaskStatusResponse_taskId(ctx, field)
+			case "status":
+				return ec.fieldContext_FeedTaskStatusResponse_status(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type FeedTaskStatusResponse", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_feedTaskStatus_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -4793,6 +5052,11 @@ func (ec *executionContext) _AddResponse(ctx context.Context, sel ast.SelectionS
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "jobId":
+			out.Values[i] = ec._AddResponse_jobId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -5091,6 +5355,50 @@ func (ec *executionContext) _FeedTaskResponse(ctx context.Context, sel ast.Selec
 	return out
 }
 
+var feedTaskStatusResponseImplementors = []string{"FeedTaskStatusResponse"}
+
+func (ec *executionContext) _FeedTaskStatusResponse(ctx context.Context, sel ast.SelectionSet, obj *model.FeedTaskStatusResponse) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, feedTaskStatusResponseImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("FeedTaskStatusResponse")
+		case "taskId":
+			out.Values[i] = ec._FeedTaskStatusResponse_taskId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "status":
+			out.Values[i] = ec._FeedTaskStatusResponse_status(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var fetchFeedsResponseImplementors = []string{"FetchFeedsResponse"}
 
 func (ec *executionContext) _FetchFeedsResponse(ctx context.Context, sel ast.SelectionSet, obj *model.FetchFeedsResponse) graphql.Marshaler {
@@ -5331,6 +5639,28 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_article(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "feedTaskStatus":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_feedTaskStatus(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
 				return res
 			}
 
@@ -6011,6 +6341,20 @@ func (ec *executionContext) marshalNFeedTaskResponse2ᚖgithubᚗcomᚋericbuter
 		return graphql.Null
 	}
 	return ec._FeedTaskResponse(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNFeedTaskStatusResponse2githubᚗcomᚋericbuteraᚋamalgamᚋservicesᚋgraphᚋgraphᚋmodelᚐFeedTaskStatusResponse(ctx context.Context, sel ast.SelectionSet, v model.FeedTaskStatusResponse) graphql.Marshaler {
+	return ec._FeedTaskStatusResponse(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNFeedTaskStatusResponse2ᚖgithubᚗcomᚋericbuteraᚋamalgamᚋservicesᚋgraphᚋgraphᚋmodelᚐFeedTaskStatusResponse(ctx context.Context, sel ast.SelectionSet, v *model.FeedTaskStatusResponse) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._FeedTaskStatusResponse(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNID2string(ctx context.Context, v interface{}) (string, error) {

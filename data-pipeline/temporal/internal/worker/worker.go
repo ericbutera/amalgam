@@ -2,11 +2,12 @@ package worker
 
 import (
 	"context"
+	"log/slog"
+	"strings"
 
 	clientHelper "github.com/ericbutera/amalgam/data-pipeline/temporal/internal/client"
 	"github.com/ericbutera/amalgam/pkg/config/env"
 	"github.com/ericbutera/amalgam/pkg/otel"
-	"github.com/samber/lo"
 	"go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/worker"
 )
@@ -29,7 +30,7 @@ func NewFromEnv(client client.Client) (worker.Worker, error) {
 }
 
 type OtelConfig struct {
-	IgnoredSpanNames []string `mapstructure:"ignored_span_names"`
+	IgnoredSpanNames string `env:"IGNORED_SPAN_NAMES"`
 }
 
 func NewOtel(ctx context.Context) (func(context.Context) error, error) {
@@ -37,8 +38,7 @@ func NewOtel(ctx context.Context) (func(context.Context) error, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	shutdown, err := otel.Setup(ctx, config.IgnoredSpanNames)
+	shutdown, err := otel.Setup(ctx, strings.Split(config.IgnoredSpanNames, ","))
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +63,10 @@ func New(ctx context.Context) (worker.Worker, func(), error) {
 	}
 
 	closers := func() {
-		lo.Must0(shutdown(ctx))
+		slog.Info("Shutting down worker")
+		if err := shutdown(ctx); err != nil {
+			slog.Error("shutdown error", "error", err)
+		}
 		client.Close()
 	}
 

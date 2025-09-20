@@ -77,7 +77,7 @@ CREATE TABLE
   ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4;
 
 CREATE TABLE
-  `feed_verification` (
+  `feed_verifications` (
     `id` bigint NOT NULL AUTO_INCREMENT,
     `url` longtext,
     `url_hash` CHAR(64) GENERATED ALWAYS AS (SHA2 (url, 256)) STORED,
@@ -106,7 +106,7 @@ CREATE TABLE
     `created_at` datetime (3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     PRIMARY KEY (`id`),
     CONSTRAINT `fk_fh_feed_id` FOREIGN KEY (`feed_id`) REFERENCES `feeds` (`id`),
-    CONSTRAINT `fk_fh_feed_verification_id` FOREIGN KEY (`feed_verification_id`) REFERENCES `feed_verification` (`id`),
+    CONSTRAINT `fk_fh_feed_verification_id` FOREIGN KEY (`feed_verification_id`) REFERENCES `feed_verifications` (`id`),
     CONSTRAINT `chk_feed_or_url` CHECK (
       `feed_id` IS NOT NULL
       OR `feed_verification_id` IS NOT NULL

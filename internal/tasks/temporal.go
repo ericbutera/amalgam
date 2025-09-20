@@ -6,6 +6,7 @@ import (
 
 	"github.com/ericbutera/amalgam/data-pipeline/temporal/feed_tasks"
 	"github.com/ericbutera/amalgam/pkg/config/env"
+	"go.temporal.io/api/enums/v1"
 	sdk "go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/temporal"
 )
@@ -48,13 +49,12 @@ func (t *Temporal) Close() {
 	t.client.Close()
 }
 
-func (t *Temporal) Workflow(ctx context.Context, task TaskType) (*TaskResult, error) {
+func (t *Temporal) Workflow(ctx context.Context, task TaskType, args []any) (*TaskResult, error) {
 	workflow, err := taskTypeToWorkflow(task)
 	if err != nil {
 		return nil, err
 	}
 
-	var args []any
 	if task == TaskGenerateFeeds {
 		args = []any{
 			t.config.FakeHost,
@@ -78,6 +78,30 @@ func (t *Temporal) Workflow(ctx context.Context, task TaskType) (*TaskResult, er
 	if err != nil {
 		return nil, err
 	}
+	var result any
+	_ = we.Get(ctx, result)
+	return &TaskResult{
+		ID:     we.GetID(),
+		RunID:  we.GetRunID(),
+		Result: result,
+	}, nil
+}
 
-	return &TaskResult{ID: we.GetID()}, nil
+func (t *Temporal) Status(ctx context.Context, taskID string) (*TaskStatusResult, error) {
+	var data string
+	history := t.client.GetWorkflowHistory(ctx, taskID, "", false, enums.HISTORY_EVENT_FILTER_TYPE_CLOSE_EVENT)
+	for {
+		if !history.HasNext() {
+			break
+		}
+		event, err := history.Next()
+		if err != nil {
+			return nil, err
+		}
+		data = event.GetEventType().String()
+	}
+
+	return &TaskStatusResult{
+		Status: data,
+	}, nil
 }

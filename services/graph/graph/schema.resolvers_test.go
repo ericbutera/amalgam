@@ -74,23 +74,20 @@ func Test_AddFeed(t *testing.T) {
 
 	svcFeed := newFeed()
 
-	r.client.EXPECT().
-		CreateFeed(mock.Anything, &pb.CreateFeedRequest{
-			Feed: &pb.CreateFeedRequest_Feed{
-				Url:  svcFeed.URL,
-				Name: svcFeed.Name,
-			},
-			User: &pb.User{
-				Id: seed.UserID,
-			},
-		}).
-		Return(&pb.CreateFeedResponse{Id: svcFeed.ID}, nil)
+	jobID := "test-job-id"
+	args := []any{
+		svcFeed.URL,
+		seed.UserID,
+	}
+	r.task.EXPECT().
+		Workflow(mock.Anything, tasks.TaskAddFeed, args).
+		Return(&tasks.TaskResult{ID: jobID}, nil)
 
 	actual, err := r.resolver.Mutation().
 		AddFeed(newAuthCtx(), svcFeed.URL, svcFeed.Name)
 
 	require.NoError(t, err)
-	helpers.Diff(t, graphModel.AddResponse{ID: svcFeed.ID}, *actual)
+	helpers.Diff(t, graphModel.AddResponse{JobID: jobID}, *actual)
 }
 
 func Test_UpdateFeed(t *testing.T) {
@@ -282,7 +279,7 @@ func TestFeedTasks(t *testing.T) {
 			r := newTestResolver()
 
 			r.task.EXPECT().
-				Workflow(mock.Anything, tc.taskType).
+				Workflow(mock.Anything, tc.taskType, mock.Anything).
 				Return(&tasks.TaskResult{ID: expectedID}, nil)
 
 			resp, err := r.resolver.Mutation().

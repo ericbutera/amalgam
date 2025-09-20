@@ -10,7 +10,8 @@ import (
 )
 
 type AddResponse struct {
-	ID string `json:"id"`
+	ID    string `json:"id"`
+	JobID string `json:"jobId"`
 }
 
 type Article struct {
@@ -50,6 +51,11 @@ type FeedResponse struct {
 
 type FeedTaskResponse struct {
 	TaskID string `json:"taskId"`
+}
+
+type FeedTaskStatusResponse struct {
+	TaskID string `json:"taskId"`
+	Status string `json:"status"`
 }
 
 type FetchFeedsResponse struct {
