@@ -1,4 +1,3 @@
-load("ext://helm_resource", "helm_resource", "helm_repo")
 load('ext://secret', 'secret_create_generic', 'secret_from_dict')
 
 # Minio object storage
