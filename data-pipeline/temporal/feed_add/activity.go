@@ -3,8 +3,9 @@ package feed_add
 import (
 	"context"
 	"errors"
-	"log/slog"
 	"net/http"
+
+	"go.temporal.io/sdk/activity"
 
 	"github.com/ericbutera/amalgam/data-pipeline/temporal/internal/bucket"
 	"github.com/ericbutera/amalgam/data-pipeline/temporal/internal/transforms"
@@ -25,6 +26,11 @@ const (
 var (
 	ErrInvalidURL     = errors.New("invalid URL")
 	ErrInvalidContent = errors.New("invalid content")
+)
+
+const (
+	FeedNotFoundErrorType  = "FeedNotFound"
+	DuplicateFeedErrorType = "ErrDuplicateFeed"
 )
 
 type Activities struct {
@@ -61,7 +67,9 @@ func NewActivitiesFromEnv() *Activities {
 	return a
 }
 
+// TODO: normalize url (prevent dupes)
 func (a *Activities) CreateVerifyRecord(ctx context.Context, verification FeedVerification) (*FeedVerification, error) {
+	// TODO: normalize url (prevent dupes)
 	resp, err := a.rpc.CreateFeedVerification(ctx, &pb.CreateFeedVerificationRequest{
 		Verification: &pb.FeedVerification{
 			Url:        verification.URL,
@@ -69,10 +77,12 @@ func (a *Activities) CreateVerifyRecord(ctx context.Context, verification FeedVe
 			WorkflowId: verification.WorkflowID,
 		},
 	})
+
+	activity.GetLogger(ctx).Debug("CreateVerifyRecord", "response", resp, "error", err)
 	if err != nil {
 		st, ok := status.FromError(err)
 		if ok && st.Code() == codes.AlreadyExists {
-			return nil, temporal.NewNonRetryableApplicationError("duplicate feed", "ErrDuplicateFeed", nil, nil)
+			return nil, temporal.NewNonRetryableApplicationError("duplicate feed", DuplicateFeedErrorType, nil, nil)
 		}
 		return nil, err
 	}
@@ -96,7 +106,7 @@ func (a *Activities) Fetch(ctx context.Context, verification FeedVerification) (
 		// proceed if 200 (possibly other 2xx)
 		// stop on everything else
 		if params.StatusCode != http.StatusOK {
-			return ErrInvalidContent
+			return temporal.NewNonRetryableApplicationError("invalid content", "InvalidContent", nil)
 		}
 
 		// TODO: reuse content from this fetch during the feed_fetch workflow (not possible at the moment due to missing "feed_id")
@@ -115,8 +125,10 @@ func (a *Activities) Fetch(ctx context.Context, verification FeedVerification) (
 
 		return err
 	}, nil)
+
+	activity.GetLogger(ctx).Debug("Fetch", "error", err, "verification", verification)
 	if err != nil {
-		slog.Info("unable to fetch feed", "error", err, "url", verification.URL)
+		activity.GetLogger(ctx).Info("unable to fetch feed", "error", err, "url", verification.URL)
 		return "", err
 	}
 	return "", err
@@ -129,22 +141,27 @@ func (a *Activities) CreateFeed(ctx context.Context, verification FeedVerificati
 		},
 		User: &pb.User{Id: verification.UserID},
 	})
+	activity.GetLogger(ctx).Debug("CreateFeed", "response", resp, "error", err, "url", verification.URL, "user", verification.UserID)
 	if err != nil {
+		st, ok := status.FromError(err)
+		if ok && st.Code() == codes.AlreadyExists {
+			return "", temporal.NewNonRetryableApplicationError("feed already exists", DuplicateFeedErrorType, nil)
+		}
 		return "", err
 	}
 	return resp.GetId(), nil
 }
 
-// Attempts to associate an existing feed with a user.
 func (a *Activities) SubscribeUserToUrl(ctx context.Context, url string, userID string) (string, error) {
 	res, err := a.rpc.SubscribeUserToUrl(ctx, &pb.SubscribeUserToUrlRequest{
 		Url:  url,
 		User: &pb.User{Id: userID},
 	})
+	activity.GetLogger(ctx).Debug("SubscribeUserToUrl", "response", res, "error", err, "url", url, "user", userID)
 	if err != nil {
 		st, ok := status.FromError(err)
 		if ok && st.Code() == codes.NotFound {
-			return "", nil // feed doesn't exist, continue with workflow
+			return "", temporal.NewNonRetryableApplicationError("feed not found", FeedNotFoundErrorType, nil)
 		}
 		return "", err
 	}

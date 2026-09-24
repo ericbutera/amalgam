@@ -7,6 +7,5 @@ type Config struct {
 	CorsAllowHeaders  string `env:"CORS_ALLOW_HEADERS"`
 	CorsExposeHeaders string `env:"CORS_EXPOSE_HEADERS"`
 	GraphHost         string `env:"GRAPH_HOST"`
-	// TODO:
-	// log level
+	LogLevel          string `env:"LOG_LEVEL"           envDefault:"info"`
 }
