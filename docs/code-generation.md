@@ -12,10 +12,10 @@ General workflow:
 
 - run tilt `tilt up`
 - change server schema `services/graph/graph/schema.graphqls`
-- generate server `just generate-graph-server`
+- generate server `mise run generate-graph-server`
 - await graph service to hot-reload
-- generate schema `just generate-graph-schema`
-- generate clients `just generate-graph-clients`
+- generate schema `mise run generate-graph-schema`
+- generate clients `mise run generate-graph-clients`
 
 This is not an optimal solution. I intend to have it so these steps are automated without a Tilt dependency.
 
@@ -27,8 +27,8 @@ These generated clients provide strongly typed interfaces, enhancing developer e
 
 | Client                                                                                                                                  | Command                                                                                                                                  |
 | --------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| [TypeScript](https://github.com/ericbutera/amalgam/blob/9528beb51c6b2affa3b6bd1622ca666983148fc4/ui/app/generated/graphql.ts#L204-L225) | [`generate-graph-ts-client`](https://github.com/ericbutera/amalgam/blob/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/justfile#L165-L169)     |
-| [Go](https://github.com/ericbutera/amalgam/blob/9528beb51c6b2affa3b6bd1622ca666983148fc4/pkg/clients/graphql/graphql.gen.go)            | [`generate-graph-golang-client`](https://github.com/ericbutera/amalgam/blob/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/justfile#L159-L162) |
+| [TypeScript](https://github.com/ericbutera/amalgam/blob/9528beb51c6b2affa3b6bd1622ca666983148fc4/ui/app/generated/graphql.ts#L204-L225) | `mise run generate-graph-ts-client`     |
+| [Go](https://github.com/ericbutera/amalgam/blob/9528beb51c6b2affa3b6bd1622ca666983148fc4/pkg/clients/graphql/graphql.gen.go)            | `mise run generate-graph-golang-client` |
 
 ### (deprecated) OpenAPI Clients ([v1.3.1](https://github.com/ericbutera/amalgam/releases/tag/v1.3.1))
 

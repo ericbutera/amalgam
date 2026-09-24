@@ -6,9 +6,9 @@ Pre-commit hooks run [unit tests](https://github.com/ericbutera/amalgam/blob/ad3
 
 ## Unit Tests
 
-Unit tests can be ran on your dev machine using `just test` ([src](https://github.com/ericbutera/amalgam/blob/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/justfile#L14)).
+Unit tests can be ran on your dev machine using `mise run test`.
 
-There is a `just go-coverage-report` ([src](https://github.com/ericbutera/amalgam/blob/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/justfile#L26-L29)) command to generate a coverage report. This is useful for seeing what parts of the codebase are not covered by tests.
+Use `mise run go-coverage-report` to generate a coverage report. This is useful for seeing what parts of the codebase are not covered by tests.
 
 ## Integration Tests (And End-to-End)
 

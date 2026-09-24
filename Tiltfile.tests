@@ -20,7 +20,7 @@ test_go('go-unit-tests', '.', '.',
 # environment variables are set with dotenv (main tiltfile)
 local_resource(
   "go integration tests",
-  "just go-integration-test",
+  "mise run go-integration-test",
   resource_deps=["minio", "rpc","graph"],
   trigger_mode=TRIGGER_MODE_MANUAL,
   auto_init=config.tilt_subcommand == "ci",

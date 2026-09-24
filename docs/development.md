@@ -3,8 +3,8 @@
 ## Prerequisites
 
 - [docker desktop](https://docs.docker.com/desktop/) + [docker kubernetes](https://docs.docker.com/desktop/features/kubernetes/)
-- [asdf-vm](https://asdf-vm.com/) - easily manage third party tools (or manually install things listed in [.tool-versions](../.tool-versions)).
-- [tilt](https://tilt.dev/) - local development orchestrator (installed via asdf).
+- [mise](https://mise.jdx.dev/) - manage the pinned tools and project tasks in [mise.toml](../mise.toml).
+- [tilt](https://tilt.dev/) - local development orchestrator (installed by mise).
 
 ## Tilt
 
@@ -15,7 +15,7 @@ Tilt is the local development orchestrator. The [Tiltfile](../Tiltfile) configur
 Be sure to install the pre-commit hooks which run various linters, formatters, and tests.
 
 ```sh
-just setup
+mise run setup
 ```
 
 A few of the linters used:

@@ -7,9 +7,9 @@ Read the [Grafana K6 docs](https://grafana.com/docs/k6/latest/) for more informa
 ## Quick start
 
 ```sh
-# prereq: generate ./api/docs/swagger.json
-make generate
-make test
+# prereq: generate ./services/api/docs/swagger.json
+mise run generate-k6
+mise run k6:test
 ```
 
 ## TODO

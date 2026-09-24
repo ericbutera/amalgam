@@ -37,7 +37,7 @@ repos:
     hooks:
       - id: go-checks
         name: go-checks
-        entry: just go-checks
+        entry: mise run go-checks
         description: golang lint & tests
         language: system
         pass_filenames: false
@@ -45,7 +45,7 @@ repos:
         types: [go]
       - id: ts-checks
         name: ts-checks
-        entry: just ts-checks
+        entry: mise run ts-checks
         description: typescript lint & tests
         language: system
         pass_filenames: false
