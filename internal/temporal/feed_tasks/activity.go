@@ -6,6 +6,8 @@ import (
 	"log/slog"
 
 	"github.com/Khan/genqlient/graphql"
+	"github.com/ericbutera/amalgam/internal/temporal/feed_add"
+	"github.com/ericbutera/amalgam/internal/temporal/feed_fetch"
 	graph_client "github.com/ericbutera/amalgam/pkg/clients/graphql"
 	"github.com/ericbutera/amalgam/pkg/config/env"
 	"github.com/google/uuid"
@@ -47,13 +49,15 @@ func (a *Activities) GenerateFeeds(ctx context.Context, host string, count int /
 			return err
 		}
 
-		a.logger.Debug("created feed", "feed_id", resp.AddFeed.Id)
+		a.logger.Debug("enqueued feed add", "job_id", resp.AddFeed.Id)
 	}
 
 	return nil
 }
 
 func (a *Activities) RefreshFeeds(ctx context.Context) error {
+	// Compatibility path only. New enqueue requests start FetchFeedsWorkflow
+	// directly through internal/tasks.
 	opts := sdk.StartWorkflowOptions{
 		TaskQueue: a.Config.FeedFetchQueue,
 		RetryPolicy: &temporal.RetryPolicy{
@@ -62,17 +66,19 @@ func (a *Activities) RefreshFeeds(ctx context.Context) error {
 	}
 	args := []any{}
 
-	_, err := a.feedClient.ExecuteWorkflow(ctx, opts, "FetchFeedsWorkflow", args...)
+	_, err := a.feedClient.ExecuteWorkflow(ctx, opts, feed_fetch.WorkflowName, args...)
 	return err
 }
 
 func (a *Activities) AddFeed(ctx context.Context, url string, userID string) (string, error) {
+	// Compatibility path only. New enqueue requests start AddFeedWorkflow
+	// directly through internal/tasks.
 	opts := sdk.StartWorkflowOptions{
 		TaskQueue:   a.Config.FeedAddQueue,
 		RetryPolicy: &a.RetryPolicy,
 	}
 	var feedID string
-	run, err := a.feedClient.ExecuteWorkflow(ctx, opts, "AddFeedWorkflow", url, userID)
+	run, err := a.feedClient.ExecuteWorkflow(ctx, opts, feed_add.LegacyWorkflowName, url, userID)
 	if err != nil {
 		return "", err
 	}

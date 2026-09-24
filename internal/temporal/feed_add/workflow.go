@@ -17,6 +17,11 @@ var (
 	ErrDuplicateFeed = errors.New("duplicate feed")
 )
 
+const (
+	LegacyWorkflowName = "AddFeedWorkflow"
+	WorkflowName       = "AddFeedWorkflowV2"
+)
+
 func isApplicationErrorType(err error, errorType string) bool {
 	var applicationErr *temporal.ApplicationError
 	return errors.As(err, &applicationErr) && applicationErr.Type() == errorType
@@ -37,10 +42,27 @@ type FeedVerification struct {
 	ID         int64
 	WorkflowID string
 	URL        string
+	Name       string
 	UserID     string
 }
 
+type AddFeedInput struct {
+	URL    string
+	Name   string
+	UserID string
+}
+
+// AddFeedWorkflow preserves the original positional-input workflow contract
+// for executions that were started before AddFeedInput was introduced.
 func AddFeedWorkflow(ctx workflow.Context, url string, userID string) (string, error) {
+	return addFeedWorkflow(ctx, AddFeedInput{URL: url, UserID: userID})
+}
+
+func AddFeedWorkflowV2(ctx workflow.Context, input AddFeedInput) (string, error) {
+	return addFeedWorkflow(ctx, input)
+}
+
+func addFeedWorkflow(ctx workflow.Context, input AddFeedInput) (string, error) {
 	// 1. determine if feed exists
 	//    - if it does, subscribe user to feed and return feed ID
 	// 2. create verification record
@@ -61,7 +83,7 @@ func AddFeedWorkflow(ctx workflow.Context, url string, userID string) (string, e
 
 	// 1. determine if feed exists by attempting to subscribe the user.
 	//    If the feed exists, the RPC will succeed and return the feed ID.
-	err = workflow.ExecuteActivity(ctx, a.SubscribeUserToUrl, url, userID).Get(ctx, &feedID)
+	err = workflow.ExecuteActivity(ctx, a.SubscribeUserToUrl, input.URL, input.UserID).Get(ctx, &feedID)
 	if err == nil && feedID != "" {
 		return feedID, nil
 	}
@@ -71,13 +93,14 @@ func AddFeedWorkflow(ctx workflow.Context, url string, userID string) (string, e
 
 	var verification FeedVerification
 	err = workflow.ExecuteActivity(ctx, a.CreateVerifyRecord, FeedVerification{
-		URL:        url,
-		UserID:     userID,
+		URL:        input.URL,
+		Name:       input.Name,
+		UserID:     input.UserID,
 		WorkflowID: workflowID,
 	}).Get(ctx, &verification)
 	if err != nil {
 		if isApplicationErrorType(err, DuplicateFeedErrorType) {
-			return subscribeUserToFeed(ctx, a, url, userID)
+			return subscribeUserToFeed(ctx, a, input.URL, input.UserID)
 		}
 		return feedID, err
 	}
@@ -92,10 +115,10 @@ func AddFeedWorkflow(ctx workflow.Context, url string, userID string) (string, e
 	err = workflow.ExecuteActivity(ctx, a.CreateFeed, verification).Get(ctx, &feedID)
 	if err != nil {
 		if isApplicationErrorType(err, DuplicateFeedErrorType) {
-			return subscribeUserToFeed(ctx, a, url, userID)
+			return subscribeUserToFeed(ctx, a, input.URL, input.UserID)
 		}
 		return feedID, err
 	}
 
-	return subscribeUserToFeed(ctx, a, url, userID)
+	return subscribeUserToFeed(ctx, a, input.URL, input.UserID)
 }

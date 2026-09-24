@@ -137,7 +137,8 @@ func (a *Activities) Fetch(ctx context.Context, verification FeedVerification) (
 func (a *Activities) CreateFeed(ctx context.Context, verification FeedVerification) (string, error) {
 	resp, err := a.rpc.CreateFeed(ctx, &pb.CreateFeedRequest{
 		Feed: &pb.CreateFeedRequest_Feed{
-			Url: verification.URL,
+			Url:  verification.URL,
+			Name: verification.Name,
 		},
 		User: &pb.User{Id: verification.UserID},
 	})

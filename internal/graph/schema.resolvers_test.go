@@ -75,12 +75,13 @@ func Test_AddFeed(t *testing.T) {
 	svcFeed := newFeed()
 
 	jobID := "test-job-id"
-	args := []any{
-		svcFeed.URL,
-		seed.UserID,
-	}
 	r.task.EXPECT().
-		Workflow(mock.Anything, tasks.TaskAddFeed, args).
+		Enqueue(mock.Anything, tasks.WorkflowRequest{
+			Task:   tasks.TaskAddFeed,
+			URL:    svcFeed.URL,
+			Name:   svcFeed.Name,
+			UserID: seed.UserID,
+		}).
 		Return(&tasks.TaskResult{ID: jobID}, nil)
 
 	actual, err := r.resolver.Mutation().
@@ -279,7 +280,7 @@ func TestFeedTasks(t *testing.T) {
 			r := newTestResolver()
 
 			r.task.EXPECT().
-				Workflow(mock.Anything, tc.taskType, mock.Anything).
+				Enqueue(mock.Anything, tasks.WorkflowRequest{Task: tc.taskType}).
 				Return(&tasks.TaskResult{ID: expectedID}, nil)
 
 			resp, err := r.resolver.Mutation().
@@ -289,4 +290,17 @@ func TestFeedTasks(t *testing.T) {
 			assert.Equal(t, expectedID, resp.TaskID)
 		})
 	}
+}
+
+func TestFeedTaskStatus(t *testing.T) {
+	t.Parallel()
+
+	r := newTestResolver()
+	r.task.EXPECT().
+		Status(mock.Anything, "workflow-1").
+		Return(&tasks.TaskStatusResult{ID: "workflow-1", RunID: "run-1", Status: "RUNNING"}, nil)
+
+	result, err := r.resolver.Query().FeedTaskStatus(newAuthCtx(), "workflow-1")
+	require.NoError(t, err)
+	assert.Equal(t, &graphModel.FeedTaskStatusResponse{TaskID: "workflow-1", Status: "RUNNING"}, result)
 }

@@ -54,11 +54,16 @@ func New(ctx context.Context) (worker.Worker, func(), error) {
 
 	shutdown, err := NewOtel(ctx)
 	if err != nil {
+		client.Close()
 		return nil, nil, err
 	}
 
 	w, err := NewFromEnv(client)
 	if err != nil {
+		if shutdownErr := shutdown(ctx); shutdownErr != nil {
+			slog.Error("shutdown error", "error", shutdownErr)
+		}
+		client.Close()
 		return nil, nil, err
 	}
 

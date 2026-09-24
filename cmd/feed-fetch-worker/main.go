@@ -22,6 +22,7 @@ func main() {
 
 	w.RegisterWorkflow(app.FetchFeedsWorkflow)
 	w.RegisterWorkflow(app.FeedWorkflow)
+	w.RegisterWorkflow(app.FeedWorkflowV2)
 	w.RegisterActivity(a)
 
 	err := w.Run(worker.InterruptCh())

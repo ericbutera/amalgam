@@ -31,7 +31,10 @@ func main() {
 		},
 	}
 
-	we, err := client.ExecuteWorkflow(ctx, opts, feed_tasks.GenerateFeedsWorkflow, config.FakeHost, config.GenerateCount)
+	we, err := client.ExecuteWorkflow(ctx, opts, feed_tasks.GenerateFeedsWorkflowV2, feed_tasks.GenerateFeedsInput{
+		Host:  config.FakeHost,
+		Count: config.GenerateCount,
+	})
 	if err != nil {
 		slog.Error("unable to execute workflow", "error", err)
 		os.Exit(1) //nolint: gocritic

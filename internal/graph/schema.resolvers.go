@@ -22,11 +22,12 @@ import (
 // AddFeed is the resolver for the addFeed field.
 func (r *mutationResolver) AddFeed(ctx context.Context, url string, name string) (*model.AddResponse, error) {
 	// Note: this should use a Feed Task instead of performing the verification directly. ref: https://www.oreilly.com/library/view/designing-data-intensive-applications/9781491903063/ch08.html
-	args := []any{
-		url,
-		middleware.GetUserID(ctx),
-	}
-	result, err := r.tasks.Workflow(ctx, tasks.TaskAddFeed, args)
+	result, err := r.tasks.Enqueue(ctx, tasks.WorkflowRequest{
+		Task:   tasks.TaskAddFeed,
+		URL:    url,
+		Name:   name,
+		UserID: middleware.GetUserID(ctx),
+	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to start feed task")
 	}
@@ -67,8 +68,7 @@ func (r *mutationResolver) FeedTask(ctx context.Context, task model.TaskType) (*
 		return nil, status.Errorf(codes.InvalidArgument, "invalid task type")
 	}
 
-	var args []any
-	result, err := r.tasks.Workflow(ctx, t, args /*middleware.GetUserID(ctx)*/) // TODO: r.auth.GetUserID(ctx)
+	result, err := r.tasks.Enqueue(ctx, tasks.WorkflowRequest{Task: t}) // TODO: r.auth.GetUserID(ctx)
 	if err != nil {
 		slog.ErrorContext(ctx, "failed to start feed task", "error", err)
 		return nil, status.Errorf(codes.Internal, "failed to start feed task")
@@ -219,7 +219,8 @@ func (r *queryResolver) FeedTaskStatus(ctx context.Context, id string) (*model.F
 		return nil, status.Errorf(codes.Internal, "failed to get feed task")
 	}
 	return &model.FeedTaskStatusResponse{
-		Status: result.Status.(string),
+		TaskID: result.ID,
+		Status: result.Status,
 	}, nil
 }
 

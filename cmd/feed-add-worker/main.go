@@ -21,6 +21,7 @@ func main() {
 	defer closers()
 
 	w.RegisterWorkflow(app.AddFeedWorkflow)
+	w.RegisterWorkflow(app.AddFeedWorkflowV2)
 	w.RegisterActivity(a)
 
 	err := w.Run(worker.InterruptCh())

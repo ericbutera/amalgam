@@ -32,7 +32,7 @@ func (s *UnitTestSuite) Test_GenerateFeedsWorkflow() {
 
 	env.OnActivity(a.GenerateFeeds, mock.Anything, host, count).Return(nil)
 	env.RegisterActivity(a)
-	env.ExecuteWorkflow(feed_tasks.GenerateFeedsWorkflow, host, count)
+	env.ExecuteWorkflow(feed_tasks.GenerateFeedsWorkflowV2, feed_tasks.GenerateFeedsInput{Host: host, Count: count})
 
 	t := s.T()
 	assert.True(t, env.IsWorkflowCompleted())
@@ -68,7 +68,7 @@ func (s *UnitTestSuite) Test_AddFeedWorkflow() {
 
 	env.OnActivity(a.AddFeed, mock.Anything, url, userID).Return("feed-id-123", nil)
 	env.RegisterActivity(a)
-	env.ExecuteWorkflow(feed_tasks.AddFeedWorkflow, url, userID)
+	env.ExecuteWorkflow(feed_tasks.AddFeedWorkflowV2, feed_tasks.AddFeedInput{URL: url, UserID: userID})
 
 	t := s.T()
 	assert.True(t, env.IsWorkflowCompleted())

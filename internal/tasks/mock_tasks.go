@@ -80,29 +80,27 @@ func (_c *MockTasks_Status_Call) RunAndReturn(run func(context.Context, string) 
 	return _c
 }
 
-// Workflow provides a mock function with given fields: ctx, task, args
-func (_m *MockTasks) Workflow(ctx context.Context, task TaskType, args []any) (*TaskResult, error) {
-	ret := _m.Called(ctx, task, args)
+// GetResult provides a mock function with given fields: ctx, taskID
+func (_m *MockTasks) GetResult(ctx context.Context, taskID string) (*TaskWorkflowResult, error) {
+	ret := _m.Called(ctx, taskID)
 
 	if len(ret) == 0 {
-		panic("no return value specified for Workflow")
+		panic("no return value specified for GetResult")
 	}
 
-	var r0 *TaskResult
+	var r0 *TaskWorkflowResult
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, TaskType, []any) (*TaskResult, error)); ok {
-		return rf(ctx, task, args)
+	if rf, ok := ret.Get(0).(func(context.Context, string) (*TaskWorkflowResult, error)); ok {
+		return rf(ctx, taskID)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, TaskType, []any) *TaskResult); ok {
-		r0 = rf(ctx, task, args)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*TaskResult)
-		}
+	if rf, ok := ret.Get(0).(func(context.Context, string) *TaskWorkflowResult); ok {
+		r0 = rf(ctx, taskID)
+	} else if ret.Get(0) != nil {
+		r0 = ret.Get(0).(*TaskWorkflowResult)
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, TaskType, []any) error); ok {
-		r1 = rf(ctx, task, args)
+	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = rf(ctx, taskID)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -110,32 +108,86 @@ func (_m *MockTasks) Workflow(ctx context.Context, task TaskType, args []any) (*
 	return r0, r1
 }
 
-// MockTasks_Workflow_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Workflow'
-type MockTasks_Workflow_Call struct {
+type MockTasks_GetResult_Call struct {
 	*mock.Call
 }
 
-// Workflow is a helper method to define mock.On call
-//   - ctx context.Context
-//   - task TaskType
-//   - args []any
-func (_e *MockTasks_Expecter) Workflow(ctx interface{}, task interface{}, args interface{}) *MockTasks_Workflow_Call {
-	return &MockTasks_Workflow_Call{Call: _e.mock.On("Workflow", ctx, task, args)}
+func (_e *MockTasks_Expecter) GetResult(ctx interface{}, taskID interface{}) *MockTasks_GetResult_Call {
+	return &MockTasks_GetResult_Call{Call: _e.mock.On("GetResult", ctx, taskID)}
 }
 
-func (_c *MockTasks_Workflow_Call) Run(run func(ctx context.Context, task TaskType, args []any)) *MockTasks_Workflow_Call {
+func (_c *MockTasks_GetResult_Call) Run(run func(ctx context.Context, taskID string)) *MockTasks_GetResult_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(TaskType), args[2].([]any))
+		run(args[0].(context.Context), args[1].(string))
 	})
 	return _c
 }
 
-func (_c *MockTasks_Workflow_Call) Return(_a0 *TaskResult, _a1 error) *MockTasks_Workflow_Call {
+func (_c *MockTasks_GetResult_Call) Return(_a0 *TaskWorkflowResult, _a1 error) *MockTasks_GetResult_Call {
 	_c.Call.Return(_a0, _a1)
 	return _c
 }
 
-func (_c *MockTasks_Workflow_Call) RunAndReturn(run func(context.Context, TaskType, []any) (*TaskResult, error)) *MockTasks_Workflow_Call {
+func (_c *MockTasks_GetResult_Call) RunAndReturn(run func(context.Context, string) (*TaskWorkflowResult, error)) *MockTasks_GetResult_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// Enqueue provides a mock function with given fields: ctx, request
+func (_m *MockTasks) Enqueue(ctx context.Context, request WorkflowRequest) (*TaskResult, error) {
+	ret := _m.Called(ctx, request)
+
+	if len(ret) == 0 {
+		panic("no return value specified for Enqueue")
+	}
+
+	var r0 *TaskResult
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, WorkflowRequest) (*TaskResult, error)); ok {
+		return rf(ctx, request)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, WorkflowRequest) *TaskResult); ok {
+		r0 = rf(ctx, request)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*TaskResult)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, WorkflowRequest) error); ok {
+		r1 = rf(ctx, request)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// MockTasks_Enqueue_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Enqueue'
+type MockTasks_Enqueue_Call struct {
+	*mock.Call
+}
+
+// Enqueue is a helper method to define mock.On call
+//   - ctx context.Context
+//   - request WorkflowRequest
+func (_e *MockTasks_Expecter) Enqueue(ctx interface{}, request interface{}) *MockTasks_Enqueue_Call {
+	return &MockTasks_Enqueue_Call{Call: _e.mock.On("Enqueue", ctx, request)}
+}
+
+func (_c *MockTasks_Enqueue_Call) Run(run func(ctx context.Context, request WorkflowRequest)) *MockTasks_Enqueue_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(WorkflowRequest))
+	})
+	return _c
+}
+
+func (_c *MockTasks_Enqueue_Call) Return(_a0 *TaskResult, _a1 error) *MockTasks_Enqueue_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *MockTasks_Enqueue_Call) RunAndReturn(run func(context.Context, WorkflowRequest) (*TaskResult, error)) *MockTasks_Enqueue_Call {
 	_c.Call.Return(run)
 	return _c
 }

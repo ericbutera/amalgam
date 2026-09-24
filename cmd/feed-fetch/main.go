@@ -4,6 +4,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
 	"os"
@@ -13,6 +14,8 @@ import (
 	app "github.com/ericbutera/amalgam/internal/temporal/feed_fetch"
 	"github.com/ericbutera/amalgam/pkg/config/env"
 	"github.com/samber/lo"
+	"go.temporal.io/api/enums/v1"
+	"go.temporal.io/api/serviceerror"
 	sdk "go.temporal.io/sdk/client"
 	"go.temporal.io/sdk/temporal"
 )
@@ -51,35 +54,65 @@ func runWorker() error {
 func runSchedule(ctx context.Context, config *Config, client sdk.Client) error {
 	// docs: https://docs.temporal.io/develop/go/schedules
 	handle := client.ScheduleClient().GetHandle(ctx, config.ScheduleID)
-	if err := handle.Delete(ctx); err != nil {
-		return fmt.Errorf("failed to delete schedule: %w", err)
-	}
-
-	schedule, err := client.ScheduleClient().Create(ctx, sdk.ScheduleOptions{
+	options := sdk.ScheduleOptions{
 		ID: config.ScheduleID,
 		Spec: sdk.ScheduleSpec{
 			Intervals: []sdk.ScheduleIntervalSpec{
 				{Every: 1 * time.Minute},
 			},
 		},
+		Overlap:        enums.SCHEDULE_OVERLAP_POLICY_SKIP,
+		PauseOnFailure: false,
 		Action: &sdk.ScheduleWorkflowAction{
 			ID:          config.WorkflowID,
 			Workflow:    app.FetchFeedsWorkflow,
 			TaskQueue:   config.TaskQueue,
 			RetryPolicy: retryPolicy,
 		},
-	})
-	if err != nil {
-		return fmt.Errorf("failed to schedule workflow: %w", err)
 	}
 
-	slog.Info("started workflow", "schedule", schedule.GetID())
+	if _, err := handle.Describe(ctx); err != nil {
+		var notFound *serviceerror.NotFound
+		if !errors.As(err, &notFound) {
+			return fmt.Errorf("failed to inspect schedule: %w", err)
+		}
+
+		schedule, err := client.ScheduleClient().Create(ctx, options)
+		if err != nil {
+			return fmt.Errorf("failed to create schedule: %w", err)
+		}
+
+		slog.Info("created workflow schedule", "schedule", schedule.GetID())
+		return nil
+	}
+
+	if err := handle.Update(ctx, sdk.ScheduleUpdateOptions{
+		DoUpdate: func(input sdk.ScheduleUpdateInput) (*sdk.ScheduleUpdate, error) {
+			return &sdk.ScheduleUpdate{
+				Schedule: &sdk.Schedule{
+					Action: options.Action,
+					Spec:   &options.Spec,
+					Policy: &sdk.SchedulePolicies{
+						Overlap:        options.Overlap,
+						CatchupWindow:  options.CatchupWindow,
+						PauseOnFailure: options.PauseOnFailure,
+					},
+					State: input.Description.Schedule.State,
+				},
+			}, nil
+		},
+	}); err != nil {
+		return fmt.Errorf("failed to update schedule: %w", err)
+	}
+
+	slog.Info("updated workflow schedule", "schedule", config.ScheduleID)
 
 	return nil
 }
 
 func runExecute(ctx context.Context, config *Config, client sdk.Client) error {
 	opts := sdk.StartWorkflowOptions{
+		ID:          config.WorkflowID,
 		TaskQueue:   config.TaskQueue,
 		RetryPolicy: retryPolicy,
 	}

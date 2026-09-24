@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	"github.com/ericbutera/amalgam/internal/temporal/feed_tasks"
+	"github.com/ericbutera/amalgam/internal/temporal/feed_fetch"
 )
 
 var ErrInvalidTaskType = errors.New("invalid task type")
@@ -18,32 +18,42 @@ const (
 	TaskAddFeed       TaskType = "add_feed"
 )
 
+// WorkflowRequest is the application-facing enqueue contract. It deliberately
+// contains business inputs instead of exposing Temporal's variadic argument
+// list to callers.
+type WorkflowRequest struct {
+	Task       TaskType
+	URL        string
+	Name       string
+	UserID     string
+	WorkflowID string
+}
+
 type Tasks interface {
-	// Args will be passed as parameters to the workflow.
-	Workflow(ctx context.Context, task TaskType, args []any) (*TaskResult, error)
+	// Enqueue starts durable background work and returns its Temporal handle.
+	Enqueue(ctx context.Context, request WorkflowRequest) (*TaskResult, error)
 	Status(ctx context.Context, taskID string) (*TaskStatusResult, error)
+	GetResult(ctx context.Context, taskID string) (*TaskWorkflowResult, error)
 }
 
 type TaskResult struct {
-	ID     string
-	RunID  string
-	Result any
+	ID           string
+	RunID        string
+	WorkflowType string
 }
 
 type TaskStatusResult struct {
 	ID     string
-	Status any
+	RunID  string
+	Status string
 }
 
-func taskTypeToWorkflow(taskType TaskType) (any, error) {
-	switch taskType { //nolint:exhaustive
-	case TaskGenerateFeeds:
-		return feed_tasks.GenerateFeedsWorkflow, nil
-	case TaskFetchFeeds:
-		return feed_tasks.RefreshFeedsWorkflow, nil
-	case TaskAddFeed:
-		return feed_tasks.AddFeedWorkflow, nil
-	default:
-		return nil, ErrInvalidTaskType
-	}
+// TaskWorkflowResult is the internal typed union for workflow payloads. The
+// workflow type determines which payload field is populated.
+type TaskWorkflowResult struct {
+	ID           string
+	RunID        string
+	WorkflowType string
+	AddFeedID    string
+	FetchFeeds   *feed_fetch.FetchFeedsResult
 }

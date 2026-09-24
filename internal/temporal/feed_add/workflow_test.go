@@ -53,7 +53,7 @@ func (s *FeedAddWorkflowTestSuite) Test_FeedAddWorkflow() {
 	env.OnActivity(a.CreateFeed, mock.Anything, verification).Return("test-feed-id", nil)
 	env.OnActivity(a.SubscribeUserToUrl, mock.Anything, verification.URL, verification.UserID).Return("test-feed-id", nil).Once()
 	env.RegisterActivity(a)
-	env.ExecuteWorkflow(app.AddFeedWorkflow, verification.URL, verification.UserID)
+	env.ExecuteWorkflow(app.AddFeedWorkflowV2, app.AddFeedInput{URL: verification.URL, Name: verification.Name, UserID: verification.UserID})
 
 	t := s.T()
 	require.NoError(t, env.GetWorkflowError())

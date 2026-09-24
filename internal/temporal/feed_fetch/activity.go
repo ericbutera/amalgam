@@ -5,7 +5,6 @@ package feed_fetch
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"log/slog"
@@ -17,6 +16,9 @@ import (
 	"github.com/ericbutera/amalgam/internal/temporal/transforms"
 	"github.com/ericbutera/amalgam/pkg/feed/parse"
 	"github.com/samber/lo"
+	"go.temporal.io/sdk/activity"
+	templog "go.temporal.io/sdk/log"
+	"go.temporal.io/sdk/temporal"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -28,7 +30,10 @@ const (
 	ArticleContentType = "application/json"
 )
 
-var ErrContentNotChanged = errors.New("content not changed")
+const (
+	ContentNotChangedErrorType = "ContentNotChanged"
+	PartialSaveErrorType       = "PartialSave"
+)
 
 type Activities struct {
 	transforms transforms.Transforms
@@ -36,6 +41,16 @@ type Activities struct {
 	bucket     bucket.Bucket
 	feeds      feeds.Feeds
 	Closers    func()
+}
+
+func activityLogger(ctx context.Context) templog.Logger {
+	if activity.IsActivity(ctx) {
+		return activity.GetLogger(ctx)
+	}
+
+	// Unit tests sometimes invoke the implementation directly instead of
+	// through ActivityEnvironment, where no Temporal activity context exists.
+	return slog.Default()
 }
 
 func NewActivities(fetch fetch.Fetch, bucket bucket.Bucket, feeds feeds.Feeds) *Activities {
@@ -71,15 +86,15 @@ func (a *Activities) DownloadActivity(ctx context.Context, feedId string, url st
 	// TODO: research temporal metrics to see if there is a built in way to view how long "downloads" are taking
 	// TODO: also research to get counts of how many downloads are happening
 	rssFile := RssPath(feedId)
-	entry := slog.Default().With(
-		"feed_id", feedId,
-		"file", rssFile,
-		"url", url,
-	)
+	entry := activityLogger(ctx)
 	// TODO: ensure fetch.Url makes a fetch_history entry
 	err := a.fetch.Url(ctx, url, func(params fetch.CallbackParams) error {
 		if params.StatusCode == http.StatusNotModified {
-			return ErrContentNotChanged
+			return temporal.NewNonRetryableApplicationError(
+				"content not changed",
+				ContentNotChangedErrorType,
+				nil,
+			)
 		}
 
 		if err := a.bucket.Create(ctx, BucketName); err != nil {
@@ -91,7 +106,7 @@ func (a *Activities) DownloadActivity(ctx context.Context, feedId string, url st
 			return err
 		}
 
-		entry.Debug("downloaded activity", "key", upload.Key, "bucket", upload.Bucket, "size", upload.Size)
+		entry.Debug("downloaded activity", "feed_id", feedId, "file", rssFile, "url", url, "key", upload.Key, "bucket", upload.Bucket, "size", upload.Size)
 
 		return nil
 	}, &fetch.ExtraParams{
@@ -112,10 +127,7 @@ func ArticlePath(feedId string) string {
 // TODO: actually support a streaming bucket read -> rss to articles -> bucket write
 func (a *Activities) ParseActivity(ctx context.Context, feedId string, rssFile string) (string, error) { // TODO: ParseActivity -> ArticleActivity
 	articlesFile := ArticlePath(feedId)
-	entry := slog.Default().With(
-		"feed_id", feedId,
-		"article_file", articlesFile,
-	)
+	entry := activityLogger(ctx)
 
 	rssReader, err := a.bucket.Read(ctx, BucketName, rssFile)
 	if err != nil {
@@ -131,7 +143,7 @@ func (a *Activities) ParseActivity(ctx context.Context, feedId string, rssFile s
 	jsonl, errs := a.transforms.ArticleToJsonl(feedId, articles)
 	if len(errs) > 0 {
 		for err := range errs {
-			entry.Debug("article to jsonlines", "error", err)
+			entry.Debug("article to jsonlines", "feed_id", feedId, "article_file", articlesFile, "error", err)
 		}
 	}
 
@@ -140,7 +152,7 @@ func (a *Activities) ParseActivity(ctx context.Context, feedId string, rssFile s
 		return articlesFile, err
 	}
 
-	entry.Debug("parse activity: upload info", "key", upload.Key, "bucket", upload.Bucket, "size", upload.Size)
+	entry.Debug("parse activity: upload info", "feed_id", feedId, "article_file", articlesFile, "key", upload.Key, "bucket", upload.Bucket, "size", upload.Size)
 
 	return articlesFile, nil
 }
@@ -152,9 +164,7 @@ type SaveResults struct {
 
 // Load articles into database.
 func (a *Activities) SaveActivity(ctx context.Context, feedId string, articlesPath string) (SaveResults, error) {
-	entry := slog.Default().With(
-		"feed_id", feedId,
-	)
+	entry := activityLogger(ctx)
 	results := SaveResults{}
 
 	articleReader, err := a.bucket.Read(ctx, BucketName, articlesPath)
@@ -175,7 +185,7 @@ func (a *Activities) SaveActivity(ctx context.Context, feedId string, articlesPa
 
 			results.Failed++
 
-			entry.Error("save: decode error", "error", err)
+			entry.Error("save: decode error", "feed_id", feedId, "error", err)
 
 			continue
 		}
@@ -191,10 +201,10 @@ func (a *Activities) SaveActivity(ctx context.Context, feedId string, articlesPa
 
 		results.Succeeded++
 
-		entry.Debug("saved article", "article_url", article.Url, "article_id", id)
+		entry.Debug("saved article", "feed_id", feedId, "article_url", article.Url, "article_id", id)
 	}
 
-	entry.Info("save results", "succeeded", results.Succeeded, "failed", results.Failed)
+	entry.Info("save results", "feed_id", feedId, "succeeded", results.Succeeded, "failed", results.Failed)
 
 	// TODO: increment failure counter for alerting (does temporal have built in metrics for this?)
 	return results, nil
@@ -204,7 +214,7 @@ func (a *Activities) StatsActivity(ctx context.Context, feedId string) error {
 	return a.feeds.UpdateStats(ctx, feedId)
 }
 
-func handleSaveError(err error, url string, entry *slog.Logger) {
+func handleSaveError(err error, url string, entry templog.Logger) {
 	// TODO: research recording errors like this using grpc middleware
 	// need to have to correlate errors with the feed & article that caused it
 	code := status.Code(err)
