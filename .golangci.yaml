@@ -31,7 +31,7 @@ linters:
         disabled: true
       - name: flag-parameter
         exclude:
-        - rpc/pkg/client/client.go
+        - internal/rpc/client/client.go
       - name: import-shadowing
         disabled: true
       - name: import-alias-naming
@@ -43,7 +43,7 @@ linters:
         - _test\\.go$
       - name: unused-receiver
         exclude:
-        - graph/extensions/prometheus/prometheus.go
+        - internal/graph/extensions/prometheus/prometheus.go
       - name: max-public-structs
         disabled: true
       - name: comment-spacings
@@ -69,19 +69,15 @@ linters:
     - std-error-handling
     rules:
     - linters:
-      - depguard
       - revive
-      path: api/
+      path: internal/cli/
     - linters:
       - revive
-      path: cli/
-    - linters:
-      - revive
-      path: services/graph/graph/schema.resolvers_test.go
+      path: internal/graph/schema.resolvers_test.go
     paths:
     - .*\.pb\.go$
     - pkg/feeds/v1/service_grpc.pb.go
-    - services/graph/extensions/prometheus/prometheus.go
+    - internal/graph/extensions/prometheus/prometheus.go
     - internal/goverter/goverter.go
     - third_party$
     - builtin$
@@ -100,7 +96,7 @@ formatters:
     paths:
     - .*\.pb\.go$
     - pkg/feeds/v1/service_grpc.pb.go
-    - services/graph/extensions/prometheus/prometheus.go
+    - internal/graph/extensions/prometheus/prometheus.go
     - internal/goverter/goverter.go
     - third_party$
     - builtin$

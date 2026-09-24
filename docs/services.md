@@ -1,6 +1,6 @@
 # Services
 
-## [Graph (GraphQL)](../services/graph/README.md)
+## [Graph (GraphQL)](../internal/graph/README.md)
 
 [GraphQL API](http://localhost:8082). The goal is to show how to quickly build out public facing features. GraphQL would be available to public.
 
@@ -8,19 +8,19 @@
 
 A Next.JS app [user interface](http://localhost:3000/) for interacting with the project. It uses the public GraphQL API.
 
-## [RPC (gRPC)](../services/rpc/README.md)
+## [RPC (gRPC)](../internal/rpc/README.md)
 
 A simple gRPC service that can be used to show how to convert a monolith into microservices architecture. This service would only be available on the internal VPC.
 
 ## Clients
 
-- [Command Line Interface (CLI)](https://github.com/ericbutera/amalgam/tree/9528beb51c6b2affa3b6bd1622ca666983148fc4/cli)
+- [Command Line Interface (CLI)](../cmd/amalgam-cli/README.md)
 
 ## Data Pipeline
 
 ### Temporal
 
-The first [pipeline](../data-pipeline/temporal/feed) that I have built is a rudimentary batch process for ingesting RSS feeds.
+The first [pipeline](../internal/temporal/feed_fetch) that I have built is a rudimentary batch process for ingesting RSS feeds.
 
 ## Supporting Services
 

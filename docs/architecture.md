@@ -187,21 +187,21 @@ Components:
 
 - Public
   - [UI](https://github.com/ericbutera/amalgam/tree/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/ui)
-  - [CLI](https://github.com/ericbutera/amalgam/tree/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/cli)
+  - [CLI](../cmd/amalgam-cli)
 - Services
-  - [GraphQL](https://github.com/ericbutera/amalgam/tree/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/graph)
-  - [gRPC](https://github.com/ericbutera/amalgam/tree/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/rpc)
+  - [GraphQL](../cmd/graph)
+  - [gRPC](../cmd/rpc)
 - Data Pipelines
   - Temporal
-    - [FetchFeeds](https://github.com/ericbutera/amalgam/tree/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/data-pipeline/temporal/feed)
-    - [FeedTasks](https://github.com/ericbutera/amalgam/tree/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/data-pipeline/temporal/feed_tasks)
+    - [FetchFeeds](../internal/temporal/feed_fetch)
+    - [FeedTasks](../internal/temporal/feed_tasks)
 
 Ancillary Services:
 
 - K6
   - [load test graph service](https://github.com/ericbutera/amalgam/tree/main/k6/load-test-graph)
   - [traffic generator](https://github.com/ericbutera/amalgam/tree/main/k6/simulate-traffic)
-- [Faker](https://github.com/ericbutera/amalgam/tree/main/services/faker) (data generator)
+- [Faker](../cmd/faker) (data generator)
 - [Observability](https://github.com/ericbutera/amalgam/tree/main/containers/tilt/extensions/lgtm)
   - [dashboards](https://github.com/ericbutera/amalgam/tree/main/containers/lgtm/grafana/conf/provisioning/dashboards)
   - [alerts](https://github.com/ericbutera/amalgam/tree/main/containers/lgtm/grafana/conf/provisioning/alerting)

@@ -5,9 +5,9 @@ package goverter
 
 import (
 	models "github.com/ericbutera/amalgam/internal/db/models"
+	model "github.com/ericbutera/amalgam/internal/graph/model"
 	models1 "github.com/ericbutera/amalgam/internal/service/models"
 	v1 "github.com/ericbutera/amalgam/pkg/feeds/v1"
-	model "github.com/ericbutera/amalgam/services/graph/graph/model"
 	"time"
 )
 

@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	"github.com/ericbutera/amalgam/data-pipeline/temporal/feed_tasks"
+	"github.com/ericbutera/amalgam/internal/temporal/feed_tasks"
 )
 
 var ErrInvalidTaskType = errors.New("invalid task type")

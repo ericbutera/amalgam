@@ -24,8 +24,8 @@ RPC_PORT_FORWARD=50055
 
 load('./containers/tilt/extensions/go/Tiltfile', 'go_compile', 'go_image')
 
-go_compile('rpc-compile', './services/rpc', ['./services/rpc'])
-go_image('rpc', './services/rpc')
+go_compile('rpc-compile', './cmd/rpc', ['./internal/rpc'])
+go_image('rpc', './cmd/rpc')
 k8s_yaml(secret_from_dict("rpc-auth", inputs={
   "DB_MYSQL_DSN": "amalgam-user:amalgam-password@tcp(mysql:3306)/amalgam-db?charset=utf8mb4&parseTime=True&loc=Local"
 }))
@@ -42,8 +42,8 @@ k8s_resource(
   labels=["app"],
 )
 
-go_compile('graph-compile', './services/graph', ['./services/graph'])
-go_image('graph', './services/graph')
+go_compile('graph-compile', './cmd/graph', ['./internal/graph'])
+go_image('graph', './cmd/graph')
 k8s_resource("graph",
   port_forwards=[
     port_forward(GRAPH_PORT_FORWARD, 8080, "playground")
@@ -57,8 +57,8 @@ k8s_resource("graph",
   labels=["app"]
 )
 
-go_compile('echo-compile', './services/echo', ['./services/echo'])
-go_image('echo', './services/echo')
+go_compile('echo-compile', './cmd/echo', ['./cmd/echo'])
+go_image('echo', './cmd/echo')
 k8s_resource("echo", port_forwards=[port_forward(8083, 8080, "http")], labels=["services"])
 
 docker_build(
@@ -69,8 +69,8 @@ docker_build(
 )
 k8s_resource("ui", port_forwards=[port_forward(3000, 3000, "ui")], labels=["app"])
 
-go_compile('faker-compile', './services/faker', ['./services/faker'])
-go_image('faker', './services/faker')
+go_compile('faker-compile', './cmd/faker', ['./cmd/faker'])
+go_image('faker', './cmd/faker')
 k8s_resource("faker", port_forwards=[port_forward(8084, 8080, "http")], labels=["services"])
 cmd_button('random feed',
   argv=['sh', '-c', 'curl "http://localhost:8084/feed/$(uuidgen)" 2>/dev/null'],
@@ -83,26 +83,26 @@ k8s_yaml(secret_from_dict("data-pipeline-auth", inputs={
   "MINIO_ACCESS_KEY": "minio",
   "MINIO_SECRET_ACCESS_KEY": "minio-password",
 }))
-go_compile('feed-fetch-worker-compile', './data-pipeline/temporal/feed_fetch/worker', ['./data-pipeline/temporal/feed_fetch'])
-go_image('feed-fetch-worker', './data-pipeline/temporal/feed_fetch/worker')
+go_compile('feed-fetch-worker-compile', './cmd/feed-fetch-worker', ['./internal/temporal/feed_fetch'])
+go_image('feed-fetch-worker', './cmd/feed-fetch-worker')
 k8s_resource("feed-fetch-worker", resource_deps=["temporal","rpc"], labels=["data-pipeline"], auto_init=(not IS_CI),
   port_forwards=[port_forward(9096, 9090, "metrics")],
 )
-go_compile('feed-tasks-worker-compile', './data-pipeline/temporal/feed_tasks/worker', ['./data-pipeline/temporal/feed_tasks'])
-go_image('feed-tasks-worker', './data-pipeline/temporal/feed_tasks/worker')
+go_compile('feed-tasks-worker-compile', './cmd/feed-tasks-worker', ['./internal/temporal/feed_tasks'])
+go_image('feed-tasks-worker', './cmd/feed-tasks-worker')
 k8s_resource("feed-tasks-worker", resource_deps=["temporal","rpc"], labels=["data-pipeline"], auto_init=(not IS_CI),
   port_forwards=[port_forward(9097, 9090, "metrics")],
 )
-go_compile('feed-add-worker-compile', './data-pipeline/temporal/feed_add/worker', ['./data-pipeline/temporal/feed_add'])
-go_image('feed-add-worker', './data-pipeline/temporal/feed_add/worker')
+go_compile('feed-add-worker-compile', './cmd/feed-add-worker', ['./internal/temporal/feed_add'])
+go_image('feed-add-worker', './cmd/feed-add-worker')
 k8s_resource("feed-add-worker", resource_deps=["temporal","rpc"], labels=["data-pipeline"], auto_init=(not IS_CI),
   port_forwards=[port_forward(9098, 9090, "metrics")],
 )
 
-cmd_button('fetch feeds', argv=['sh', '-c', 'cd data-pipeline/temporal/feed_fetch && go run start/main.go'],
+cmd_button('fetch feeds', argv=['go', 'run', './cmd/feed-fetch'],
   resource='temporal', icon_name='add_to_queue', text='fetch feeds',
 )
-cmd_button('generate feeds', argv=['sh', '-c', 'cd data-pipeline/temporal/feed_tasks && go run start/main.go'],
+cmd_button('generate feeds', argv=['go', 'run', './cmd/feed-tasks'],
   resource='temporal', icon_name='add_to_queue', text='generate fake feeds',
   env=["FAKE_HOST=faker:8080"],
 )

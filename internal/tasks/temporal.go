@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	"github.com/ericbutera/amalgam/data-pipeline/temporal/feed_tasks"
+	"github.com/ericbutera/amalgam/internal/temporal/feed_tasks"
 	"github.com/ericbutera/amalgam/pkg/config/env"
 	"go.temporal.io/api/enums/v1"
 	sdk "go.temporal.io/sdk/client"

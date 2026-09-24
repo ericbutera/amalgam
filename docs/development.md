@@ -10,6 +10,18 @@
 
 Tilt is the local development orchestrator. The [Tiltfile](../Tiltfile) configures services, dependencies and build steps.
 
+## Go repository layout
+
+The Go code is organized as a tool-neutral monorepo:
+
+- `cmd/` contains executable entrypoints and deployment binaries. Each subdirectory is one `main` package.
+- `internal/` contains private application implementations, service wiring, CLI commands, and workflow code.
+- `pkg/` contains shared or externally consumable contracts, including generated protobuf and GraphQL client packages.
+- `tools/` contains developer and code-generation tooling rather than application services.
+- `integration/` contains cross-package and infrastructure-facing tests.
+
+Use `go run ./cmd/<name>` or the corresponding `mise` task to run a binary. Keep reusable code below `internal/` or `pkg/`; do not add new application services under a top-level `services/` directory.
+
 ## Linters
 
 Be sure to install the pre-commit hooks which run various linters, formatters, and tests.
@@ -41,7 +53,7 @@ example `.vscode/launch.json`:
       "type": "go",
       "request": "launch",
       "mode": "debug",
-      "program": "graph/main.go",
+      "program": "cmd/graph",
       "envFile": "${workspaceFolder}/.env",
       "args": ["server"]
     },
@@ -50,7 +62,7 @@ example `.vscode/launch.json`:
       "type": "go",
       "request": "launch",
       "mode": "debug",
-      "program": "rpc/main.go",
+      "program": "cmd/rpc",
       "env": {
         "PORT": "50055",
         "METRIC_ADDRESS": ":9091",
@@ -64,7 +76,7 @@ example `.vscode/launch.json`:
       "type": "go",
       "request": "launch",
       "mode": "debug",
-      "program": "data-pipeline/temporal/feed_fetch/worker/main.go",
+      "program": "cmd/feed-fetch-worker",
       "envFile": "${workspaceFolder}/.env"
     },
     {
@@ -72,7 +84,7 @@ example `.vscode/launch.json`:
       "type": "go",
       "request": "launch",
       "mode": "debug",
-      "program": "data-pipeline/temporal/generate/worker/main.go",
+      "program": "cmd/feed-tasks-worker",
       "envFile": "${workspaceFolder}/.env"
     },
     {

@@ -157,7 +157,7 @@ run = "buf generate"
 
 [tasks."generate-graph-server"]
 description = "Generate the GraphQL server"
-run = "cd services/graph && go run github.com/99designs/gqlgen@v0.17.55 generate"
+run = "cd internal/graph && go run github.com/99designs/gqlgen@v0.17.55 generate"
 
 [tasks."generate-graph-schema"]
 description = "Generate the GraphQL schema from a running server"
@@ -180,16 +180,16 @@ run = "npm --prefix ui run graphql-codegen"
 
 [tasks."install-amalgam-cli"]
 description = "Install the amalgam CLI"
-run = "go install ./amalgam-cli/cmd"
+run = "go install ./cmd/amalgam-cli"
 
 [tasks."build:faker"]
 description = "Build the faker service binary"
-dir = "services/faker"
+dir = "cmd/faker"
 run = "CGO_ENABLED=0 GOOS=linux go build -o bin/app"
 
 [tasks."build:feed-fetch-start"]
 description = "Build the feed fetch starter binary"
-dir = "data-pipeline/temporal/feed_fetch/start"
+dir = "cmd/feed-fetch"
 run = "CGO_ENABLED=0 GOOS=linux go build -o bin/app"
 
 [tasks."k6:test"]

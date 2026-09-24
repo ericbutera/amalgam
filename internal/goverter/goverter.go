@@ -7,9 +7,9 @@ import (
 	"time"
 
 	db_model "github.com/ericbutera/amalgam/internal/db/models"
+	gql_model "github.com/ericbutera/amalgam/internal/graph/model"
 	svc_model "github.com/ericbutera/amalgam/internal/service/models"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
-	gql_model "github.com/ericbutera/amalgam/services/graph/graph/model"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 

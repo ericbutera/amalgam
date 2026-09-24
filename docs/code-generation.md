@@ -11,7 +11,7 @@ By automating the generation of code for copying fields between structs with sim
 General workflow:
 
 - run tilt `tilt up`
-- change server schema `services/graph/graph/schema.graphqls`
+- change server schema `internal/graph/schema.graphqls`
 - generate server `mise run generate-graph-server`
 - await graph service to hot-reload
 - generate schema `mise run generate-graph-schema`
