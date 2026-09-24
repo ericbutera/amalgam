@@ -11,11 +11,11 @@ By automating the generation of code for copying fields between structs with sim
 General workflow:
 
 - run tilt `tilt up`
-- change server schema `services/graph/graph/schema.graphqls`
-- generate server `just generate-graph-server`
+- change server schema `internal/graph/schema.graphqls`
+- generate server `mise run generate-graph-server`
 - await graph service to hot-reload
-- generate schema `just generate-graph-schema`
-- generate clients `just generate-graph-clients`
+- generate schema `mise run generate-graph-schema`
+- generate clients `mise run generate-graph-clients`
 
 This is not an optimal solution. I intend to have it so these steps are automated without a Tilt dependency.
 
@@ -27,12 +27,9 @@ These generated clients provide strongly typed interfaces, enhancing developer e
 
 | Client                                                                                                                                  | Command                                                                                                                                  |
 | --------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| [TypeScript](https://github.com/ericbutera/amalgam/blob/9528beb51c6b2affa3b6bd1622ca666983148fc4/ui/app/generated/graphql.ts#L204-L225) | [`generate-graph-ts-client`](https://github.com/ericbutera/amalgam/blob/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/justfile#L165-L169)     |
-| [Go](https://github.com/ericbutera/amalgam/blob/9528beb51c6b2affa3b6bd1622ca666983148fc4/pkg/clients/graphql/graphql.gen.go)            | [`generate-graph-golang-client`](https://github.com/ericbutera/amalgam/blob/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/justfile#L159-L162) |
+| [TypeScript](https://github.com/ericbutera/amalgam/blob/9528beb51c6b2affa3b6bd1622ca666983148fc4/ui/app/generated/graphql.ts#L204-L225) | `mise run generate-graph-ts-client`     |
+| [Go](https://github.com/ericbutera/amalgam/blob/9528beb51c6b2affa3b6bd1622ca666983148fc4/pkg/clients/graphql/graphql.gen.go)            | `mise run generate-graph-golang-client` |
 
-### (deprecated) OpenAPI Clients ([v1.3.1](https://github.com/ericbutera/amalgam/releases/tag/v1.3.1))
-
-- [OpenAPI spec](https://github.com/ericbutera/amalgam/blob/8c4e26f23ecd3af6c7eae80cbb1a16165fcd1703/api/docs/swagger.yaml) with [swaggo/swag](https://github.com/swaggo/swag)
-- [REST client](https://github.com/ericbutera/amalgam/tree/8c4e26f23ecd3af6c7eae80cbb1a16165fcd1703/pkg/client) from OpenAPI spec
-- [TypeScript client](https://github.com/ericbutera/amalgam/tree/8c4e26f23ecd3af6c7eae80cbb1a16165fcd1703/ui/app/lib/client) from OpenAPI spec
-- [k6 tests](https://github.com/ericbutera/amalgam/tree/main/k6/tests/openapi) from OpenAPI spec
+There is no active REST/OpenAPI client-generation workflow. Public clients
+should be generated from the GraphQL schema and operations above; internal
+service clients are generated from the protobuf definitions with Buf.

@@ -1,21 +1,21 @@
 # K6 Tests
 
-This demo shows how to generate k6 tests from an OpenAPI spec. These tests can be used to validate & load test the API.
+These k6 tests exercise the public GraphQL API. They provide a small smoke
+test for the feed and article read paths; the larger GraphQL load test lives in
+[`k6/load-test-graph`](../load-test-graph).
 
 Read the [Grafana K6 docs](https://grafana.com/docs/k6/latest/) for more information.
 
 ## Quick start
 
 ```sh
-# prereq: generate ./api/docs/swagger.json
-make generate
-make test
+mise run k6:test
 ```
 
 ## TODO
 
 - [fake data generation](https://github.com/grafana/k6-example-data-generation/blob/main/src/index.js)
-- [load test](https://k6.io/blog/load-testing-your-api-with-swagger-openapi-and-k6/)
+- [load test](https://k6.io/docs/testing-guides/running-large-tests/)
 
 ## Expected Output
 
@@ -32,27 +32,17 @@ The tilt environment has k6 wired up to run tests. The output should look like t
         script: /tests/script.js
         output: -
 
-     scenarios: (100.00%) 1 scenario, 1 max VUs, 10m30s max duration (incl. graceful stop):
-              * default: 1 iterations for each of 1 VUs (maxDuration: 10m0s, gracefulStop: 30s)
+     scenarios: (100.00%) 1 scenario, 1 max VUs, 1 iteration
+              * default: 1 iteration for 1 VU
 
 
-     █ /health
-
-       ✓ OK
-
-     █ /article/{id}
+     █ GraphQL feed and article queries
 
        ✓ OK
 
-     █ /feeds
-
        ✓ OK
 
-     █ /feed/{id}/articles
-
-       ✓ OK
-
-     checks.........................: 100.00% 4 out of 4
+     checks.........................: 100.00% 8 out of 8
      data_received..................: 2.0 kB  447 kB/s
      data_sent......................: 331 B   75 kB/s
      group_duration.................: avg=1.05ms   min=763.91µs med=1.01ms   max=1.44ms   p(90)=1.34ms   p(95)=1.39ms

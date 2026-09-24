@@ -1,0 +1,226 @@
+[tools]
+act = "0.2.69"
+buf = "1.47.2"
+ctlptl = "0.8.36"
+go = "1.25.1"
+golangci-lint = "2.4.0"
+grpcurl = "1.9.1"
+helm = "3.16.3"
+k6 = "0.55.0"
+kind = "0.25.0"
+kubectl = "1.31.2"
+mockery = "2.47.0"
+node = "22.9.0"
+pre-commit = "4.0.1"
+protoc-gen-go = "1.35.2"
+protoc-gen-go-grpc = "1.5.1"
+tilt = "0.35.1"
+
+[tasks.default]
+depends = ["help"]
+
+[tasks.help]
+description = "List available mise tasks"
+run = "mise tasks ls"
+
+[tasks.act]
+description = "Run GitHub Actions locally"
+run = "act"
+
+[tasks.build]
+description = "Build a Linux binary for an application directory"
+usage = '''
+arg "<app>" help="Application directory"
+'''
+run = 'cd {{ usage.app | quote }} && CGO_ENABLED=0 GOOS=linux go build -o bin/app'
+
+[tasks.lint]
+description = "Run Go, TypeScript, and protobuf checks"
+depends = ["go-lint", "ts-lint", "buf-lint"]
+
+[tasks.test]
+description = "Run Go and TypeScript tests"
+depends = ["go-test", "ts-test"]
+
+[tasks."buf-lint"]
+description = "Lint protobuf files"
+run = "buf lint"
+
+[tasks."go-checks"]
+description = "Run Go lint and tests"
+depends = ["go-lint", "go-test"]
+
+[tasks."ts-checks"]
+description = "Run TypeScript formatting and tests"
+depends = ["ts-lint", "ts-test"]
+
+[tasks."go-coverage"]
+description = "Run Go tests and write the CI coverage profile"
+run = "go test -cover -coverprofile=coverage.txt ./..."
+
+[tasks."go-coverage-report"]
+description = "Generate Go coverage reports"
+depends = ["install-go-tools"]
+run = [
+  "mkdir -p reports/go",
+  "go test -coverprofile=reports/go/coverage.out ./...",
+  "go tool cover -func reports/go/coverage.out -o reports/go/coverage.txt",
+  "go tool cover -html reports/go/coverage.out -o reports/go/cover.html",
+]
+
+[tasks."go-lint-changed"]
+description = "Lint recently changed Go files"
+depends = ["install-go-tools"]
+run = "golangci-lint run --fix --new-from-rev=HEAD~1 --config .golangci.yaml"
+
+[tasks."go-lint"]
+description = "Lint Go files"
+depends = ["install-go-tools"]
+run = "golangci-lint run --fix --config .golangci.yaml --timeout 5m --concurrency 4"
+
+[tasks."go-lint-ci"]
+description = "Run the CI Go linter"
+depends = ["install-go-tools"]
+run = "golangci-lint run --timeout=5m --config=.golangci.yaml"
+
+[tasks."go-integration-test"]
+description = "Run Go integration tests against Tilt services"
+depends = ["install-go-tools"]
+run = "go test -tags integration ./..."
+
+[tasks."go-test"]
+description = "Run short Go tests"
+depends = ["install-go-tools"]
+run = "go test -short -timeout 30s ./..."
+
+[tasks."ts-lint"]
+description = "Format TypeScript files"
+depends = ["install-ts-tools"]
+run = "npm --prefix ui run format"
+
+[tasks."ts-test"]
+description = "Run TypeScript tests"
+depends = ["install-ts-tools"]
+run = "echo 'TypeScript tests are not configured'"
+
+[tasks."ts-build"]
+description = "Build the TypeScript application"
+depends = ["install-ts-tools"]
+run = "npm --prefix ui run build"
+
+[tasks."install-tools"]
+description = "Install project dependencies"
+depends = ["install-go-tools", "install-ts-tools"]
+
+[tasks."install-go-tools"]
+description = "Download Go dependencies"
+depends = ["go-mod-download"]
+
+[tasks."go-mod-download"]
+description = "Download go.mod dependencies"
+run = "go mod download"
+
+[tasks."install-ts-tools"]
+description = "Install UI dependencies"
+run = "npm --prefix ui install"
+
+[tasks.setup]
+description = "Install project dependencies and pre-commit hooks"
+depends = ["install-tools"]
+run = [
+  "pre-commit install --install-hook",
+  "pre-commit install --hook-type commit-msg",
+]
+
+[tasks.ci]
+description = "Run the Tilt CI pipeline"
+depends = ["install-tools"]
+run = "ctlptl create cluster kind --registry=ctlptl-registry && tilt ci && ctlptl delete cluster kind"
+
+[tasks."generate-typescript-client"]
+description = "Generate the GraphQL TypeScript client"
+depends = ["install-ts-tools"]
+run = "mise run generate-graph-ts-client"
+
+[tasks."generate-go-mocks"]
+description = "Generate Go test mocks"
+run = "mockery"
+
+[tasks."generate-go-converters"]
+description = "Generate Go converters"
+depends = ["install-go-tools"]
+run = "go run github.com/jmattheis/goverter/cmd/goverter@v1.5.1 gen ./internal/goverter"
+
+[tasks."generate-proto"]
+description = "Generate protobuf code"
+run = "buf generate"
+
+[tasks."generate-graph-server"]
+description = "Generate the GraphQL server"
+run = "cd internal/graph && go run github.com/99designs/gqlgen@v0.17.55 generate"
+
+[tasks."generate-graph-schema"]
+description = "Generate the GraphQL schema from a running server"
+run = "go run ./tools/graphql-schema"
+
+[tasks."generate-graph-clients"]
+description = "Generate GraphQL Go and TypeScript clients"
+depends = ["generate-graph-golang-client", "generate-graph-ts-client"]
+run = "echo 'Generated GraphQL clients'"
+
+[tasks."generate-graph-golang-client"]
+description = "Generate the GraphQL Go client"
+depends = ["generate-graph-schema"]
+run = "go run github.com/Khan/genqlient tools/graphql-golang-client/genqlient.yaml"
+
+[tasks."generate-graph-ts-client"]
+description = "Generate the GraphQL TypeScript client"
+depends = ["generate-graph-schema", "install-ts-tools"]
+run = "npm --prefix ui run graphql-codegen"
+
+[tasks."install-amalgam-cli"]
+description = "Install the amalgam CLI"
+run = "go install ./cmd/amalgam-cli"
+
+[tasks."build:faker"]
+description = "Build the faker service binary"
+dir = "cmd/faker"
+run = "CGO_ENABLED=0 GOOS=linux go build -o bin/app"
+
+[tasks."build:feed-fetch-start"]
+description = "Build the feed fetch starter binary"
+dir = "cmd/feed-fetch"
+run = "CGO_ENABLED=0 GOOS=linux go build -o bin/app"
+
+[tasks."k6:test"]
+description = "Run the GraphQL k6 smoke tests"
+run = '''
+docker run --rm \
+  -v "./k6/tests:/tests" \
+  grafana/k6 \
+  run "/tests/script.js"
+'''
+
+[tasks."k6:test-debug"]
+description = "Run the GraphQL k6 tests with HTTP debugging"
+run = "k6 run k6/tests/script.js --http-debug"
+
+[tasks."k6:load-test-graph"]
+description = "Build and run the GraphQL load test"
+run = '''
+docker build -t k6-load-test-graph ./k6/load-test-graph
+docker run \
+  -e GRAPH_HOST="http://localhost:8082/query" \
+  -e FAKER_HOST="localhost:8084" \
+  -it --rm k6-load-test-graph
+'''
+
+[tasks."k6:simulate-traffic"]
+description = "Build and run the traffic simulator"
+run = '''
+docker build -t k6-simulate-traffic ./k6/simulate-traffic
+docker run \
+  -e GRAPH_HOST="http://localhost:8082/query" \
+  -e FAKER_HOST="localhost:8084" \
+  -it --rm k6-simulate-traffic
+'''

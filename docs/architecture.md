@@ -2,6 +2,12 @@
 
 This document outlines how to grow a project from a monolithic REST API to a microservices architecture.
 
+## Current architecture
+
+GraphQL is the public application API. The GraphQL service calls internal gRPC
+services, and the UI and CLI use generated GraphQL clients. The former REST
+adapter and its OpenAPI-generated clients have been retired.
+
 - [Architecture Journey](#architecture-journey)
   - [Beginnings](#beginnings)
   - [v0.1.0 Monolithic REST API](#v010-monolithic-rest-api)
@@ -170,7 +176,10 @@ flowchart LR
 
 ## [v1.4.0](https://github.com/ericbutera/amalgam/releases/tag/v1.4.0) GraphQL Gateway powered by Data Pipelines
 
-As of v1.4.0, the system has stabilized around GraphQL as our API Gateway. It is possible to make sweeping changes to the internal system without having to change our external contract. For instance, we can now delete the API service. We can also split up any internal service to support horizontal scaling.
+As of v1.4.0, the system stabilized around GraphQL as our API Gateway. The
+legacy REST adapter has now been removed, so sweeping changes to the internal
+system can be made without changing the public GraphQL contract. Internal
+services can also be split up to support horizontal scaling.
 
 Note: in prod there would be an ingress controller in front of the GraphQL service. This would handle things like rate limiting, authentication, and other concerns.
 
@@ -178,21 +187,21 @@ Components:
 
 - Public
   - [UI](https://github.com/ericbutera/amalgam/tree/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/ui)
-  - [CLI](https://github.com/ericbutera/amalgam/tree/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/cli)
+  - [CLI](../cmd/amalgam-cli)
 - Services
-  - [GraphQL](https://github.com/ericbutera/amalgam/tree/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/graph)
-  - [gRPC](https://github.com/ericbutera/amalgam/tree/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/rpc)
+  - [GraphQL](../cmd/graph)
+  - [gRPC](../cmd/rpc)
 - Data Pipelines
   - Temporal
-    - [FetchFeeds](https://github.com/ericbutera/amalgam/tree/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/data-pipeline/temporal/feed)
-    - [FeedTasks](https://github.com/ericbutera/amalgam/tree/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/data-pipeline/temporal/feed_tasks)
+    - [FetchFeeds](../internal/temporal/feed_fetch)
+    - [FeedTasks](../internal/temporal/feed_tasks)
 
 Ancillary Services:
 
 - K6
   - [load test graph service](https://github.com/ericbutera/amalgam/tree/main/k6/load-test-graph)
   - [traffic generator](https://github.com/ericbutera/amalgam/tree/main/k6/simulate-traffic)
-- [Faker](https://github.com/ericbutera/amalgam/tree/main/services/faker) (data generator)
+- [Faker](../cmd/faker) (data generator)
 - [Observability](https://github.com/ericbutera/amalgam/tree/main/containers/tilt/extensions/lgtm)
   - [dashboards](https://github.com/ericbutera/amalgam/tree/main/containers/lgtm/grafana/conf/provisioning/dashboards)
   - [alerts](https://github.com/ericbutera/amalgam/tree/main/containers/lgtm/grafana/conf/provisioning/alerting)

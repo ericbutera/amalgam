@@ -6,9 +6,9 @@ Pre-commit hooks run [unit tests](https://github.com/ericbutera/amalgam/blob/ad3
 
 ## Unit Tests
 
-Unit tests can be ran on your dev machine using `just test` ([src](https://github.com/ericbutera/amalgam/blob/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/justfile#L14)).
+Unit tests can be ran on your dev machine using `mise run test`.
 
-There is a `just go-coverage-report` ([src](https://github.com/ericbutera/amalgam/blob/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/justfile#L26-L29)) command to generate a coverage report. This is useful for seeing what parts of the codebase are not covered by tests.
+Use `mise run go-coverage-report` to generate a coverage report. This is useful for seeing what parts of the codebase are not covered by tests.
 
 ## Integration Tests (And End-to-End)
 
@@ -24,14 +24,14 @@ Another benefit of using Tilt is `tilt ci` is able to run these tests in a CI/CD
 
 Navigate to Tilt > [Temporal](http://localhost:10350/r/temporal/overview) in the local environment. There should be two buttons at the top right:
 
-- [Generate Fake Feeds](https://github.com/ericbutera/amalgam/blob/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/Tiltfile#L121-L127) - creates a dozen or so feeds using [faker service](../services/faker)
-- [Fetch Feeds](https://github.com/ericbutera/amalgam/blob/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/Tiltfile#L115-L120) - invokes the [FetchFeeds Workflow](https://github.com/ericbutera/amalgam/blob/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/data-pipeline/temporal/feed/workflow.go#L43)
+- [Generate Fake Feeds](https://github.com/ericbutera/amalgam/blob/main/Tiltfile) - creates a dozen or so feeds using the [faker command](../cmd/faker)
+- [Fetch Feeds](https://github.com/ericbutera/amalgam/blob/main/Tiltfile) - invokes the [FetchFeeds Workflow](../internal/temporal/feed_fetch/workflow.go)
 
 Note: feeds that point to faker will continuously generate fake articles.
 
 ### RPC Feed Tasks
 
-Generate fake feeds using a [feed task](https://github.com/ericbutera/amalgam/blob/ad3d79839030889826a8fb2f0c0dcad48bf9d06e/data-pipeline/temporal/feed_tasks/workflow.go#L9):
+Generate fake feeds using the [feed task workflow](../internal/temporal/feed_tasks/workflow.go):
 
 ```sh
 RPC_HOST=localhost:50055; \

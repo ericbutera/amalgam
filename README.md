@@ -23,11 +23,9 @@ Tech demo of a modern web application stack.
 Install the required prerequisites:
 
 1. [docker](https://docs.docker.com/get-docker/) or [orbstack](https://www.orbstack.com/)
-2. [asdf-vm](https://asdf-vm.com/)
+2. [mise](https://mise.jdx.dev/)
 
-Run `asdf install` to install additional required tools.
-
-One caveat is that you may need to add individual asdf [plugins](https://asdf-vm.com/manage/plugins.html). Due to security reasons, asdf doesn't provide a native way to automatically add missing plugins during install. If you are comfortable with the tools listed in [.tool-versions](./.tool-versions), you can run the following command: `cut -d' ' -f1 .tool-versions | xargs -I {} asdf plugin add {}`, then `asdf install`. You can verify the plugins are installed by running `asdf plugin list`.
+Run `mise install` to install the pinned tools from [mise.toml](./mise.toml), then run `mise run setup` to install the project hooks and dependencies.
 
 ## Run
 

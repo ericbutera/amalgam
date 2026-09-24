@@ -20,7 +20,7 @@ test_go('go-unit-tests', '.', '.',
 # environment variables are set with dotenv (main tiltfile)
 local_resource(
   "go integration tests",
-  "just go-integration-test",
+  "mise run go-integration-test",
   resource_deps=["minio", "rpc","graph"],
   trigger_mode=TRIGGER_MODE_MANUAL,
   auto_init=config.tilt_subcommand == "ci",
@@ -29,10 +29,10 @@ local_resource(
 
 docker_build("k6-image", "k6/tests")
 k8s_resource("k6",
-  new_name="k6 - api test",
+  new_name="k6 - graphql test",
   trigger_mode=TRIGGER_MODE_MANUAL,
   auto_init=False,
-  resource_deps=["api","rpc"],
+  resource_deps=["graph"],
   links=[link("https://k6.io", "grafana k6")],
   labels=["test"]
 )

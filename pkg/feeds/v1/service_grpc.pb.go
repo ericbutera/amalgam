@@ -23,6 +23,8 @@ const (
 	FeedService_GetUserFeed_FullMethodName            = "/feeds.v1.FeedService/GetUserFeed"
 	FeedService_ListFeeds_FullMethodName              = "/feeds.v1.FeedService/ListFeeds"
 	FeedService_ListUserFeeds_FullMethodName          = "/feeds.v1.FeedService/ListUserFeeds"
+	FeedService_SaveUserFeed_FullMethodName           = "/feeds.v1.FeedService/SaveUserFeed"
+	FeedService_SubscribeUserToUrl_FullMethodName     = "/feeds.v1.FeedService/SubscribeUserToUrl"
 	FeedService_GetUserArticles_FullMethodName        = "/feeds.v1.FeedService/GetUserArticles"
 	FeedService_MarkArticleAsRead_FullMethodName      = "/feeds.v1.FeedService/MarkArticleAsRead"
 	FeedService_CreateFeed_FullMethodName             = "/feeds.v1.FeedService/CreateFeed"
@@ -45,6 +47,8 @@ type FeedServiceClient interface {
 	GetUserFeed(ctx context.Context, in *GetUserFeedRequest, opts ...grpc.CallOption) (*GetUserFeedResponse, error)
 	ListFeeds(ctx context.Context, in *ListFeedsRequest, opts ...grpc.CallOption) (*ListFeedsResponse, error)
 	ListUserFeeds(ctx context.Context, in *ListUserFeedsRequest, opts ...grpc.CallOption) (*ListUserFeedsResponse, error)
+	SaveUserFeed(ctx context.Context, in *SaveUserFeedRequest, opts ...grpc.CallOption) (*SaveUserFeedResponse, error)
+	SubscribeUserToUrl(ctx context.Context, in *SubscribeUserToUrlRequest, opts ...grpc.CallOption) (*SubscribeUserToUrlResponse, error)
 	GetUserArticles(ctx context.Context, in *GetUserArticlesRequest, opts ...grpc.CallOption) (*GetUserArticlesResponse, error)
 	MarkArticleAsRead(ctx context.Context, in *MarkArticleAsReadRequest, opts ...grpc.CallOption) (*MarkArticleAsReadResponse, error)
 	CreateFeed(ctx context.Context, in *CreateFeedRequest, opts ...grpc.CallOption) (*CreateFeedResponse, error)
@@ -103,6 +107,26 @@ func (c *feedServiceClient) ListUserFeeds(ctx context.Context, in *ListUserFeeds
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ListUserFeedsResponse)
 	err := c.cc.Invoke(ctx, FeedService_ListUserFeeds_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *feedServiceClient) SaveUserFeed(ctx context.Context, in *SaveUserFeedRequest, opts ...grpc.CallOption) (*SaveUserFeedResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SaveUserFeedResponse)
+	err := c.cc.Invoke(ctx, FeedService_SaveUserFeed_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *feedServiceClient) SubscribeUserToUrl(ctx context.Context, in *SubscribeUserToUrlRequest, opts ...grpc.CallOption) (*SubscribeUserToUrlResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SubscribeUserToUrlResponse)
+	err := c.cc.Invoke(ctx, FeedService_SubscribeUserToUrl_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -238,6 +262,8 @@ type FeedServiceServer interface {
 	GetUserFeed(context.Context, *GetUserFeedRequest) (*GetUserFeedResponse, error)
 	ListFeeds(context.Context, *ListFeedsRequest) (*ListFeedsResponse, error)
 	ListUserFeeds(context.Context, *ListUserFeedsRequest) (*ListUserFeedsResponse, error)
+	SaveUserFeed(context.Context, *SaveUserFeedRequest) (*SaveUserFeedResponse, error)
+	SubscribeUserToUrl(context.Context, *SubscribeUserToUrlRequest) (*SubscribeUserToUrlResponse, error)
 	GetUserArticles(context.Context, *GetUserArticlesRequest) (*GetUserArticlesResponse, error)
 	MarkArticleAsRead(context.Context, *MarkArticleAsReadRequest) (*MarkArticleAsReadResponse, error)
 	CreateFeed(context.Context, *CreateFeedRequest) (*CreateFeedResponse, error)
@@ -273,6 +299,12 @@ func (UnimplementedFeedServiceServer) ListFeeds(context.Context, *ListFeedsReque
 }
 func (UnimplementedFeedServiceServer) ListUserFeeds(context.Context, *ListUserFeedsRequest) (*ListUserFeedsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListUserFeeds not implemented")
+}
+func (UnimplementedFeedServiceServer) SaveUserFeed(context.Context, *SaveUserFeedRequest) (*SaveUserFeedResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SaveUserFeed not implemented")
+}
+func (UnimplementedFeedServiceServer) SubscribeUserToUrl(context.Context, *SubscribeUserToUrlRequest) (*SubscribeUserToUrlResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SubscribeUserToUrl not implemented")
 }
 func (UnimplementedFeedServiceServer) GetUserArticles(context.Context, *GetUserArticlesRequest) (*GetUserArticlesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserArticles not implemented")
@@ -399,6 +431,42 @@ func _FeedService_ListUserFeeds_Handler(srv interface{}, ctx context.Context, de
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(FeedServiceServer).ListUserFeeds(ctx, req.(*ListUserFeedsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FeedService_SaveUserFeed_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SaveUserFeedRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FeedServiceServer).SaveUserFeed(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FeedService_SaveUserFeed_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FeedServiceServer).SaveUserFeed(ctx, req.(*SaveUserFeedRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FeedService_SubscribeUserToUrl_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SubscribeUserToUrlRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FeedServiceServer).SubscribeUserToUrl(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FeedService_SubscribeUserToUrl_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FeedServiceServer).SubscribeUserToUrl(ctx, req.(*SubscribeUserToUrlRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -641,6 +709,14 @@ var FeedService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListUserFeeds",
 			Handler:    _FeedService_ListUserFeeds_Handler,
+		},
+		{
+			MethodName: "SaveUserFeed",
+			Handler:    _FeedService_SaveUserFeed_Handler,
+		},
+		{
+			MethodName: "SubscribeUserToUrl",
+			Handler:    _FeedService_SubscribeUserToUrl_Handler,
 		},
 		{
 			MethodName: "GetUserArticles",

@@ -12,8 +12,8 @@ import (
 	"os"
 	"testing"
 
+	"github.com/ericbutera/amalgam/internal/rpc/client"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
-	"github.com/ericbutera/amalgam/services/rpc/pkg/client"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

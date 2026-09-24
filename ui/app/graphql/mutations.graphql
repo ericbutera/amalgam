@@ -1,6 +1,6 @@
 mutation AddFeed($url: String!, $name: String!) {
   addFeed(url: $url, name: $name) {
-    id
+    jobId
   }
 }
 

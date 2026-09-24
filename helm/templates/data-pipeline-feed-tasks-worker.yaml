@@ -36,6 +36,8 @@ spec:
               value: "feed-tasks-queue"
             - name: FEED_FETCH_TASK_QUEUE
               value: "feed-fetch-queue"
+            - name: FEED_ADD_TASK_QUEUE
+              value: "feed-add-queue"
             - name: TEMPORAL_HOST
               value: "temporal:7233"
             - name: GRAPH_HOST

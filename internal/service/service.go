@@ -10,9 +10,10 @@ import (
 )
 
 var (
-	ErrNotFound   = errors.New("not found")
-	ErrDuplicate  = errors.New("duplicate entry")
-	ErrValidation = errors.New("validation error")
+	ErrNotFound    = errors.New("not found")
+	ErrDuplicate   = errors.New("duplicate entry")
+	ErrValidation  = errors.New("validation error")
+	ErrQueryFailed = errors.New("query failed")
 )
 
 // type ListOptions = pagination.ListOptions
@@ -53,4 +54,5 @@ type Service interface {
 	SaveUserArticle(ctx context.Context, userArticle *svc_model.UserArticle) error
 	CreateFeedVerification(ctx context.Context, verification *svc_model.FeedVerification) (*svc_model.FeedVerification, error)
 	CreateFetchHistory(ctx context.Context, history *svc_model.FetchHistory) (*svc_model.FetchHistory, error)
+	SubscribeUserToUrl(ctx context.Context, userID string, url string) (*svc_model.UserFeed, error)
 }

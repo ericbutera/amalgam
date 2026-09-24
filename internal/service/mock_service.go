@@ -765,6 +765,66 @@ func (_c *MockService_SaveUserFeed_Call) RunAndReturn(run func(context.Context, 
 	return _c
 }
 
+// SubscribeUserToUrl provides a mock function with given fields: ctx, userID, url
+func (_m *MockService) SubscribeUserToUrl(ctx context.Context, userID string, url string) (*models.UserFeed, error) {
+	ret := _m.Called(ctx, userID, url)
+
+	if len(ret) == 0 {
+		panic("no return value specified for SubscribeUserToUrl")
+	}
+
+	var r0 *models.UserFeed
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) (*models.UserFeed, error)); ok {
+		return rf(ctx, userID, url)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) *models.UserFeed); ok {
+		r0 = rf(ctx, userID, url)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*models.UserFeed)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
+		r1 = rf(ctx, userID, url)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// MockService_SubscribeUserToUrl_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'SubscribeUserToUrl'
+type MockService_SubscribeUserToUrl_Call struct {
+	*mock.Call
+}
+
+// SubscribeUserToUrl is a helper method to define mock.On call
+//   - ctx context.Context
+//   - userID string
+//   - url string
+func (_e *MockService_Expecter) SubscribeUserToUrl(ctx interface{}, userID interface{}, url interface{}) *MockService_SubscribeUserToUrl_Call {
+	return &MockService_SubscribeUserToUrl_Call{Call: _e.mock.On("SubscribeUserToUrl", ctx, userID, url)}
+}
+
+func (_c *MockService_SubscribeUserToUrl_Call) Run(run func(ctx context.Context, userID string, url string)) *MockService_SubscribeUserToUrl_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(string), args[2].(string))
+	})
+	return _c
+}
+
+func (_c *MockService_SubscribeUserToUrl_Call) Return(_a0 *models.UserFeed, _a1 error) *MockService_SubscribeUserToUrl_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *MockService_SubscribeUserToUrl_Call) RunAndReturn(run func(context.Context, string, string) (*models.UserFeed, error)) *MockService_SubscribeUserToUrl_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // UpdateFeed provides a mock function with given fields: ctx, id, feed
 func (_m *MockService) UpdateFeed(ctx context.Context, id string, feed *models.Feed) error {
 	ret := _m.Called(ctx, id, feed)

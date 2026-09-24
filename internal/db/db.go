@@ -28,8 +28,8 @@ var (
 )
 
 type Config struct {
-	DbAdapter    Adapters `env:"DB_ADAPTER" envDefault:"sqlite"`
-	DbMysqlDsn   string   `env:"DB_MYSQL_DSN" example:"user:pass@tcp(127.0.0.1:3306)/dbname?charset=utf8mb4&parseTime=True&loc=Local"`
+	DbAdapter    Adapters `env:"DB_ADAPTER"     envDefault:"sqlite"`
+	DbMysqlDsn   string   `env:"DB_MYSQL_DSN"   example:"user:pass@tcp(127.0.0.1:3306)/dbname?charset=utf8mb4&parseTime=True&loc=Local"`
 	DbSqliteName string   `env:"DB_SQLITE_NAME" example:"file::memory:?cache=shared"`
 }
 

@@ -1059,6 +1059,154 @@ func (_c *MockFeedServiceClient_SaveArticle_Call) RunAndReturn(run func(context.
 	return _c
 }
 
+// SaveUserFeed provides a mock function with given fields: ctx, in, opts
+func (_m *MockFeedServiceClient) SaveUserFeed(ctx context.Context, in *SaveUserFeedRequest, opts ...grpc.CallOption) (*SaveUserFeedResponse, error) {
+	_va := make([]interface{}, len(opts))
+	for _i := range opts {
+		_va[_i] = opts[_i]
+	}
+	var _ca []interface{}
+	_ca = append(_ca, ctx, in)
+	_ca = append(_ca, _va...)
+	ret := _m.Called(_ca...)
+
+	if len(ret) == 0 {
+		panic("no return value specified for SaveUserFeed")
+	}
+
+	var r0 *SaveUserFeedResponse
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, *SaveUserFeedRequest, ...grpc.CallOption) (*SaveUserFeedResponse, error)); ok {
+		return rf(ctx, in, opts...)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, *SaveUserFeedRequest, ...grpc.CallOption) *SaveUserFeedResponse); ok {
+		r0 = rf(ctx, in, opts...)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*SaveUserFeedResponse)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, *SaveUserFeedRequest, ...grpc.CallOption) error); ok {
+		r1 = rf(ctx, in, opts...)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// MockFeedServiceClient_SaveUserFeed_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'SaveUserFeed'
+type MockFeedServiceClient_SaveUserFeed_Call struct {
+	*mock.Call
+}
+
+// SaveUserFeed is a helper method to define mock.On call
+//   - ctx context.Context
+//   - in *SaveUserFeedRequest
+//   - opts ...grpc.CallOption
+func (_e *MockFeedServiceClient_Expecter) SaveUserFeed(ctx interface{}, in interface{}, opts ...interface{}) *MockFeedServiceClient_SaveUserFeed_Call {
+	return &MockFeedServiceClient_SaveUserFeed_Call{Call: _e.mock.On("SaveUserFeed",
+		append([]interface{}{ctx, in}, opts...)...)}
+}
+
+func (_c *MockFeedServiceClient_SaveUserFeed_Call) Run(run func(ctx context.Context, in *SaveUserFeedRequest, opts ...grpc.CallOption)) *MockFeedServiceClient_SaveUserFeed_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		variadicArgs := make([]grpc.CallOption, len(args)-2)
+		for i, a := range args[2:] {
+			if a != nil {
+				variadicArgs[i] = a.(grpc.CallOption)
+			}
+		}
+		run(args[0].(context.Context), args[1].(*SaveUserFeedRequest), variadicArgs...)
+	})
+	return _c
+}
+
+func (_c *MockFeedServiceClient_SaveUserFeed_Call) Return(_a0 *SaveUserFeedResponse, _a1 error) *MockFeedServiceClient_SaveUserFeed_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *MockFeedServiceClient_SaveUserFeed_Call) RunAndReturn(run func(context.Context, *SaveUserFeedRequest, ...grpc.CallOption) (*SaveUserFeedResponse, error)) *MockFeedServiceClient_SaveUserFeed_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// SubscribeUserToUrl provides a mock function with given fields: ctx, in, opts
+func (_m *MockFeedServiceClient) SubscribeUserToUrl(ctx context.Context, in *SubscribeUserToUrlRequest, opts ...grpc.CallOption) (*SubscribeUserToUrlResponse, error) {
+	_va := make([]interface{}, len(opts))
+	for _i := range opts {
+		_va[_i] = opts[_i]
+	}
+	var _ca []interface{}
+	_ca = append(_ca, ctx, in)
+	_ca = append(_ca, _va...)
+	ret := _m.Called(_ca...)
+
+	if len(ret) == 0 {
+		panic("no return value specified for SubscribeUserToUrl")
+	}
+
+	var r0 *SubscribeUserToUrlResponse
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, *SubscribeUserToUrlRequest, ...grpc.CallOption) (*SubscribeUserToUrlResponse, error)); ok {
+		return rf(ctx, in, opts...)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, *SubscribeUserToUrlRequest, ...grpc.CallOption) *SubscribeUserToUrlResponse); ok {
+		r0 = rf(ctx, in, opts...)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*SubscribeUserToUrlResponse)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, *SubscribeUserToUrlRequest, ...grpc.CallOption) error); ok {
+		r1 = rf(ctx, in, opts...)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// MockFeedServiceClient_SubscribeUserToUrl_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'SubscribeUserToUrl'
+type MockFeedServiceClient_SubscribeUserToUrl_Call struct {
+	*mock.Call
+}
+
+// SubscribeUserToUrl is a helper method to define mock.On call
+//   - ctx context.Context
+//   - in *SubscribeUserToUrlRequest
+//   - opts ...grpc.CallOption
+func (_e *MockFeedServiceClient_Expecter) SubscribeUserToUrl(ctx interface{}, in interface{}, opts ...interface{}) *MockFeedServiceClient_SubscribeUserToUrl_Call {
+	return &MockFeedServiceClient_SubscribeUserToUrl_Call{Call: _e.mock.On("SubscribeUserToUrl",
+		append([]interface{}{ctx, in}, opts...)...)}
+}
+
+func (_c *MockFeedServiceClient_SubscribeUserToUrl_Call) Run(run func(ctx context.Context, in *SubscribeUserToUrlRequest, opts ...grpc.CallOption)) *MockFeedServiceClient_SubscribeUserToUrl_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		variadicArgs := make([]grpc.CallOption, len(args)-2)
+		for i, a := range args[2:] {
+			if a != nil {
+				variadicArgs[i] = a.(grpc.CallOption)
+			}
+		}
+		run(args[0].(context.Context), args[1].(*SubscribeUserToUrlRequest), variadicArgs...)
+	})
+	return _c
+}
+
+func (_c *MockFeedServiceClient_SubscribeUserToUrl_Call) Return(_a0 *SubscribeUserToUrlResponse, _a1 error) *MockFeedServiceClient_SubscribeUserToUrl_Call {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *MockFeedServiceClient_SubscribeUserToUrl_Call) RunAndReturn(run func(context.Context, *SubscribeUserToUrlRequest, ...grpc.CallOption) (*SubscribeUserToUrlResponse, error)) *MockFeedServiceClient_SubscribeUserToUrl_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // UpdateFeed provides a mock function with given fields: ctx, in, opts
 func (_m *MockFeedServiceClient) UpdateFeed(ctx context.Context, in *UpdateFeedRequest, opts ...grpc.CallOption) (*UpdateFeedResponse, error) {
 	_va := make([]interface{}, len(opts))
