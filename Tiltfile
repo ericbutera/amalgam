@@ -19,22 +19,10 @@ else:
 k8s_yaml(helm('./helm', values=values))
 
 GRAFANA_PORT_FORWARD=3001
-API_PORT_FORWARD=8080
 GRAPH_PORT_FORWARD=8082
 RPC_PORT_FORWARD=50055
 
 load('./containers/tilt/extensions/go/Tiltfile', 'go_compile', 'go_image')
-go_compile('api-compile', './services/api', ['./services/api'])
-go_image('api', './services/api')
-k8s_resource(
-  "api",
-  port_forwards=[port_forward(API_PORT_FORWARD, 8080, "api")],
-  resource_deps=["graph"],
-  links=[
-    link("localhost:%s/swagger/index.html" % API_PORT_FORWARD, "swagger"),
-  ],
-  labels=["app"],
-)
 
 go_compile('rpc-compile', './services/rpc', ['./services/rpc'])
 go_image('rpc', './services/rpc')

@@ -8,7 +8,6 @@ import (
 
 	db_model "github.com/ericbutera/amalgam/internal/db/models"
 	svc_model "github.com/ericbutera/amalgam/internal/service/models"
-	gql_client "github.com/ericbutera/amalgam/pkg/clients/graphql"
 	pb "github.com/ericbutera/amalgam/pkg/feeds/v1"
 	gql_model "github.com/ericbutera/amalgam/services/graph/graph/model"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -48,17 +47,6 @@ type Converter interface {
 	// goverter:ignoreMissing
 	// goverter:map UpdatedAt UpdatedAt | Time
 	ServiceToGraphArticle(*svc_model.Article) *gql_model.Article
-	// goverter:matchIgnoreCase
-	// goverter:ignoreMissing
-	GraphClientToApiFeedGet(*gql_client.GetFeedFeed) *svc_model.Feed
-	// goverter:matchIgnoreCase
-	// goverter:map UpdatedAt UpdatedAt | Time
-	GraphClientToApiArticle(*gql_client.GetArticleArticle) *svc_model.Article
-	// goverter:matchIgnoreCase
-	// goverter:ignoreMissing
-	// goverter:map UpdatedAt UpdatedAt | Time
-	GraphClientToApiArticleList(*gql_client.ListArticlesArticlesArticlesResponseArticlesArticle) *svc_model.Article
-
 	// goverter:matchIgnoreCase
 	// goverter:ignoreMissing
 	ProtoCreateFeedToService(*pb.CreateFeedRequest_Feed) *svc_model.Feed

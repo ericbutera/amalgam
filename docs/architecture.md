@@ -2,6 +2,12 @@
 
 This document outlines how to grow a project from a monolithic REST API to a microservices architecture.
 
+## Current architecture
+
+GraphQL is the public application API. The GraphQL service calls internal gRPC
+services, and the UI and CLI use generated GraphQL clients. The former REST
+adapter and its OpenAPI-generated clients have been retired.
+
 - [Architecture Journey](#architecture-journey)
   - [Beginnings](#beginnings)
   - [v0.1.0 Monolithic REST API](#v010-monolithic-rest-api)
@@ -170,7 +176,10 @@ flowchart LR
 
 ## [v1.4.0](https://github.com/ericbutera/amalgam/releases/tag/v1.4.0) GraphQL Gateway powered by Data Pipelines
 
-As of v1.4.0, the system has stabilized around GraphQL as our API Gateway. It is possible to make sweeping changes to the internal system without having to change our external contract. For instance, we can now delete the API service. We can also split up any internal service to support horizontal scaling.
+As of v1.4.0, the system stabilized around GraphQL as our API Gateway. The
+legacy REST adapter has now been removed, so sweeping changes to the internal
+system can be made without changing the public GraphQL contract. Internal
+services can also be split up to support horizontal scaling.
 
 Note: in prod there would be an ingress controller in front of the GraphQL service. This would handle things like rate limiting, authentication, and other concerns.
 

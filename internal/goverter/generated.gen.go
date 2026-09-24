@@ -6,7 +6,6 @@ package goverter
 import (
 	models "github.com/ericbutera/amalgam/internal/db/models"
 	models1 "github.com/ericbutera/amalgam/internal/service/models"
-	graphql "github.com/ericbutera/amalgam/pkg/clients/graphql"
 	v1 "github.com/ericbutera/amalgam/pkg/feeds/v1"
 	model "github.com/ericbutera/amalgam/services/graph/graph/model"
 	"time"
@@ -65,54 +64,6 @@ func (c *ConverterImpl) DbToServiceFeed(source *models.Feed) *models1.Feed {
 		modelsFeed.Name = (*source).Name
 		modelsFeed.URL = (*source).URL
 		modelsFeed.IsActive = (*source).IsActive
-		pModelsFeed = &modelsFeed
-	}
-	return pModelsFeed
-}
-func (c *ConverterImpl) GraphClientToApiArticle(source *graphql.GetArticleArticle) *models1.Article {
-	var pModelsArticle *models1.Article
-	if source != nil {
-		var modelsArticle models1.Article
-		modelsArticle.ID = (*source).Id
-		modelsArticle.FeedID = (*source).FeedId
-		modelsArticle.URL = (*source).Url
-		modelsArticle.Title = (*source).Title
-		modelsArticle.ImageURL = (*source).ImageUrl
-		modelsArticle.Preview = (*source).Preview
-		modelsArticle.Content = (*source).Content
-		modelsArticle.Description = (*source).Description
-		modelsArticle.GUID = (*source).Guid
-		modelsArticle.AuthorName = (*source).AuthorName
-		modelsArticle.AuthorEmail = (*source).AuthorEmail
-		modelsArticle.UpdatedAt = Time((*source).UpdatedAt)
-		pModelsArticle = &modelsArticle
-	}
-	return pModelsArticle
-}
-func (c *ConverterImpl) GraphClientToApiArticleList(source *graphql.ListArticlesArticlesArticlesResponseArticlesArticle) *models1.Article {
-	var pModelsArticle *models1.Article
-	if source != nil {
-		var modelsArticle models1.Article
-		modelsArticle.ID = (*source).Id
-		modelsArticle.FeedID = (*source).FeedId
-		modelsArticle.URL = (*source).Url
-		modelsArticle.Title = (*source).Title
-		modelsArticle.ImageURL = (*source).ImageUrl
-		modelsArticle.Preview = (*source).Preview
-		modelsArticle.AuthorName = (*source).AuthorName
-		modelsArticle.AuthorEmail = (*source).AuthorEmail
-		modelsArticle.UpdatedAt = Time((*source).UpdatedAt)
-		pModelsArticle = &modelsArticle
-	}
-	return pModelsArticle
-}
-func (c *ConverterImpl) GraphClientToApiFeedGet(source *graphql.GetFeedFeed) *models1.Feed {
-	var pModelsFeed *models1.Feed
-	if source != nil {
-		var modelsFeed models1.Feed
-		modelsFeed.ID = (*source).Id
-		modelsFeed.Name = (*source).Name
-		modelsFeed.URL = (*source).Url
 		pModelsFeed = &modelsFeed
 	}
 	return pModelsFeed

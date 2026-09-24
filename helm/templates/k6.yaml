@@ -11,8 +11,6 @@ spec:
           env:
             - name: K6_OUT
               value: json
-            - name: API_HOST
-              value: http://api:8080
             - name: GRAPH_HOST
               value: http://graph:8080/query
       restartPolicy: Never

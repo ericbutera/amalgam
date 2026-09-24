@@ -6,7 +6,7 @@
 
 ### [User Interface (UI)](../ui/README.md)
 
-A Next.JS app [user interface](http://localhost:3000/) for interacting with the project. At first it uses the REST API, but will be updated to use the GraphQL API.
+A Next.JS app [user interface](http://localhost:3000/) for interacting with the project. It uses the public GraphQL API.
 
 ## [RPC (gRPC)](../services/rpc/README.md)
 
@@ -41,12 +41,12 @@ TODO:
 
 ### [K6 (testing)](./k6/README.md)
 
-K6 tests have been [generated](./k6/tests/README.md) from the OpenAPI spec. They are a high level way of verifying the API is working as expected. This is a wonderful way to have end-to-end tests that are easy to write and maintain. Next steps might be adding load testing.
+K6 tests exercise the public GraphQL API. The smoke tests cover feed and
+article reads, while the load and traffic tests live in the dedicated GraphQL
+test directories.
 
-## Deprecated Services
+## API boundary
 
-### ~~[Monolith REST API](./api/README.md)~~ deprecated [v1.4.0](https://github.com/ericbutera/amalgam/releases/tag/v1.4.0)
-
-A classic "monolith" REST api built with gin-gonic. This service would be available to the public. It will be replaced with GraphQL as the project progresses.
-
-One of the major points of this project is the OpenAPI specification. It is generated from the gin endpoint code and is used to generate API clients in various languages.
+- GraphQL is the public application API.
+- gRPC is internal service communication and should not be publicly routed.
+- The former REST API and its OpenAPI-generated clients are retired.

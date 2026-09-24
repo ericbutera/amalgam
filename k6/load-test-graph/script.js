@@ -25,7 +25,7 @@ export default function () {
   const feedsRes = post(listFeeds())
   check(feedsRes, { 'List Feeds status is 200': (r) => r.status === 200 });
 
-  let feeds = feedsRes.json('data.feeds.#.id') || [];
+  let feeds = feedsRes.json('data.feeds.feeds.#.id') || [];
   for (let i = 0; i < feeds.length; i++) {
     const feedId = feeds[i];
     if (!feedId)
@@ -36,7 +36,7 @@ export default function () {
     const articlesRes = post(listArticles(feedId));
     check(articlesRes, { 'List Articles status is 200': (r) => r.status === 200 });
 
-    const articleId = articlesRes ? articlesRes.json('data.articles[0].id') : null; // TODO: randomize
+    const articleId = articlesRes ? articlesRes.json('data.articles.articles[0].id') : null; // TODO: randomize
     if (!articleId)
       return
 
@@ -68,9 +68,11 @@ function getArticle(articleId) {
 const QueryListFeeds = `
   query Feeds {
     feeds {
-      id
-      url
-      name
+      feeds {
+        id
+        url
+        name
+      }
     }
   }
 `;
@@ -112,13 +114,15 @@ const QueryGetArticle = `
 const QueryListArticles = `
   query ListArticles($feedId: ID!) {
     articles(feedId: $feedId) {
-      id
-      url
-      title
-      imageUrl
-      preview
-      authorName
-      authorEmail
+      articles {
+        id
+        url
+        title
+        imageUrl
+        preview
+        authorName
+        authorEmail
+      }
     }
   }
 `

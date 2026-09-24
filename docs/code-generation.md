@@ -30,9 +30,6 @@ These generated clients provide strongly typed interfaces, enhancing developer e
 | [TypeScript](https://github.com/ericbutera/amalgam/blob/9528beb51c6b2affa3b6bd1622ca666983148fc4/ui/app/generated/graphql.ts#L204-L225) | `mise run generate-graph-ts-client`     |
 | [Go](https://github.com/ericbutera/amalgam/blob/9528beb51c6b2affa3b6bd1622ca666983148fc4/pkg/clients/graphql/graphql.gen.go)            | `mise run generate-graph-golang-client` |
 
-### (deprecated) OpenAPI Clients ([v1.3.1](https://github.com/ericbutera/amalgam/releases/tag/v1.3.1))
-
-- [OpenAPI spec](https://github.com/ericbutera/amalgam/blob/8c4e26f23ecd3af6c7eae80cbb1a16165fcd1703/api/docs/swagger.yaml) with [swaggo/swag](https://github.com/swaggo/swag)
-- [REST client](https://github.com/ericbutera/amalgam/tree/8c4e26f23ecd3af6c7eae80cbb1a16165fcd1703/pkg/client) from OpenAPI spec
-- [TypeScript client](https://github.com/ericbutera/amalgam/tree/8c4e26f23ecd3af6c7eae80cbb1a16165fcd1703/ui/app/lib/client) from OpenAPI spec
-- [k6 tests](https://github.com/ericbutera/amalgam/tree/main/k6/tests/openapi) from OpenAPI spec
+There is no active REST/OpenAPI client-generation workflow. Public clients
+should be generated from the GraphQL schema and operations above; internal
+service clients are generated from the protobuf definitions with Buf.

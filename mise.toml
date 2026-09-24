@@ -14,7 +14,6 @@ node = "22.9.0"
 pre-commit = "4.0.1"
 protoc-gen-go = "1.35.2"
 protoc-gen-go-grpc = "1.5.1"
-swag = "1.16.4"
 tilt = "0.35.1"
 
 [tasks.default]
@@ -138,45 +137,6 @@ description = "Run the Tilt CI pipeline"
 depends = ["install-tools"]
 run = "ctlptl create cluster kind --registry=ctlptl-registry && tilt ci && ctlptl delete cluster kind"
 
-[tasks."generate-openapi"]
-description = "Generate the OpenAPI documentation"
-depends = ["install-go-tools"]
-run = "swag init --parseDependency --parseInternal --dir services/api --output services/api/docs"
-
-[tasks."generate-api-clients"]
-description = "Generate OpenAPI and API clients"
-depends = ["generate-openapi", "generate-go-api-client", "generate-typescript-client", "generate-k6"]
-run = "echo 'Generated API clients'"
-
-[tasks."generate-k6"]
-description = "Generate k6 tests from the OpenAPI document"
-run = '''
-echo "You will have to modify the generated script.js to work with your API"
-docker run --rm \
-  -v "./services/api/docs/swagger.json:/local/swagger.json" \
-  -v "./k6/tests/openapi:/out" \
-  openapitools/openapi-generator-cli generate \
-  -i "/local/swagger.json" \
-  -g k6 \
-  -o "/out" \
-  --skip-validate-spec
-'''
-
-[tasks."generate-go-api-client"]
-description = "Generate the Go API client"
-run = '''
-docker run \
-  -v "./services/api/docs/swagger.yaml:/local/swagger.yaml" \
-  -v "./pkg/clients/api:/out" \
-  openapitools/openapi-generator-cli \
-  generate \
-  -i "/local/swagger.yaml" \
-  -g go \
-  -o "/out/" \
-  -p packageName=client \
-  -p withGoMod=false
-'''
-
 [tasks."generate-typescript-client"]
 description = "Generate the GraphQL TypeScript client"
 depends = ["install-ts-tools"]
@@ -233,17 +193,17 @@ dir = "data-pipeline/temporal/feed_fetch/start"
 run = "CGO_ENABLED=0 GOOS=linux go build -o bin/app"
 
 [tasks."k6:test"]
-description = "Run the OpenAPI k6 tests"
+description = "Run the GraphQL k6 smoke tests"
 run = '''
 docker run --rm \
   -v "./k6/tests:/tests" \
   grafana/k6 \
-  run "/tests/openapi/script.js"
+  run "/tests/script.js"
 '''
 
 [tasks."k6:test-debug"]
-description = "Run the OpenAPI k6 tests with HTTP debugging"
-run = "k6 run k6/tests/openapi/script.js --http-debug"
+description = "Run the GraphQL k6 tests with HTTP debugging"
+run = "k6 run k6/tests/script.js --http-debug"
 
 [tasks."k6:load-test-graph"]
 description = "Build and run the GraphQL load test"
